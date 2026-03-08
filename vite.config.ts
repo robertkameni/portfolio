@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => ({
-  publicDir: 'src/assets',
+  publicDir: 'public',
   build: {
     target: ['es2020'],
   },
@@ -11,12 +10,11 @@ export default defineConfig(({ mode }) => ({
     mainFields: ['module'],
   },
   plugins: [
-    tailwindcss(),
     analog({
       nitro: {
         preset: 'vercel'
       }
-    })
+    }),
   ],
   test: {
     globals: true,
