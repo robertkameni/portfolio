@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
 
 export default defineConfig(({ mode }) => ({
-  publicDir: 'public',
   build: {
     target: ['es2020'],
   },
@@ -14,7 +13,7 @@ export default defineConfig(({ mode }) => ({
       nitro: {
         preset: 'vercel'
       }
-    }),
+    })
   ],
   test: {
     globals: true,
