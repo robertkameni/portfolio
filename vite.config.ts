@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  publicDir: 'public',
   build: {
     target: ['es2020'],
   },
@@ -13,8 +14,8 @@ export default defineConfig(({ mode }) => ({
     mainFields: ['module'],
   },
   plugins: [
+    tailwindcss(),
     analog(),
-    tailwindcss()
   ],
   test: {
     globals: true,
