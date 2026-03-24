@@ -1,15 +1,12 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import { prisma } from '../../db/client';
 import { visitorAgent } from '../../ai/agents/visitor.agent';
+import { pushUpdateToClient } from '../realtime.get';
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;
 };
 
-/**
- * Triggers the AI analysis of a visitor's session, saves the result,
- * and returns the generated profile.
- */
 export default defineEventHandler(async (event) => {
   const body = await readBody<AnalyzeVisitorBody>(event);
 
@@ -40,8 +37,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // With `VisitorProfileAnalysis` as a `type`, Prisma can now correctly handle the object.
-  return prisma.visitorProfile.upsert({
+  const savedProfile = await prisma.visitorProfile.upsert({
     where: { visitorId: session.visitorId },
     update: {
       profileData: analysis,
@@ -55,4 +51,9 @@ export default defineEventHandler(async (event) => {
       lastUpdatedByAgent: 'VisitorIntelligenceAgent',
     },
   });
+
+  // --- Push the update to the client via SSE ---
+  pushUpdateToClient(body.clientSessionId, 'visitor_profile_updated', savedProfile);
+
+  return savedProfile;
 });

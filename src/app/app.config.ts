@@ -2,6 +2,7 @@ import {
   provideHttpClient,
   withFetch,
   withInterceptors,
+  withInterceptorsFromDi,
 } from '@angular/common/http';
 import {
   ApplicationConfig,
@@ -10,6 +11,8 @@ import {
 } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,8 +21,10 @@ export const appConfig: ApplicationConfig = {
     provideFileRouter(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([requestContextInterceptor])
+      withInterceptors([requestContextInterceptor]),
+      withInterceptorsFromDi()
     ),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideClientHydration(withEventReplay()),
   ],
 };

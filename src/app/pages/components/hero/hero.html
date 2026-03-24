@@ -1,7 +1,17 @@
-<section class="flex flex-col items-center justify-center text-white p-8 md:p-16">
+<section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white p-8 md:p-16">
+  <!-- Add a prominent dynamic headline area above the cards -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl md:text-6xl font-bold text-primary mb-4 transition-all duration-500">
+      {{ adaptiveTitle() }}
+    </h1>
+    <h2 class="text-xl md:text-2xl text-gray-400">
+      {{ name() }} | {{ defaultTitle() }}
+    </h2>
+  </div>
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
     @for (card of cards(); track card.title) {
-      <div class="bg-surface border border-[#143c1a] rounded-2xl p-8 shadow-lg">
+      <div trackBehavior="hero_card_viewed_{{ card.title }}" class="bg-surface border border-[#143c1a] rounded-2xl p-8 shadow-lg">
         <div class="flex flex-col items-center mb-6">
           <div class="bg-[#0a2912] p-4 rounded-full mb-4">
             <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

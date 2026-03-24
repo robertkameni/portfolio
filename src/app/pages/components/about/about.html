@@ -1,4 +1,4 @@
-<section class="text-white p-8 md:p-16 md:pt-0 flex justify-center">
+<section trackBehavior="about_viewed" class="text-white p-8 md:p-16 md:pt-0 flex justify-center">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-6xl w-full items-center">
 
     <div class="md:col-span-5 flex justify-center">
@@ -14,12 +14,12 @@
     <div class="md:col-span-7 flex flex-col justify-center">
 
       <div class="mb-6 flex flex-col items-baseline">
-        <h2 class="text-4xl md:text-5xl font-bold text-[#22c55e] mb-2">{{ data().title }}</h2>
+        <h2 class="text-4xl md:text-5xl font-bold text-[#22c55e] mb-2">{{ adaptiveTitle() }}</h2>
         <div class="h-1 w-16 bg-white"></div>
       </div>
 
       <div class="space-y-4 mb-8 text-gray-300 leading-relaxed text-sm md:text-base text-left">
-        @for (paragraph of data().paragraphs; track $index) {
+        @for (paragraph of adaptiveParagraphs(); track $index) {
           <p>{{ paragraph }}</p>
         }
       </div>
@@ -28,7 +28,7 @@
         @for (item of data().highlights; track item.title) {
           <div class="flex items-start">
             <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
-              <svg class="w-5 h-5 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.iconPath"></path>
               </svg>
             </div>
