@@ -109,7 +109,7 @@ export default defineEventHandler(() => {
       description: "Ready to bring your ideas to life? Let's discuss how we work together to create something amazing.",
       features: [
         {
-          title: "5+ Years Experience",
+          title: "4+ Years Experience",
           description: "Building scalable web applications",
           iconPath: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
         },

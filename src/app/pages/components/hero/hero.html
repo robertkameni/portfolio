@@ -1,7 +1,4 @@
 <section class="flex flex-col items-center justify-center text-white p-8 md:p-16">
-  <h1 class="text-4xl md:text-5xl font-bold text-primary mb-12 text-center tracking-wide">
-    {{ title() }}
-  </h1>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
     @for (card of cards(); track card.title) {
       <div class="bg-surface border border-[#143c1a] rounded-2xl p-8 shadow-lg">
