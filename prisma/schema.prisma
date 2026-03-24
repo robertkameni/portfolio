@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+// =======================================================================
+// CORE TABLES (Users & Content)
+// =======================================================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Project {
+  id              String    @id @default(uuid())
+  slug            String    @unique
+  title           String
+  description     String?
+  contentMarkdown String?
+  tags            String[]
+  coverImageUrl   String?
+  isPublished     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isPublished])
+  @@map("projects")
+}
+
+// =======================================================================
+// VISITOR & ANALYTICS TABLES
+// =======================================================================
+
+model Visitor {
+  id       String         @id @default(uuid())
+  sessions VisitorSession[]
+  profile  VisitorProfile?
+
+  @@map("visitors")
+}
+
+model VisitorSession {
+  id              String    @id @default(uuid())
+  visitor         Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  visitorId       String
+  startedAt       DateTime  @default(now())
+  lastSeenAt      DateTime  @default(now())
+  initialReferrer String?
+  userAgent       String?
+  ipAddress       String?
+  clientSessionId String?   @unique
+
+  events            AnalyticsEvent[]
+  aiMemory          AiMemory[]
+  messages          Message[]
+  performanceTraces PerformanceTrace[]
+  aiLogs            AiLog[]
+  aiDecisions       AiDecision[]
+
+  @@index([visitorId])
+  @@index([lastSeenAt])
+  @@map("visitor_sessions")
+}
+
+model AnalyticsEvent {
+  id        BigInt         @id @default(autoincrement())
+  session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  eventType String
+  payload   Json?
+  timestamp DateTime       @default(now())
+
+  @@index([sessionId])
+  @@index([eventType])
+  @@index([timestamp])
+  @@map("analytics_events")
+}
+
+// =======================================================================
+// AI & INTELLIGENCE TABLES
+// =======================================================================
+
+model VisitorProfile {
+  id                 String    @id @default(uuid())
+  visitor            Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  visitorId          String    @unique
+  profileData        Json?
+  confidenceScore    Float?
+  lastUpdatedByAgent String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@map("visitor_profiles")
+}
+
+model AiMemory {
+  id        String         @id @default(uuid())
+  session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  source    String
+  content   String
+  agentUsed String?
+  timestamp DateTime       @default(now())
+
+  @@index([sessionId, timestamp])
+  @@map("ai_memory")
+}
+
+model AiInsight {
+  id             String   @id @default(uuid())
+  title          String
+  summary        String
+  recommendation String?
+  dataSources    Json?
+  generatedAt    DateTime @default(now())
+
+  @@map("ai_insights")
+}
+
+// --- NEW: AI Observability & Traceability Models ---
+
+model AiLog {
+  id        String         @id @default(uuid())
+  session   VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  sessionId String?
+  agentName String
+  prompt    String
+  response  String?
+  status    String // e.g., "SUCCESS", "ERROR_INVALID_STRUCTURE"
+  createdAt DateTime       @default(now())
+
+  @@index([agentName])
+  @@index([status])
+  @@map("ai_logs")
+}
+
+model AiDecision {
+  id              String         @id @default(uuid())
+  session         VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId       String
+  agentName       String
+  decisionType    String // e.g., "visitor_classification"
+  decisionData    Json
+  confidenceScore Float?
+  reasoning       String?
+  createdAt       DateTime       @default(now())
+
+  @@index([agentName, decisionType])
+  @@map("ai_decisions")
+}
+
+
+// =======================================================================
+// COMMUNICATION TABLES
+// =======================================================================
+
+model Message {
+  id            String    @id @default(uuid())
+  session       VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  sessionId     String?
+  senderName    String?
+  senderEmail   String
+  body          String
+  status        String    @default("UNREAD")
+  createdAt     DateTime  @default(now())
+  intelligence  MessageIntelligence?
+
+  @@map("messages")
+}
+
+model MessageIntelligence {
+  id             String    @id @default(uuid())
+  message        Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId      String    @unique
+  classification String?
+  sentiment      String?
+  urgencyScore   Float?
+  priorityScore  Float?
+  suggestedReply String?
+  createdAt      DateTime  @default(now())
+
+  @@map("message_intelligence")
+}
+
+// =======================================================================
+// CONVERSION & EXPERIMENTATION TABLES
+// =======================================================================
+
+model ConversionGoal {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  eventKey    String    @unique
+  isActive    Boolean   @default(true)
+
+  performanceTraces PerformanceTrace[]
+
+  @@map("conversion_goals")
+}
+
+model ExperienceVariant {
+  id         String @id @default(uuid())
+  name       String
+  variantKey String @unique
+  config     Json?
+
+  @@map("experience_variants")
+}
+
+model PerformanceTrace {
+  id        String         @id @default(uuid())
+  session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  goal      ConversionGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  goalId    String?
+  outcome   String
+  context   Json
+  timestamp DateTime       @default(now())
+
+  @@index([goalId])
+  @@map("performance_traces")
+}
