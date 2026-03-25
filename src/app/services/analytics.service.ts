@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { VisitorStore } from '../store/visitor.store';
+import { isPlatformBrowser } from '@angular/common';
 import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
 
 @Injectable({
@@ -9,62 +10,67 @@ import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
   private readonly visitorStore = inject(VisitorStore);
-  private readonly clientSessionId: string;
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly clientSessionId?: string;
 
   constructor() {
-    this.clientSessionId = sessionStorage.getItem('clientSessionId') || crypto.randomUUID();
-    sessionStorage.setItem('clientSessionId', this.clientSessionId);
+    // Only access sessionStorage in the browser
+    if (isPlatformBrowser(this.platformId)) {
+      this.clientSessionId = sessionStorage.getItem('clientSessionId') || crypto.randomUUID();
+      sessionStorage.setItem('clientSessionId', this.clientSessionId);
+    }
   }
 
   public getClientSessionId(): string {
+    if (!this.clientSessionId) {
+      // SSR fallback
+      return 'ssr-session';
+    }
     return this.clientSessionId;
   }
 
-  /**
-   * Tracks a page view event.
-   * @param url The URL of the page being viewed.
-   */
   trackPageView(url: string): void {
+    const sessionId = this.getClientSessionId();
     const body = {
-      clientSessionId: this.clientSessionId,
+      clientSessionId: sessionId,
       eventType: 'page_view',
       payload: { url },
     };
 
-    this.http.post('/api/analytics/event', body)
-      .subscribe({
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.post('/api/analytics/event', body).subscribe({
         error: (err) => console.error('Analytics page view tracking error:', err),
       });
+    }
   }
 
   trackBehavior(behaviorName: string): void {
+    const sessionId = this.getClientSessionId();
     const body = {
-      clientSessionId: this.clientSessionId,
+      clientSessionId: sessionId,
       eventType: 'behavior_track',
       payload: { behaviorName },
     };
 
-    this.http.post('/api/analytics/event', body)
-      .subscribe({
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.post('/api/analytics/event', body).subscribe({
         error: (err) => console.error('Analytics behavior tracking error:', err),
       });
+    }
   }
 
-  /**
-   * Triggers the backend AI analysis for the current session.
-   */
   triggerAnalysis(): void {
     this.visitorStore.setLoading(true);
-    this.http.post<VisitorProfileAnalysis>('/api/ai/analyze-visitor', { clientSessionId: this.clientSessionId })
-      .subscribe({
-        next: (profile) => {
-          this.visitorStore.setProfile(profile);
-          this.visitorStore.setLoading(false);
-        },
-        error: (err) => {
-          console.error('AI analysis trigger error:', err);
-          this.visitorStore.setLoading(false);
-        },
-      });
+    const sessionId = this.getClientSessionId();
+    this.http.post<VisitorProfileAnalysis>('/api/ai/analyze-visitor', { clientSessionId: sessionId }).subscribe({
+      next: (profile) => {
+        this.visitorStore.setProfile(profile);
+        this.visitorStore.setLoading(false);
+      },
+      error: (err) => {
+        console.error('AI analysis trigger error:', err);
+        this.visitorStore.setLoading(false);
+      },
+    });
   }
 }

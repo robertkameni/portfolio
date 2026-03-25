@@ -5,6 +5,7 @@ import { authGuard } from '../../../guards/auth.guard';
 @Component({
   selector: 'admin-layout',
   imports: [RouterOutlet],
+  standalone: true,
   template: `
     <div>
       <h1>Admin Dashboard</h1>

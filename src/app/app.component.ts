@@ -6,7 +6,10 @@ import { RealtimeService } from './services/realtime.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [
+    RouterOutlet
+  ],
   template: '<router-outlet />',
 })
 export class App implements OnInit {

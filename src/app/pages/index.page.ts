@@ -3,19 +3,41 @@ import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
 import { RealtimeService } from '../services/realtime.service';
 
-import { SkillsBentoComponent } from './components/skills-bento/skills-bento';
+import { AboutComponent } from "./components/about/about.component";
+import { SkillsBentoComponent } from "./components/skills-bento/skills-bento";
 import { HeroComponent } from "./components/hero/hero";
-import { ContactComponent } from "./components/contact/contact";
-import { About } from "./components/about/about";
 import { IntroComponent } from "./components/intro/intro";
-import { ChatWidgetComponent } from '../ai-engine/chat/chat-widget';
+import { ChatWidgetComponent } from "../ai-engine/chat/chat-widget";
+import {ContactComponent} from "./components/contact/contact";
 
 @Component({
   selector: 'home',
-  imports: [SkillsBentoComponent, HeroComponent, ContactComponent, About, IntroComponent, ChatWidgetComponent],
-  templateUrl: './index.page.html',
+  standalone: true,
+  imports: [SkillsBentoComponent, HeroComponent, AboutComponent, IntroComponent, ChatWidgetComponent, ContactComponent],
+  template: `
+    <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white">
+      @if (store.isLoading()) {
+        <div class="flex min-h-screen items-center justify-center text-white font-mono">
+          Loading system architecture...
+        </div>
+      } @else if (store.data(); as profile) {
+
+        <intro [data]="profile.intro" />
+
+        <hero [name]="profile.title" [cards]="profile.heroCards" />
+
+        <skills-bento [skills]="profile.skills" />
+
+        <about [data]="profile.about" />
+
+        <contact [data]="profile.contact" />
+
+        <chat-widget />
+      }
+    </main>
+  `
 })
-export default class Home implements OnInit {
+export default class HomeComponent implements OnInit {
   store = inject(PortfolioStore);
   private analytics = inject(AnalyticsService);
   private realtime = inject(RealtimeService);

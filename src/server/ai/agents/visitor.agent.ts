@@ -1,6 +1,6 @@
 import { contextEngine } from '../context.engine';
-import { geminiClient } from '../gemini.client';
 import { prisma } from '../../db/client';
+import {getGeminiClient} from "../gemini.client";
 
 export type VisitorProfileAnalysis = {
   visitorType:
@@ -38,7 +38,9 @@ function validateProfile(data: any): data is VisitorProfileAnalysis {
 export const visitorAgent = {
   async analyze(sessionId: string): Promise<VisitorProfileAnalysis> {
     try {
+      const gemini = getGeminiClient();
       const sessionHistory = await contextEngine.getSessionHistoryAsText(sessionId);
+
       if (!sessionHistory || sessionHistory.includes('No activity')) {
         return fallback();
       }
@@ -54,10 +56,20 @@ export const visitorAgent = {
         OUTPUT FORMAT: { "visitorType": "...", "interests": [], "confidenceScore": 0.0, "summary": "...", "reasoning": "..." }
       `;
 
-      const result = await geminiClient.generateJson<VisitorProfileAnalysis>(prompt);
+      // 1. Initialisiere das Modell mit JSON-Konfiguration
+      const model=  gemini.getGenerativeModel({
+        model: 'gemini-2.5-flash',
+        generationConfig: {
+          responseMimeType:'application/json'
+        }
+      });
+
+      // 2. Generiere den Inhalt und parse das JSON
+      const aiResponse = await model.generateContent(prompt);
+      const responseText = aiResponse.response.text();
+      const result = JSON.parse(responseText);
 
       if (validateProfile(result)) {
-        // Validation passed, result is guaranteed to be VisitorProfileAnalysis
         await prisma.aiLog.create({
           data: {
             agentName: 'VisitorAgent',
@@ -68,7 +80,6 @@ export const visitorAgent = {
           },
         });
 
-        // The `result` object is a plain JS object from JSON.parse, which is compatible with Prisma's Json type.
         await prisma.aiDecision.create({
           data: {
             sessionId,
@@ -83,7 +94,6 @@ export const visitorAgent = {
         return result;
       }
 
-      // Validation failed
       await prisma.aiLog.create({
         data: {
           agentName: 'VisitorAgent',

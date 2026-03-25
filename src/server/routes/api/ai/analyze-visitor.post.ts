@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3';
-import { prisma } from '../../db/client';
-import { visitorAgent } from '../../ai/agents/visitor.agent';
-import { pushUpdateToClient } from '../realtime.get';
+import { visitorAgent } from '../../../ai/agents/visitor.agent';
+import {prisma} from "../../../db/client";
+import {pushUpdateToClient} from "../../../api/realtime.get"; // Pfad angepasst
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;

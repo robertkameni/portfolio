@@ -3,6 +3,7 @@ import { FieldState } from '@angular/forms/signals';
 
 @Component({
   selector: 'form-field',
+  standalone: true,
   template: `
     <div>
       <ng-content select="label"></ng-content>

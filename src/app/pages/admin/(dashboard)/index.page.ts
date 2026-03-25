@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'admin-dashboard',
+  standalone: true,
   template: `
     <div class="p-8 text-white">
       <h1 class="text-3xl font-bold mb-6 text-primary">Intelligence Dashboard</h1>
