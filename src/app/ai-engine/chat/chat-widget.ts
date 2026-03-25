@@ -121,7 +121,6 @@ export class ChatWidgetComponent {
   public chatStore = inject(ChatStore);
   public realtimeService = inject(RealtimeService);
 
-  // Restore the viewChild for the scrolling container
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
   newMessage = signal('');
