@@ -1,5 +1,5 @@
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const BCRYPT_SALT_ROUNDS = 12;
 

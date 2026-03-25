@@ -44,8 +44,21 @@ export default defineEventHandler(async (event) => {
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 
+  setCookie(event, 'auth_token', accessToken, {
+    httpOnly: true,
+    secure: process.env['NODE_ENV'] === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 60 * 15,
+  });
+
   // 5. Return the access token in the response body
   return {
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
     accessToken,
   };
 });

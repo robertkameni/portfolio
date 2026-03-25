@@ -47,3 +47,10 @@ Thumbs.db
 .env*
 
 .vercel
+
+# Prisma generated files
+prisma/generated
+
+# Copilot instructions and agent documentation
+.github/copilot-instructions.md
+.github/AGENTS.md

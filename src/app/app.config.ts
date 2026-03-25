@@ -2,29 +2,22 @@ import {
   provideHttpClient,
   withFetch,
   withInterceptors,
-  withInterceptorsFromDi,
 } from '@angular/common/http';
-import {
-  ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
-} from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { withComponentInputBinding } from '@angular/router';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideBrowserGlobalErrorListeners(),
-    provideFileRouter(),
+    provideFileRouter(withComponentInputBinding()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([requestContextInterceptor]),
-      withInterceptorsFromDi()
+      withInterceptors([requestContextInterceptor, authInterceptor]),
     ),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideClientHydration(withEventReplay()),
-  ],
+  ]
 };

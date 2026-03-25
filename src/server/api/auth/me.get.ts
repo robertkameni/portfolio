@@ -1,0 +1,23 @@
+import { defineEventHandler, setResponseStatus } from 'h3';
+import { userRepository } from '../../db/repositories/user.repository';
+import { authGuard } from '../../utils/authGuard';
+
+export default defineEventHandler(async (event) => {
+  // This will throw an error if the user is not authenticated
+  const { userId } = authGuard(event);
+
+  const user = await userRepository.findById(userId);
+
+  if (!user) {
+    setResponseStatus(event, 404);
+    return {statusMessage: 'User not found'};
+  }
+
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
+});
+

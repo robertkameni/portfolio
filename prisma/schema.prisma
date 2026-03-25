@@ -6,8 +6,8 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client"
+  output   = "./generated"
 }
 
 // =======================================================================
@@ -26,16 +26,16 @@ model User {
 }
 
 model Project {
-  id              String    @id @default(uuid())
-  slug            String    @unique
+  id              String   @id @default(uuid())
+  slug            String   @unique
   title           String
   description     String?
   contentMarkdown String?
   tags            String[]
   coverImageUrl   String?
-  isPublished     Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([isPublished])
   @@map("projects")
@@ -46,7 +46,7 @@ model Project {
 // =======================================================================
 
 model Visitor {
-  id       String         @id @default(uuid())
+  id       String           @id @default(uuid())
   sessions VisitorSession[]
   profile  VisitorProfile?
 
@@ -54,15 +54,15 @@ model Visitor {
 }
 
 model VisitorSession {
-  id              String    @id @default(uuid())
-  visitor         Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  id              String   @id @default(uuid())
+  visitor         Visitor  @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   visitorId       String
-  startedAt       DateTime  @default(now())
-  lastSeenAt      DateTime  @default(now())
+  startedAt       DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
   initialReferrer String?
   userAgent       String?
   ipAddress       String?
-  clientSessionId String?   @unique
+  clientSessionId String?  @unique
 
   events            AnalyticsEvent[]
   aiMemory          AiMemory[]
@@ -95,14 +95,14 @@ model AnalyticsEvent {
 // =======================================================================
 
 model VisitorProfile {
-  id                 String    @id @default(uuid())
-  visitor            Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  visitorId          String    @unique
+  id                 String   @id @default(uuid())
+  visitor            Visitor  @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  visitorId          String   @unique
   profileData        Json?
   confidenceScore    Float?
   lastUpdatedByAgent String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@map("visitor_profiles")
 }
@@ -134,14 +134,14 @@ model AiInsight {
 // --- NEW: AI Observability & Traceability Models ---
 
 model AiLog {
-  id        String         @id @default(uuid())
+  id        String          @id @default(uuid())
   session   VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   sessionId String?
   agentName String
   prompt    String
   response  String?
   status    String // e.g., "SUCCESS", "ERROR_INVALID_STRUCTURE"
-  createdAt DateTime       @default(now())
+  createdAt DateTime        @default(now())
 
   @@index([agentName])
   @@index([status])
@@ -163,35 +163,34 @@ model AiDecision {
   @@map("ai_decisions")
 }
 
-
 // =======================================================================
 // COMMUNICATION TABLES
 // =======================================================================
 
 model Message {
-  id            String    @id @default(uuid())
-  session       VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
-  sessionId     String?
-  senderName    String?
-  senderEmail   String
-  body          String
-  status        String    @default("UNREAD")
-  createdAt     DateTime  @default(now())
-  intelligence  MessageIntelligence?
+  id           String               @id @default(uuid())
+  session      VisitorSession?      @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  sessionId    String?
+  senderName   String?
+  senderEmail  String
+  body         String
+  status       String               @default("UNREAD")
+  createdAt    DateTime             @default(now())
+  intelligence MessageIntelligence?
 
   @@map("messages")
 }
 
 model MessageIntelligence {
-  id             String    @id @default(uuid())
-  message        Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  messageId      String    @unique
+  id             String   @id @default(uuid())
+  message        Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId      String   @unique
   classification String?
   sentiment      String?
   urgencyScore   Float?
   priorityScore  Float?
   suggestedReply String?
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime @default(now())
 
   @@map("message_intelligence")
 }
@@ -201,11 +200,11 @@ model MessageIntelligence {
 // =======================================================================
 
 model ConversionGoal {
-  id          String    @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  eventKey    String    @unique
-  isActive    Boolean   @default(true)
+  eventKey    String  @unique
+  isActive    Boolean @default(true)
 
   performanceTraces PerformanceTrace[]
 
@@ -222,14 +221,14 @@ model ExperienceVariant {
 }
 
 model PerformanceTrace {
-  id        String         @id @default(uuid())
-  session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  id        String          @id @default(uuid())
+  session   VisitorSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId String
   goal      ConversionGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
   goalId    String?
   outcome   String
   context   Json
-  timestamp DateTime       @default(now())
+  timestamp DateTime        @default(now())
 
   @@index([goalId])
   @@map("performance_traces")

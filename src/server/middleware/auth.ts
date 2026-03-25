@@ -1,6 +1,6 @@
-import { defineEventHandler, getHeader, sendError, createError } from 'h3';
-import { authService } from '../auth/auth.service';
-import { userRepository } from '../db/repositories/user.repository';
+import {createError, defineEventHandler, sendError} from 'h3';
+import {authGuard} from '../utils/authGuard';
+import {userRepository} from '../db/repositories/user.repository';
 
 /**
  * This middleware protects routes by verifying the JWT access token.
@@ -13,24 +13,17 @@ import { userRepository } from '../db/repositories/user.repository';
 export default defineEventHandler(async (event) => {
   // This middleware should only run for specific protected routes, e.g., under /api/admin
   if (!event.path.startsWith('/api/admin')) {
-    return; // Do nothing for public routes
+    return;
   }
 
-  const authHeader = getHeader(event, 'authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  let payload;
+
+  try {
+    payload = authGuard(event);
+  } catch (error) {
     return sendError(event, createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: Missing or invalid token.',
-    }));
-  }
-
-  const token = authHeader.substring(7); // Remove "Bearer " prefix
-  const payload = authService.verifyAccessToken<{ userId: string }>(token);
-
-  if (!payload) {
-    return sendError(event, createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Invalid or expired token.',
+      statusMessage: 'Unauthorized: Missing or invalid token.'
     }));
   }
 
@@ -38,7 +31,7 @@ export default defineEventHandler(async (event) => {
   if (!user) {
     return sendError(event, createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: User not found.',
+      statusMessage: 'Unauthorized: User not found.'
     }));
   }
 
