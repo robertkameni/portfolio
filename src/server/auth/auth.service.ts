@@ -39,7 +39,7 @@ export const authService = {
    * @param payload The data to include in the token (e.g., { userId: '...' }).
    * @returns The signed JWT access token.
    */
-  generateAccessToken(payload: { userId: string }): string {
+  generateAccessToken(payload: { userId: string; role: string }): string {
     return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
   },
 

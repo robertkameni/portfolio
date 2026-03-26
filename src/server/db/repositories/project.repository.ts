@@ -43,6 +43,15 @@ export const projectRepository = {
   },
 
   /**
+   * Finds a project by its slug regardless of publish state (admin-only).
+   */
+  async findBySlug(slug: string): Promise<Project | null> {
+    return prisma.project.findUnique({
+      where: { slug },
+    });
+  },
+
+  /**
    * Finds all projects, including drafts. (Admin only)
    * @returns A list of all projects.
    */

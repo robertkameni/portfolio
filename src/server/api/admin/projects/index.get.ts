@@ -1,24 +1,29 @@
-import {createError, defineEventHandler} from 'h3';
+import {createError, defineEventHandler, getQuery} from 'h3';
 import {projectRepository} from '../../../db/repositories/project.repository';
 
 /**
- * API endpoint to fetch all projects (published and drafts).
- * This route is protected by the auth middleware.
+ * Admin API – fetch all projects (published + drafts).
+ * When ?slug=<value> is provided, returns a single project instead.
+ * Protected by the auth middleware.
  */
 export default defineEventHandler(async (event) => {
   if (!event.context.user) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized',
-    });
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'});
+  }
+
+  const {slug} = getQuery(event) as {slug?: string};
+
+  if (slug) {
+    const project = await projectRepository.findBySlug(slug);
+    if (!project) {
+      throw createError({statusCode: 404, statusMessage: 'Project not found'});
+    }
+    return project;
   }
 
   try {
     return await projectRepository.findAll();
   } catch (error) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Internal Server Error: Could not fetch projects.',
-    });
+    throw createError({statusCode: 500, statusMessage: 'Internal Server Error: Could not fetch projects.'});
   }
 });

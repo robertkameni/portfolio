@@ -26,29 +26,29 @@ export const analyticsRepository = {
     // Use a transaction to ensure atomicity
     return prisma.$transaction(async (tx) => {
       const existingSession = await tx.visitorSession.findUnique({
-        where: { clientSessionId },
+        where: {clientSessionId}
       });
 
       if (existingSession) {
         // If session exists, just update its last_seen_at timestamp
         return tx.visitorSession.update({
-          where: { id: existingSession.id },
-          data: { lastSeenAt: new Date() },
+          where: {id: existingSession.id},
+          data: {lastSeenAt: new Date()}
         });
       }
 
       // If no session, create a new visitor and a new session for them.
-      const newVisitor = await tx.visitor.create({ data: {} });
+      const newVisitor = await tx.visitor.create({data: {}});
 
-      return await tx.visitorSession.create({
+      return tx.visitorSession.create({
         data: {
           clientSessionId,
           visitorId: newVisitor.id,
           userAgent: context.userAgent,
           ipAddress: context.ipAddress,
           initialReferrer: context.initialReferrer,
-          lastSeenAt: new Date(),
-        },
+          lastSeenAt: new Date()
+        }
       });
     });
   },
@@ -63,8 +63,8 @@ export const analyticsRepository = {
       data: {
         sessionId: eventData.sessionId,
         eventType: eventData.eventType,
-        payload: eventData.payload,
-      },
+        payload: eventData.payload
+      }
     });
-  },
+  }
 };

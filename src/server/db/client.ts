@@ -1,38 +1,76 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import {Pool} from "pg";
+import {PrismaClient} from '@prisma/client';
+import {PrismaPg} from '@prisma/adapter-pg';
+import {Pool} from 'pg';
 
-// This is the new, recommended way to instantiate Prisma Client in serverless environments.
-// It uses a connection pool to avoid exhausting the database's connection limit.
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+type GlobalWithPrisma = typeof globalThis & {
+  prisma?: PrismaClient;
 };
 
-let prismaInstance: PrismaClient | undefined;
+const globalWithPrisma = globalThis as GlobalWithPrisma;
+
+let pool: Pool | undefined;
+let poolShutdownRegistered = false;
+
+function ensurePool(): Pool {
+  if (pool) {
+    return pool;
+  }
+
+  const databaseUrl = process.env['DATABASE_URL'];
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL is required to initialize PrismaClient.');
+  }
+
+  const newPool = new Pool({
+    connectionString: databaseUrl,
+    allowExitOnIdle: true
+  });
+
+  newPool.on('error', (error) => {
+    console.error('Prisma PostgreSQL pool error:', error);
+  });
+
+  pool = newPool;
+  registerPoolShutdown();
+  return pool;
+}
+
+function createPrismaClient(): PrismaClient {
+  const prismaPool = ensurePool();
+  const adapter = new PrismaPg(prismaPool);
+  return new PrismaClient({
+    adapter
+  });
+}
+
+function registerPoolShutdown(): void {
+  if (poolShutdownRegistered) {
+    return;
+  }
+
+  poolShutdownRegistered = true;
+
+  const shutdown = (): void => {
+    if (!pool) {
+      return;
+    }
+
+    pool.end().catch((error) => {
+      console.error('Fehler beim Beenden des Prisma-Pools:', error);
+    });
+  };
+
+  process.once('beforeExit', shutdown);
+}
 
 function getPrismaClient(): PrismaClient {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
+  if (globalWithPrisma.prisma) {
+    return globalWithPrisma.prisma;
   }
 
-  if (!prismaInstance) {
-    const databaseUrl = process.env['DATABASE_URL'];
-
-    if (!databaseUrl) {
-      throw new Error('DATABASE_URL is required to initialize PrismaClient.');
-    }
-
-    const pool = new Pool({ connectionString: databaseUrl });
-    const adapter = new PrismaPg(pool);
-    prismaInstance = new PrismaClient({ adapter });
-
-    if (process.env['NODE_ENV'] !== 'production') {
-      globalForPrisma.prisma = prismaInstance;
-    }
-  }
-
-  return prismaInstance;
+  const client = createPrismaClient();
+  globalWithPrisma.prisma = client;
+  return client;
 }
 
 export const prisma = new Proxy({} as PrismaClient, {
@@ -40,6 +78,5 @@ export const prisma = new Proxy({} as PrismaClient, {
     const client = getPrismaClient();
     const value = (client as any)[prop];
     return typeof value === 'function' ? value.bind(client) : value;
-  },
+  }
 }) as PrismaClient;
-

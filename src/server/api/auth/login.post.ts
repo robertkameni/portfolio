@@ -31,9 +31,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // 3. Generate tokens
-  const tokenPayload = { userId: user.id };
-  const accessToken = authService.generateAccessToken(tokenPayload);
-  const refreshToken = authService.generateRefreshToken(tokenPayload);
+  const accessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
+  const refreshToken = authService.generateRefreshToken({ userId: user.id });
 
   // 4. Set the refresh token in a secure, HTTP-only cookie
   setCookie(event, 'refreshToken', refreshToken, {

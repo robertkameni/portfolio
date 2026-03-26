@@ -90,6 +90,27 @@ export const ProjectsStore = signalStore(
         )
       )
     ),
+
+    updateProject: rxMethod<{ id: string; data: Partial<Project> }>(
+      pipe(
+        switchMap(({ id, data }) =>
+          http.put<Project>(`/api/admin/projects/${id}`, data).pipe(
+            tap((project) =>
+              patchState(store, (state) => ({
+                projects: state.projects.map((p) => (p.id === id ? project : p)),
+                error: null,
+              }))
+            ),
+            catchError((err) => {
+              const message = err?.error?.statusMessage || err?.message || 'Failed to update project';
+              console.error('[ProjectsStore] updateProject error:', err.status, message);
+              patchState(store, { error: message });
+              return EMPTY;
+            })
+          )
+        )
+      )
+    ),
   }))
 );
 

@@ -12,7 +12,7 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
       <div class="z-10 text-center max-w-3xl px-4 flex flex-col items-center">
         <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 tracking-tight whitespace-pre">
           @for (letter of nameLetters(); track $index) {
-            <span [class.text-[#22c55e]]="$index % 2 === 0" [class.text-white]="$index % 2 !== 0">{{ letter }}</span>
+            <span [class.text-primary]="$index % 2 === 0" [class.text-white]="$index % 2 !== 0">{{ letter }}</span>
           }
         </h1>
 
