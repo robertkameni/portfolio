@@ -1,5 +1,5 @@
 import {createError, defineEventHandler, readBody} from 'h3';
-import {type CreateProjectDto, projectRepository} from '../../../db/repositories/project.repository';
+import {CreateProjectDto, projectRepository} from '../../../db/repositories/project.repository';
 
 /**
  * API endpoint to create a new project.
@@ -10,10 +10,7 @@ export default defineEventHandler(async (event) => {
   // The auth middleware has already run and verified the user.
   // If the user was not authenticated, the request would have been rejected.
   if (!event.context.user) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized',
-    });
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'});
   }
 
   const body = await readBody<CreateProjectDto>(event);
@@ -22,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!body?.title || !body?.slug) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: Title and slug are required.',
+      statusMessage: 'Bad Request: Title and slug are required.'
     });
   }
 
@@ -32,7 +29,7 @@ export default defineEventHandler(async (event) => {
     // Handle potential database errors, e.g., unique constraint violation on slug
     throw createError({
       statusCode: 500,
-      statusMessage: 'Internal Server Error: Could not create project.',
+      statusMessage: 'Internal Server Error: Could not create project.'
     });
   }
 });

@@ -2,17 +2,24 @@ import {Component} from '@angular/core';
 import {httpResource} from '@angular/common/http';
 import {ProjectsComponent} from '../components/projects/projects.component';
 import {Project} from '../../store/projects.store';
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'projects-page',
   standalone: true,
-  imports: [ProjectsComponent],
+  imports: [ProjectsComponent, RouterLink],
   template: `
     <main class="bg-background min-h-screen text-white p-8 md:p-16">
       <div class="max-w-6xl mx-auto">
-        <div class="mb-12">
-          <h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">Projects</h1>
-          <div class="h-1 w-16 bg-white"></div>
+        <div class="flex mb-12 justify-between items-center">
+          <div>
+            <h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">Projects</h1>
+            <div class="h-1 w-16 bg-white"></div>
+          </div>
+          <a [routerLink]="['/']"
+             class="inline-flex items-center gap-2 text-base text-gray-200 hover:text-primary transition mb-3">
+            <span aria-hidden="true">←</span> Back to main
+          </a>
         </div>
 
         @if (projectsResource.isLoading()) {

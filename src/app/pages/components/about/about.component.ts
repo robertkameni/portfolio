@@ -1,18 +1,19 @@
-import { Component, input, inject, computed } from "@angular/core";
-import { AboutData } from "./interface/about-data";
-import { VisitorStore } from "../../../store/visitor.store";
-import { TrackBehaviorDirective } from "../../../ai-engine/directives/track-behavior.directive";
+import {Component, computed, inject, input} from "@angular/core";
+import {AboutData} from "./interface/about-data";
+import {VisitorStore} from "../../../store/visitor.store";
+import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavior.directive";
 
 @Component({
   selector: "about",
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="about_viewed" class="text-white p-8 md:p-16 md:pt-0 flex justify-center">
+    <section trackBehavior="about_viewed" class="text-white p-8 pb-0 md:p-16 md:pb-0 md:pt-0 flex justify-center">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-6xl w-full items-center">
 
         <div class="md:col-span-5 flex justify-center">
-          <div class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+          <div
+            class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
             <img
               src="/assets/robert-kameni-bw.jpg"
               alt="Robert Kameni"
@@ -39,7 +40,8 @@ import { TrackBehaviorDirective } from "../../../ai-engine/directives/track-beha
               <div class="flex items-start">
                 <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
                   <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.iconPath"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          [attr.d]="item.iconPath"></path>
                   </svg>
                 </div>
                 <div>

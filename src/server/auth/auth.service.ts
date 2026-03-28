@@ -7,7 +7,7 @@ const BCRYPT_SALT_ROUNDS = 12;
 const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'] || 'your-super-secret-access-key';
 const REFRESH_TOKEN_SECRET = process.env['REFRESH_TOKEN_SECRET'] || 'your-super-secret-refresh-key';
 
-const ACCESS_TOKEN_EXPIRATION = '15m';
+const ACCESS_TOKEN_EXPIRATION = '20m';
 const REFRESH_TOKEN_EXPIRATION = '7d';
 
 /**
@@ -40,7 +40,7 @@ export const authService = {
    * @returns The signed JWT access token.
    */
   generateAccessToken(payload: { userId: string; role: string }): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
+    return jwt.sign(payload, ACCESS_TOKEN_SECRET, {expiresIn: ACCESS_TOKEN_EXPIRATION});
   },
 
   /**
@@ -49,7 +49,7 @@ export const authService = {
    * @returns The signed JWT refresh token.
    */
   generateRefreshToken(payload: { userId: string }): string {
-    return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
+    return jwt.sign(payload, REFRESH_TOKEN_SECRET, {expiresIn: REFRESH_TOKEN_EXPIRATION});
   },
 
   /**
@@ -76,5 +76,5 @@ export const authService = {
     } catch (error) {
       return null;
     }
-  },
+  }
 };

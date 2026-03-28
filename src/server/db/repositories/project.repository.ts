@@ -6,7 +6,7 @@ import type { Project } from '@prisma/client';
  */
 export type CreateProjectDto = Pick<
   Project,
-  'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl'
+  'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl' | 'isPublished'
 >;
 
 /**
