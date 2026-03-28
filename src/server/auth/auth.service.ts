@@ -3,9 +3,14 @@ import jwt from 'jsonwebtoken';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
-// Ensure these are set in your .env file for production
-const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'] || 'your-super-secret-access-key';
-const REFRESH_TOKEN_SECRET = process.env['REFRESH_TOKEN_SECRET'] || 'your-super-secret-refresh-key';
+const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'];
+const REFRESH_TOKEN_SECRET = process.env['REFRESH_TOKEN_SECRET'];
+
+if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+  throw new Error(
+    'ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must be set as environment variables.'
+  );
+}
 
 const ACCESS_TOKEN_EXPIRATION = '20m';
 const REFRESH_TOKEN_EXPIRATION = '7d';

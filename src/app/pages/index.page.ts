@@ -19,6 +19,8 @@ import {PageLoaderComponent} from "../shared/components/page-loader/page-loader.
     <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white">
       @if (store.isLoading()) {
         <page-loader message="Loading system architecture..."/>
+      } @else if (store.error()) {
+        <page-loader message="Failed to load profile. Please refresh."/>
       } @else if (store.data(); as profile) {
 
         <intro [data]="profile.intro"/>

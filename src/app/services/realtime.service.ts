@@ -1,17 +1,14 @@
 import { Injectable, inject, OnDestroy, signal, PLATFORM_ID } from '@angular/core';
 import { VisitorStore } from '../store/visitor.store';
-import { ExperienceStore } from '../store/experience.store';
 import { ChatStore } from '../store/chat.store';
 import { isPlatformBrowser } from '@angular/common';
 import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
-import type { ExperienceState } from '../store/experience.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
-  private readonly experienceStore = inject(ExperienceStore);
   private readonly chatStore = inject(ChatStore);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -49,10 +46,7 @@ export class RealtimeService implements OnDestroy {
       this.visitorStore.setProfile(newProfile);
     });
 
-    this.eventSource.addEventListener('experience_directive_received', (event) => {
-      const newDirectives = JSON.parse(event.data) as ExperienceState;
-      this.experienceStore.setDirectives(newDirectives);
-    });
+    // experience_directive_received removed: AdaptiveSectionHost is not active.
   }
 
   sendChatMessage(message: string): void {

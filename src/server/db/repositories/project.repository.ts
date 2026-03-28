@@ -1,5 +1,5 @@
 import { prisma } from '../client';
-import type { Project } from '@prisma/client';
+import type { Project } from '../../../../prisma/generated/client';
 
 /**
  * Data Transfer Object for creating a project.

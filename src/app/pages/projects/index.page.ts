@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {httpResource} from '@angular/common/http';
 import {ProjectsComponent} from '../components/projects/projects.component';
-import {Project} from '../../store/projects.store';
+import type { Project } from '../../shared/types/project.types';
 import {RouterLink} from "@angular/router";
 
 @Component({

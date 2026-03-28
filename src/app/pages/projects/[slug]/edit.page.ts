@@ -3,7 +3,7 @@ import {isPlatformBrowser} from '@angular/common';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {httpResource} from '@angular/common/http';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Project} from '../../../store/projects.store';
+import type {Project} from '../../../shared/types/project.types';
 import {AdminProjectsService} from '../../../services/admin-projects.service';
 import {
   ProjectFormComponent,

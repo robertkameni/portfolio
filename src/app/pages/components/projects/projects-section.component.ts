@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { httpResource } from '@angular/common/http';
-import type { Project } from '../../../store/projects.store';
+import type { Project } from '../../../shared/types/project.types';
 import { ProjectsComponent } from './projects.component';
 import { RestoreScrollPositionDirective } from '../../../shared/directives/restore-scroll-position.directive';
 

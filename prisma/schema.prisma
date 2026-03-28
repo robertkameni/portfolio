@@ -41,6 +41,22 @@ model Project {
   @@map("projects")
 }
 
+model Profile {
+  id        String   @id @default(uuid())
+  name      String
+  title     String
+  phone     String
+  email     String
+  intro     Json
+  heroCards Json
+  skills    Json
+  about     Json
+  contact   Json
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
 // =======================================================================
 // VISITOR & ANALYTICS TABLES
 // =======================================================================

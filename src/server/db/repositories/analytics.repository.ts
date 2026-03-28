@@ -1,5 +1,5 @@
 import {prisma} from '../client';
-import type {AnalyticsEvent, VisitorSession} from '@prisma/client';
+import type { AnalyticsEvent, VisitorSession } from '../../../../prisma/generated/client';
 
 export type AnalyticsEventDto = {
   sessionId: string;

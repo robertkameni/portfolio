@@ -2,7 +2,7 @@ import {Component, computed, inject, PLATFORM_ID, signal} from '@angular/core';
 import {DatePipe, isPlatformBrowser} from '@angular/common';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {httpResource} from '@angular/common/http';
-import type {Project} from '../../../store/projects.store';
+import type {Project} from '../../../shared/types/project.types';
 
 @Component({
   selector: 'project-overview-page',

@@ -1,5 +1,5 @@
 import { prisma } from '../client';
-import type { User } from '@prisma/client';
+import type { User } from '../../../../prisma/generated/client';
 
 /**
  * Repository for User data access.

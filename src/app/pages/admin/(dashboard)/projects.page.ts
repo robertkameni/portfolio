@@ -2,7 +2,7 @@ import {Component, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core'
 import {isPlatformBrowser} from '@angular/common';
 import {httpResource} from '@angular/common/http';
 import {RouterLink} from '@angular/router';
-import {Project} from '../../../store/projects.store';
+import type {Project} from '../../../shared/types/project.types';
 import {AdminProjectsService} from '../../../services/admin-projects.service';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/project-form.component';
