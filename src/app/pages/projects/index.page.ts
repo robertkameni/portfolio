@@ -17,8 +17,8 @@ import {RouterLink} from "@angular/router";
             <div class="h-1 w-16 bg-white"></div>
           </div>
           <a [routerLink]="['/']"
-             class="inline-flex items-center gap-2 text-base text-gray-200 hover:text-primary transition mb-3">
-            <span aria-hidden="true">←</span> Back to main
+             class="inline-flex items-center gap-2 text-base text-primary hover:underline transition mb-3">
+            <span aria-hidden="true">←</span> Back to Portfolio
           </a>
         </div>
 

@@ -32,9 +32,11 @@ import {DatePipe} from "@angular/common";
                   }
                 </div>
               }
-
               <div class="flex items-center justify-between">
-                <a class="text-sm text-primary font-medium" [routerLink]="['/projects', project.slug]">View</a>
+                <a class="text-sm text-primary font-medium hover:underline hover:font-bold"
+                   [routerLink]="['/projects', project.slug]">
+                  Open project →
+                </a>
                 <time class="text-xs text-gray-500">{{ project.createdAt | date }}</time>
               </div>
             </div>
