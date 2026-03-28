@@ -19,10 +19,8 @@ I am currently seeking freelance engagements for architecture consulting, comple
 ### Contact & Conditions
 
 - **Email:** [robertkameni83@gmail.com](mailto:robertkameni83@gmail.com)
-- **Phone:** 0176 3037077
-- **Location:** Bulmannstraße 10, 90459 Nürnberg
+- **Location:** 90459 Nürnberg
 - **Availability:** From 01.07.2026
-- **Rate:** €75 - €90 / hour (net, all-inclusive)
 - **Languages:** German (Fluent), English (Fluent), French (Native)
 
 ---
