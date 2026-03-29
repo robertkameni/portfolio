@@ -6,9 +6,10 @@ import { TrackBehaviorDirective } from "../../../ai-engine/directives/track-beha
   selector: 'skills-bento',
   standalone: true,
   template: `
-    <section trackBehavior="skills_viewed" class="p-8 md:p-16 md:pt-0 max-w-5xl mx-auto tex-white">
-      <h2 class="text-center text-primary text-3xl font-bold mb-8">Technical Arsenal</h2>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <section trackBehavior="skills_viewed" class="p-8 md:p-16 md:pt-0">
+      <div class="max-w-6xl w-full mx-auto px-4">
+        <h2 class="text-center text-primary text-3xl font-bold mb-8">Technical Arsenal</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         @for(skill of skills(); track skill){
           <div trackBehavior="skill_viewed_{{skill.name}}" class="bg-surface border border-[#143c1a] p-6 rounded-xl hover:border-primary transition-colors flex flex-col items-center justify-center text-center shadow-lg group">
 
@@ -19,6 +20,7 @@ import { TrackBehaviorDirective } from "../../../ai-engine/directives/track-beha
             <span class="font-mono text-sm text-gray-300 group-hover:text-white transition-colors">{{ skill.name }}</span>
           </div>
         }
+        </div>
       </div>
     </section>
   `,

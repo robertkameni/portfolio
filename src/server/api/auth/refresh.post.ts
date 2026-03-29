@@ -27,6 +27,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  // Only allow refresh for admin users
+  if (user.role !== 'ADMIN') {
+    // clear cookies if any and return forbidden
+    setCookie(event, 'auth_token', '', { path: '/', maxAge: 0 });
+    setCookie(event, 'refreshToken', '', { path: '/', maxAge: 0 });
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden: Admin access required' });
+  }
+
   const newAccessToken = authService.generateAccessToken({userId: user.id, role: user.role});
   const newRefreshToken = authService.generateRefreshToken({userId: user.id});
 
@@ -42,6 +50,13 @@ export default defineEventHandler(async (event) => {
   setCookie(event, 'refreshToken', newRefreshToken, {
     ...cookieOptions,
     maxAge: 60 * 60 * 24 * 7 // 7 days for the refresh token
+  });
+  setCookie(event, 'auth_hint', '1', {
+    httpOnly: false,
+    secure: process.env['NODE_ENV'] === 'production',
+    sameSite: 'strict' as const,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7
   });
 
   return {

@@ -1,10 +1,10 @@
 import { defineEventHandler, setResponseStatus } from 'h3';
 import { userRepository } from '../../db/repositories/user.repository';
-import { authGuard } from '../../utils/authGuard';
+import { adminGuard } from '../../utils/authGuard';
 
 export default defineEventHandler(async (event) => {
-  // This will throw an error if the user is not authenticated
-  const { userId } = authGuard(event);
+  // This will throw an error if the user is not authenticated or not an admin
+  const { userId } = adminGuard(event);
 
   const user = await userRepository.findById(userId);
 

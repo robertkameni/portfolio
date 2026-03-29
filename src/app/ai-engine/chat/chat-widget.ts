@@ -1,6 +1,6 @@
 import {afterRenderEffect, Component, ElementRef, inject, signal, viewChild} from '@angular/core';
-import { ChatStore } from '../../store/chat.store';
-import { RealtimeService } from '../../services/realtime.service';
+import {ChatStore} from '../../store/chat.store';
+import {RealtimeService} from '../../services/realtime.service';
 
 @Component({
   selector: 'chat-widget',
@@ -28,7 +28,7 @@ import { RealtimeService } from '../../services/realtime.service';
       <!-- Chat Window -->
       @if (chatStore.isOpen()) {
         <div
-          class="absolute bottom-16 right-0 w-80 md:w-96 bg-[#020a04] border border-[#0f2e15] rounded-2xl shadow-2xl flex flex-col h-[500px] max-h-[80vh] overflow-hidden">
+          class="absolute bottom-16 right-0 w-80 md:w-96 bg-[#020a04] border border-[#0f2e15] rounded-2xl shadow-2xl flex flex-col h-125 max-h-[80vh] overflow-x-hidden overflow-y-auto">
 
           <!-- Header -->
           <div class="bg-[#0a2912] border-b border-[#143c1a] p-4 flex items-center justify-between">
@@ -37,7 +37,8 @@ import { RealtimeService } from '../../services/realtime.service';
                 <div class="w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-primary">
                   <span class="text-primary font-bold">RK</span>
                 </div>
-                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
+                <div
+                  class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
               </div>
               <div>
                 <h3 class="text-white font-bold text-sm">Digital Twin</h3>

@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { filter, take } from 'rxjs/operators';
-import { AnalyticsService } from './services/analytics.service';
-import { RealtimeService } from './services/realtime.service';
+import {Component, inject, OnInit} from '@angular/core';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {filter, take} from 'rxjs/operators';
+import {AnalyticsService} from './services/analytics.service';
+import {RealtimeService} from './services/realtime.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import { RealtimeService } from './services/realtime.service';
   imports: [
     RouterOutlet
   ],
-  template: '<router-outlet />',
+  template: '<router-outlet />'
 })
 export class App implements OnInit {
   private readonly router = inject(Router);
@@ -18,20 +18,17 @@ export class App implements OnInit {
   private readonly realtimeService = inject(RealtimeService);
 
   ngOnInit(): void {
-    // Track initial page view and then connect to the real-time service
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      take(1) // We only need the very first navigation event to start everything
+      take(1)
     ).subscribe(event => {
       const clientSessionId = this.analyticsService.getClientSessionId();
       this.analyticsService.trackPageView(event.urlAfterRedirects);
       this.realtimeService.connect(clientSessionId);
 
-      // After the first event, we can trigger the AI analysis
       this.analyticsService.triggerAnalysis();
     });
 
-    // Continue tracking subsequent page views
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe(event => {

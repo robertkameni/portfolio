@@ -1,5 +1,5 @@
-import { contextEngine } from '../context.engine';
-import { prisma } from '../../db/client';
+import {contextEngine} from '../context.engine';
+import {prisma} from '../../db/client';
 import {getGeminiClient} from "../gemini.client";
 
 export type VisitorProfileAnalysis = {
@@ -22,7 +22,7 @@ function fallback(): VisitorProfileAnalysis {
     interests: [],
     confidenceScore: 0.3,
     summary: 'Insufficient data to classify visitor.',
-    reasoning: 'Fallback due to low data or AI failure',
+    reasoning: 'Fallback due to low data or AI failure'
   };
 }
 
@@ -74,10 +74,10 @@ export const visitorAgent = {
         }
       `;
 
-      const model=  gemini.getGenerativeModel({
-        model: 'gemini-2.5-flash',
+      const model = gemini.getGenerativeModel({
+        model: 'gemini-3-flash-preview',
         generationConfig: {
-          responseMimeType:'application/json'
+          responseMimeType: 'application/json'
         }
       });
 
@@ -92,8 +92,8 @@ export const visitorAgent = {
             prompt,
             response: JSON.stringify(result),
             status: 'success',
-            sessionId: sessionId,
-          },
+            sessionId: sessionId
+          }
         });
 
         await prisma.aiDecision.create({
@@ -103,8 +103,8 @@ export const visitorAgent = {
             decisionType: 'visitor_classification',
             decisionData: result,
             confidenceScore: result.confidenceScore,
-            reasoning: result.reasoning,
-          },
+            reasoning: result.reasoning
+          }
         });
 
         return result;
@@ -116,8 +116,8 @@ export const visitorAgent = {
           prompt,
           response: JSON.stringify(result),
           status: 'error_validation_failed',
-          sessionId: sessionId,
-        },
+          sessionId: sessionId
+        }
       });
       return fallback();
 
@@ -129,10 +129,10 @@ export const visitorAgent = {
           prompt: 'ERROR_DURING_EXECUTION',
           response: error instanceof Error ? error.message : JSON.stringify(error),
           status: 'error_exception',
-          sessionId: sessionId,
-        },
+          sessionId: sessionId
+        }
       });
       return fallback();
     }
-  },
+  }
 };

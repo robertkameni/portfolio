@@ -13,7 +13,6 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
     <section trackBehavior="contact_viewed" class="flex pb-12 p-8 justify-center text-white">
       <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-8 md:p-12 shadow-2xl">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-
           <div class="flex flex-col justify-center text-left">
             <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>
             <p class="text-gray-300 mb-10 text-lg">{{ adaptiveDescription() }}</p>
@@ -76,11 +75,9 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
               </button>
             </form>
           </div>
-
         </div>
       </div>
     </section>
-
   `
 })
 export class ContactComponent {

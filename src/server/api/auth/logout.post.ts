@@ -15,6 +15,13 @@ export default defineEventHandler((event) => {
     path: '/',
   });
 
+  deleteCookie(event, 'auth_hint', {
+    httpOnly: false,
+    secure: process.env['NODE_ENV'] === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+
   setResponseStatus(event, 200);
   return { statusMessage: 'Logged out successfully' };
 });

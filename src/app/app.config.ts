@@ -1,9 +1,18 @@
 import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
-import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection} from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection
+} from '@angular/core';
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
 import {provideFileRouter, requestContextInterceptor} from '@analogjs/router';
 import {withComponentInputBinding, withInMemoryScrolling} from '@angular/router';
 import {authInterceptor} from './interceptors/auth.interceptor';
+import {AuthService} from './services/auth.service';
+import {lastValueFrom, of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +29,10 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([requestContextInterceptor, authInterceptor])
     ),
-    provideClientHydration(withEventReplay())
+    provideClientHydration(withEventReplay()),
+    provideAppInitializer(() => {
+      const authService = inject(AuthService);
+      return lastValueFrom(authService.checkInitialAuthStatus().pipe(catchError(() => of(null))));
+    })
   ]
 };

@@ -1,8 +1,9 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
+import {computed, inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {isPlatformBrowser} from '@angular/common';
 import {Router} from '@angular/router';
 import {Observable, of} from 'rxjs';
-import {catchError, map, shareReplay, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, tap, finalize} from 'rxjs/operators';
 import type {User} from '../shared/types/user.types';
 
 interface LoginResponse {
@@ -16,16 +17,49 @@ interface LoginResponse {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
 
   #currentUser = signal<User | null>(null);
   #accessToken = signal<string | null>(null);
+  #authInitialized = signal(false);
   #initialAuthStatus$?: Observable<User | null>;
 
   public readonly isAuthenticated = computed(() => !!this.#currentUser());
+  public readonly isAdmin = computed(() => this.#currentUser()?.role === 'ADMIN');
+  public readonly authInitialized = this.#authInitialized.asReadonly();
   public readonly accessToken = this.#accessToken.asReadonly();
 
   checkInitialAuthStatus(): Observable<User | null> {
     if (!this.#initialAuthStatus$) {
+      if (!isPlatformBrowser(this.platformId)) {
+        this.#currentUser.set(null);
+        this.#authInitialized.set(true);
+        this.#initialAuthStatus$ = of(null).pipe(
+          shareReplay({bufferSize: 1, refCount: false})
+        );
+        return this.#initialAuthStatus$;
+      }
+
+      try {
+        const cookie = document.cookie || '';
+        const hasAuthHint = cookie.includes('auth_hint=1');
+        if (!hasAuthHint) {
+          this.#currentUser.set(null);
+          this.#authInitialized.set(true);
+          this.#initialAuthStatus$ = of(null).pipe(
+            shareReplay({bufferSize: 1, refCount: false})
+          );
+          return this.#initialAuthStatus$;
+        }
+      } catch {
+        this.#currentUser.set(null);
+        this.#authInitialized.set(true);
+        this.#initialAuthStatus$ = of(null).pipe(
+          shareReplay({bufferSize: 1, refCount: false})
+        );
+        return this.#initialAuthStatus$;
+      }
+
       this.#initialAuthStatus$ = this.http.get<User>('/api/auth/me').pipe(
         tap(user => this.#currentUser.set(user)),
         catchError((error) => {
@@ -35,6 +69,7 @@ export class AuthService {
           this.#currentUser.set(null);
           return of(null);
         }),
+        finalize(() => this.#authInitialized.set(true)),
         shareReplay({bufferSize: 1, refCount: false})
       );
     }

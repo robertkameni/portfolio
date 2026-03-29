@@ -31,6 +31,14 @@ export default defineEventHandler(async (event) => {
   }
 
   // 3. Generate tokens
+  // Only allow admin users to sign in to the portfolio admin
+  if (user.role !== 'ADMIN') {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Forbidden: User does not have admin privileges.',
+    });
+  }
+
   const accessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
   const refreshToken = authService.generateRefreshToken({ userId: user.id });
 
@@ -49,6 +57,14 @@ export default defineEventHandler(async (event) => {
     sameSite: 'strict',
     path: '/',
     maxAge: 60 * 15,
+  });
+
+  setCookie(event, 'auth_hint', '1', {
+    httpOnly: false,
+    secure: process.env['NODE_ENV'] === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   // 5. Return the access token in the response body

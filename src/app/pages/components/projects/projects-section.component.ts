@@ -10,31 +10,33 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
   standalone: true,
   imports: [RouterLink, ProjectsListComponent, RestoreScrollPositionDirective],
   template: `
-    <section id="projects-section" class="max-w-6xl p-8" restoreScrollPosition>
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <p class="text-sm uppercase tracking-[0.3em] text-gray-500 mb-3">Selected work</p>
-          <h2 class="text-3xl md:text-4xl font-bold text-primary">Projects</h2>
-          <p class="text-gray-400 mt-3 max-w-2xl">
-            A small preview of published work. Open the full overview to browse every project.
-          </p>
+    <section id="projects-section" class="p-8" restoreScrollPosition>
+      <div class="max-w-6xl w-full mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div>
+            <p class="text-sm uppercase tracking-[0.3em] text-gray-500 mb-3">Selected work</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-primary">Projects</h2>
+            <p class="text-gray-400 mt-3 max-w-2xl">
+              A small preview of published work. Open the full overview to browse every project.
+            </p>
+          </div>
+          <a routerLink="/projects"
+             class="inline-flex items-center gap-2 text-base text-white font-bold decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out hover:underline hover:decoration-current hover:text-primary hover:font-bold">
+            View all projects
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
-        <a routerLink="/projects"
-           class="inline-flex items-center gap-2 text-base font-bold text-white decoration-transparent underline-offset-4 transition-colors duration-1000 ease-in-out hover:text-primary hover:underline hover:decoration-current">
-          View all projects
-          <span aria-hidden="true">→</span>
-        </a>
-      </div>
 
-      @if (projectsResource.isLoading()) {
-        <div class="py-12 text-gray-400 font-mono text-center">Loading projects...</div>
-      } @else if (projectsResource.error()) {
-        <div class="py-12 text-red-400 text-center text-sm">Could not load projects.</div>
-      } @else if ((projectsResource.value() ?? []).length === 0) {
-        <div class="py-12 text-gray-500 text-center text-sm">No projects published yet.</div>
-      } @else {
-        <projects-list [projects]="(projectsResource.value() ?? []).slice(0, 3)"/>
-      }
+        @if (projectsResource.isLoading()) {
+          <div class="py-12 text-gray-400 font-mono text-center">Loading projects...</div>
+        } @else if (projectsResource.error()) {
+          <div class="py-12 text-red-400 text-center text-sm">Could not load projects.</div>
+        } @else if ((projectsResource.value() ?? []).length === 0) {
+          <div class="py-12 text-gray-500 text-center text-sm">No projects published yet.</div>
+        } @else {
+          <projects-list [projects]="(projectsResource.value() ?? []).slice(0, 3)"/>
+        }
+      </div>
     </section>
   `
 })
