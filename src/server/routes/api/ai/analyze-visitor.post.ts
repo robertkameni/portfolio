@@ -29,7 +29,6 @@ export default defineEventHandler(async (event) => {
   }
 
   // --- ASYNCHRONOUS BACKGROUND PROCESSING ---
-  // We do NOT await the analysis here. We start the promise and let it run in the background.
   // This prevents the HTTP request from hanging while Gemini thinks.
   void (async () => {
     try {
@@ -58,6 +57,7 @@ export default defineEventHandler(async (event) => {
       console.error('[Background Analysis] Error:', error);
     }
   })();
+  
   event.node.res.statusCode = 202;
   return {status: 'accepted', message: 'Analysis started in background'};
 });
