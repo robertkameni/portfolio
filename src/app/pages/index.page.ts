@@ -10,32 +10,43 @@ import {ChatWidgetComponent} from "../ai-engine/chat/chat-widget";
 import {ContactComponent} from "./components/contact/contact";
 import {ProjectsSectionComponent} from "./components/projects/projects-section.component";
 import {PageLoaderComponent} from "../shared/components/page-loader/page-loader.component";
+import {FadeInDirective} from "../shared/directives/fade-in.directive";
 
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [SkillsBentoComponent, HeroComponent, AboutComponent, IntroComponent, ChatWidgetComponent, ContactComponent, ProjectsSectionComponent, PageLoaderComponent],
+  imports: [
+    SkillsBentoComponent,
+    HeroComponent,
+    AboutComponent,
+    IntroComponent,
+    ChatWidgetComponent,
+    ContactComponent,
+    ProjectsSectionComponent,
+    PageLoaderComponent,
+    FadeInDirective
+  ],
   template: `
-    <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white">
+    <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white" fadeIn>
       @if (store.isLoading()) {
         <page-loader message="Loading system architecture..."/>
       } @else if (store.error()) {
         <page-loader message="Failed to load profile. Please refresh."/>
       } @else if (store.data(); as profile) {
 
-        <intro [data]="profile.intro"/>
+        <intro [data]="profile.intro" fadeIn/>
 
-        <hero [name]="profile.title" [cards]="profile.heroCards"/>
+        <hero [name]="profile.title" [cards]="profile.heroCards" fadeIn/>
 
-        <skills-bento [skills]="profile.skills"/>
+        <skills-bento [skills]="profile.skills" fadeIn/>
 
-        <about [data]="profile.about"/>
+        <about [data]="profile.about" fadeIn/>
 
-        <projects-section/>
+        <projects-section fadeIn/>
 
-        <contact [data]="profile.contact"/>
+        <contact [data]="profile.contact" fadeIn/>
 
-        <chat-widget/>
+        <chat-widget fadeIn/>
       }
     </main>
   `

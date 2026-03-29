@@ -9,7 +9,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideBrowserGlobalErrorListeners(),
-    provideFileRouter(withComponentInputBinding(), withInMemoryScrolling({scrollPositionRestoration: 'enabled'})),
+    provideFileRouter(
+      withComponentInputBinding(),
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled'
+      })
+    ),
     provideHttpClient(
       withFetch(),
       withInterceptors([requestContextInterceptor, authInterceptor])

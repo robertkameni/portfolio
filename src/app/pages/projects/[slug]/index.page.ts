@@ -12,7 +12,7 @@ import type {Project} from '../../../shared/types/project.types';
     <main class="min-h-screen bg-background text-white px-6 py-10 md:px-12 lg:px-16">
       <div class="max-w-5xl mx-auto">
         <a [routerLink]="goBackLink()"
-           class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-primary transition mb-8">
+           class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary hover:underline transition mb-8">
           <span aria-hidden="true">←</span>
           Back to projects
         </a>

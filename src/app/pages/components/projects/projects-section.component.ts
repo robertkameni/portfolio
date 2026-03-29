@@ -2,15 +2,15 @@ import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {httpResource} from '@angular/common/http';
 import type {Project} from '../../../shared/types/project.types';
-import {ProjectsComponent} from './projects.component';
+import {ProjectsListComponent} from './projects-list.component';
 import {RestoreScrollPositionDirective} from '../../../shared/directives/restore-scroll-position.directive';
 
 @Component({
   selector: 'projects-section',
   standalone: true,
-  imports: [RouterLink, ProjectsComponent, RestoreScrollPositionDirective],
+  imports: [RouterLink, ProjectsListComponent, RestoreScrollPositionDirective],
   template: `
-    <section class="max-w-6xl p-8" restoreScrollPosition>
+    <section id="projects-section" class="max-w-6xl p-8" restoreScrollPosition>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <p class="text-sm uppercase tracking-[0.3em] text-gray-500 mb-3">Selected work</p>
@@ -20,7 +20,7 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
           </p>
         </div>
         <a routerLink="/projects"
-           class="inline-flex items-center gap-2 text-base font-medium text-primary hover:underline hover:font-bold">
+           class="inline-flex items-center gap-2 text-base font-bold text-white decoration-transparent underline-offset-4 transition-colors duration-1000 ease-in-out hover:text-primary hover:underline hover:decoration-current">
           View all projects
           <span aria-hidden="true">→</span>
         </a>
@@ -41,4 +41,3 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
 export class ProjectsSectionComponent {
   protected readonly projectsResource = httpResource<Project[]>(() => '/api/projects');
 }
-

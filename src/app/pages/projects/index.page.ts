@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
 import {httpResource} from '@angular/common/http';
-import {ProjectsComponent} from '../components/projects/projects.component';
-import type { Project } from '../../shared/types/project.types';
+import {ProjectsListComponent} from '../components/projects/projects-list.component';
+import type {Project} from '../../shared/types/project.types';
 import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'projects-page',
   standalone: true,
-  imports: [ProjectsComponent, RouterLink],
+  imports: [ProjectsListComponent, RouterLink],
   template: `
     <main class="bg-background min-h-screen text-white p-8 md:p-16">
       <div class="max-w-6xl mx-auto">
@@ -16,8 +16,8 @@ import {RouterLink} from "@angular/router";
             <h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">Projects</h1>
             <div class="h-1 w-16 bg-white"></div>
           </div>
-          <a [routerLink]="['/']"
-             class="inline-flex items-center gap-2 text-base text-primary hover:underline transition mb-3">
+          <a [routerLink]="['/']" fragment="projects-section"
+             class="inline-flex items-center gap-2 mb-3 text-base font-bold text-white decoration-transparent underline-offset-4 transition-colors duration-1000 ease-in-out hover:text-primary hover:underline hover:decoration-current">
             <span aria-hidden="true">←</span> Back to Portfolio
           </a>
         </div>
