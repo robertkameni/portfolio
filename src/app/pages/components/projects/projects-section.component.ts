@@ -1,17 +1,17 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { httpResource } from '@angular/common/http';
-import type { Project } from '../../../shared/types/project.types';
-import { ProjectsComponent } from './projects.component';
-import { RestoreScrollPositionDirective } from '../../../shared/directives/restore-scroll-position.directive';
+import {Component} from '@angular/core';
+import {RouterLink} from '@angular/router';
+import {httpResource} from '@angular/common/http';
+import type {Project} from '../../../shared/types/project.types';
+import {ProjectsComponent} from './projects.component';
+import {RestoreScrollPositionDirective} from '../../../shared/directives/restore-scroll-position.directive';
 
 @Component({
   selector: 'projects-section',
   standalone: true,
   imports: [RouterLink, ProjectsComponent, RestoreScrollPositionDirective],
   template: `
-    <section class="max-w-6xl mx-auto px-6 md:px-0 py-16 md:py-20" restoreScrollPosition>
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+    <section class="max-w-6xl p-8" restoreScrollPosition>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <p class="text-sm uppercase tracking-[0.3em] text-gray-500 mb-3">Selected work</p>
           <h2 class="text-3xl md:text-4xl font-bold text-primary">Projects</h2>
