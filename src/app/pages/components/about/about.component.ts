@@ -10,7 +10,6 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
   template: `
     <section trackBehavior="about_viewed" class="text-white p-8 pb-0 md:p-16 md:pb-0 md:pt-0 flex justify-center">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-6xl w-full items-center">
-
         <div class="md:col-span-5 flex justify-center">
           <div
             class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
@@ -25,7 +24,7 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
         <div class="md:col-span-7 flex flex-col justify-center">
 
           <div class="mb-6 flex flex-col items-baseline">
-            <h2 class="text-4xl md:text-5xl font-bold text-[#22c55e] mb-2">{{ adaptiveTitle() }}</h2>
+            <h2 class="text-4xl md:text-5xl font-bold text-primary mb-2">{{ adaptiveTitle() }}</h2>
             <div class="h-1 w-16 bg-white"></div>
           </div>
 

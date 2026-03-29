@@ -1,7 +1,7 @@
-import { defineEventHandler, readBody, createError } from 'h3';
-import { visitorAgent } from '../../../ai/agents/visitor.agent';
+import {createError, defineEventHandler, readBody} from 'h3';
+import {visitorAgent} from '../../../ai/agents/visitor.agent';
 import {prisma} from "../../../db/client";
-import {pushUpdateToClient} from "../../../api/realtime.get"; // Pfad angepasst
+import {pushUpdateToClient} from "../../../api/realtime.get";
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;
@@ -13,47 +13,51 @@ export default defineEventHandler(async (event) => {
   if (!body.clientSessionId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: clientSessionId is required.',
+      statusMessage: 'Bad Request: clientSessionId is required.'
     });
   }
 
   const session = await prisma.visitorSession.findUnique({
-    where: { clientSessionId: body.clientSessionId },
+    where: {clientSessionId: body.clientSessionId}
   });
 
   if (!session) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Not Found: Session not found.',
+      statusMessage: 'Not Found: Session not found.'
     });
   }
 
-  const analysis = await visitorAgent.analyze(session.id);
+  // --- ASYNCHRONOUS BACKGROUND PROCESSING ---
+  // We do NOT await the analysis here. We start the promise and let it run in the background.
+  // This prevents the HTTP request from hanging while Gemini thinks.
+  void (async () => {
+    try {
+      const analysis = await visitorAgent.analyze(session.id);
 
-  if (!analysis) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'AI analysis failed or returned no result.',
-    });
-  }
+      if (analysis) {
+        const savedProfile = await prisma.visitorProfile.upsert({
+          where: {visitorId: session.visitorId},
+          update: {
+            profileData: analysis,
+            confidenceScore: analysis.confidenceScore,
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
+          },
+          create: {
+            visitorId: session.visitorId,
+            profileData: analysis,
+            confidenceScore: analysis.confidenceScore,
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
+          }
+        });
 
-  const savedProfile = await prisma.visitorProfile.upsert({
-    where: { visitorId: session.visitorId },
-    update: {
-      profileData: analysis,
-      confidenceScore: analysis.confidenceScore,
-      lastUpdatedByAgent: 'VisitorIntelligenceAgent',
-    },
-    create: {
-      visitorId: session.visitorId,
-      profileData: analysis,
-      confidenceScore: analysis.confidenceScore,
-      lastUpdatedByAgent: 'VisitorIntelligenceAgent',
-    },
-  });
-
-  // --- Push the update to the client via SSE ---
-  pushUpdateToClient(body.clientSessionId, 'visitor_profile_updated', savedProfile);
-
-  return savedProfile;
+        // Push the update to the client via SSE once Gemini is done
+        pushUpdateToClient(body.clientSessionId, 'visitor_profile_updated', savedProfile);
+      }
+    } catch (error) {
+      console.error('[Background Analysis] Error:', error);
+    }
+  })();
+  event.node.res.statusCode = 202;
+  return {status: 'accepted', message: 'Analysis started in background'};
 });

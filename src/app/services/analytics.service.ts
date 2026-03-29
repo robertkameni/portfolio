@@ -2,7 +2,6 @@ import {inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {VisitorStore} from '../store/visitor.store';
 import {isPlatformBrowser} from '@angular/common';
-import type {VisitorProfileAnalysis} from '../shared/types/visitor.types';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({
@@ -15,7 +14,10 @@ export class AnalyticsService {
   private readonly clientSessionId?: string;
 
   private eventQueue: any[] = [];
-  private isBatching = false;
+  private isFlushing = false;
+
+  private unanalyzedEventCount = 0;
+  private readonly EVENTS_BEFORE_ANALYSIS = 5;
 
   private readonly SYNC_ENDPOINT = '/api/sys/sync';
 
@@ -31,11 +33,11 @@ export class AnalyticsService {
   }
 
   trackPageView(url: string): void {
-    this.queueEvent('page_view', { url });
+    this.queueEvent('page_view', {url});
   }
 
   trackBehavior(behaviorName: string): void {
-    this.queueEvent('behavior_track', { behaviorName });
+    this.queueEvent('behavior_track', {behaviorName});
   }
 
   private queueEvent(eventType: string, payload: any) {
@@ -47,30 +49,37 @@ export class AnalyticsService {
       payload
     });
 
-    if (!this.isBatching) {
-      this.isBatching = true;
-      setTimeout(() => this.flushQueue(), 2500);
+    if (!this.isFlushing) {
+      void this.flushQueue();
     }
   }
 
   private async flushQueue(): Promise<void> {
     if (this.eventQueue.length === 0) {
-      this.isBatching = false;
+      this.isFlushing = false;
       return;
     }
 
+    this.isFlushing = true;
     const batch = [...this.eventQueue];
+    const batchSize = batch.length;
     this.eventQueue = [];
 
     try {
       await firstValueFrom(this.http.post(this.SYNC_ENDPOINT, batch));
-    } catch (err) {
-      console.debug('[SysSync] Batch dropped');
+
+      this.unanalyzedEventCount += batchSize;
+
+      if (this.unanalyzedEventCount >= this.EVENTS_BEFORE_ANALYSIS) {
+        this.triggerAnalysis();
+        this.unanalyzedEventCount = 0;
+      }
+    } catch {
     } finally {
-      this.isBatching = false;
       if (this.eventQueue.length > 0) {
-        this.isBatching = true;
-        setTimeout(() => this.flushQueue(), 2500);
+        void this.flushQueue();
+      } else {
+        this.isFlushing = false;
       }
     }
   }
@@ -78,14 +87,9 @@ export class AnalyticsService {
   triggerAnalysis(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.visitorStore.setLoading(true);
-
-    this.http.post<VisitorProfileAnalysis>('/api/ai/analyze-visitor', {clientSessionId: this.getClientSessionId()}).subscribe({
-      next: (profile) => {
-        this.visitorStore.setProfile(profile);
-        this.visitorStore.setLoading(false);
-      },
-      error: () => this.visitorStore.setLoading(false)
+    // Fire-and-forget. The RealtimeService (SSE) will handle the response.
+    this.http.post('/api/ai/analyze-visitor', {clientSessionId: this.getClientSessionId()}).subscribe({
+      error: (err) => console.error('[AI Analysis] Trigger error:', err)
     });
   }
 }

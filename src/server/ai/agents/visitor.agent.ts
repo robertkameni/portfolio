@@ -46,17 +46,34 @@ export const visitorAgent = {
       }
 
       const prompt = `
-        SYSTEM: You are a highly accurate visitor intelligence system.
-        RULES: Return ONLY valid JSON. Base answers strictly on provided session data. If unsure, use "other".
-        SESSION DATA:
+        SYSTEM: You are a highly accurate visitor intelligence system analyzing behavior on a Software Engineer's portfolio website.
+
+        RULES:
+        1. Return ONLY valid JSON matching the exact OUTPUT FORMAT.
+        2. Base answers strictly on the provided SESSION DATA.
+        3. A "recruiter" usually looks at basic info, about, and skills quickly.
+        4. A "hiring_manager" looks deeper at projects, skills, and about sections.
+        5. A "founder" might focus on full-stack projects, architecture, and contact forms.
+        6. A "developer" will likely spend time reading specific technical details, github links, or specific modern tech stack cards (like Angular, Signals, Nx).
+        7. If unsure, use "other".
+
+        SESSION DATA (Chronological events of what the visitor viewed):
         ---
         ${sessionHistory}
         ---
-        TASK: Classify the visitor and extract intent.
-        OUTPUT FORMAT: { "visitorType": "...", "interests": [], "confidenceScore": 0.0, "summary": "...", "reasoning": "..." }
+
+        TASK: Analyze the chronology and focus of the views. Classify the visitor and extract their primary interests.
+
+        OUTPUT FORMAT EXACTLY:
+        {
+          "visitorType": "recruiter" | "hiring_manager" | "developer" | "founder" | "student" | "other",
+          "interests": ["list", "of", "technologies", "or", "topics", "they", "viewed"],
+          "confidenceScore": 0.95,
+          "summary": "A 1-sentence summary of what they did.",
+          "reasoning": "A 1-sentence explanation of why you chose this visitorType based on the events."
+        }
       `;
 
-      // 1. Initialisiere das Modell mit JSON-Konfiguration
       const model=  gemini.getGenerativeModel({
         model: 'gemini-2.5-flash',
         generationConfig: {
@@ -64,7 +81,6 @@ export const visitorAgent = {
         }
       });
 
-      // 2. Generiere den Inhalt und parse das JSON
       const aiResponse = await model.generateContent(prompt);
       const responseText = aiResponse.response.text();
       const result = JSON.parse(responseText);
