@@ -1,6 +1,6 @@
-import {createError, defineEventHandler, getQuery, getRouterParam} from 'h3';
-import {projectRepository} from '../../db/repositories/project.repository';
-import {authGuard} from '../../utils/authGuard';
+import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3';
+import { projectRepository } from '../../db/repositories/project.repository';
+import { authGuard } from '../../utils/authGuard';
 
 /**
  * Public API endpoint to fetch a single published project by its slug.
@@ -11,12 +11,12 @@ export default defineEventHandler(async (event) => {
   if (!slug) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: Slug parameter is missing.'
+      statusMessage: 'Bad Request: Slug parameter is missing.',
     });
   }
 
   const query = getQuery(event);
-  const previewMode = query["preview"] === 'admin';
+  const previewMode = query['preview'] === 'admin';
 
   if (previewMode) {
     authGuard(event);
@@ -24,14 +24,12 @@ export default defineEventHandler(async (event) => {
 
   let project;
   try {
-    project = previewMode
-      ? await projectRepository.findBySlug(slug)
-      : await projectRepository.findPublishedBySlug(slug);
+    project = previewMode ? await projectRepository.findBySlug(slug) : await projectRepository.findPublishedBySlug(slug);
   } catch (dbError) {
     console.error('Database error fetching project by slug:', dbError);
     throw createError({
       statusCode: 500,
-      statusMessage: 'Internal Server Error'
+      statusMessage: 'Internal Server Error',
     });
   }
 
@@ -40,7 +38,7 @@ export default defineEventHandler(async (event) => {
   if (!project) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Not Found: Project not found.'
+      statusMessage: 'Not Found: Project not found.',
     });
   }
 

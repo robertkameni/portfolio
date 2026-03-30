@@ -1,16 +1,14 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
-import {filter, take} from 'rxjs/operators';
-import {AnalyticsService} from './services/analytics.service';
-import {RealtimeService} from './services/realtime.service';
+import { Component, inject, OnInit } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
+import { AnalyticsService } from './services/analytics.service';
+import { RealtimeService } from './services/realtime.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet
-  ],
-  template: '<router-outlet />'
+  imports: [RouterOutlet],
+  template: '<router-outlet />',
 })
 export class App implements OnInit {
   private readonly router = inject(Router);
@@ -18,20 +16,20 @@ export class App implements OnInit {
   private readonly realtimeService = inject(RealtimeService);
 
   ngOnInit(): void {
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      take(1)
-    ).subscribe(event => {
-      const clientSessionId = this.analyticsService.getClientSessionId();
-      this.analyticsService.trackPageView(event.urlAfterRedirects);
-      this.realtimeService.connect(clientSessionId);
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        take(1),
+      )
+      .subscribe((event) => {
+        const clientSessionId = this.analyticsService.getClientSessionId();
+        this.analyticsService.trackPageView(event.urlAfterRedirects);
+        this.realtimeService.connect(clientSessionId);
 
-      this.analyticsService.triggerAnalysis();
-    });
+        this.analyticsService.triggerAnalysis();
+      });
 
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe(event => {
+    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event) => {
       this.analyticsService.trackPageView(event.urlAfterRedirects);
     });
   }

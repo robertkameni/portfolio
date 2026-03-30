@@ -1,7 +1,7 @@
-import {defineEventHandler, getQuery} from 'h3';
-import {GenerativeModel} from '@google/generative-ai';
-import {getGeminiClient} from "../../../../ai/gemini.client";
-import {prisma} from "../../../../db/client";
+import { defineEventHandler, getQuery } from 'h3';
+import { GenerativeModel } from '@google/generative-ai';
+import { getGeminiClient } from '../../../../ai/gemini.client';
+import { prisma } from '../../../../db/client';
 
 export default defineEventHandler(async (event) => {
   event.node.res.setHeader('Content-Type', 'text/event-stream');
@@ -9,10 +9,10 @@ export default defineEventHandler(async (event) => {
   event.node.res.setHeader('Connection', 'keep-alive');
   event.node.res.setHeader('X-Accel-Buffering', 'no');
 
-  const {sessionId, message, history} = getQuery(event);
+  const { sessionId, message, history } = getQuery(event);
 
   if (!message || typeof message !== 'string') {
-    event.node.res.write(`data: ${JSON.stringify({error: 'No message provided.'})}\n\n`);
+    event.node.res.write(`data: ${JSON.stringify({ error: 'No message provided.' })}\n\n`);
     event.node.res.end();
     return;
   }
@@ -22,10 +22,10 @@ export default defineEventHandler(async (event) => {
     const genAI = getGeminiClient();
     model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
-      systemInstruction: "You are the Digital Twin of Lucas Robert Kameni, a Senior Angular Developer. Answer questions as if you are him. Be professional, concise, and helpful."
+      systemInstruction: 'You are the Digital Twin of Lucas Robert Kameni, a Senior Angular Developer. Answer questions as if you are him. Be professional, concise, and helpful.',
     });
   } catch (error) {
-    event.node.res.write(`data: ${JSON.stringify({error: 'AI service unavailable.'})}\n\n`);
+    event.node.res.write(`data: ${JSON.stringify({ error: 'AI service unavailable.' })}\n\n`);
     event.node.res.end();
     return;
   }
@@ -41,12 +41,12 @@ export default defineEventHandler(async (event) => {
   }
 
   // 2. Fetch the Visitor Profile to give the AI context
-  let visitorContextString = "";
+  let visitorContextString = '';
   if (sessionId && typeof sessionId === 'string') {
     try {
       const session = await prisma.visitorSession.findUnique({
         where: { clientSessionId: sessionId },
-        include: { visitor: { include: { profile: true } } }
+        include: { visitor: { include: { profile: true } } },
       });
 
       if (session?.visitor?.profile?.profileData) {
@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
         // Inject this context into the system instruction for this specific run
         model = getGeminiClient().getGenerativeModel({
           model: 'gemini-2.5-flash',
-          systemInstruction: `You are the Digital Twin of Lucas Robert Kameni, a Senior Angular Developer. Answer questions as if you are him. Be professional, concise, and helpful.${visitorContextString}`
+          systemInstruction: `You are the Digital Twin of Lucas Robert Kameni, a Senior Angular Developer. Answer questions as if you are him. Be professional, concise, and helpful.${visitorContextString}`,
         });
       }
     } catch (e) {
@@ -67,8 +67,8 @@ export default defineEventHandler(async (event) => {
   const chat = model.startChat({
     history: parsedHistory,
     generationConfig: {
-      maxOutputTokens: 800
-    }
+      maxOutputTokens: 800,
+    },
   });
 
   try {
@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
     for await (const chunk of stream.stream) {
       const chunkText = chunk.text();
       if (chunkText) {
-        event.node.res.write(`data: ${JSON.stringify({token: chunkText})}\n\n`);
+        event.node.res.write(`data: ${JSON.stringify({ token: chunkText })}\n\n`);
 
         if (typeof (event.node.res as any).flush === 'function') {
           (event.node.res as any).flush();
@@ -85,11 +85,10 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    event.node.res.write(`data: ${JSON.stringify({done: true})}\n\n`);
+    event.node.res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     event.node.res.end();
-
   } catch (error) {
-    event.node.res.write(`data: ${JSON.stringify({error: 'Error processing AI response.'})}\n\n`);
+    event.node.res.write(`data: ${JSON.stringify({ error: 'Error processing AI response.' })}\n\n`);
     event.node.res.end();
   }
 

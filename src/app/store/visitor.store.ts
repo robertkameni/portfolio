@@ -22,5 +22,5 @@ export const VisitorStore = signalStore(
     setLoading(isLoading: boolean) {
       patchState(store, { isLoading });
     },
-  }))
+  })),
 );

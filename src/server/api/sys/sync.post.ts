@@ -28,7 +28,6 @@ export default defineEventHandler(async (event) => {
 
     event.node.res.statusCode = 202;
     return { status: 'accepted' };
-
   } catch {
     // Fail silently for analytics
     event.node.res.statusCode = 500;

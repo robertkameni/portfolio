@@ -4,7 +4,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 
 @Directive({
   selector: '[trackBehavior]',
-  standalone: true
+  standalone: true,
 })
 export class TrackBehaviorDirective implements OnInit, OnDestroy {
   @Input('trackBehavior') behaviorName!: string;
@@ -19,14 +19,17 @@ export class TrackBehaviorDirective implements OnInit, OnDestroy {
       return;
     }
 
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          this.analytics.trackBehavior(this.behaviorName);
-          this.observer.disconnect();
-        }
-      });
-    }, { threshold: 0.5 });
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.analytics.trackBehavior(this.behaviorName);
+            this.observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.5 },
+    );
 
     this.observer.observe(this.el.nativeElement);
   }

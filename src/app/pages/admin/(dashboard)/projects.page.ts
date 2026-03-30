@@ -1,12 +1,12 @@
-import {Component, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {httpResource} from '@angular/common/http';
-import {Router, RouterLink} from '@angular/router';
-import type {Project} from '../../../shared/types/project.types';
-import {AdminProjectsService} from '../../../services/admin-projects.service';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/project-form.component';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import { Component, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
+import type { Project } from '../../../shared/types/project.types';
+import { AdminProjectsService } from '../../../services/admin-projects.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form.component';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 
 @Component({
   selector: 'admin-projects',
@@ -15,28 +15,32 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
   template: `
     <div
       class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
-      fadeIn>
+      fadeIn
+    >
       <div class="flex items-center gap-2 mr-2 md:mr-4">
         <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span
-          class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+        <span class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
       </div>
-
 
       <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
 
       <div class="ml-auto">
         <div class="flex gap-6">
-          <button (click)="navigateHome()"
-                  class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition">
+          <button
+            (click)="navigateHome()"
+            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition"
+          >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
-                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+              />
             </svg>
             Home
           </button>
-          <button (click)="toggleForm()"
-                  class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg hover:bg-[#16a34a] transition">
+          <button
+            (click)="toggleForm()"
+            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg hover:bg-[#16a34a] transition"
+          >
             <span>+</span>
             {{ showForm() ? 'Cancel' : 'New Project' }}
           </button>
@@ -52,21 +56,18 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
       </div>
 
       @if (submitSuccess()) {
-        <div
-          class="mb-6 flex items-center gap-3 bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-6 flex items-center gap-3 bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           Project created successfully.
         </div>
       }
 
       @if (submitError()) {
-        <div
-          class="mb-6 flex items-center gap-3 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-6 flex items-center gap-3 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {{ submitError() }}
         </div>
@@ -98,8 +99,7 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
           @for (project of projectsResource.value(); track project.id) {
             <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex items-center justify-between">
               <div class="flex items-center gap-4">
-                <span class="px-2 py-0.5 rounded text-xs font-medium"
-                      [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
+                <span class="px-2 py-0.5 rounded text-xs font-medium" [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
                   {{ project.isPublished ? 'Published' : 'Draft' }}
                 </span>
                 <div>
@@ -111,23 +111,26 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
                 @if (project.tags.length > 0) {
                   <div class="hidden md:flex gap-2 mr-18">
                     @for (tag of project.tags.slice(0, 3); track tag) {
-                      <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded">{{ tag }}</span>
+                      <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded">
+                        {{ tag }}
+                      </span>
                     }
                   </div>
                 }
 
-                <a [routerLink]="['/projects', project.slug]"
-                   [queryParams]="{ preview: 'admin' }"
-                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">View👁️</a>
+                <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }" class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                  View👁️
+                </a>
 
-                <a [routerLink]="['/projects', project.slug, 'edit']"
-                   [queryParams]="{ preview: 'admin' }"
-                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                <a
+                  [routerLink]="['/projects', project.slug, 'edit']"
+                  [queryParams]="{ preview: 'admin' }"
+                  class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+                >
                   Edit ✏️
                 </a>
 
-                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
-                   (click)="deleteProject(project)">Delete🗑️</a>
+                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project)">Delete🗑️</a>
               </div>
             </div>
           } @empty {
@@ -136,7 +139,7 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
         </div>
       }
     </div>
-  `
+  `,
 })
 export default class AdminProjectsPage {
   private platformId = inject(PLATFORM_ID);
@@ -145,9 +148,7 @@ export default class AdminProjectsPage {
   private readonly clientReady = isPlatformBrowser(this.platformId);
   private readonly adminProjectsService = inject(AdminProjectsService);
 
-  projectsResource = httpResource<Project[] | undefined>(() =>
-    this.clientReady ? '/api/admin/projects' : undefined
-  );
+  projectsResource = httpResource<Project[] | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
 
   showForm = signal(false);
   submitError = signal<string | null>(null);
@@ -176,7 +177,8 @@ export default class AdminProjectsPage {
     this.submitError.set(null);
     this.submitSuccess.set(false);
 
-    this.adminProjectsService.createProject({...payload, contentMarkdown: null})
+    this.adminProjectsService
+      .createProject({ ...payload, contentMarkdown: null })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {
@@ -190,20 +192,21 @@ export default class AdminProjectsPage {
           console.error('[AdminProjects] create error:', err.status, msg);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        }
+        },
       });
   }
 
   deleteProject(project: Project) {
     if (!confirm(`Are you sure you want to delete the project "${project.title}"?`)) return;
 
-    this.adminProjectsService.deleteProject(project.id)
+    this.adminProjectsService
+      .deleteProject(project.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.projectsResource.set((this.projectsResource.value() ?? []).filter(p => p.id !== project.id));
+          this.projectsResource.set((this.projectsResource.value() ?? []).filter((p) => p.id !== project.id));
         },
-        error: (err) => console.error('[AdminProjects] delete error:', err)
+        error: (err) => console.error('[AdminProjects] delete error:', err),
       });
   }
 }

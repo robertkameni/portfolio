@@ -1,4 +1,4 @@
-import {ContactFeature} from "./contact-feature";
+import { ContactFeature } from './contact-feature';
 
 export interface ContactData {
   title: string;
@@ -7,5 +7,5 @@ export interface ContactData {
   formCard: {
     title: string;
     description: string;
-  }
+  };
 }

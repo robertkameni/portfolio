@@ -1,4 +1,4 @@
-import {createError, getCookie, getHeader, H3Event} from 'h3';
+import { createError, getCookie, getHeader, H3Event } from 'h3';
 import jwt from 'jsonwebtoken';
 
 const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'];
@@ -19,14 +19,14 @@ export const authGuard = (event: H3Event): JwtPayload => {
   if (!token) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: Missing token'
+      statusMessage: 'Unauthorized: Missing token',
     });
   }
 
   if (!ACCESS_TOKEN_SECRET) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Server configuration error: Missing ACCESS_TOKEN_SECRET'
+      statusMessage: 'Server configuration error: Missing ACCESS_TOKEN_SECRET',
     });
   }
 
@@ -35,7 +35,7 @@ export const authGuard = (event: H3Event): JwtPayload => {
   } catch (error) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: Invalid token'
+      statusMessage: 'Unauthorized: Invalid token',
     });
   }
 };
@@ -45,7 +45,7 @@ export const adminGuard = (event: H3Event): JwtPayload => {
   if (payload.role !== 'ADMIN') {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Forbidden: Admin access required'
+      statusMessage: 'Forbidden: Admin access required',
     });
   }
   return payload;

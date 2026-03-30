@@ -1,6 +1,6 @@
-import {afterRenderEffect, Component, ElementRef, inject, signal, viewChild} from '@angular/core';
-import {ChatStore} from '../../store/chat.store';
-import {RealtimeService} from '../../services/realtime.service';
+import { afterRenderEffect, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { ChatStore } from '../../store/chat.store';
+import { RealtimeService } from '../../services/realtime.service';
 
 @Component({
   selector: 'chat-widget',
@@ -19,8 +19,12 @@ import {RealtimeService} from '../../services/realtime.service';
           </svg>
         } @else {
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+            ></path>
           </svg>
         }
       </button>
@@ -28,8 +32,8 @@ import {RealtimeService} from '../../services/realtime.service';
       <!-- Chat Window -->
       @if (chatStore.isOpen()) {
         <div
-          class="absolute bottom-16 right-0 w-80 md:w-96 bg-[#020a04] border border-[#0f2e15] rounded-2xl shadow-2xl flex flex-col h-125 max-h-[80vh] overflow-x-hidden overflow-y-auto">
-
+          class="absolute bottom-16 right-0 w-80 md:w-96 bg-[#020a04] border border-[#0f2e15] rounded-2xl shadow-2xl flex flex-col h-125 max-h-[80vh] overflow-x-hidden overflow-y-auto"
+        >
           <!-- Header -->
           <div class="bg-[#0a2912] border-b border-[#143c1a] p-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -37,8 +41,7 @@ import {RealtimeService} from '../../services/realtime.service';
                 <div class="w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-primary">
                   <span class="text-primary font-bold">RK</span>
                 </div>
-                <div
-                  class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
+                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
               </div>
               <div>
                 <h3 class="text-white font-bold text-sm">Digital Twin</h3>
@@ -54,12 +57,16 @@ import {RealtimeService} from '../../services/realtime.service';
                 <p class="text-sm">Hi! I'm Robert's AI Digital Twin.</p>
                 <p class="text-sm mt-2">I know his projects, stack, and experience.</p>
                 <div class="mt-4 space-y-2">
-                  <button (click)="newMessage.set('Tell me about your Angular experience'); sendMessage()"
-                          class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left">
+                  <button
+                    (click)="newMessage.set('Tell me about your Angular experience'); sendMessage()"
+                    class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left"
+                  >
                     "Tell me about your Angular experience"
                   </button>
-                  <button (click)="newMessage.set('Are you available for freelance work?'); sendMessage()"
-                          class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left">
+                  <button
+                    (click)="newMessage.set('Are you available for freelance work?'); sendMessage()"
+                    class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left"
+                  >
                     "Are you available for freelance?"
                   </button>
                 </div>
@@ -69,7 +76,12 @@ import {RealtimeService} from '../../services/realtime.service';
             @for (msg of chatStore.messages(); track $index) {
               <div [class]="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
                 <div
-                  [class]="msg.role === 'user' ? 'bg-primary text-black max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-2 text-sm' : 'bg-surface border border-[#143c1a] text-white max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-2 text-sm'">
+                  [class]="
+                    msg.role === 'user'
+                      ? 'bg-primary text-black max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-2 text-sm'
+                      : 'bg-surface border border-[#143c1a] text-white max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-2 text-sm'
+                  "
+                >
                   {{ msg.content }}
                 </div>
               </div>
@@ -77,13 +89,12 @@ import {RealtimeService} from '../../services/realtime.service';
 
             @if (chatStore.isTyping()) {
               <div class="flex justify-start">
-                <div
-                  class="bg-surface border border-[#143c1a] text-white rounded-2xl rounded-tl-sm px-4 py-3 flex space-x-1">
+                <div class="bg-surface border border-[#143c1a] text-white rounded-2xl rounded-tl-sm px-4 py-3 flex space-x-1">
                   <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                   <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
                 </div>
-                <span class="sr-only"> AI is typing...</span>
+                <span class="sr-only">AI is typing...</span>
               </div>
             }
           </div>
@@ -106,17 +117,15 @@ import {RealtimeService} from '../../services/realtime.service';
                 class="bg-primary hover:bg-[#16a34a] disabled:bg-gray-600 disabled:cursor-not-allowed text-black w-9 h-9 rounded-full flex items-center justify-center transition-colors"
               >
                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                 </svg>
               </button>
             </form>
           </div>
-
         </div>
       }
     </div>
-  `
+  `,
 })
 export class ChatWidgetComponent {
   public chatStore = inject(ChatStore);
@@ -137,7 +146,7 @@ export class ChatWidgetComponent {
           const el = container.nativeElement;
           el.scrollTop = el.scrollHeight;
         }
-      }
+      },
     });
   }
 
@@ -160,8 +169,7 @@ export class ChatWidgetComponent {
     const message = this.newMessage();
     this.newMessage.set(''); // Clear input
 
-
-    console.log('Sending message:', message)
+    console.log('Sending message:', message);
 
     this.chatStore.addUserMessage(message);
     this.realtimeService.sendChatMessage(message);

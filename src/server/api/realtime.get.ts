@@ -10,7 +10,7 @@ export default defineEventHandler((event) => {
 
   if (!sessionId || typeof sessionId !== 'string') {
     event.node.res.statusCode = 400;
-    event.node.res.end('Session ID is required.')
+    event.node.res.end('Session ID is required.');
     return;
   }
 

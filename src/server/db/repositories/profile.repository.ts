@@ -1,5 +1,5 @@
-import {prisma} from '../client';
-import type {ProfileData} from '../../../app/store/portfolio.store';
+import { prisma } from '../client';
+import type { ProfileData } from '../../../app/store/portfolio.store';
 
 // Serializes typed objects to plain JSON for Prisma write operations.
 // Only needed on the write path — Prisma already returns parsed objects on reads.
@@ -10,7 +10,7 @@ export const profileRepository = {
     const row = await prisma.profile.findFirst();
     if (!row) return null;
 
-    const {id: _id, updatedAt: _updatedAt, ...profile} = row;
+    const { id: _id, updatedAt: _updatedAt, ...profile } = row;
     return profile as unknown as ProfileData;
   },
 
@@ -24,14 +24,14 @@ export const profileRepository = {
       heroCards: toJson(data.heroCards),
       skills: toJson(data.skills),
       about: toJson(data.about),
-      contact: toJson(data.contact)
+      contact: toJson(data.contact),
     };
 
     const existing = await prisma.profile.findFirst();
     if (existing) {
-      await prisma.profile.update({where: {id: existing.id}, data: payload});
+      await prisma.profile.update({ where: { id: existing.id }, data: payload });
     } else {
-      await prisma.profile.create({data: payload});
+      await prisma.profile.create({ data: payload });
     }
-  }
+  },
 };

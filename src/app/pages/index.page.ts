@@ -1,19 +1,19 @@
-import {Component, inject, isDevMode, OnInit} from '@angular/core';
-import {PortfolioStore} from '../store/portfolio.store';
-import {AnalyticsService} from '../services/analytics.service';
-import {RealtimeService} from '../services/realtime.service';
-import {AboutComponent} from "./components/about/about.component";
-import {SkillsBentoComponent} from "./components/skills-bento/skills-bento";
-import {HeroComponent} from "./components/hero/hero";
-import {IntroComponent} from "./components/intro/intro";
-import {ChatWidgetComponent} from "../ai-engine/chat/chat-widget";
-import {ContactComponent} from "./components/contact/contact";
-import {ProjectsSectionComponent} from "./components/projects/projects-section.component";
-import {PageLoaderComponent} from "../shared/components/page-loader/page-loader.component";
-import {FadeInDirective} from "../shared/directives/fade-in.directive";
-import {VisitorStore} from '../store/visitor.store';
-import {AuthService} from '../services/auth.service';
-import {Router} from '@angular/router';
+import { Component, inject, isDevMode, OnInit } from '@angular/core';
+import { PortfolioStore } from '../store/portfolio.store';
+import { AnalyticsService } from '../services/analytics.service';
+import { RealtimeService } from '../services/realtime.service';
+import { AboutComponent } from './components/about/about.component';
+import { SkillsBentoComponent } from './components/skills-bento/skills-bento';
+import { HeroComponent } from './components/hero/hero';
+import { IntroComponent } from './components/intro/intro';
+import { ChatWidgetComponent } from '../ai-engine/chat/chat-widget';
+import { ContactComponent } from './components/contact/contact';
+import { ProjectsSectionComponent } from './components/projects/projects-section.component';
+import { PageLoaderComponent } from '../shared/components/page-loader/page-loader.component';
+import { FadeInDirective } from '../shared/directives/fade-in.directive';
+import { VisitorStore } from '../store/visitor.store';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'home',
@@ -27,66 +27,82 @@ import {Router} from '@angular/router';
     ContactComponent,
     ProjectsSectionComponent,
     PageLoaderComponent,
-    FadeInDirective
+    FadeInDirective,
   ],
   template: `
     @if (isDevMode) {
       <div
-        class="flex flex-col flex-wrap sticky top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 items-center justify-center gap-2 md:flex-row md:mr-auto hover:bg-[#051109] transition-colors shadow-lg">
-        <div class="flex items-center gap-2 mr-2 md:mr-4">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span
-            class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+        class="sticky top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-col sm:flex-row items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
+      >
+        <div class="flex items-center justify-center w-full sm:w-auto sm:mr-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+          </div>
         </div>
 
-        <button (click)="setMockProfile('founder')"
-                class="text-xs px-4 py-1.5 bg-green-950/30 text-green-400 border w-full md:w-auto
-                border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-green-900/50">
+        <button
+          (click)="setMockProfile('founder')"
+          class="w-full sm:w-auto text-xs px-4 py-1.5 bg-green-950/30 hover:bg-green-900/50 text-green-400 border border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+        >
           Founder
         </button>
-        <button (click)="setMockProfile('recruiter')"
-                class="text-xs px-4 py-1.5 bg-blue-950/30 text-blue-400 border w-full md:w-auto
-                border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-blue-900/50 ">
+        <button
+          (click)="setMockProfile('recruiter')"
+          class="w-full sm:w-auto text-xs px-4 py-1.5 bg-blue-950/30 hover:bg-blue-900/50 text-blue-400 border border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+        >
           Recruiter
         </button>
-        <button (click)="setMockProfile('developer')"
-                class="text-xs px-4 py-1.5 bg-purple-950/30 text-purple-400 border w-full md:w-auto
-                border-purple-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-purple-900/50">
+        <button
+          (click)="setMockProfile('developer')"
+          class="text-xs px-4 py-1.5 bg-purple-950/30 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer w-full sm:w-auto"
+        >
           Developer
         </button>
 
-        <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
+        <div class="hidden sm:block w-px h-4 bg-gray-800 mx-1 sm:mx-2"></div>
 
-        <button (click)="setMockProfile(null)"
-                class="text-xs px-4 py-1.5 bg-gray-900/50 hover:bg-gray-800 text-gray-400 border w-full md:w-auto
-                border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
+        <button
+          (click)="setMockProfile(null)"
+          class="w-full sm:w-auto text-xs px-4 py-1.5 bg-gray-900/50 hover:bg-gray-800 text-gray-400 border border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+        >
           Reset
         </button>
 
-        <div class="w-full md:ml-auto">
+        <div class="w-full sm:w-auto sm:ml-auto">
           @if (auth.authInitialized() && auth.isAuthenticated() && auth.isAdmin()) {
-            <button (click)="navigateToAdminProjects()"
-                    title="Admin Projects"
-                    aria-label="Admin projects dashboard"
-                    class="cursor-pointer inline-flex items-center place-content-center gap-2 px-3 py-1.5 bg-primary text-black w-full md:w-auto
-                    rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold md:place-content-start">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                   aria-hidden="true">
-                <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
-                      stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <button
+              (click)="navigateToAdminProjects()"
+              title="Admin Projects"
+              aria-label="Admin projects dashboard"
+              class="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center sm:justify-start gap-2 px-3 py-1.5 bg-primary text-black rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
               <span>Admin Page</span>
             </button>
           } @else if (auth.authInitialized() && !auth.isAuthenticated()) {
-            <button (click)="onAdminClick()"
-                    title="Admin"
-                    aria-label="Admin login"
-                    class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white w-full md:w-auto
-                    rounded-md shadow place-content-center md:place-content-starthover:bg-green-500 transition-colors duration-300">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                   aria-hidden="true">
-                <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
-                      stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <button
+              (click)="onAdminClick()"
+              title="Admin"
+              aria-label="Admin login"
+              class="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center sm:justify-start gap-2 px-3 py-1.5 bg-green-600 text-white rounded-md shadow hover:bg-green-500 transition-colors duration-300"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
               <span>Admin</span>
             </button>
@@ -97,27 +113,26 @@ import {Router} from '@angular/router';
 
     <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white" fadeIn>
       @if (store.isLoading()) {
-        <page-loader message="Loading system architecture..."/>
+        <page-loader message="Loading system architecture..." />
       } @else if (store.error()) {
-        <page-loader message="Failed to load profile. Please refresh."/>
+        <page-loader message="Failed to load profile. Please refresh." />
       } @else if (store.data(); as profile) {
+        <intro [data]="profile.intro" fadeIn />
 
-        <intro [data]="profile.intro" fadeIn/>
+        <hero [name]="profile.title" [cards]="profile.heroCards" fadeIn />
 
-        <hero [name]="profile.title" [cards]="profile.heroCards" fadeIn/>
+        <skills-bento [skills]="profile.skills" fadeIn />
 
-        <skills-bento [skills]="profile.skills" fadeIn/>
+        <about [data]="profile.about" fadeIn />
 
-        <about [data]="profile.about" fadeIn/>
+        <projects-section fadeIn />
 
-        <projects-section fadeIn/>
+        <contact [data]="profile.contact" fadeIn />
 
-        <contact [data]="profile.contact" fadeIn/>
-
-        <chat-widget fadeIn/>
+        <chat-widget fadeIn />
       }
     </main>
-  `
+  `,
 })
 export default class HomeComponent implements OnInit {
   store = inject(PortfolioStore);
@@ -138,7 +153,7 @@ export default class HomeComponent implements OnInit {
       confidenceScore: 1,
       interests: ['Mock Data'],
       summary: 'Mocked profile for development',
-      reasoning: 'Dev Mode activated'
+      reasoning: 'Dev Mode activated',
     });
   }
 
@@ -168,7 +183,7 @@ export default class HomeComponent implements OnInit {
   logout() {
     this.auth.logout().subscribe({
       next: () => this.router.navigateByUrl('/'),
-      error: () => this.router.navigateByUrl('/admin/login')
+      error: () => this.router.navigateByUrl('/admin/login'),
     });
   }
 }

@@ -1,4 +1,4 @@
-import {SocialLink} from "./social-link";
+import { SocialLink } from './social-link';
 
 export interface IntroData {
   name: string;

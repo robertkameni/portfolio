@@ -1,6 +1,6 @@
-import {createError, defineEventHandler, sendError} from 'h3';
-import {authGuard} from '../utils/authGuard';
-import {userRepository} from '../db/repositories/user.repository';
+import { createError, defineEventHandler, sendError } from 'h3';
+import { authGuard } from '../utils/authGuard';
+import { userRepository } from '../db/repositories/user.repository';
 
 /**
  * This middleware protects routes by verifying the JWT access token.
@@ -21,18 +21,24 @@ export default defineEventHandler(async (event) => {
   try {
     payload = authGuard(event);
   } catch (error) {
-    return sendError(event, createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Missing or invalid token.'
-    }));
+    return sendError(
+      event,
+      createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized: Missing or invalid token.',
+      }),
+    );
   }
 
   const user = await userRepository.findById(payload.userId);
   if (!user) {
-    return sendError(event, createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized: User not found.'
-    }));
+    return sendError(
+      event,
+      createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized: User not found.',
+      }),
+    );
   }
 
   // Attach user to the event context for use in protected API routes

@@ -1,4 +1,4 @@
-import {prisma} from '../client';
+import { prisma } from '../client';
 import type { AnalyticsEvent, VisitorSession } from '../../../../prisma/generated/client';
 
 export type AnalyticsEventDto = {
@@ -19,26 +19,23 @@ export const analyticsRepository = {
    * @param context Additional request data like user agent and IP.
    * @returns The existing or newly created visitor session.
    */
-  async findOrCreateSession(
-    clientSessionId: string,
-    context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }
-  ): Promise<VisitorSession> {
+  async findOrCreateSession(clientSessionId: string, context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }): Promise<VisitorSession> {
     // Use a transaction to ensure atomicity
     return prisma.$transaction(async (tx) => {
       const existingSession = await tx.visitorSession.findUnique({
-        where: {clientSessionId}
+        where: { clientSessionId },
       });
 
       if (existingSession) {
         // If session exists, just update its last_seen_at timestamp
         return tx.visitorSession.update({
-          where: {id: existingSession.id},
-          data: {lastSeenAt: new Date()}
+          where: { id: existingSession.id },
+          data: { lastSeenAt: new Date() },
         });
       }
 
       // If no session, create a new visitor and a new session for them.
-      const newVisitor = await tx.visitor.create({data: {}});
+      const newVisitor = await tx.visitor.create({ data: {} });
 
       return tx.visitorSession.create({
         data: {
@@ -47,8 +44,8 @@ export const analyticsRepository = {
           userAgent: context.userAgent,
           ipAddress: context.ipAddress,
           initialReferrer: context.initialReferrer,
-          lastSeenAt: new Date()
-        }
+          lastSeenAt: new Date(),
+        },
       });
     });
   },
@@ -63,8 +60,8 @@ export const analyticsRepository = {
       data: {
         sessionId: eventData.sessionId,
         eventType: eventData.eventType,
-        payload: eventData.payload
-      }
+        payload: eventData.payload,
+      },
     });
-  }
+  },
 };

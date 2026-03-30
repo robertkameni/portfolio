@@ -1,7 +1,7 @@
-import {createError, defineEventHandler, readBody} from 'h3';
-import {visitorAgent} from '../../../ai/agents/visitor.agent';
-import {prisma} from "../../../db/client";
-import {pushUpdateToClient} from "../../../api/realtime.get";
+import { createError, defineEventHandler, readBody } from 'h3';
+import { visitorAgent } from '../../../ai/agents/visitor.agent';
+import { prisma } from '../../../db/client';
+import { pushUpdateToClient } from '../../../api/realtime.get';
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;
@@ -13,18 +13,18 @@ export default defineEventHandler(async (event) => {
   if (!body.clientSessionId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: clientSessionId is required.'
+      statusMessage: 'Bad Request: clientSessionId is required.',
     });
   }
 
   const session = await prisma.visitorSession.findUnique({
-    where: {clientSessionId: body.clientSessionId}
+    where: { clientSessionId: body.clientSessionId },
   });
 
   if (!session) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Not Found: Session not found.'
+      statusMessage: 'Not Found: Session not found.',
     });
   }
 
@@ -36,18 +36,18 @@ export default defineEventHandler(async (event) => {
 
       if (analysis) {
         const savedProfile = await prisma.visitorProfile.upsert({
-          where: {visitorId: session.visitorId},
+          where: { visitorId: session.visitorId },
           update: {
             profileData: analysis,
             confidenceScore: analysis.confidenceScore,
-            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent',
           },
           create: {
             visitorId: session.visitorId,
             profileData: analysis,
             confidenceScore: analysis.confidenceScore,
-            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
-          }
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent',
+          },
         });
 
         // Push the update to the client via SSE once Gemini is done
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
       console.error('[Background Analysis] Error:', error);
     }
   })();
-  
+
   event.node.res.statusCode = 202;
-  return {status: 'accepted', message: 'Analysis started in background'};
+  return { status: 'accepted', message: 'Analysis started in background' };
 });

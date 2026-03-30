@@ -12,6 +12,7 @@
     "build": "vite build",
     "watch": "vite build --watch",
     "test": "vitest",
+    "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
     "preview": "node dist/analog/server/index.mjs",
     "postinstall": "prisma generate"
   },

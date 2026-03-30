@@ -1,9 +1,9 @@
-import {Directive, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
+import { Directive, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
   selector: '[fadeIn]',
-  standalone: true
+  standalone: true,
 })
 export class FadeInDirective implements OnInit, OnDestroy {
   private readonly el = inject(ElementRef<HTMLElement>);
@@ -26,18 +26,20 @@ export class FadeInDirective implements OnInit, OnDestroy {
       if (this.observer) {
         try {
           this.observer.unobserve(this.el.nativeElement);
-        } catch {
-        }
+        } catch {}
       }
     };
 
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          trigger();
-        }
-      });
-    }, {threshold: 0.1});
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            trigger();
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
 
     this.observer.observe(this.el.nativeElement);
 

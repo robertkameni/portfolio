@@ -1,13 +1,13 @@
-import {createError, defineEventHandler, getCookie, setCookie} from 'h3';
-import {userRepository} from '../../db/repositories/user.repository';
-import {authService} from '../../auth/auth.service';
+import { createError, defineEventHandler, getCookie, setCookie } from 'h3';
+import { userRepository } from '../../db/repositories/user.repository';
+import { authService } from '../../auth/auth.service';
 
 export default defineEventHandler(async (event) => {
   const refreshToken = getCookie(event, 'refreshToken');
   if (!refreshToken) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: Missing refresh token.'
+      statusMessage: 'Unauthorized: Missing refresh token.',
     });
   }
 
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   if (!payload) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: Invalid refresh token.'
+      statusMessage: 'Unauthorized: Invalid refresh token.',
     });
   }
 
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   if (!user) {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized: User no longer exists.'
+      statusMessage: 'Unauthorized: User no longer exists.',
     });
   }
 
@@ -35,28 +35,28 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden: Admin access required' });
   }
 
-  const newAccessToken = authService.generateAccessToken({userId: user.id, role: user.role});
-  const newRefreshToken = authService.generateRefreshToken({userId: user.id});
+  const newAccessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
+  const newRefreshToken = authService.generateRefreshToken({ userId: user.id });
 
   const cookieOptions = {
     httpOnly: true,
     secure: process.env['NODE_ENV'] === 'production',
     sameSite: 'strict' as const,
     path: '/',
-    maxAge: 60 * 20 // 20 minutes
+    maxAge: 60 * 20, // 20 minutes
   };
 
   setCookie(event, 'auth_token', newAccessToken, cookieOptions);
   setCookie(event, 'refreshToken', newRefreshToken, {
     ...cookieOptions,
-    maxAge: 60 * 60 * 24 * 7 // 7 days for the refresh token
+    maxAge: 60 * 60 * 24 * 7, // 7 days for the refresh token
   });
   setCookie(event, 'auth_hint', '1', {
     httpOnly: false,
     secure: process.env['NODE_ENV'] === 'production',
     sameSite: 'strict' as const,
     path: '/',
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return {
@@ -64,9 +64,8 @@ export default defineEventHandler(async (event) => {
       id: user.id,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
     },
-    accessToken: newAccessToken
+    accessToken: newAccessToken,
   };
 });
-

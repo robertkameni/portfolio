@@ -7,9 +7,7 @@ const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'];
 const REFRESH_TOKEN_SECRET = process.env['REFRESH_TOKEN_SECRET'];
 
 if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
-  throw new Error(
-    'ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must be set as environment variables.'
-  );
+  throw new Error('ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must be set as environment variables.');
 }
 
 const ACCESS_TOKEN_EXPIRATION = '20m';
@@ -45,7 +43,7 @@ export const authService = {
    * @returns The signed JWT access token.
    */
   generateAccessToken(payload: { userId: string; role: string }): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, {expiresIn: ACCESS_TOKEN_EXPIRATION});
+    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
   },
 
   /**
@@ -54,7 +52,7 @@ export const authService = {
    * @returns The signed JWT refresh token.
    */
   generateRefreshToken(payload: { userId: string }): string {
-    return jwt.sign(payload, REFRESH_TOKEN_SECRET, {expiresIn: REFRESH_TOKEN_EXPIRATION});
+    return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
   },
 
   /**
@@ -81,5 +79,5 @@ export const authService = {
     } catch (error) {
       return null;
     }
-  }
+  },
 };

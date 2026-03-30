@@ -1,6 +1,6 @@
 import { PrismaClient } from '../../../prisma/generated/client';
-import {PrismaPg} from '@prisma/adapter-pg';
-import {Pool} from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 type GlobalWithPrisma = typeof globalThis & {
   prisma?: PrismaClient;
@@ -23,7 +23,7 @@ function ensurePool(): Pool {
 
   const newPool = new Pool({
     connectionString: databaseUrl,
-    allowExitOnIdle: true
+    allowExitOnIdle: true,
   });
 
   newPool.on('error', (error) => {
@@ -39,7 +39,7 @@ function createPrismaClient(): PrismaClient {
   const prismaPool = ensurePool();
   const adapter = new PrismaPg(prismaPool);
   return new PrismaClient({
-    adapter
+    adapter,
   });
 }
 
@@ -78,5 +78,5 @@ export const prisma = new Proxy({} as PrismaClient, {
     const client = getPrismaClient();
     const value = (client as any)[prop];
     return typeof value === 'function' ? value.bind(client) : value;
-  }
+  },
 }) as PrismaClient;

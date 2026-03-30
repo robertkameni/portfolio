@@ -1,4 +1,4 @@
 export interface SkillBentoData {
-  name:string;
+  name: string;
   iconPath: string;
 }

@@ -1,10 +1,10 @@
-import {computed, inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {isPlatformBrowser} from '@angular/common';
-import {Router} from '@angular/router';
-import {Observable, of} from 'rxjs';
-import {catchError, map, shareReplay, tap, finalize} from 'rxjs/operators';
-import type {User} from '../shared/types/user.types';
+import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError, map, shareReplay, tap, finalize } from 'rxjs/operators';
+import type { User } from '../shared/types/user.types';
 
 interface LoginResponse {
   user: User;
@@ -12,7 +12,7 @@ interface LoginResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -34,9 +34,7 @@ export class AuthService {
       if (!isPlatformBrowser(this.platformId)) {
         this.#currentUser.set(null);
         this.#authInitialized.set(true);
-        this.#initialAuthStatus$ = of(null).pipe(
-          shareReplay({bufferSize: 1, refCount: false})
-        );
+        this.#initialAuthStatus$ = of(null).pipe(shareReplay({ bufferSize: 1, refCount: false }));
         return this.#initialAuthStatus$;
       }
 
@@ -46,22 +44,18 @@ export class AuthService {
         if (!hasAuthHint) {
           this.#currentUser.set(null);
           this.#authInitialized.set(true);
-          this.#initialAuthStatus$ = of(null).pipe(
-            shareReplay({bufferSize: 1, refCount: false})
-          );
+          this.#initialAuthStatus$ = of(null).pipe(shareReplay({ bufferSize: 1, refCount: false }));
           return this.#initialAuthStatus$;
         }
       } catch {
         this.#currentUser.set(null);
         this.#authInitialized.set(true);
-        this.#initialAuthStatus$ = of(null).pipe(
-          shareReplay({bufferSize: 1, refCount: false})
-        );
+        this.#initialAuthStatus$ = of(null).pipe(shareReplay({ bufferSize: 1, refCount: false }));
         return this.#initialAuthStatus$;
       }
 
       this.#initialAuthStatus$ = this.http.get<User>('/api/auth/me').pipe(
-        tap(user => this.#currentUser.set(user)),
+        tap((user) => this.#currentUser.set(user)),
         catchError((error) => {
           if ((error as { status?: number }).status === 401) {
             return this.refreshSession();
@@ -70,7 +64,7 @@ export class AuthService {
           return of(null);
         }),
         finalize(() => this.#authInitialized.set(true)),
-        shareReplay({bufferSize: 1, refCount: false})
+        shareReplay({ bufferSize: 1, refCount: false }),
       );
     }
 
@@ -83,21 +77,21 @@ export class AuthService {
         this.#accessToken.set(response.accessToken);
         this.#currentUser.set(response.user);
       }),
-      map(response => response.user),
+      map((response) => response.user),
       catchError((error) => {
         console.error('[AuthService] refreshSession error', error);
         this.#currentUser.set(null);
         this.#accessToken.set(null);
         return of(null);
-      })
+      }),
     );
   }
 
   login(credentials: { email: string; password: string }): Observable<User> {
     return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
-      tap(response => this.#accessToken.set(response.accessToken)),
-      map(response => response.user),
-      tap(user => this.#currentUser.set(user))
+      tap((response) => this.#accessToken.set(response.accessToken)),
+      map((response) => response.user),
+      tap((user) => this.#currentUser.set(user)),
     );
   }
 
@@ -109,14 +103,14 @@ export class AuthService {
         this.#initialAuthStatus$ = undefined;
         this.router.navigateByUrl('/admin/login');
       }),
-      catchError(err => {
+      catchError((err) => {
         // Even if logout fails on server, clear user on client
         this.#currentUser.set(null);
         this.#accessToken.set(null);
         this.#initialAuthStatus$ = undefined;
         this.router.navigateByUrl('/admin/login');
         throw err;
-      })
+      }),
     );
   }
 }

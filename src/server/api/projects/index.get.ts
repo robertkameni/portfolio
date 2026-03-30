@@ -1,5 +1,5 @@
-import {createError, defineEventHandler} from 'h3';
-import {projectRepository} from '../../db/repositories/project.repository';
+import { createError, defineEventHandler } from 'h3';
+import { projectRepository } from '../../db/repositories/project.repository';
 
 /**
  * Public API endpoint to fetch all published projects.

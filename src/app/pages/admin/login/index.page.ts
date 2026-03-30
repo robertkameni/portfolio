@@ -1,8 +1,8 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {AuthService} from '../../../services/auth.service';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 
 function resolveReturnUrl(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -23,19 +23,28 @@ function resolveReturnUrl(value: string | null): string {
         <form (ngSubmit)="submit()" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-300">Email</label>
-            <input type="email" [(ngModel)]="email" name="email" required
-                   class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"/>
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              required
+              class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-300">Password</label>
-            <input type="password" [(ngModel)]="password" name="password" required
-                   class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"/>
+            <input
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              required
+              class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
           </div>
           @if (errorMessage()) {
             <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
           }
-          <button type="submit" [disabled]="isLoading()"
-                  class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
+          <button type="submit" [disabled]="isLoading()" class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
             {{ isLoading() ? 'Logging in...' : 'Login' }}
           </button>
         </form>
@@ -48,7 +57,7 @@ function resolveReturnUrl(value: string | null): string {
         <div class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow">{{ toastMessage() }}</div>
       </div>
     }
-  `
+  `,
 })
 export default class LoginPageComponent implements OnInit {
   private readonly authService = inject(AuthService);
@@ -64,7 +73,7 @@ export default class LoginPageComponent implements OnInit {
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
-      this.router.navigateByUrl(this.returnUrl, {replaceUrl: true});
+      this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
     }
   }
 
@@ -72,7 +81,7 @@ export default class LoginPageComponent implements OnInit {
     if (this.isLoading() || !this.email || !this.password) return;
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    this.authService.login({email: this.email, password: this.password}).subscribe({
+    this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: () => this.router.navigateByUrl(this.returnUrl),
       error: (err) => {
         this.isLoading.set(false);
@@ -83,7 +92,7 @@ export default class LoginPageComponent implements OnInit {
           this.errorMessage.set(err.error?.statusMessage || 'Invalid credentials.');
         }
       },
-      complete: () => this.isLoading.set(false)
+      complete: () => this.isLoading.set(false),
     });
   }
 

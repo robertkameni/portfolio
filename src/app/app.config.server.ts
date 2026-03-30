@@ -5,10 +5,7 @@ import { provideFileRouter } from '@analogjs/router';
 import { appConfig } from './app.config';
 
 const serverConfig: ApplicationConfig = {
-  providers: [
-    provideServerRendering(),
-    provideFileRouter(),
-  ],
+  providers: [provideServerRendering(), provideFileRouter()],
 };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);

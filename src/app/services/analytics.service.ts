@@ -1,11 +1,11 @@
-import {inject, Injectable, PLATFORM_ID} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {VisitorStore} from '../store/visitor.store';
-import {isPlatformBrowser} from '@angular/common';
-import {firstValueFrom} from 'rxjs';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { VisitorStore } from '../store/visitor.store';
+import { isPlatformBrowser } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
@@ -33,11 +33,11 @@ export class AnalyticsService {
   }
 
   trackPageView(url: string): void {
-    this.queueEvent('page_view', {url});
+    this.queueEvent('page_view', { url });
   }
 
   trackBehavior(behaviorName: string): void {
-    this.queueEvent('behavior_track', {behaviorName});
+    this.queueEvent('behavior_track', { behaviorName });
   }
 
   private queueEvent(eventType: string, payload: any) {
@@ -46,7 +46,7 @@ export class AnalyticsService {
     this.eventQueue.push({
       clientSessionId: this.getClientSessionId(),
       eventType,
-      payload
+      payload,
     });
 
     if (!this.isFlushing) {
@@ -88,8 +88,8 @@ export class AnalyticsService {
     if (!isPlatformBrowser(this.platformId)) return;
 
     // Fire-and-forget. The RealtimeService (SSE) will handle the response.
-    this.http.post('/api/ai/analyze-visitor', {clientSessionId: this.getClientSessionId()}).subscribe({
-      error: (err) => console.error('[AI Analysis] Trigger error:', err)
+    this.http.post('/api/ai/analyze-visitor', { clientSessionId: this.getClientSessionId() }).subscribe({
+      error: (err) => console.error('[AI Analysis] Trigger error:', err),
     });
   }
 }

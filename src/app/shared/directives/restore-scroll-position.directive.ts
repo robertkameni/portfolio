@@ -1,10 +1,10 @@
-import {AfterViewInit, Directive, ElementRef, inject} from "@angular/core";
-import {Router} from "@angular/router";
-import {ViewportScroller} from "@angular/common";
+import { AfterViewInit, Directive, ElementRef, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 
 @Directive({
   selector: '[restoreScrollPosition]',
-  standalone: true
+  standalone: true,
 })
 export class RestoreScrollPositionDirective implements AfterViewInit {
   private readonly el = inject(ElementRef<HTMLElement>);

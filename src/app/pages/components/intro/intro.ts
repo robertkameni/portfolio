@@ -1,6 +1,6 @@
-import {Component, computed, input} from "@angular/core";
-import {IntroData} from "./interface/intro-data";
-import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavior.directive";
+import { Component, computed, input } from '@angular/core';
+import { IntroData } from './interface/intro-data';
+import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
 
 @Component({
   selector: 'intro',
@@ -32,9 +32,9 @@ import {TrackBehaviorDirective} from "../../../ai-engine/directives/track-behavi
         </div>
       </div>
     </section>
-  `
+  `,
 })
 export class IntroComponent {
   data = input.required<IntroData>();
-  nameLetters = computed(() => this.data().name.split(''))
+  nameLetters = computed(() => this.data().name.split(''));
 }

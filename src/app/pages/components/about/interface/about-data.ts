@@ -1,4 +1,4 @@
-import {AboutHighlight} from "./about-highlight";
+import { AboutHighlight } from './about-highlight';
 
 export interface AboutData {
   title: string;

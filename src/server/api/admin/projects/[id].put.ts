@@ -1,6 +1,6 @@
-import {createError, defineEventHandler, getRouterParam, readBody} from "h3";
-import {adminGuard} from "../../../utils/authGuard";
-import {projectRepository, UpdateProjectDto} from "../../../db/repositories/project.repository";
+import { createError, defineEventHandler, getRouterParam, readBody } from 'h3';
+import { adminGuard } from '../../../utils/authGuard';
+import { projectRepository, UpdateProjectDto } from '../../../db/repositories/project.repository';
 
 export default defineEventHandler(async (event) => {
   adminGuard(event);
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (!projectId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: Project ID is required.'
+      statusMessage: 'Bad Request: Project ID is required.',
     });
   }
 
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Internal Server Error: Unable to update project.'
+      statusMessage: 'Internal Server Error: Unable to update project.',
     });
   }
-})
+});

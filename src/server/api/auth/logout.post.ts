@@ -25,4 +25,3 @@ export default defineEventHandler((event) => {
   setResponseStatus(event, 200);
   return { statusMessage: 'Logged out successfully' };
 });
-

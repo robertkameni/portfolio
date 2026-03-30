@@ -12,12 +12,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   return authService.checkInitialAuthStatus().pipe(
-    map(user =>
+    map((user) =>
       user && user.role === 'ADMIN'
         ? true
         : router.createUrlTree(['/admin/login'], {
             queryParams: { returnUrl: state.url },
-          })
-    )
+          }),
+    ),
   );
 };

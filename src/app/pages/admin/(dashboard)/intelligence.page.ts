@@ -10,6 +10,6 @@ import { Component } from '@angular/core';
         <p class="text-gray-400">Loading AI Insights...</p>
       </div>
     </div>
-  `
+  `,
 })
 export default class AdminIntelligenceComponent {}

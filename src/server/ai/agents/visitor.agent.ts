@@ -1,15 +1,9 @@
-import {contextEngine} from '../context.engine';
-import {prisma} from '../../db/client';
-import {getGeminiClient} from "../gemini.client";
+import { contextEngine } from '../context.engine';
+import { prisma } from '../../db/client';
+import { getGeminiClient } from '../gemini.client';
 
 export type VisitorProfileAnalysis = {
-  visitorType:
-    | 'recruiter'
-    | 'hiring_manager'
-    | 'developer'
-    | 'founder'
-    | 'student'
-    | 'other';
+  visitorType: 'recruiter' | 'hiring_manager' | 'developer' | 'founder' | 'student' | 'other';
   interests: string[];
   confidenceScore: number;
   summary: string;
@@ -22,17 +16,12 @@ function fallback(): VisitorProfileAnalysis {
     interests: [],
     confidenceScore: 0.3,
     summary: 'Insufficient data to classify visitor.',
-    reasoning: 'Fallback due to low data or AI failure'
+    reasoning: 'Fallback due to low data or AI failure',
   };
 }
 
 function validateProfile(data: any): data is VisitorProfileAnalysis {
-  return (
-    !!data &&
-    typeof data.visitorType === 'string' &&
-    typeof data.confidenceScore === 'number' &&
-    Array.isArray(data.interests)
-  );
+  return !!data && typeof data.visitorType === 'string' && typeof data.confidenceScore === 'number' && Array.isArray(data.interests);
 }
 
 export const visitorAgent = {
@@ -77,8 +66,8 @@ export const visitorAgent = {
       const model = gemini.getGenerativeModel({
         model: 'gemini-3-flash-preview',
         generationConfig: {
-          responseMimeType: 'application/json'
-        }
+          responseMimeType: 'application/json',
+        },
       });
 
       const aiResponse = await model.generateContent(prompt);
@@ -92,8 +81,8 @@ export const visitorAgent = {
             prompt,
             response: JSON.stringify(result),
             status: 'success',
-            sessionId: sessionId
-          }
+            sessionId: sessionId,
+          },
         });
 
         await prisma.aiDecision.create({
@@ -103,8 +92,8 @@ export const visitorAgent = {
             decisionType: 'visitor_classification',
             decisionData: result,
             confidenceScore: result.confidenceScore,
-            reasoning: result.reasoning
-          }
+            reasoning: result.reasoning,
+          },
         });
 
         return result;
@@ -116,11 +105,10 @@ export const visitorAgent = {
           prompt,
           response: JSON.stringify(result),
           status: 'error_validation_failed',
-          sessionId: sessionId
-        }
+          sessionId: sessionId,
+        },
       });
       return fallback();
-
     } catch (error) {
       console.error('VisitorAgent Error:', error);
       await prisma.aiLog.create({
@@ -129,10 +117,10 @@ export const visitorAgent = {
           prompt: 'ERROR_DURING_EXECUTION',
           response: error instanceof Error ? error.message : JSON.stringify(error),
           status: 'error_exception',
-          sessionId: sessionId
-        }
+          sessionId: sessionId,
+        },
       });
       return fallback();
     }
-  }
+  },
 };

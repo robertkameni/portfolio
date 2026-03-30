@@ -38,10 +38,8 @@ export default defineEventHandler(async (event) => {
 
     event.node.res.statusCode = 202;
     return { status: 'accepted' };
-
   } catch (error) {
     console.error('Analytics ingestion error:', error);
     throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' });
   }
 });
-

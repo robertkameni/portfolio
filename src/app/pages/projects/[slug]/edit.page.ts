@@ -1,38 +1,36 @@
-import {Component, computed, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
-import {httpResource} from '@angular/common/http';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import type {Project} from '../../../shared/types/project.types';
-import {AdminProjectsService} from '../../../services/admin-projects.service';
-import {
-  ProjectFormComponent,
-  ProjectFormModel,
-  ProjectPayload
-} from '../../../shared/components/project-form.component';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import { Component, computed, DestroyRef, inject, input, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { httpResource } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import type { Project } from '../../../shared/types/project.types';
+import { AdminProjectsService } from '../../../services/admin-projects.service';
+import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form.component';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 
 @Component({
   selector: 'edit-project-page',
   standalone: true,
-  imports: [ProjectFormComponent, FadeInDirective],
+  imports: [ProjectFormComponent, FadeInDirective, JsonPipe],
   template: `
     <div
       class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
-      fadeIn>
+      fadeIn
+    >
       <div class="flex items-center gap-2 mr-2 md:mr-4">
         <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span
-          class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+        <span class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
       </div>
 
       <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
 
       <div class="ml-auto">
-        <button (click)="navigateBack()"
-                class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition">
+        <button
+          (click)="navigateBack()"
+          class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition"
+        >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
           Back
         </button>
@@ -46,21 +44,18 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
       </div>
 
       @if (submitSuccess()) {
-        <div
-          class="mb-6 flex items-center gap-3 bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-6 flex items-center gap-3 bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           Project updated successfully. Redirecting...
         </div>
       }
 
       @if (submitError()) {
-        <div
-          class="mb-6 flex items-center gap-3 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
+        <div class="mb-6 flex items-center gap-3 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {{ submitError() }}
         </div>
@@ -68,8 +63,10 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
 
       @if (projectResource.isLoading()) {
         <div class="text-gray-400 font-mono py-12 text-center">Loading project...</div>
+      } @else if (projectResource.status() === 'idle') {
+        <div class="text-gray-400 font-mono py-12 text-center">Waiting for data...</div>
       } @else if (projectResource.error()) {
-        <div class="text-red-400 py-8 text-center text-sm">Failed to load project.</div>
+        <div class="text-red-400 py-8 text-center text-sm">Failed to load project: {{ projectResource.error() | json }}</div>
       } @else if (projectResource.value()) {
         <project-form
           [formTitle]="'Edit: ' + projectResource.value()!.title"
@@ -83,17 +80,17 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
         />
       }
     </div>
-  `
+  `,
 })
 export default class EditProjectPage {
-  private readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly adminProjectsService = inject(AdminProjectsService);
 
-  private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
-  private readonly previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
+  protected readonly slug = input('');
+  protected readonly preview = input('');
+  protected readonly previewMode = computed(() => this.preview() === 'admin');
 
   private readonly clientReady = isPlatformBrowser(this.platformId);
 
@@ -102,7 +99,6 @@ export default class EditProjectPage {
     if (!slug) return undefined;
 
     if (this.previewMode()) {
-      // admin preview uses admin API; skip SSR fetch for admin preview
       if (!this.clientReady) return undefined;
       return `/api/admin/projects?slug=${slug}`;
     }
@@ -119,7 +115,7 @@ export default class EditProjectPage {
       description: project.description ?? '',
       coverImageUrl: project.coverImageUrl ?? '',
       tags: project.tags.join(', '),
-      isPublished: project.isPublished
+      isPublished: project.isPublished,
     };
   });
 
@@ -140,7 +136,10 @@ export default class EditProjectPage {
     this.submitSuccess.set(false);
 
     this.adminProjectsService
-      .updateProject(project.id, {...payload, contentMarkdown: project.contentMarkdown})
+      .updateProject(project.id, {
+        ...payload,
+        contentMarkdown: project.contentMarkdown,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -153,7 +152,7 @@ export default class EditProjectPage {
           console.error('[EditProjectPage] update error:', err.status, msg);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        }
+        },
       });
   }
 }

@@ -52,10 +52,10 @@ export const PortfolioStore = signalStore(
             catchError(() => {
               patchState(store, { isLoading: false, error: 'Failed to load profile.' });
               return EMPTY;
-            })
+            }),
           );
-        })
-      )
-    )
-  }))
+        }),
+      ),
+    ),
+  })),
 );

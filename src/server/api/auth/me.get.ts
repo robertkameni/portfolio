@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
 
   if (!user) {
     setResponseStatus(event, 404);
-    return {statusMessage: 'User not found'};
+    return { statusMessage: 'User not found' };
   }
 
   return {
@@ -20,4 +20,3 @@ export default defineEventHandler(async (event) => {
     createdAt: user.createdAt,
   };
 });
-

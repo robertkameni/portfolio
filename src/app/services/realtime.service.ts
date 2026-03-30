@@ -1,8 +1,8 @@
-import {inject, Injectable, OnDestroy, PLATFORM_ID, signal} from '@angular/core';
-import {VisitorStore} from '../store/visitor.store';
-import {ChatStore} from '../store/chat.store';
-import {isPlatformBrowser} from '@angular/common';
-import type {VisitorProfileAnalysis} from '../shared/types/visitor.types';
+import { inject, Injectable, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
+import { VisitorStore } from '../store/visitor.store';
+import { ChatStore } from '../store/chat.store';
+import { isPlatformBrowser } from '@angular/common';
+import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
 
 type VisitorProfileEvent = {
   profileData: VisitorProfileAnalysis;
@@ -10,7 +10,7 @@ type VisitorProfileEvent = {
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
@@ -67,9 +67,9 @@ export class RealtimeService implements OnDestroy {
     const allMessages = this.chatStore.messages();
     const history = allMessages
       .slice(0, allMessages.length - 1) // exclude the message currently being sent
-      .map(msg => ({
+      .map((msg) => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{text: msg.content}]
+        parts: [{ text: msg.content }],
       }));
 
     const encodedMessage = encodeURIComponent(message);

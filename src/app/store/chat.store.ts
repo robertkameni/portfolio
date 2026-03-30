@@ -42,5 +42,5 @@ export const ChatStore = signalStore(
     setTyping(isTyping: boolean) {
       patchState(store, { isTyping });
     },
-  }))
+  })),
 );
