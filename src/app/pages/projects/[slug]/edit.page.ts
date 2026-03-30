@@ -1,6 +1,6 @@
 import {Component, computed, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {httpResource} from '@angular/common/http';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import type {Project} from '../../../shared/types/project.types';
@@ -10,18 +10,37 @@ import {
   ProjectFormModel,
   ProjectPayload
 } from '../../../shared/components/project-form.component';
+import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
 
 @Component({
   selector: 'edit-project-page',
   standalone: true,
-  imports: [RouterLink, ProjectFormComponent],
+  imports: [ProjectFormComponent, FadeInDirective],
   template: `
-    <div class="p-8 text-white max-w-5xl mx-auto">
+    <div
+      class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
+      fadeIn>
+      <div class="flex items-center gap-2 mr-2 md:mr-4">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span
+          class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+      </div>
+
+      <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
+
+      <div class="ml-auto">
+        <button (click)="navigateBack()"
+                class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+      </div>
+    </div>
+
+    <div class="p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8">
-        <a [routerLink]="['/admin/projects']"
-           class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-primary transition mb-3">
-          <span aria-hidden="true">←</span> Back to projects
-        </a>
         <h1 class="text-3xl font-bold text-primary">Edit Project</h1>
         <p class="text-gray-400 text-sm mt-1">Update the project details below</p>
       </div>
@@ -60,7 +79,7 @@ import {
           [isSubmitting]="isSubmitting()"
           [initialData]="initialData()"
           (formSubmit)="updateProject($event)"
-          (cancel)="router.navigate(['/admin/projects'])"
+          (cancel)="navigateBack()"
         />
       }
     </div>
@@ -72,14 +91,23 @@ export default class EditProjectPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly adminProjectsService = inject(AdminProjectsService);
-  private readonly clientReady = isPlatformBrowser(this.platformId);
 
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
+  private readonly previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
+
+  private readonly clientReady = isPlatformBrowser(this.platformId);
 
   projectResource = httpResource<Project>(() => {
     const slug = this.slug();
-    if (!this.clientReady || !slug) return undefined;
-    return `/api/projects/${slug}?preview=admin`;
+    if (!slug) return undefined;
+
+    if (this.previewMode()) {
+      // admin preview uses admin API; skip SSR fetch for admin preview
+      if (!this.clientReady) return undefined;
+      return `/api/admin/projects?slug=${slug}`;
+    }
+
+    return `/api/projects/${slug}`;
   });
 
   initialData = computed<ProjectFormModel | null>(() => {
@@ -98,6 +126,10 @@ export default class EditProjectPage {
   submitError = signal<string | null>(null);
   submitSuccess = signal(false);
   isSubmitting = signal(false);
+
+  navigateBack() {
+    this.router.navigate(['/admin/projects']);
+  }
 
   updateProject(payload: ProjectPayload) {
     const project = this.projectResource.value();

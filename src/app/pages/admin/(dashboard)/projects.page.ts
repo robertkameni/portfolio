@@ -121,6 +121,7 @@ import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
                    class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">View👁️</a>
 
                 <a [routerLink]="['/projects', project.slug, 'edit']"
+                   [queryParams]="{ preview: 'admin' }"
                    class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
                   Edit ✏️
                 </a>
