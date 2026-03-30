@@ -32,7 +32,7 @@ import {Router} from '@angular/router';
   template: `
     @if (isDevMode) {
       <div
-        class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg">
+        class="flex flex-col flex-wrap sticky top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 items-center justify-center gap-2 md:flex-row md:mr-auto hover:bg-[#051109] transition-colors shadow-lg">
         <div class="flex items-center gap-2 mr-2 md:mr-4">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
           <span
@@ -40,31 +40,36 @@ import {Router} from '@angular/router';
         </div>
 
         <button (click)="setMockProfile('founder')"
-                class="text-xs px-4 py-1.5 bg-green-950/30 hover:bg-green-900/50 text-green-400 border border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
+                class="text-xs px-4 py-1.5 bg-green-950/30 text-green-400 border w-full md:w-auto
+                border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-green-900/50">
           Founder
         </button>
         <button (click)="setMockProfile('recruiter')"
-                class="text-xs px-4 py-1.5 bg-blue-950/30 hover:bg-blue-900/50 text-blue-400 border border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
+                class="text-xs px-4 py-1.5 bg-blue-950/30 text-blue-400 border w-full md:w-auto
+                border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-blue-900/50 ">
           Recruiter
         </button>
         <button (click)="setMockProfile('developer')"
-                class="text-xs px-4 py-1.5 bg-purple-950/30 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
+                class="text-xs px-4 py-1.5 bg-purple-950/30 text-purple-400 border w-full md:w-auto
+                border-purple-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer hover:bg-purple-900/50">
           Developer
         </button>
 
         <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
 
         <button (click)="setMockProfile(null)"
-                class="text-xs px-4 py-1.5 bg-gray-900/50 hover:bg-gray-800 text-gray-400 border border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
+                class="text-xs px-4 py-1.5 bg-gray-900/50 hover:bg-gray-800 text-gray-400 border w-full md:w-auto
+                border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer">
           Reset
         </button>
 
-        <div class="ml-auto">
+        <div class="w-full md:ml-auto">
           @if (auth.authInitialized() && auth.isAuthenticated() && auth.isAdmin()) {
             <button (click)="navigateToAdminProjects()"
                     title="Admin Projects"
                     aria-label="Admin projects dashboard"
-                    class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 bg-primary text-black rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold">
+                    class="cursor-pointer inline-flex items-center place-content-center gap-2 px-3 py-1.5 bg-primary text-black w-full md:w-auto
+                    rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold md:place-content-start">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                    aria-hidden="true">
                 <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
@@ -76,7 +81,8 @@ import {Router} from '@angular/router';
             <button (click)="onAdminClick()"
                     title="Admin"
                     aria-label="Admin login"
-                    class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-md shadow hover:bg-green-500 transition-colors duration-300">
+                    class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white w-full md:w-auto
+                    rounded-md shadow place-content-center md:place-content-starthover:bg-green-500 transition-colors duration-300">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                    aria-hidden="true">
                 <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"

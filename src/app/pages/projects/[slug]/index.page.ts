@@ -84,7 +84,7 @@ export default class ProjectOverviewPage {
 
   private readonly clientReady = isPlatformBrowser(inject(PLATFORM_ID));
 
-  goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/projects'));
+  goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
 
   projectResource = httpResource<Project>(() => {
     const slug = this.slug();
