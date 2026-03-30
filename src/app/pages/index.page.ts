@@ -11,6 +11,7 @@ import { ContactComponent } from './components/contact/contact';
 import { ProjectsSectionComponent } from './components/projects/projects-section.component';
 import { PageLoaderComponent } from '../shared/components/page-loader/page-loader.component';
 import { FadeInDirective } from '../shared/directives/fade-in.directive';
+import { DevProxyBarComponent } from '../shared/components/dev-proxy-bar.component';
 import { VisitorStore } from '../store/visitor.store';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -28,19 +29,11 @@ import { Router } from '@angular/router';
     ProjectsSectionComponent,
     PageLoaderComponent,
     FadeInDirective,
+    DevProxyBarComponent,
   ],
   template: `
     @if (isDevMode) {
-      <div
-        class="sticky top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-col sm:flex-row items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
-      >
-        <div class="flex items-center justify-center w-full sm:w-auto sm:mr-4">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span class="text-[10px] sm:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
-          </div>
-        </div>
-
+      <dev-proxy-bar>
         <button
           (click)="setMockProfile('founder')"
           class="w-full sm:w-auto text-xs px-4 py-1.5 bg-green-950/30 hover:bg-green-900/50 text-green-400 border border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
@@ -108,7 +101,7 @@ import { Router } from '@angular/router';
             </button>
           }
         </div>
-      </div>
+      </dev-proxy-bar>
     }
 
     <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white" fadeIn>

@@ -7,46 +7,28 @@ import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form.component';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.component';
+import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
 
 @Component({
   selector: 'admin-projects',
   standalone: true,
-  imports: [RouterLink, ProjectFormComponent, FadeInDirective],
+  imports: [RouterLink, ProjectFormComponent, FadeInDirective, DevProxyBarComponent, StatusAlertComponent],
   template: `
-    <div
-      class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
-      fadeIn
-    >
-      <div class="flex items-center gap-2 mr-2 md:mr-4">
-        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">AI Dev Proxy</span>
+    <dev-proxy-bar homeUrl="/">
+      <div class="hidden sm:block flex-1"></div>
+      <div class="w-full sm:w-auto flex justify-end">
+        <button
+          (click)="toggleForm()"
+          class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg 
+          hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
+        >
+          <span>+</span>
+          {{ showForm() ? 'Cancel' : 'New Project' }}
+        </button>
       </div>
+    </dev-proxy-bar>
 
-      <div class="hidden md:block w-px h-4 bg-gray-800 mx-1 md:mx-2"></div>
-
-      <div class="ml-auto">
-        <div class="flex gap-6">
-          <button
-            (click)="navigateHome()"
-            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
-              />
-            </svg>
-            Home
-          </button>
-          <button
-            (click)="toggleForm()"
-            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg hover:bg-[#16a34a] transition"
-          >
-            <span>+</span>
-            {{ showForm() ? 'Cancel' : 'New Project' }}
-          </button>
-        </div>
-      </div>
-    </div>
     <div class="p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8 flex items-center justify-between">
         <div>
@@ -56,21 +38,11 @@ import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
       </div>
 
       @if (submitSuccess()) {
-        <div class="mb-6 flex items-center gap-3 bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Project created successfully.
-        </div>
+        <status-alert type="success">Project created successfully.</status-alert>
       }
 
       @if (submitError()) {
-        <div class="mb-6 flex items-center gap-3 bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {{ submitError() }}
-        </div>
+        <status-alert type="error">{{ submitError() }}</status-alert>
       }
 
       @if (showForm()) {
