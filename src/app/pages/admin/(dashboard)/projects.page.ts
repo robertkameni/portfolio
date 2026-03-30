@@ -20,7 +20,7 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
       <div class="w-full sm:w-auto flex justify-end">
         <button
           (click)="toggleForm()"
-          class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg 
+          class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold rounded-lg
           hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
         >
           <span>+</span>
@@ -29,7 +29,7 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
       </div>
     </dev-proxy-bar>
 
-    <div class="p-8 text-white max-w-5xl mx-auto" fadeIn>
+    <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8 flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-primary">Projects</h1>

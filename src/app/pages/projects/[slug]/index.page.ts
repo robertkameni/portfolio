@@ -9,7 +9,7 @@ import type { Project } from '../../../shared/types/project.types';
   standalone: true,
   imports: [DatePipe, RouterLink],
   template: `
-    <main class="min-h-screen bg-background text-white px-6 py-10 md:px-12 lg:px-16">
+    <main class="min-h-screen bg-background text-white px-4 py-8 md:py-12 md:px-8">
       <div class="max-w-5xl mx-auto">
         <a [routerLink]="goBackLink()" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary hover:underline transition mb-8">
           <span aria-hidden="true">←</span>

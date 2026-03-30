@@ -10,7 +10,7 @@ import { FadeInDirective } from '../directives/fade-in.directive';
     <div
       class="sticky mr-auto top-0 z-9999 w-full bg-[#051109]/95 backdrop-blur-md border-b border-primary/20 px-4 py-3 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 hover:bg-[#051109] transition-colors shadow-lg"
       fadeIn
-      >
+    >
       <div class="flex items-center justify-center w-full sm:w-auto sm:mr-4">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>

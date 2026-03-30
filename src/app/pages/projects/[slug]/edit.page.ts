@@ -23,7 +23,7 @@ export const routeMeta: RouteMeta = {
   template: `
     <dev-proxy-bar backUrl="/admin/projects" />
 
-    <div class="p-8 text-white max-w-5xl mx-auto" fadeIn>
+    <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-primary">Edit Project</h1>
         <p class="text-gray-400 text-sm mt-1">Update the project details below</p>

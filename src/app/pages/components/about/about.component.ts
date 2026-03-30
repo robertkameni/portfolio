@@ -8,7 +8,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="about_viewed" class="pr-5 pl-5 xs:p-8 md:p-16 pb-0 flex justify-center text-white">
+    <section trackBehavior="about_viewed" class="py-6 md:py-10 flex justify-center text-white">
       <div class="max-w-6xl w-full mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-12 w-full items-center">
           <div class="md:col-span-5 flex justify-center">

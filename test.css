@@ -1,0 +1,1 @@
+@import 'tailwindcss'; @theme { --text-2xl: clamp(1.2rem, 5vw, 1.5rem); }

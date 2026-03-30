@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [ProjectsListComponent, RouterLink],
   template: `
-    <main class="bg-background min-h-screen text-white p-8 md:p-16">
+    <main class="bg-background min-h-screen text-white px-4 py-12 md:px-8 md:py-16">
       <div class="max-w-6xl mx-auto">
         <div class="flex mb-12 justify-between items-center">
           <div>

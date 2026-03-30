@@ -7,6 +7,20 @@
   --color-background: #000000;
   --color-surface: #051408;
   --color-primary: #22c55e;
+
+  /* Fluid typography perfectly interpolating from 320px to md (768px) */
+  --text-xs: clamp(0.65rem, 0.55rem + 0.45vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.65rem + 0.45vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.75rem + 0.55vw, 1rem);
+  --text-lg: clamp(1rem, 0.85rem + 0.6vw, 1.125rem);
+  --text-xl: clamp(1.1rem, 0.95rem + 0.7vw, 1.25rem);
+  --text-2xl: clamp(1.2rem, 0.95rem + 1vw, 1.5rem);
+  --text-3xl: clamp(1.4rem, 1.05rem + 1.6vw, 1.875rem);
+  --text-4xl: clamp(1.6rem, 1.15rem + 2.2vw, 2.25rem);
+  --text-5xl: clamp(2rem, 1.3rem + 3.5vw, 3rem);
+  --text-6xl: clamp(2.5rem, 1.6rem + 4.5vw, 3.75rem);
+  --text-7xl: clamp(3rem, 1.95rem + 5.5vw, 4.5rem);
+  --text-8xl: clamp(4rem, 2.55rem + 7.5vw, 6rem);
 }
 
 @layer base {

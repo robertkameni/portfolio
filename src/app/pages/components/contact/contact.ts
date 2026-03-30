@@ -10,8 +10,8 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
   standalone: true,
   imports: [FormFieldComponent, TrackBehaviorDirective, FormField],
   template: `
-    <section trackBehavior="contact_viewed" class="flex pl-3 pr-3 pb-4 xs:pb-12 xs:p-8 justify-center text-white">
-      <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl pl-5 pr-5 xs:p-8 md:p-12 shadow-2xl">
+    <section trackBehavior="contact_viewed" class="flex px-2 md:px-4 py-8 md:py-12 justify-center text-white">
+      <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-6 md:p-10 shadow-2xl">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-12">
           <div class="flex flex-col justify-center text-left">
             <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>

@@ -8,7 +8,7 @@ import { SkillCard } from './interface/skill-card';
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white xs:p-8 md:p-16">
+    <section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white py-6 md:py-10">
       <div class="max-w-6xl w-full mx-auto px-4 pt-4">
         <div class="text-center mb-12">
           <h1 class="text-4xl md:text-6xl font-bold text-primary mb-4 transition-all duration-1000">

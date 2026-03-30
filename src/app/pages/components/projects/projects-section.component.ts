@@ -10,7 +10,7 @@ import { RestoreScrollPositionDirective } from '../../../shared/directives/resto
   standalone: true,
   imports: [RouterLink, ProjectsListComponent, RestoreScrollPositionDirective],
   template: `
-    <section id="projects-section" class="pl-5 pr-5 pt-5 xs:p-8" restoreScrollPosition>
+    <section id="projects-section" class="py-6 md:py-10" restoreScrollPosition>
       <div class="max-w-6xl w-full mx-auto">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
