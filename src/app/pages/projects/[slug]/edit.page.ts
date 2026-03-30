@@ -3,12 +3,18 @@ import { isPlatformBrowser, JsonPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouteMeta } from '@analogjs/router';
+import { authGuard } from '../../../guards/auth.guard';
 import type { Project } from '../../../shared/types/project.types';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form.component';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.component';
 import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
+
+export const routeMeta: RouteMeta = {
+  canActivate: [authGuard],
+};
 
 @Component({
   selector: 'edit-project-page',

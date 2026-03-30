@@ -10,7 +10,7 @@ import type { Project } from '../../../shared/types/project.types';
   imports: [TrackBehaviorDirective, DatePipe, RouterLink],
   template: `
     <section class="max-w-6xl mx-auto">
-      <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
         @for (project of projects(); track project.id) {
           <article trackBehavior="project_viewed_{{ project.slug }}" class="rounded-xl overflow-hidden border border-gray-800 bg-surface h-full grid grid-rows-[auto_1fr]">
             @if (project.coverImageUrl) {

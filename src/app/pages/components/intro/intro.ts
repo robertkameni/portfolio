@@ -7,7 +7,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="intro_viewed" class="p-8 md:p-16 pt-12 flex flex-col items-center justify-center text-white relative overflow-hidden">
+    <section trackBehavior="intro_viewed" class="sm:p-8 md:p-16 pt-6 xs:pt-12 flex flex-col items-center justify-center text-white relative overflow-hidden">
       <div class="max-w-6xl w-full mx-auto px-4">
         <div class="z-10 text-center max-w-3xl mx-auto flex flex-col items-center">
           <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 tracking-tight whitespace-pre">
@@ -16,7 +16,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
             }
           </h1>
 
-          <p class="text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed mb-12 max-w-2xl text-center">
+          <p class="text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed mb-4 xs:mb-12 max-w-2xl text-center">
             {{ data().description }}
           </p>
 

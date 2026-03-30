@@ -6,7 +6,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
   selector: 'skills-bento',
   standalone: true,
   template: `
-    <section trackBehavior="skills_viewed" class="p-8 md:p-16 md:pt-0">
+    <section trackBehavior="skills_viewed" class="pl-5 pr-5 pt-4 pb-4 xs:p-8 md:p-16 md:pt-0">
       <div class="max-w-6xl w-full mx-auto px-4">
         <h2 class="text-center text-primary text-3xl font-bold mb-8">Technical Arsenal</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">

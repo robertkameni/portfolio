@@ -8,8 +8,8 @@ import { SkillCard } from './interface/skill-card';
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white p-8 md:p-16">
-      <div class="max-w-6xl w-full mx-auto px-4">
+    <section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white xs:p-8 md:p-16">
+      <div class="max-w-6xl w-full mx-auto px-4 pt-4">
         <div class="text-center mb-12">
           <h1 class="text-4xl md:text-6xl font-bold text-primary mb-4 transition-all duration-1000">
             {{ adaptiveTitle() }}
@@ -18,8 +18,8 @@ import { SkillCard } from './interface/skill-card';
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
           @for (card of adaptiveCards(); track card.title) {
-            <div trackBehavior="hero_card_viewed_{{ card.title }}" class="bg-surface border border-[#143c1a] rounded-2xl p-8 shadow-lg">
-              <div class="flex flex-col items-center mb-6">
+            <div trackBehavior="hero_card_viewed_{{ card.title }}" class="bg-surface border border-[#143c1a] rounded-2xl xs:p-8 shadow-lg">
+              <div class="flex flex-col items-center mb-6 pt-4 pl-5 pr-5">
                 <div class="bg-[#0a2912] p-4 rounded-full mb-4">
                   <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="card.iconPath"></path>
@@ -28,8 +28,8 @@ import { SkillCard } from './interface/skill-card';
                 <h2 class="text-2xl font-bold text-white mb-2">{{ card.title }}</h2>
                 <p class="text-sm text-gray-400">{{ card.subtitle }}</p>
               </div>
-              <p class="text-gray-300 text-sm leading-relaxed mb-6">{{ card.description }}</p>
-              <ul class="space-y-4 text-sm text-gray-300">
+              <p class="text-gray-300 text-sm leading-relaxed mb-6 pl-5 pr-5">{{ card.description }}</p>
+              <ul class="space-y-4 text-sm text-gray-300 pl-5 pr-5 pb-4">
                 @for (item of card.items; track item.title) {
                   <li class="flex items-start">
                     <svg class="w-5 h-5 text-primary mr-3 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
