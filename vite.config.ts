@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
 
+const isWindows = process.platform === 'win32';
+
 export default defineConfig(({ mode }) => ({
   build: {
     target: ['es2020'],
@@ -10,6 +12,12 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     analog({
+      prerender: isWindows
+        ? {
+            discover: false,
+            routes: [],
+          }
+        : undefined,
       nitro: {
         preset: 'vercel'
       }

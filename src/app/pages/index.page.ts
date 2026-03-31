@@ -1,4 +1,4 @@
-import { Component, inject, isDevMode, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
 import { RealtimeService } from '../services/realtime.service';
@@ -32,7 +32,6 @@ import { Router } from '@angular/router';
     DevProxyBarComponent,
   ],
   template: `
-    @if (isDevMode) {
       <dev-proxy-bar>
         <button
           (click)="setMockProfile('founder')"
@@ -102,7 +101,6 @@ import { Router } from '@angular/router';
           }
         </div>
       </dev-proxy-bar>
-    }
 
     <main class="bg-background min-h-screen font-sans selection:bg-blue-500 selection:text-white" fadeIn>
       @if (store.isLoading()) {
@@ -134,7 +132,6 @@ export default class HomeComponent implements OnInit {
   private router = inject(Router);
   private analytics = inject(AnalyticsService);
   private realtime = inject(RealtimeService);
-  isDevMode = isDevMode();
 
   setMockProfile(type: any) {
     if (!type) {
