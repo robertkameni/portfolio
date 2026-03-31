@@ -156,7 +156,6 @@ export default class HomeComponent implements OnInit {
   ngOnInit() {
     this.store.loadProfile();
     const sessionId = this.analytics.getClientSessionId();
-    this.analytics.trackPageView('/');
     this.realtime.connect(sessionId);
   }
 

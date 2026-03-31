@@ -25,8 +25,6 @@ export class App implements OnInit {
         const clientSessionId = this.analyticsService.getClientSessionId();
         this.analyticsService.trackPageView(event.urlAfterRedirects);
         this.realtimeService.connect(clientSessionId);
-
-        this.analyticsService.triggerAnalysis();
       });
 
     this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event) => {

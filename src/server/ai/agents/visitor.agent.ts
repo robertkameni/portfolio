@@ -1,6 +1,6 @@
 import { contextEngine } from '../context.engine';
 import { prisma } from '../../db/client';
-import { getGeminiClient } from '../gemini.client';
+import { getGeminiClient, withGeminiRetry } from '../gemini.client';
 
 export type VisitorProfileAnalysis = {
   visitorType: 'recruiter' | 'hiring_manager' | 'developer' | 'founder' | 'student' | 'other';
@@ -70,7 +70,7 @@ export const visitorAgent = {
         },
       });
 
-      const aiResponse = await model.generateContent(prompt);
+      const aiResponse = await withGeminiRetry(() => model.generateContent(prompt));
       const responseText = aiResponse.response.text();
       const result = JSON.parse(responseText);
 

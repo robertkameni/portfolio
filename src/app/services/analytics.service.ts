@@ -1,23 +1,33 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { VisitorStore } from '../store/visitor.store';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
+
+type QueuedAnalyticsEvent = {
+  clientSessionId: string;
+  eventType: string;
+  payload: Record<string, unknown>;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
-  private readonly visitorStore = inject(VisitorStore);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly clientSessionId?: string;
 
-  private eventQueue: any[] = [];
+  private eventQueue: QueuedAnalyticsEvent[] = [];
   private isFlushing = false;
 
   private unanalyzedEventCount = 0;
-  private readonly EVENTS_BEFORE_ANALYSIS = 5;
+  private isAnalysisInFlight = false;
+  private lastAnalysisAt = 0;
+  private analysisTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private readonly EVENTS_BEFORE_ANALYSIS = 12;
+  private readonly ANALYSIS_DEBOUNCE_MS = 12_000;
+  private readonly ANALYSIS_COOLDOWN_MS = 60_000;
 
   private readonly SYNC_ENDPOINT = '/api/sys/sync';
 
@@ -40,7 +50,7 @@ export class AnalyticsService {
     this.queueEvent('behavior_track', { behaviorName });
   }
 
-  private queueEvent(eventType: string, payload: any) {
+  private queueEvent(eventType: string, payload: Record<string, unknown>) {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.eventQueue.push({
@@ -69,12 +79,11 @@ export class AnalyticsService {
       await firstValueFrom(this.http.post(this.SYNC_ENDPOINT, batch));
 
       this.unanalyzedEventCount += batchSize;
-
       if (this.unanalyzedEventCount >= this.EVENTS_BEFORE_ANALYSIS) {
-        this.triggerAnalysis();
-        this.unanalyzedEventCount = 0;
+        this.scheduleAnalysis();
       }
     } catch {
+      // Analytics should not block UI.
     } finally {
       if (this.eventQueue.length > 0) {
         void this.flushQueue();
@@ -84,12 +93,40 @@ export class AnalyticsService {
     }
   }
 
-  triggerAnalysis(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+  private scheduleAnalysis(): void {
+    if (!isPlatformBrowser(this.platformId) || this.analysisTimer) {
+      return;
+    }
 
-    // Fire-and-forget. The RealtimeService (SSE) will handle the response.
+    this.analysisTimer = setTimeout(() => {
+      this.analysisTimer = null;
+      this.triggerAnalysis();
+    }, this.ANALYSIS_DEBOUNCE_MS);
+  }
+
+  triggerAnalysis(): void {
+    if (!isPlatformBrowser(this.platformId) || this.isAnalysisInFlight) return;
+    if (this.unanalyzedEventCount < this.EVENTS_BEFORE_ANALYSIS) return;
+
+    const now = Date.now();
+    if (now - this.lastAnalysisAt < this.ANALYSIS_COOLDOWN_MS) {
+      return;
+    }
+
+    this.isAnalysisInFlight = true;
+    this.lastAnalysisAt = now;
+
+    // Fire-and-forget. The RealtimeService (SSE) handles updates.
     this.http.post('/api/ai/analyze-visitor', { clientSessionId: this.getClientSessionId() }).subscribe({
-      error: (err) => console.error('[AI Analysis] Trigger error:', err),
+      next: () => {
+        this.unanalyzedEventCount = 0;
+      },
+      error: (err) => {
+        console.error('[AI Analysis] Trigger error:', err);
+      },
+      complete: () => {
+        this.isAnalysisInFlight = false;
+      },
     });
   }
 }

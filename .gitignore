@@ -57,3 +57,6 @@ prisma/generated
 # Copilot instructions and agent documentation
 .github/copilot-instructions.md
 .github/AGENTS.md
+
+.vercel
+.env*.local
