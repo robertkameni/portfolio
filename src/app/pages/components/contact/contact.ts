@@ -1,16 +1,16 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
-import { form, FormField, required } from '@angular/forms/signals';
-import { ContactData } from './interface/contact-data';
-import { FormFieldComponent } from '../../../shared/components/form-field.component';
-import { VisitorStore } from '../../../store/visitor.store';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import {Component, computed, inject, input, signal} from '@angular/core';
+import {form, FormField, required} from '@angular/forms/signals';
+import {ContactData} from './interface/contact-data';
+import {FormFieldComponent} from '../../../shared/components/form-field.component';
+import {VisitorStore} from '../../../store/visitor.store';
+import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
 
 @Component({
   selector: 'contact',
   standalone: true,
   imports: [FormFieldComponent, TrackBehaviorDirective, FormField],
   template: `
-    <section trackBehavior="contact_viewed" class="flex px-2 md:px-4 py-8 md:py-12 justify-center text-white">
+    <section trackBehavior="contact_viewed" class="flex px-4 py-4 md:py-12 justify-center text-white">
       <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-6 md:p-10 shadow-2xl">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-12">
           <div class="flex flex-col justify-center text-left">
@@ -22,7 +22,8 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
                 <div class="flex items-start">
                   <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="feature.iconPath"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            [attr.d]="feature.iconPath"></path>
                     </svg>
                   </div>
                   <div>
@@ -34,7 +35,8 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
             </div>
           </div>
 
-          <div class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
+          <div
+            class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
             <form (submit)="submit($event)" class="flex flex-col gap-4 w-full text-left">
               <!-- Wrapped each input in the custom app-form-field component -->
               <form-field [control]="form.name()">
@@ -76,7 +78,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
         </div>
       </div>
     </section>
-  `,
+  `
 })
 export class ContactComponent {
   private readonly visitorStore = inject(VisitorStore);
@@ -86,12 +88,12 @@ export class ContactComponent {
   formModel = signal({
     name: '',
     email: '',
-    message: '',
+    message: ''
   });
 
   form = form(this.formModel, (schema) => {
-    required(schema.email, { message: 'Email is required' });
-    required(schema.message, { message: 'Message is required' });
+    required(schema.email, {message: 'Email is required'});
+    required(schema.message, {message: 'Message is required'});
   });
 
   adaptiveTitle = computed(() => {
