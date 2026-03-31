@@ -51,7 +51,7 @@ Start immediately.
 
 Process:
 
-* optional: max 3 short bullets (only if helpful)
+* optional: max 2 short bullets (only if helpful)
 * then code
 
 Rules:
@@ -60,6 +60,8 @@ Rules:
 * no long explanations
 * no teaching mode
 * focus on solving
+* no comment in generated codes
+* when asking for PR commit messages, do not push any code!
 
 ---
 
