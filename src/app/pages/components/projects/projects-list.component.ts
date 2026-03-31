@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
-import { DatePipe } from '@angular/common';
-import type { Project } from '../../../shared/types/project.types';
+import {Component, input} from '@angular/core';
+import {RouterLink} from '@angular/router';
+import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
+import {DatePipe} from '@angular/common';
+import type {Project} from '../../../shared/types/project.types';
 
 @Component({
   selector: 'projects-list',
@@ -12,10 +12,14 @@ import type { Project } from '../../../shared/types/project.types';
     <section class="max-w-6xl mx-auto">
       <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
         @for (project of projects(); track project.id) {
-          <article trackBehavior="project_viewed_{{ project.slug }}" class="rounded-xl overflow-hidden border border-gray-800 bg-surface h-full grid grid-rows-[auto_1fr]">
+          <article
+            trackBehavior="project_viewed_{{ project.slug }}"
+            tabindex="0"
+            class="group rounded-xl overflow-hidden border border-gray-800 bg-surface h-full grid grid-rows-[auto_1fr] transition duration-300 ease-out transform hover:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:border-primary focus:scale-105 focus:-translate-y-1 focus:shadow-2xl focus:border-primary outline-none"
+          >
             @if (project.coverImageUrl) {
               <div class="h-40 w-full overflow-hidden">
-                <img [src]="project.coverImageUrl" [alt]="project.title" class="object-cover w-full h-full" />
+                <img [src]="project.coverImageUrl" [alt]="project.title" class="object-cover w-full h-full"/>
               </div>
             }
 
@@ -39,7 +43,7 @@ import type { Project } from '../../../shared/types/project.types';
               }
               <div class="flex items-center justify-between">
                 <a
-                  class="text-sm text-white font-bold decoration-transparent underline-offset-4 transition-colors duration-1000 ease-in-out hover:text-primary hover:underline hover:decoration-current"
+                  class="link-color-primary-hover text-sm font-bold decoration-transparent underline-offset-4 transition-colors duration-800 ease-in-out group-hover:text-primary! hover:underline hover:decoration-current"
                   [routerLink]="['/projects', project.slug]"
                 >
                   Open project →
@@ -51,7 +55,7 @@ import type { Project } from '../../../shared/types/project.types';
         }
       </div>
     </section>
-  `,
+  `
 })
 export class ProjectsListComponent {
   projects = input.required<Project[]>();

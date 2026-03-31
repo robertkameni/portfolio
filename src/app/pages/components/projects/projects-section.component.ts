@@ -21,10 +21,11 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
           </div>
           <a
             routerLink="/projects"
-            class="inline-flex items-center gap-2 text-base text-white font-bold decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out hover:underline hover:decoration-current hover:text-primary hover:font-bold"
-          >
+            class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover
+            decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out
+            hover:underline hover:decoration-current hover:font-bold">
             View all projects
-            <span aria-hidden="true">→</span>
+            <span aria-hidden="true" class="text-current">→</span>
           </a>
         </div>
 

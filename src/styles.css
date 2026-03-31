@@ -37,3 +37,10 @@
     padding: 0;
   }
 }
+
+@layer components {
+  .link-color-primary-hover {
+    @apply text-white visited:text-white hover:text-primary! focus-visible:text-primary!;
+  }
+}
+
