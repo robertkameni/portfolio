@@ -1,8 +1,8 @@
-import {Component, input} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
-import {DatePipe} from '@angular/common';
-import type {Project} from '../../../shared/types/project.types';
+import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { DatePipe } from '@angular/common';
+import type { Project } from '../../../shared/types/project.types';
 
 @Component({
   selector: 'projects-list',
@@ -19,7 +19,7 @@ import type {Project} from '../../../shared/types/project.types';
           >
             @if (project.coverImageUrl) {
               <div class="h-40 w-full overflow-hidden">
-                <img [src]="project.coverImageUrl" [alt]="project.title" class="object-cover w-full h-full"/>
+                <img [src]="project.coverImageUrl" [alt]="project.title" class="object-cover w-full h-full" />
               </div>
             }
 
@@ -55,7 +55,7 @@ import type {Project} from '../../../shared/types/project.types';
         }
       </div>
     </section>
-  `
+  `,
 })
 export class ProjectsListComponent {
   projects = input.required<Project[]>();

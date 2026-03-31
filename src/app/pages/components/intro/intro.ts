@@ -1,14 +1,13 @@
-import {Component, computed, input} from '@angular/core';
-import {IntroData} from './interface/intro-data';
-import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
+import { Component, computed, input } from '@angular/core';
+import { IntroData } from './interface/intro-data';
+import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
 
 @Component({
   selector: 'intro',
   standalone: true,
   imports: [TrackBehaviorDirective],
   template: `
-    <section trackBehavior="intro_viewed"
-             class="md:py-12 flex flex-col gap-4 items-center justify-center text-white relative overflow-hidden">
+    <section trackBehavior="intro_viewed" class="md:py-12 flex flex-col gap-4 items-center justify-center text-white relative overflow-hidden">
       <div class="max-w-6xl w-full mx-auto px-4">
         <div class="z-10 text-center max-w-3xl mx-auto flex flex-col items-center">
           <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 tracking-tight whitespace-pre">
@@ -23,8 +22,7 @@ import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavi
 
           <div class="flex items-center justify-center gap-4 md:mt-8 sm:gap-6 md:gap-8">
             @for (social of data().socials; track social.platform) {
-              <a [href]="social.url" target="_blank" rel="noopener noreferrer"
-                 class="link-color-primary-hover transition-all duration-700">
+              <a [href]="social.url" target="_blank" rel="noopener noreferrer" class="link-color-primary-hover transition-all duration-700">
                 <svg class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-current" fill="currentColor" viewBox="0 0 24 24">
                   <path [attr.d]="social.iconPath"></path>
                 </svg>
@@ -34,7 +32,7 @@ import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavi
         </div>
       </div>
     </section>
-  `
+  `,
 })
 export class IntroComponent {
   data = input.required<IntroData>();

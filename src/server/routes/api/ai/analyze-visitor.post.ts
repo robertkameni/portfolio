@@ -1,7 +1,7 @@
-import {createError, defineEventHandler, readBody} from 'h3';
-import {visitorAgent} from '../../../ai/agents/visitor.agent';
-import {prisma} from '../../../db/client';
-import {pushUpdateToClient} from '../../../api/realtime.get';
+import { createError, defineEventHandler, readBody } from 'h3';
+import { visitorAgent } from '../../../ai/agents/visitor.agent';
+import { prisma } from '../../../db/client';
+import { pushUpdateToClient } from '../../../api/realtime.get';
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;
@@ -51,58 +51,58 @@ export default defineEventHandler(async (event) => {
   if (!body.clientSessionId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Bad Request: clientSessionId is required.'
+      statusMessage: 'Bad Request: clientSessionId is required.',
     });
   }
 
   const session = await prisma.visitorSession.findUnique({
-    where: {clientSessionId: body.clientSessionId}
+    where: { clientSessionId: body.clientSessionId },
   });
 
   if (!session) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Not Found: Session not found.'
+      statusMessage: 'Not Found: Session not found.',
     });
   }
 
   if (hasSessionRateLimit(session.id)) {
     event.node.res.statusCode = 202;
-    return {status: 'skipped', reason: 'session_rate_limited'};
+    return { status: 'skipped', reason: 'session_rate_limited' };
   }
 
   if (inFlightAnalyses.has(session.id)) {
     event.node.res.statusCode = 202;
-    return {status: 'skipped', reason: 'analysis_in_flight'};
+    return { status: 'skipped', reason: 'analysis_in_flight' };
   }
 
   const latestDecision = await prisma.aiDecision.findFirst({
     where: {
       sessionId: session.id,
       agentName: 'VisitorAgent',
-      decisionType: 'visitor_classification'
+      decisionType: 'visitor_classification',
     },
-    orderBy: {createdAt: 'desc'},
-    select: {createdAt: true}
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true },
   });
 
   if (latestDecision) {
     const elapsedMs = Date.now() - latestDecision.createdAt.getTime();
     if (elapsedMs < ANALYSIS_COOLDOWN_MS) {
       event.node.res.statusCode = 202;
-      return {status: 'skipped', reason: 'cooldown_active'};
+      return { status: 'skipped', reason: 'cooldown_active' };
     }
 
     const newEventsCount = await prisma.analyticsEvent.count({
       where: {
         sessionId: session.id,
-        timestamp: {gt: latestDecision.createdAt}
-      }
+        timestamp: { gt: latestDecision.createdAt },
+      },
     });
 
     if (newEventsCount < MIN_NEW_EVENTS_FOR_REANALYSIS) {
       event.node.res.statusCode = 202;
-      return {status: 'skipped', reason: 'not_enough_new_events'};
+      return { status: 'skipped', reason: 'not_enough_new_events' };
     }
   }
 
@@ -112,18 +112,18 @@ export default defineEventHandler(async (event) => {
 
       if (analysis) {
         const savedProfile = await prisma.visitorProfile.upsert({
-          where: {visitorId: session.visitorId},
+          where: { visitorId: session.visitorId },
           update: {
             profileData: analysis,
             confidenceScore: analysis.confidenceScore,
-            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent',
           },
           create: {
             visitorId: session.visitorId,
             profileData: analysis,
             confidenceScore: analysis.confidenceScore,
-            lastUpdatedByAgent: 'VisitorIntelligenceAgent'
-          }
+            lastUpdatedByAgent: 'VisitorIntelligenceAgent',
+          },
         });
 
         // Push update to the client after the asynchronous analysis finishes.
@@ -139,5 +139,5 @@ export default defineEventHandler(async (event) => {
   inFlightAnalyses.set(session.id, analysisTask);
 
   event.node.res.statusCode = 202;
-  return {status: 'accepted', message: 'Analysis started in background'};
+  return { status: 'accepted', message: 'Analysis started in background' };
 });

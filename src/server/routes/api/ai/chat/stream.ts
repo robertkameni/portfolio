@@ -28,11 +28,7 @@ function buildIntentHint(userMessage: string): string {
   }
 
   if (text.includes('impact') || text.includes('result') || text.includes('delivered')) {
-    return [
-      'INTENT: measurable_impact.',
-      'Prioritize quantified outcomes and personal ownership.',
-      'Lead with the strongest measurable impact first.',
-    ].join(' ');
+    return ['INTENT: measurable_impact.', 'Prioritize quantified outcomes and personal ownership.', 'Lead with the strongest measurable impact first.'].join(' ');
   }
 
   return 'INTENT: general_recruiter_screening. Keep answers concrete and role-fit oriented.';
@@ -41,19 +37,7 @@ function buildIntentHint(userMessage: string): string {
 function detectResponseMode(userMessage: string): ResponseMode {
   const text = userMessage.toLowerCase();
 
-  const storytellingSignals = [
-    'example',
-    'story',
-    'challenge',
-    'decision',
-    'why',
-    'how did',
-    'how do',
-    'walk me through',
-    'case',
-    'timeline',
-    'situation',
-  ];
+  const storytellingSignals = ['example', 'story', 'challenge', 'decision', 'why', 'how did', 'how do', 'walk me through', 'case', 'timeline', 'situation'];
 
   const conciseSignals = ['years', 'experience', 'stack', 'skills', 'availability', 'rate', 'salary', 'location', 'start date'];
 
@@ -68,16 +52,13 @@ function detectResponseMode(userMessage: string): ResponseMode {
   return 'concise_recruiter';
 }
 
-function buildSystemInstruction(
-  baseProfile: any,
-  projectSummary: string,
-  visitorContextString: string,
-  mode: ResponseMode,
-  intentHint: string,
-): string {
+function buildSystemInstruction(baseProfile: any, projectSummary: string, visitorContextString: string, mode: ResponseMode, intentHint: string): string {
   const about = baseProfile?.about?.paragraphs?.join(' ') ?? '';
   const skills = Array.isArray(baseProfile?.skills)
-    ? baseProfile.skills.map((skill: { name?: string }) => skill?.name).filter(Boolean).join(', ')
+    ? baseProfile.skills
+        .map((skill: { name?: string }) => skill?.name)
+        .filter(Boolean)
+        .join(', ')
     : '';
 
   const modeSpecificRules =

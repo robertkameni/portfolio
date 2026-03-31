@@ -1,12 +1,12 @@
-import {Directive, ElementRef, inject, Input, isDevMode, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {AnalyticsService} from '../../services/analytics.service';
+import { Directive, ElementRef, inject, Input, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AnalyticsService } from '../../services/analytics.service';
 
 let hasLoggedServerSkip = false;
 
 @Directive({
   selector: '[trackBehavior]',
-  standalone: true
+  standalone: true,
 })
 export class TrackBehaviorDirective implements OnInit, OnDestroy {
   @Input('trackBehavior') behaviorName!: string;
@@ -33,7 +33,7 @@ export class TrackBehaviorDirective implements OnInit, OnDestroy {
           }
         });
       },
-      {threshold: 0.5}
+      { threshold: 0.5 },
     );
 
     this.observer.observe(this.el.nativeElement);

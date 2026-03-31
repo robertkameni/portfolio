@@ -19,7 +19,8 @@ import { RouterLink } from '@angular/router';
           <a
             [routerLink]="['/']"
             fragment="projects-section"
-            class="inline-flex items-center gap-2 mb-3 text-base text-primary font-bold decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out hover:underline hover:decoration-current hover:text-primary hover:font-bold"
+            class="inline-flex items-center gap-2 mb-3 text-base font-bold link-color-primary-hover decoration-transparent
+            underline-offset-4 transition-all duration-700 ease-in-out hover:underline hover:decoration-current hover:font-bold"
           >
             <span aria-hidden="true">←</span>
             Back to Portfolio

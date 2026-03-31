@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {httpResource} from '@angular/common/http';
-import type {Project} from '../../../shared/types/project.types';
-import {ProjectsListComponent} from './projects-list.component';
-import {RestoreScrollPositionDirective} from '../../../shared/directives/restore-scroll-position.directive';
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { httpResource } from '@angular/common/http';
+import type { Project } from '../../../shared/types/project.types';
+import { ProjectsListComponent } from './projects-list.component';
+import { RestoreScrollPositionDirective } from '../../../shared/directives/restore-scroll-position.directive';
 
 @Component({
   selector: 'projects-section',
@@ -16,14 +16,14 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
           <div>
             <p class="text-sm uppercase tracking-[0.3em] text-gray-500 mb-3">Selected work</p>
             <h2 class="text-3xl md:text-4xl font-bold text-primary">Projects</h2>
-            <p class="text-gray-400 mt-3 max-w-2xl">A small preview of published work. Open the full overview to browse
-              every project.</p>
+            <p class="text-gray-400 mt-3 max-w-2xl">A small preview of published work. Open the full overview to browse every project.</p>
           </div>
           <a
             routerLink="/projects"
             class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover
             decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out
-            hover:underline hover:decoration-current hover:font-bold">
+            hover:underline hover:decoration-current hover:font-bold"
+          >
             View all projects
             <span aria-hidden="true" class="text-current">→</span>
           </a>
@@ -36,11 +36,11 @@ import {RestoreScrollPositionDirective} from '../../../shared/directives/restore
         } @else if ((projectsResource.value() ?? []).length === 0) {
           <div class="py-12 text-gray-500 text-center text-sm">No projects published yet.</div>
         } @else {
-          <projects-list [projects]="(projectsResource.value() ?? []).slice(0, 3)"/>
+          <projects-list [projects]="(projectsResource.value() ?? []).slice(0, 3)" />
         }
       </div>
     </section>
-  `
+  `,
 })
 export class ProjectsSectionComponent {
   protected readonly projectsResource = httpResource<Project[]>(() => '/api/projects');
