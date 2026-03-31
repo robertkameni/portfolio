@@ -124,7 +124,7 @@ import {Router} from '@angular/router';
 
         <contact [data]="profile.contact" fadeIn/>
 
-        <chat-widget fadeIn/>
+        <chat-widget/>
       }
     </main>
   `

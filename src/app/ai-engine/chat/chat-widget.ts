@@ -1,4 +1,6 @@
-import { afterRenderEffect, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { afterRenderEffect, Component, ElementRef, inject, SecurityContext, signal, viewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { marked } from 'marked';
 import { ChatStore } from '../../store/chat.store';
 import { RealtimeService } from '../../services/realtime.service';
 
@@ -82,7 +84,11 @@ import { RealtimeService } from '../../services/realtime.service';
                       : 'bg-surface border border-[#143c1a] text-white max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-2 text-sm'
                   "
                 >
-                  {{ msg.content }}
+                  @if (msg.role === 'assistant') {
+                    <div class="chat-markdown" [innerHTML]="renderAssistantMessage(msg.content)"></div>
+                  } @else {
+                    {{ msg.content }}
+                  }
                 </div>
               </div>
             }
@@ -130,6 +136,7 @@ import { RealtimeService } from '../../services/realtime.service';
 export class ChatWidgetComponent {
   public chatStore = inject(ChatStore);
   public realtimeService = inject(RealtimeService);
+  private readonly sanitizer = inject(DomSanitizer);
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
@@ -173,5 +180,20 @@ export class ChatWidgetComponent {
 
     this.chatStore.addUserMessage(message);
     this.realtimeService.sendChatMessage(message);
+  }
+
+  renderAssistantMessage(content: string): string {
+    const markdownHtml = marked.parse(content, {
+      gfm: true,
+      breaks: true,
+    });
+
+    const html = typeof markdownHtml === 'string' ? markdownHtml : content;
+    const normalized = html
+      .replace(/<ul>/g, '<ul class="list-disc pl-5 my-2 space-y-1">')
+      .replace(/<ol>/g, '<ol class="list-decimal pl-5 my-2 space-y-1">')
+      .replace(/<p>/g, '<p class="leading-relaxed mb-2">');
+
+    return this.sanitizer.sanitize(SecurityContext.HTML, normalized) ?? '';
   }
 }
