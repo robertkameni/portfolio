@@ -3,11 +3,19 @@ import jwt from 'jsonwebtoken';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
-const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'];
-const REFRESH_TOKEN_SECRET = process.env['REFRESH_TOKEN_SECRET'];
+function getRequiredEnv(name: 'ACCESS_TOKEN_SECRET' | 'REFRESH_TOKEN_SECRET'): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Server configuration error: Missing ${name}`);
+  }
+  return value;
+}
 
-if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
-  throw new Error('ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must be set as environment variables.');
+function getJwtSecrets(): { accessTokenSecret: string; refreshTokenSecret: string } {
+  return {
+    accessTokenSecret: getRequiredEnv('ACCESS_TOKEN_SECRET'),
+    refreshTokenSecret: getRequiredEnv('REFRESH_TOKEN_SECRET'),
+  };
 }
 
 const ACCESS_TOKEN_EXPIRATION = '20m';
@@ -43,7 +51,8 @@ export const authService = {
    * @returns The signed JWT access token.
    */
   generateAccessToken(payload: { userId: string; role: string }): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
+    const { accessTokenSecret } = getJwtSecrets();
+    return jwt.sign(payload, accessTokenSecret, { expiresIn: ACCESS_TOKEN_EXPIRATION });
   },
 
   /**
@@ -52,7 +61,8 @@ export const authService = {
    * @returns The signed JWT refresh token.
    */
   generateRefreshToken(payload: { userId: string }): string {
-    return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
+    const { refreshTokenSecret } = getJwtSecrets();
+    return jwt.sign(payload, refreshTokenSecret, { expiresIn: REFRESH_TOKEN_EXPIRATION });
   },
 
   /**
@@ -62,7 +72,8 @@ export const authService = {
    */
   verifyAccessToken<T>(token: string): T | null {
     try {
-      return jwt.verify(token, ACCESS_TOKEN_SECRET) as T;
+      const { accessTokenSecret } = getJwtSecrets();
+      return jwt.verify(token, accessTokenSecret) as T;
     } catch (error) {
       return null;
     }
@@ -75,7 +86,8 @@ export const authService = {
    */
   verifyRefreshToken<T>(token: string): T | null {
     try {
-      return jwt.verify(token, REFRESH_TOKEN_SECRET) as T;
+      const { refreshTokenSecret } = getJwtSecrets();
+      return jwt.verify(token, refreshTokenSecret) as T;
     } catch (error) {
       return null;
     }
