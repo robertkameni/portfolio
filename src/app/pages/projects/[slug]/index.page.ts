@@ -1,18 +1,23 @@
-import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
-import { DatePipe, isPlatformBrowser } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { httpResource } from '@angular/common/http';
-import type { Project } from '../../../shared/types/project.types';
+import {Component, computed, inject, PLATFORM_ID, signal} from '@angular/core';
+import {DatePipe, isPlatformBrowser} from '@angular/common';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {httpResource} from '@angular/common/http';
+import {DomSanitizer} from '@angular/platform-browser';
+import {marked, Renderer} from 'marked';
+import type {Project} from '../../../shared/types/project.types';
+import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
 
 @Component({
   selector: 'project-overview-page',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, FadeInDirective],
   template: `
-    <main class="min-h-screen bg-background text-white px-4 py-8 md:py-12 md:px-8">
+    <main class="min-h-screen bg-background text-white px-4 py-8 md:py-12 md:px-8" fadeIn>
       <div class="max-w-5xl mx-auto">
-        <a [routerLink]="goBackLink()" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary hover:underline transition mb-8">
-          <span aria-hidden="true">←</span>
+        <a [routerLink]="goBackLink()" class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover
+            decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out
+            hover:underline hover:decoration-current hover:font-bold">
+          <span aria-hidden="true" class="text-current">←</span>
           Back to projects
         </a>
 
@@ -24,7 +29,7 @@ import type { Project } from '../../../shared/types/project.types';
             <p class="text-sm text-red-200/80">{{ getErrorMessage(projectResource.error()) }}</p>
           </div>
         } @else if (projectResource.value(); as project) {
-          <article class="space-y-8">
+          <article class="mt-3 space-y-8">
             <header class="space-y-4">
               <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
                 <span class="rounded-full border border-[#143c1a] px-2 py-1 text-primary">
@@ -42,14 +47,15 @@ import type { Project } from '../../../shared/types/project.types';
 
             @if (project.coverImageUrl) {
               <div class="overflow-hidden rounded-2xl border border-[#143c1a] bg-[#07120a]">
-                <img [src]="project.coverImageUrl" [alt]="project.title" class="h-80 w-full object-cover" />
+                <img [src]="project.coverImageUrl" [alt]="project.title" class="h-80 w-full object-cover"/>
               </div>
             }
 
             @if (project.tags.length > 0) {
               <section class="flex flex-wrap gap-2">
                 @for (tag of project.tags; track tag) {
-                  <span class="rounded-full bg-[#07200f] px-3 py-1 text-xs text-primary border border-[#143c1a] hover:text-white">
+                  <span
+                    class="rounded-full bg-[#07200f] px-3 py-1 text-xs text-primary border border-[#143c1a] hover:text-white">
                     {{ tag }}
                   </span>
                 }
@@ -59,23 +65,28 @@ import type { Project } from '../../../shared/types/project.types';
             <section class="rounded-2xl border border-[#143c1a] bg-surface p-6 md:p-8 space-y-4">
               <h2 class="text-xl font-semibold text-white">Overview</h2>
               @if (project.contentMarkdown) {
-                <pre class="whitespace-pre-wrap text-sm leading-7 text-gray-300 font-sans">{{ project.contentMarkdown }}</pre>
+                <div class="prose prose-invert max-w-none text-gray-300"
+                     [innerHTML]="renderedMarkdown(project.contentMarkdown)"></div>
               } @else {
-                <p class="text-gray-300 leading-7">This project does not have a long-form description yet. The summary above is the current overview.</p>
+                <p class="text-gray-300 leading-7">This project does not have a long-form description yet. The summary
+                  above is the current overview.</p>
               }
             </section>
           </article>
         }
       </div>
     </main>
-  `,
+  `
 })
 export default class ProjectOverviewPage {
   private readonly route = inject(ActivatedRoute);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
   private readonly previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
 
   private readonly clientReady = isPlatformBrowser(inject(PLATFORM_ID));
+
+  private readonly renderer = this.setupRenderer();
 
   goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
 
@@ -84,14 +95,58 @@ export default class ProjectOverviewPage {
     if (!slug) return undefined;
 
     if (this.previewMode()) {
-      // Skip SSR fetch for admin preview.
-      // Bearer token is added automatically by the authInterceptor for /api/admin/* routes.
       if (!this.clientReady) return undefined;
       return `/api/admin/projects?slug=${slug}`;
     }
 
     return `/api/projects/${slug}`;
   });
+
+  private setupRenderer(): Renderer {
+    const renderer = new Renderer();
+
+    renderer.heading = ({text, depth}) => {
+      const sizeMap = {
+        1: 'font-size: clamp(1.25rem, 3vw, 1.5rem)',
+        2: 'font-size: clamp(1rem, 2.5vw, 1.25rem)',
+        3: 'font-size: clamp(0.875rem, 2vw, 1rem)'
+      };
+      const style = sizeMap[depth as 1 | 2 | 3] || 'font-size: clamp(0.875rem, 1.5vw, 1rem)';
+      return `<h${depth} style="${style}" class="font-bold mt-6 mb-3 text-primary">${text}</h${depth}>`;
+    };
+
+    renderer.paragraph = ({text}) => `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
+
+    renderer.list = ({items, ordered}) => {
+      const listClass = ordered ? 'list-decimal' : 'list-disc';
+      const html = items.map(item => `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${item.text}</li>`).join('');
+      return `<${ordered ? 'ol' : 'ul'} class="${listClass} ml-4 mb-4">${html}</${ordered ? 'ol' : 'ul'}>`;
+    };
+
+    renderer.image = ({href, text, title}) => {
+      return `<img src="${href}" alt="${text}" title="${title || ''}" style="max-width: clamp(100%, 90vw, 100%); height: auto;" class="rounded-lg my-6"/>`;
+    };
+
+    renderer.strong = ({text}) => `<strong class="font-semibold">${text}</strong>`;
+
+    return renderer;
+  }
+
+  renderedMarkdown(markdown: string) {
+    try {
+      const cleaned = markdown
+        .split('\n')
+        .map(line => line.trimStart())
+        .join('\n')
+        .trim();
+
+      const html = marked.parse(cleaned, {renderer: this.renderer, async: false});
+      return this.sanitizer.bypassSecurityTrustHtml(html as string);
+    } catch (e) {
+      console.error('Markdown parsing error:', e);
+      return this.sanitizer.bypassSecurityTrustHtml(`<p>${markdown}</p>`);
+    }
+  }
 
   getErrorTitle(error: unknown): string {
     const status = (error as { status?: number })?.status;

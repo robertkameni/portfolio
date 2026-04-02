@@ -60,7 +60,7 @@ Rules:
 * no long explanations
 * no teaching mode
 * focus on solving
-* no comment in generated codes
+* no comment in generated codes, and at the always check if there errors, and then fix them
 * when asking for PR commit messages, do not push any code!
 
 ---
