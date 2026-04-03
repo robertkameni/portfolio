@@ -2,6 +2,8 @@ import {Component, computed, inject, input, signal} from '@angular/core';
 import {AboutData} from './interface/about-data';
 import {VisitorStore} from '../../../store/visitor.store';
 import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
+import type {AppLocale} from '../../../shared/i18n/app-locale';
+import {getSiteCopy} from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'about',
@@ -34,7 +36,7 @@ import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavi
                 <button type="button"
                         class="text-primary font-bold hover:underline cursor-pointer"
                         (click)="toggleAbout()">
-                  {{ isExpanded() ? 'show less...' : 'show more...' }}
+                  {{ isExpanded() ? copy().about.showLess : copy().about.showMore }}
                 </button>
               }
             </div>
@@ -63,18 +65,19 @@ import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavi
 })
 export class AboutComponent {
   private readonly visitorStore = inject(VisitorStore);
-  private readonly previewSplitToken = 'Signals and NgRx Signal Store.';
 
   data = input.required<AboutData>();
+  locale = input<AppLocale>('en');
   isExpanded = signal(false);
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   adaptiveTitle = computed(() => {
     const profile = this.visitorStore.profile();
 
-    if (profile?.visitorType === 'recruiter') return 'A Reliable Engineering Partner';
-    if (profile?.visitorType === 'founder') return 'Building Your Vision, End-to-End';
-    if (profile?.visitorType === 'developer') return 'An Architect Who Loves the Code';
-    if (profile?.visitorType === 'hiring_manager') return 'Ready to Lead & Deliver';
+    if (profile?.visitorType === 'recruiter') return this.copy().about.adaptiveTitle.recruiter;
+    if (profile?.visitorType === 'founder') return this.copy().about.adaptiveTitle.founder;
+    if (profile?.visitorType === 'developer') return this.copy().about.adaptiveTitle.developer;
+    if (profile?.visitorType === 'hiring_manager') return this.copy().about.adaptiveTitle.hiringManager;
 
     return this.data().title;
   });
@@ -88,23 +91,20 @@ export class AboutComponent {
     switch (profile.visitorType) {
       case 'founder':
         return [
-          'I specialize in bringing ambitious SaaS products from 0 to 1. My focus is on establishing a clean, scalable architecture early on, ensuring your application can handle rapid growth without accumulating technical debt.',
-          'Founders need speed to market without sacrificing product stability. I architect end-to-end solutions using modern Angular and Nitro backends that allow your product to pivot quickly. Furthermore, I leverage Large Language Models (LLMs) and custom AI agents to build highly intelligent, scalable features that give your platform a competitive edge from day one.',
+          ...this.copy().about.founderParagraphs,
           ...baseParas.slice(1)
         ];
 
       case 'recruiter':
       case 'hiring_manager':
         return [
-          'As a Technical Lead, I bring a proven track record of significantly increasing development team efficiency, establishing strict code quality standards, and successfully delivering highly complex enterprise-grade Angular applications.',
-          'I excel in large-scale, multi-team Scrum environments. Beyond writing clean code, I focus heavily on mentoring junior and mid-level developers, streamlining CI/CD pipelines, and integrating AI-driven tooling to accelerate the software development lifecycle across the engineering department.',
+          ...this.copy().about.recruiterParagraphs,
           ...baseParas
         ];
 
       case 'developer':
         return [
-          'I am deeply passionate about the modern Angular ecosystem and pushing the framework to its limits. I love migrating legacy applications to zoneless architectures using Angular Signals and building robust, predictable state management systems with the NgRx Signal Store.',
-          "I enjoy solving complex architectural challenges, setting up scalable Nx monorepo structures, and exploring how we can use AI logic and LLMs to power highly scalable, self-adapting application architectures. If you're interested in discussing reactive programming patterns or AI integration, let's connect.",
+          ...this.copy().about.developerParagraphs,
           ...baseParas.slice(2)
         ];
 
@@ -123,7 +123,7 @@ export class AboutComponent {
 
     const previewParagraphs = paragraphs.slice(0, 3);
     const fourthParagraph = paragraphs[3] ?? '';
-    const tokenIndex = fourthParagraph.indexOf(this.previewSplitToken);
+    const tokenIndex = fourthParagraph.indexOf(this.copy().about.previewSplitToken);
 
     if (tokenIndex > -1) {
       previewParagraphs.push(`${fourthParagraph.slice(0, tokenIndex).trim()}`);

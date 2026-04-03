@@ -8,6 +8,7 @@ import type { SkillCard } from '../pages/components/hero/interface/skill-card';
 import type { SkillBentoData } from '../pages/components/skills-bento/interface/skill-bento-data';
 import type { AboutData } from '../pages/components/about/interface/about-data';
 import type { ContactData } from '../pages/components/contact/interface/contact-data';
+import type { AppLocale } from '../shared/i18n/app-locale';
 
 export interface ProfileData {
   name: string;
@@ -21,8 +22,12 @@ export interface ProfileData {
   contact: ContactData;
 }
 
+export interface LocalizedProfileData extends ProfileData {
+  locale: AppLocale;
+}
+
 type ProfileState = {
-  data: ProfileData | null;
+  data: LocalizedProfileData | null;
   isLoading: boolean;
   error: string | null;
 };
@@ -47,7 +52,7 @@ export const PortfolioStore = signalStore(
         }),
         switchMap(() => {
           if (store.data()) return EMPTY;
-          return http.get<ProfileData>('/api/v1/profile').pipe(
+          return http.get<LocalizedProfileData>('/api/v1/profile').pipe(
             tap((data) => patchState(store, { data, isLoading: false })),
             catchError(() => {
               patchState(store, { isLoading: false, error: 'Failed to load profile.' });

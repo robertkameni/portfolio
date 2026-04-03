@@ -4,6 +4,8 @@ import { ContactData } from './interface/contact-data';
 import { FormFieldComponent } from '../../../shared/components/form-field.component';
 import { VisitorStore } from '../../../store/visitor.store';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import type { AppLocale } from '../../../shared/i18n/app-locale';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'contact',
@@ -41,7 +43,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
                 <input
                   type="text"
                   [formField]="form.name"
-                  placeholder="Name"
+                  [placeholder]="copy().contact.placeholderName"
                   class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
                 />
               </form-field>
@@ -50,7 +52,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
                 <input
                   type="email"
                   [formField]="form.email"
-                  placeholder="E-Mail"
+                  [placeholder]="copy().contact.placeholderEmail"
                   class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
                 />
               </form-field>
@@ -82,6 +84,8 @@ export class ContactComponent {
   private readonly visitorStore = inject(VisitorStore);
 
   data = input.required<ContactData>();
+  locale = input<AppLocale>('en');
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   formModel = signal({
     name: '',
@@ -90,36 +94,36 @@ export class ContactComponent {
   });
 
   form = form(this.formModel, (schema) => {
-    required(schema.email, { message: 'Email is required' });
-    required(schema.message, { message: 'Message is required' });
+    required(schema.email, { message: this.copy().contact.validation.emailRequired });
+    required(schema.message, { message: this.copy().contact.validation.messageRequired });
   });
 
   adaptiveTitle = computed(() => {
     const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return "Let's Talk About Your Next Big Hire";
-    if (profile?.visitorType === 'founder') return "Let's Bring Your Idea to Life";
+    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveTitle.recruiter;
+    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveTitle.founder;
     return this.data().title;
   });
 
   adaptiveDescription = computed(() => {
     const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return "Looking for a seasoned Angular engineer? Drop me a message and let's schedule an interview.";
-    if (profile?.visitorType === 'founder') return "Ready to start building? Contact me and let's discuss your product's architecture and roadmap.";
+    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveDescription.recruiter;
+    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveDescription.founder;
     return this.data().description;
   });
 
   adaptivePlaceholder = computed(() => {
     const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return "Hi Robert, we're looking for an Angular expert...";
-    if (profile?.visitorType === 'founder') return 'Hi Robert, I have an idea for a SaaS...';
-    return 'Message';
+    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptivePlaceholder.recruiter;
+    if (profile?.visitorType === 'founder') return this.copy().contact.adaptivePlaceholder.founder;
+    return this.copy().contact.adaptivePlaceholder.default;
   });
 
   adaptiveButtonText = computed(() => {
     const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return 'Schedule an Interview';
-    if (profile?.visitorType === 'founder') return 'Discuss My Project';
-    return 'Send Message';
+    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveButtonText.recruiter;
+    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveButtonText.founder;
+    return this.copy().contact.adaptiveButtonText.default;
   });
 
   submit(event: Event) {

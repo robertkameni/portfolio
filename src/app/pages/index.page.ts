@@ -1,4 +1,4 @@
-import { Component, inject, isDevMode, OnInit } from '@angular/core';
+import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
 import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
 import { RealtimeService } from '../services/realtime.service';
@@ -15,6 +15,7 @@ import { DevProxyBarComponent } from '../shared/components/dev-proxy-bar.compone
 import { VisitorStore } from '../store/visitor.store';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { getSiteCopy } from '../shared/i18n/site-copy';
 
 @Component({
   selector: 'home',
@@ -39,21 +40,21 @@ import { Router } from '@angular/router';
           class="w-full sm:w-auto text-xs px-4 py-1.5 bg-green-950/30 hover:bg-green-900/50 text-green-400 border
           border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
         >
-          Founder
+          {{ copy().home.founder }}
         </button>
         <button
           (click)="setMockProfile('recruiter')"
           class="w-full sm:w-auto text-xs px-4 py-1.5 bg-blue-950/30 hover:bg-blue-900/50 text-blue-400 border
         border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
         >
-          Recruiter
+          {{ copy().home.recruiter }}
         </button>
         <button
           (click)="setMockProfile('developer')"
           class="text-xs px-4 py-1.5 bg-purple-950/30 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50
         rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer w-full sm:w-auto"
         >
-          Developer
+          {{ copy().home.developer }}
         </button>
 
         <div class="hidden sm:block w-px h-4 bg-gray-800 mx-1 sm:mx-2"></div>
@@ -63,7 +64,7 @@ import { Router } from '@angular/router';
           class="w-full sm:w-auto text-xs px-4 py-1.5 bg-gray-900/50 hover:bg-gray-800 text-gray-400 border
         border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
         >
-          Reset
+          {{ copy().home.reset }}
         </button>
       }
 
@@ -85,7 +86,7 @@ import { Router } from '@angular/router';
                 stroke-linejoin="round"
               />
             </svg>
-            <span>Admin Page</span>
+            <span>{{ copy().home.adminPage }}</span>
           </button>
         } @else if (auth.authInitialized() && !auth.isAuthenticated()) {
           <button
@@ -104,7 +105,7 @@ import { Router } from '@angular/router';
                 stroke-linejoin="round"
               />
             </svg>
-            <span>Admin</span>
+            <span>{{ copy().home.admin }}</span>
           </button>
         }
       </div>
@@ -112,21 +113,21 @@ import { Router } from '@angular/router';
 
     <main class="bg-background min-h-screen font-sans selection:bg-blue-500 pt-4 xs:pt-0 selection:text-white" fadeIn>
       @if (store.isLoading()) {
-        <page-loader message="Loading system architecture..." />
+        <page-loader [message]="copy().home.loadingProfile" />
       } @else if (store.error()) {
-        <page-loader message="Failed to load profile. Please refresh." />
+        <page-loader [message]="copy().home.failedProfile" />
       } @else if (store.data(); as profile) {
         <intro [data]="profile.intro" fadeIn />
 
-        <hero [name]="profile.title" [cards]="profile.heroCards" fadeIn />
+        <hero [name]="profile.title" [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
 
-        <skills-bento [skills]="profile.skills" fadeIn />
+        <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn />
 
-        <about [data]="profile.about" fadeIn />
+        <about [data]="profile.about" [locale]="profile.locale" fadeIn />
 
-        <projects-section fadeIn />
+        <projects-section [locale]="profile.locale" fadeIn />
 
-        <contact [data]="profile.contact" fadeIn />
+        <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
 
         <chat-widget />
       }
@@ -142,6 +143,7 @@ export default class HomeComponent implements OnInit {
   private realtime = inject(RealtimeService);
 
   devMode = isDevMode();
+  protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
 
   setMockProfile(type: any) {
     if (!type) {

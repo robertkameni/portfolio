@@ -1,10 +1,14 @@
 import { createError, defineEventHandler } from 'h3';
 import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
+import { localizeProfile } from '../../../data/localized-profile';
+import { resolveRequestLocale } from '../../../utils/locale';
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const locale = resolveRequestLocale(event);
+
   if (!process.env['DATABASE_URL']) {
-    return defaultProfile;
+    return localizeProfile(defaultProfile, locale);
   }
 
   const profile = await profileRepository.find();
@@ -13,5 +17,5 @@ export default defineEventHandler(async () => {
     throw createError({ statusCode: 404, statusMessage: 'Profile not found.' });
   }
 
-  return profile;
+  return localizeProfile(profile, locale);
 });

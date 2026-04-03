@@ -66,12 +66,20 @@ function readStatusCode(error: unknown): number | null {
 
 function isRetryableGeminiError(error: unknown): boolean {
   const status = readStatusCode(error);
-  if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) {
+  if (status === 429) {
+    return false;
+  }
+
+  if (status === 500 || status === 502 || status === 503 || status === 504) {
     return true;
   }
 
   const message = error instanceof Error ? error.message.toLowerCase() : '';
-  return message.includes('429') || message.includes('rate') || message.includes('quota') || message.includes('timeout');
+  if (message.includes('429') || message.includes('quota') || message.includes('rate limit') || message.includes('too many requests')) {
+    return false;
+  }
+
+  return message.includes('timeout') || message.includes('temporarily unavailable') || message.includes('econnreset');
 }
 
 function computeBackoffDelay(attempt: number, baseDelayMs: number, maxDelayMs: number): number {

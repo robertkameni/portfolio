@@ -1,6 +1,8 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { SkillBentoData } from './interface/skill-bento-data';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import type { AppLocale } from '../../../shared/i18n/app-locale';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'skills-bento',
@@ -8,7 +10,7 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
   template: `
     <section trackBehavior="skills_viewed" class="py-6 md:py-10">
       <div class="max-w-6xl w-full mx-auto px-4">
-        <h2 class="text-center text-primary text-3xl font-bold mb-8">Technical Arsenal</h2>
+        <h2 class="text-center text-primary text-3xl font-bold mb-8">{{ copy().skills.title }}</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           @for (skill of skills(); track skill) {
             <div
@@ -30,4 +32,6 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
 })
 export class SkillsBentoComponent {
   skills = input.required<SkillBentoData[]>();
+  locale = input<AppLocale>('en');
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
 }

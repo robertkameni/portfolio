@@ -1,8 +1,11 @@
-import { Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
-import { DatePipe, NgOptimizedImage } from '@angular/common';
-import type { Project } from '../../../shared/types/project.types';
+import {Component, input} from '@angular/core';
+import {RouterLink} from '@angular/router';
+import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
+import {DatePipe, NgOptimizedImage} from '@angular/common';
+import type {Project} from '../../../shared/types/project.types';
+import type {AppLocale} from '../../../shared/i18n/app-locale';
+import {toAngularLocale} from '../../../shared/i18n/app-locale';
+import {getSiteCopy} from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'projects-list',
@@ -52,17 +55,28 @@ import type { Project } from '../../../shared/types/project.types';
                   class="link-color-primary-hover text-sm font-bold decoration-transparent underline-offset-4 transition-colors duration-800 ease-in-out group-hover:text-primary! hover:underline hover:decoration-current"
                   [routerLink]="['/projects', project.slug]"
                 >
-                  Open project →
+                  {{ projectCopy().openProject }}
                 </a>
-                <time class="text-xs text-gray-500">{{ project.createdAt | date }}</time>
+                <time
+                  class="text-xs text-gray-500">{{ project.createdAt | date: undefined : undefined : currentDateLocale() }}
+                </time>
               </div>
             </div>
           </article>
         }
       </div>
     </section>
-  `,
+  `
 })
 export class ProjectsListComponent {
   projects = input.required<Project[]>();
+  locale = input<AppLocale>('en');
+
+  protected projectCopy() {
+    return getSiteCopy(this.locale()).projects;
+  }
+
+  protected currentDateLocale() {
+    return toAngularLocale(this.locale());
+  }
 }

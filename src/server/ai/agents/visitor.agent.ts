@@ -2,6 +2,9 @@ import { contextEngine } from '../context.engine';
 import { prisma } from '../../db/client';
 import { getGeminiClient, withGeminiRetry } from '../gemini.client';
 
+const VISITOR_AI_QUOTA_BACKOFF_MS = Number.parseInt(process.env['VISITOR_AI_QUOTA_BACKOFF_MS'] ?? '900000', 10);
+let quotaBlockedUntil = 0;
+
 export type VisitorProfileAnalysis = {
   visitorType: 'recruiter' | 'hiring_manager' | 'developer' | 'founder' | 'student' | 'other';
   interests: string[];
@@ -24,9 +27,56 @@ function validateProfile(data: any): data is VisitorProfileAnalysis {
   return !!data && typeof data.visitorType === 'string' && typeof data.confidenceScore === 'number' && Array.isArray(data.interests);
 }
 
+function readStatusCode(error: unknown): number | null {
+  if (!error || typeof error !== 'object') {
+    return null;
+  }
+
+  const statusFromError = (error as { status?: unknown }).status;
+  if (typeof statusFromError === 'number') {
+    return statusFromError;
+  }
+
+  const responseStatus = (error as { response?: { status?: unknown } }).response?.status;
+  if (typeof responseStatus === 'number') {
+    return responseStatus;
+  }
+
+  return null;
+}
+
+function isQuotaError(error: unknown): boolean {
+  const status = readStatusCode(error);
+  if (status === 429) {
+    return true;
+  }
+
+  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+  return message.includes('quota') || message.includes('too many requests') || message.includes('rate limit');
+}
+
+async function persistFallbackDecision(sessionId: string, analysis: VisitorProfileAnalysis, reasoning: string): Promise<void> {
+  await prisma.aiDecision.create({
+    data: {
+      sessionId,
+      agentName: 'VisitorAgent',
+      decisionType: 'visitor_classification',
+      decisionData: { ...analysis, reasoning },
+      confidenceScore: analysis.confidenceScore,
+      reasoning,
+    },
+  });
+}
+
 export const visitorAgent = {
   async analyze(sessionId: string): Promise<VisitorProfileAnalysis> {
     try {
+      if (Date.now() < quotaBlockedUntil) {
+        const fb = fallback();
+        await persistFallbackDecision(sessionId, fb, 'Fallback due to active Gemini quota backoff window.');
+        return fb;
+      }
+
       const gemini = getGeminiClient();
       const sessionHistory = await contextEngine.getSessionHistoryAsText(sessionId);
 
@@ -108,9 +158,21 @@ export const visitorAgent = {
           sessionId: sessionId,
         },
       });
-      return fallback();
+
+      const fb = fallback();
+      await persistFallbackDecision(sessionId, fb, 'Fallback due to invalid AI response payload.');
+      return fb;
     } catch (error) {
-      console.error('VisitorAgent Error:', error);
+      if (isQuotaError(error)) {
+        quotaBlockedUntil = Date.now() + VISITOR_AI_QUOTA_BACKOFF_MS;
+      }
+
+      const compactError = {
+        status: typeof (error as { status?: unknown })?.status === 'number' ? (error as { status: number }).status : null,
+        message: error instanceof Error ? error.message : String(error),
+      };
+
+      console.warn('[VisitorAgent] AI analysis fallback triggered.', compactError);
       await prisma.aiLog.create({
         data: {
           agentName: 'VisitorAgent',
@@ -120,7 +182,10 @@ export const visitorAgent = {
           sessionId: sessionId,
         },
       });
-      return fallback();
+
+      const fb = fallback();
+      await persistFallbackDecision(sessionId, fb, 'Fallback due to AI exception (quota or transient error).');
+      return fb;
     }
   },
 };
