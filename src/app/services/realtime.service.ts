@@ -59,10 +59,6 @@ export class RealtimeService implements OnDestroy {
   sendChatMessage(message: string): void {
     if (!isPlatformBrowser(this.platformId) || !this.currentSessionId) return;
 
-    if (this.currentChatStream) {
-      this.currentChatStream.close();
-    }
-
     // Format history for Gemini
     const allMessages = this.chatStore.messages();
     const history = allMessages
@@ -72,42 +68,104 @@ export class RealtimeService implements OnDestroy {
         parts: [{ text: msg.content }],
       }));
 
-    const encodedMessage = encodeURIComponent(message);
-    const encodedHistory = encodeURIComponent(JSON.stringify(history));
-
-    this.currentChatStream = new EventSource(`/api/ai/chat/stream?sessionId=${this.currentSessionId}&message=${encodedMessage}&history=${encodedHistory}`);
+    const requestBody = {
+      message,
+      history,
+      sessionId: this.currentSessionId,
+    };
 
     this.chatStore.setTyping(true);
 
-    this.currentChatStream.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-
-        if (data.done) {
+    fetch('/api/ai/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.body;
+      })
+      .then((body) => {
+        if (!body) {
           this.chatStore.setTyping(false);
-          this.currentChatStream?.close();
           return;
         }
 
-        if (data.error) {
-          this.chatStore.appendAssistantToken(`\n[Error: ${data.error}]`);
-          this.chatStore.setTyping(false);
-          this.currentChatStream?.close();
-          return;
-        }
+        const reader = body.getReader();
+        const decoder = new TextDecoder();
 
-        if (data.token) {
-          this.chatStore.appendAssistantToken(data.token);
-        }
-      } catch (error) {
-        // noop
-      }
-    };
+        const handleDataLine = (line: string): boolean => {
+          if (!line.startsWith('data: ')) {
+            return false;
+          }
 
-    this.currentChatStream.onerror = () => {
-      this.chatStore.setTyping(false);
-      this.currentChatStream?.close();
-    };
+          const jsonStr = line.substring(6);
+
+          try {
+            const data = JSON.parse(jsonStr);
+
+            if (data.done) {
+              return true;
+            }
+
+            if (data.error) {
+              this.chatStore.appendAssistantToken(`\n[Error: ${data.error}]`);
+              return true;
+            }
+
+            if (data.token) {
+              this.chatStore.appendAssistantToken(data.token);
+            }
+          } catch {
+            // ignore malformed chunk and continue reading stream
+          }
+
+          return false;
+        };
+
+        const processStream = async (): Promise<void> => {
+          let buffer = '';
+          let shouldStop = false;
+
+          try {
+            while (!shouldStop) {
+              const { done, value } = await reader.read();
+
+              if (done) {
+                buffer += decoder.decode();
+                break;
+              }
+
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() ?? '';
+
+              for (const line of lines) {
+                if (handleDataLine(line)) {
+                  shouldStop = true;
+                  break;
+                }
+              }
+            }
+
+            if (!shouldStop && buffer.trim().length > 0) {
+              handleDataLine(buffer.trim());
+            }
+          } finally {
+            this.chatStore.setTyping(false);
+            reader.releaseLock();
+          }
+        };
+
+        return processStream();
+      })
+      .catch((error) => {
+        console.error('[RealtimeService] chat stream error:', error);
+        this.chatStore.appendAssistantToken(`\n[Connection error: ${error.message}]`);
+        this.chatStore.setTyping(false);
+      });
   }
 
   disconnect(): void {
