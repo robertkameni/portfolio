@@ -18,6 +18,13 @@ type StreamOptions = {
   onCompleted?: () => void;
 };
 
+export function applySseHeaders(event: H3Event): void {
+  event.node.res.setHeader('Content-Type', 'text/event-stream');
+  event.node.res.setHeader('Cache-Control', 'no-cache');
+  event.node.res.setHeader('Connection', 'keep-alive');
+  event.node.res.setHeader('X-Accel-Buffering', 'no');
+}
+
 function writeSseData(event: H3Event, payload: unknown, flush = false): void {
   event.node.res.write(`data: ${JSON.stringify(payload)}\n\n`);
 
@@ -32,13 +39,17 @@ function endSse(event: H3Event): void {
   }
 }
 
+export function writeSseError(event: H3Event, message: string): void {
+  writeSseData(event, { error: message });
+  endSse(event);
+}
+
 export function createChatModelSafe(event: H3Event, factory: () => GenerativeModel, options: CreateModelOptions = {}): GenerativeModel | null {
   try {
     return factory();
   } catch (error) {
     options.onError?.(error);
-    writeSseData(event, { error: options.unavailableMessage ?? 'AI service unavailable.' });
-    endSse(event);
+    writeSseError(event, options.unavailableMessage ?? 'AI service unavailable.');
     return null;
   }
 }
@@ -65,8 +76,7 @@ export async function streamChatResponseSafe(
     return true;
   } catch (error) {
     options.onError?.(error);
-    writeSseData(event, { error: options.streamErrorMessage ?? 'Error processing AI response.' });
-    endSse(event);
+    writeSseError(event, options.streamErrorMessage ?? 'Error processing AI response.');
     return false;
   }
 }

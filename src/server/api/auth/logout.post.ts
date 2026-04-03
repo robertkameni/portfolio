@@ -1,26 +1,8 @@
-import { defineEventHandler, deleteCookie, setResponseStatus } from 'h3';
+import { defineEventHandler, setResponseStatus } from 'h3';
+import { clearAuthSessionCookies } from '../../utils/auth-cookies';
 
 export default defineEventHandler((event) => {
-  deleteCookie(event, 'auth_token', {
-    httpOnly: true,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'lax',
-    path: '/',
-  });
-
-  deleteCookie(event, 'refreshToken', {
-    httpOnly: true,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'lax',
-    path: '/',
-  });
-
-  deleteCookie(event, 'auth_hint', {
-    httpOnly: false,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'lax',
-    path: '/',
-  });
+  clearAuthSessionCookies(event);
 
   setResponseStatus(event, 200);
   return { statusMessage: 'Logged out successfully' };

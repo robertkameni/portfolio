@@ -1,6 +1,7 @@
-import { defineEventHandler, readBody, setCookie, createError } from 'h3';
+import { defineEventHandler, readBody, createError } from 'h3';
 import { userRepository } from '../../db/repositories/user.repository';
 import { authService } from '../../auth/auth.service';
+import { setAuthSessionCookies } from '../../utils/auth-cookies';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ email?: string; password?: string }>(event);
@@ -39,29 +40,7 @@ export default defineEventHandler(async (event) => {
     const accessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
     const refreshToken = authService.generateRefreshToken({ userId: user.id });
 
-    setCookie(event, 'refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-    });
-
-    setCookie(event, 'auth_token', accessToken, {
-      httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 60 * 15,
-    });
-
-    setCookie(event, 'auth_hint', '1', {
-      httpOnly: false,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    setAuthSessionCookies(event, accessToken, refreshToken, 60 * 15);
 
     return {
       user: {

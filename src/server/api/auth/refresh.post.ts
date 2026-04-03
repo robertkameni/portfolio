@@ -1,6 +1,7 @@
-import { createError, defineEventHandler, getCookie, setCookie } from 'h3';
+import { createError, defineEventHandler, getCookie } from 'h3';
 import { userRepository } from '../../db/repositories/user.repository';
 import { authService } from '../../auth/auth.service';
+import { clearAuthSessionCookies, setAuthSessionCookies } from '../../utils/auth-cookies';
 
 export default defineEventHandler(async (event) => {
   const refreshToken = getCookie(event, 'refreshToken');
@@ -29,35 +30,14 @@ export default defineEventHandler(async (event) => {
 
   // Only allow refresh for admin users
   if (user.role !== 'ADMIN') {
-    // clear cookies if any and return forbidden
-    setCookie(event, 'auth_token', '', { path: '/', maxAge: 0 });
-    setCookie(event, 'refreshToken', '', { path: '/', maxAge: 0 });
+    clearAuthSessionCookies(event);
     throw createError({ statusCode: 403, statusMessage: 'Forbidden: Admin access required' });
   }
 
   const newAccessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
   const newRefreshToken = authService.generateRefreshToken({ userId: user.id });
 
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'strict' as const,
-    path: '/',
-    maxAge: 60 * 20, // 20 minutes
-  };
-
-  setCookie(event, 'auth_token', newAccessToken, cookieOptions);
-  setCookie(event, 'refreshToken', newRefreshToken, {
-    ...cookieOptions,
-    maxAge: 60 * 60 * 24 * 7, // 7 days for the refresh token
-  });
-  setCookie(event, 'auth_hint', '1', {
-    httpOnly: false,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'strict' as const,
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7,
-  });
+  setAuthSessionCookies(event, newAccessToken, newRefreshToken, 60 * 20);
 
   return {
     user: {

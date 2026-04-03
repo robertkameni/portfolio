@@ -1,19 +1,13 @@
-import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3';
+import { createError, defineEventHandler, getQuery } from 'h3';
 import { projectRepository } from '../../db/repositories/project.repository';
 import { authGuard } from '../../utils/authGuard';
+import { requireRouterParam } from '../../utils/route-params';
 
 /**
  * Public API endpoint to fetch a single published project by its slug.
  */
 export default defineEventHandler(async (event) => {
-  const slug = getRouterParam(event, 'slug');
-
-  if (!slug) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request: Slug parameter is missing.',
-    });
-  }
+  const slug = requireRouterParam(event, 'slug', 'Bad Request: Slug parameter is missing.');
 
   const query = getQuery(event);
   const previewMode = query['preview'] === 'admin';

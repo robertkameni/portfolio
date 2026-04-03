@@ -1,15 +1,10 @@
-import { defineEventHandler, getRouterParam, createError } from 'h3';
+import { defineEventHandler, createError } from 'h3';
 import { projectRepository } from '../../../db/repositories/project.repository';
 import { adminGuard } from '../../../utils/authGuard';
+import { requireRouterParam } from '../../../utils/route-params';
 
 export default defineEventHandler(async (event) => {
-  const projectId = getRouterParam(event, 'id');
-  if (!projectId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request: Project ID is required.',
-    });
-  }
+  const projectId = requireRouterParam(event, 'id', 'Bad Request: Project ID is required.');
 
   try {
     adminGuard(event);

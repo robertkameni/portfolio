@@ -1,26 +1,23 @@
-import { defineEventHandler, getQuery } from 'h3';
+import { defineEventHandler } from 'h3';
 import { getGeminiClient } from '../../../../ai/gemini.client';
 import { prisma } from '../../../../db/client';
 import { profileRepository } from '../../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../../data/default-profile';
 import { buildIntentHint, buildSystemInstruction, detectResponseMode, normalizeProjectSummary } from './prompt-helpers';
-import { createChatModelSafe, streamChatResponseSafe } from './stream-utils';
+import { parseAndValidateGetChatRequest } from './stream-request-utils';
+import { applySseHeaders, createChatModelSafe, streamChatResponseSafe } from './stream-utils';
 import { resolveVisitorContextString } from './visitor-context';
 
 
 export default defineEventHandler(async (event) => {
-  event.node.res.setHeader('Content-Type', 'text/event-stream');
-  event.node.res.setHeader('Cache-Control', 'no-cache');
-  event.node.res.setHeader('Connection', 'keep-alive');
-  event.node.res.setHeader('X-Accel-Buffering', 'no');
+  applySseHeaders(event);
 
-  const { sessionId, message, history } = getQuery(event);
-
-  if (!message || typeof message !== 'string') {
-    event.node.res.write(`data: ${JSON.stringify({ error: 'No message provided.' })}\n\n`);
-    event.node.res.end();
+  const request = parseAndValidateGetChatRequest(event);
+  if (!request) {
     return;
   }
+
+  const { sessionId, message, history } = request;
 
   const baseProfile = (await profileRepository.find()) ?? defaultProfile;
   const publishedProjects = await prisma.project.findMany({
@@ -35,19 +32,9 @@ export default defineEventHandler(async (event) => {
 
   let visitorContextString = '';
 
-  // 1. Parse the history passed from the frontend
-  let parsedHistory: any[] = [];
-  if (typeof history === 'string') {
-    try {
-      parsedHistory = JSON.parse(history);
-    } catch (e) {
-      console.error('[SSE] Failed to parse chat history:', e);
-    }
-  }
-
-  // 2. Fetch visitor classification to adapt the style and focus.
+  // Fetch visitor classification to adapt the style and focus.
   visitorContextString = await resolveVisitorContextString(
-    typeof sessionId === 'string' ? sessionId : undefined,
+    sessionId,
     '[SSE] Failed to fetch visitor profile for context'
   );
 
@@ -63,7 +50,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const chat = model.startChat({
-    history: parsedHistory,
+    history,
     generationConfig: {
       maxOutputTokens: 800,
     },
