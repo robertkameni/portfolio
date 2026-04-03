@@ -1,5 +1,7 @@
 import { Component, computed, input, linkedSignal, output } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
+import type { AppLocale } from '../i18n/app-locale';
+import { getSiteCopy } from '../i18n/site-copy';
 
 export interface ProjectFormModel {
   title: string;
@@ -29,7 +31,7 @@ export interface ProjectPayload {
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Title *</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.titleLabel }}</label>
           <input
             [formField]="projectForm.title"
             type="text"
@@ -43,7 +45,7 @@ export interface ProjectPayload {
           }
         </div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Slug *</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.slugLabel }}</label>
           <input
             [formField]="projectForm.slug"
             type="text"
@@ -59,7 +61,7 @@ export interface ProjectPayload {
       </div>
 
       <div>
-        <label class="block text-sm text-gray-400 mb-1">Description</label>
+        <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.descriptionLabel }}</label>
         <textarea
           [formField]="projectForm.description"
           rows="3"
@@ -69,7 +71,7 @@ export interface ProjectPayload {
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Cover Image URL</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.coverImageUrlLabel }}</label>
           <input
             [formField]="projectForm.coverImageUrl"
             type="text"
@@ -77,11 +79,11 @@ export interface ProjectPayload {
           />
         </div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Tags (comma-separated)</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.tagsLabel }}</label>
           <input
             [formField]="projectForm.tags"
             type="text"
-            placeholder="Angular, TypeScript, SSR"
+            [placeholder]="copy().projectForm.tagsPlaceholder"
             class="w-full bg-[#0a1a0f] border border-[#143c1a] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary"
           />
         </div>
@@ -89,12 +91,12 @@ export interface ProjectPayload {
 
       <div class="flex items-center gap-3">
         <input [formField]="projectForm.isPublished" type="checkbox" id="isPublished" class="w-4 h-4 accent-primary" />
-        <label for="isPublished" class="text-sm text-gray-300">{{ publishLabel() }}</label>
+        <label for="isPublished" class="text-sm text-gray-300">{{ effectivePublishLabel() }}</label>
       </div>
 
       <div class="flex justify-end gap-3">
-        <button type="button" (click)="cancel.emit()" class="px-6 py-2 border border-[#143c1a] text-gray-300 font-semibold rounded-lg hover:border-primary transition text-sm">
-          Cancel
+          <button type="button" (click)="cancel.emit()" class="px-6 py-2 border border-[#143c1a] text-gray-300 font-semibold rounded-lg hover:border-primary transition text-sm">
+          {{ copy().projectForm.cancel }}
         </button>
         <button
           type="submit"
@@ -108,12 +110,15 @@ export interface ProjectPayload {
   `,
 })
 export class ProjectFormComponent {
+  locale = input<AppLocale>('en');
   formTitle = input<string>('Project');
   submitLabel = input<string>('Save');
   submittingLabel = input<string>('Saving...');
-  publishLabel = input<string>('Publish immediately');
+  publishLabel = input<string>('');
   isSubmitting = input<boolean>(false);
   initialData = input<ProjectFormModel | null>(null);
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
+  protected readonly effectivePublishLabel = computed(() => this.publishLabel() || this.copy().projectForm.publishImmediately);
 
   formSubmit = output<ProjectPayload>();
   cancel = output<void>();
@@ -135,8 +140,8 @@ export class ProjectFormComponent {
   });
 
   readonly projectForm = form(this.formModel, (schema) => {
-    required(schema.title, { message: 'Title is required' });
-    required(schema.slug, { message: 'Slug is required' });
+    required(schema.title, { message: this.copy().projectForm.titleRequired });
+    required(schema.slug, { message: this.copy().projectForm.slugRequired });
   });
 
   readonly isFormValid = computed(() => this.projectForm.title().valid() && this.projectForm.slug().valid());

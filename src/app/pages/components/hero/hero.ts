@@ -66,9 +66,10 @@ export class HeroComponent {
 
   adaptiveTitle = computed(() => {
     const profile = this.visitorStore.profile();
+    const defaultTitle = this.name() || this.copy().hero.defaultTitle;
 
     if (!profile) {
-      return this.defaultTitle();
+      return defaultTitle;
     }
 
     switch (profile.visitorType) {
@@ -80,7 +81,7 @@ export class HeroComponent {
       case 'developer':
         return this.copy().hero.adaptiveTitle.developer;
       default:
-        return this.defaultTitle();
+        return defaultTitle;
     }
   });
 

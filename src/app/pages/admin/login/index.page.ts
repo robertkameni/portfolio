@@ -1,9 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { LocaleService } from '../../../shared/services/locale.service';
 
 function resolveReturnUrl(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -20,10 +22,10 @@ function resolveReturnUrl(value: string | null): string {
   template: `
     <div fadeIn class="flex items-center justify-center min-h-screen bg-gray-900 relative z-10001">
       <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-center text-white">Admin Login</h1>
+        <h1 class="text-2xl font-bold text-center text-white">{{ copy().adminLogin.title }}</h1>
         <form (ngSubmit)="submit()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-300">Email</label>
+            <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.email }}</label>
             <input
               type="email"
               [(ngModel)]="email"
@@ -33,7 +35,7 @@ function resolveReturnUrl(value: string | null): string {
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-300">Password</label>
+            <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.password }}</label>
             <input
               type="password"
               [(ngModel)]="password"
@@ -46,7 +48,7 @@ function resolveReturnUrl(value: string | null): string {
             <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
           }
           <button type="submit" [disabled]="isLoading()" class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
-            {{ isLoading() ? 'Logging in...' : 'Login' }}
+            {{ isLoading() ? copy().adminLogin.loggingIn : copy().adminLogin.login }}
           </button>
         </form>
       </div>
@@ -64,6 +66,9 @@ export default class LoginPageComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly localeService = inject(LocaleService);
+  protected locale = this.localeService.locale;
+  protected copy = computed(() => getSiteCopy(this.locale()));
 
   email = '';
   password = '';
@@ -87,10 +92,10 @@ export default class LoginPageComponent implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         if ((err as { status?: number }).status === 403) {
-          this.errorMessage.set('Zugriff verweigert: Nur Admins.');
-          this.showToast('Nur Administratoren können sich im Portfolio anmelden. Bitte kontaktieren Sie den Seiteninhaber, falls nötig.');
+          this.errorMessage.set(this.copy().adminLogin.accessDenied);
+          this.showToast(this.copy().adminLogin.accessDeniedToast);
         } else {
-          this.errorMessage.set(extractApiErrorMessage(err, 'Invalid credentials.'));
+          this.errorMessage.set(extractApiErrorMessage(err, this.copy().adminLogin.invalidCredentials));
         }
       },
       complete: () => this.isLoading.set(false),

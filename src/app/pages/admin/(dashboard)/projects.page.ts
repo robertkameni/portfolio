@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
+import {Component, computed, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {httpResource} from '@angular/common/http';
 import {Router, RouterLink} from '@angular/router';
@@ -11,6 +11,8 @@ import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/p
 import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
 import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar.component';
 import {StatusAlertComponent} from '../../../shared/components/status-alert.component';
+import {getSiteCopy} from '../../../shared/i18n/site-copy';
+import {LocaleService} from '../../../shared/services/locale.service';
 
 @Component({
   selector: 'admin-projects',
@@ -26,7 +28,7 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
           hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
         >
           <span>+</span>
-          {{ showForm() ? 'Cancel' : 'New Project' }}
+          {{ showForm() ? copy().adminProjects.cancel : copy().adminProjects.newProject }}
         </button>
       </div>
     </dev-proxy-bar>
@@ -34,13 +36,13 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
     <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8 flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-primary">Projects</h1>
-          <p class="text-gray-400 text-sm mt-1">Manage published and draft projects</p>
+          <h1 class="text-3xl font-bold text-primary">{{ copy().adminProjects.title }}</h1>
+          <p class="text-gray-400 text-sm mt-1">{{ copy().adminProjects.subtitle }}</p>
         </div>
       </div>
 
       @if (submitSuccess()) {
-        <status-alert type="success">Project created successfully.</status-alert>
+        <status-alert type="success">{{ copy().adminProjects.createSuccess }}</status-alert>
       }
 
       @if (submitError()) {
@@ -54,9 +56,10 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
       @if (showForm()) {
         <div class="mb-8">
           <project-form
-            formTitle="Create Project"
-            submitLabel="Create Project"
-            submittingLabel="Creating..."
+            [locale]="locale()"
+            [formTitle]="copy().adminProjects.createFormTitle"
+            [submitLabel]="copy().adminProjects.createSubmitLabel"
+            [submittingLabel]="copy().adminProjects.createSubmittingLabel"
             [isSubmitting]="isSubmitting()"
             (formSubmit)="createProject($event)"
             (cancel)="toggleForm()"
@@ -65,9 +68,9 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
       }
 
       @if (projectsResource.isLoading()) {
-        <div class="text-gray-400 font-mono py-12 text-center">Loading projects...</div>
+        <div class="text-gray-400 font-mono py-12 text-center">{{ copy().adminProjects.loading }}</div>
       } @else if (projectsResource.status() === 'idle') {
-        <div class="text-gray-500 py-12 text-center text-sm">Loading...</div>
+        <div class="text-gray-500 py-12 text-center text-sm">{{ copy().adminProjects.loadingIdle }}</div>
       } @else if (projectsResource.error()) {
         <div class="text-red-400 py-8 text-center text-sm">
           {{ getErrorMessage(projectsResource.error()) }}
@@ -75,47 +78,52 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
       } @else {
         <div class="space-y-3" fadeIn>
           @for (project of (projectsResource.value()?.data ?? []); track project.id) {
-            <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <span class="px-2 py-0.5 rounded text-xs font-medium"
-                      [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
-                  {{ project.isPublished ? 'Published' : 'Draft' }}
+            <div
+              class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+
+              <div class="flex items-center gap-4 min-w-0 flex-wrap flex-1">
+                <span
+                  class="px-2 py-0.5 rounded text-xs font-medium"
+                  [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
+                  {{ project.isPublished ? copy().adminProjects.published : copy().adminProjects.draft }}
                 </span>
-                <div>
-                  <p class="text-white font-medium">{{ project.title }}</p>
-                  <p class="text-gray-500 text-xs">/projects/{{ project.slug }}</p>
+
+                <div class="min-w-0">
+                  <p class="text-white font-medium truncate">{{ project.title }}</p>
+                  <p class="text-gray-500 text-xs truncate">/projects/{{ project.slug }}</p>
                 </div>
               </div>
-              <div class="flex items-center gap-3">
-                @if (project.tags.length > 0) {
-                  <div class="hidden md:flex gap-2 mr-18">
+
+              <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-3 md:gap-4 min-w-0">
+                <div class="hidden md:flex items-center justify-start gap-2 flex-wrap w-60">
+                  @if (project.tags.length > 0) {
                     @for (tag of project.tags.slice(0, 3); track tag) {
-                      <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded">
+                      <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded whitespace-nowrap shrink-0">
                         {{ tag }}
                       </span>
                     }
-                  </div>
-                }
+                  }
+                </div>
 
+              </div>
+              <div class="flex gap-4 justify-start">
                 <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }"
                    class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
-                  View👁️
+                  {{ copy().adminProjects.view }}
                 </a>
 
-                <a
-                  [routerLink]="['/projects', project.slug, 'edit']"
-                  [queryParams]="{ preview: 'admin' }"
-                  class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
-                >
-                  Edit ✏️
+                <a [routerLink]="['/projects', project.slug, 'edit']" [queryParams]="{ preview: 'admin' }"
+                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                  {{ copy().adminProjects.edit }}
                 </a>
 
                 <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
-                   (click)="deleteProject(project)">Delete🗑️</a>
+                   (click)="deleteProject(project)">{{ copy().adminProjects.delete }}
+                </a>
               </div>
             </div>
           } @empty {
-            <p class="text-gray-500 text-center py-12">No projects yet. Create your first one.</p>
+            <p class="text-gray-500 text-center py-12">{{ copy().adminProjects.empty }}</p>
           }
         </div>
       }
@@ -123,11 +131,15 @@ import {StatusAlertComponent} from '../../../shared/components/status-alert.comp
   `
 })
 export default class AdminProjectsPage {
-  private platformId = inject(PLATFORM_ID);
-  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
-  private readonly clientReady = isPlatformBrowser(this.platformId);
   private readonly adminProjectsService = inject(AdminProjectsService);
+  private readonly localeService = inject(LocaleService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
+  protected clientReady = isPlatformBrowser(this.platformId);
+  protected locale = this.localeService.locale;
+  protected copy = computed(() => getSiteCopy(this.locale()));
 
   projectsResource = httpResource<ApiSuccess<Project[]> | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
 
@@ -149,7 +161,7 @@ export default class AdminProjectsPage {
   }
 
   getErrorMessage(err: unknown): string {
-    return extractApiErrorMessage(err, 'Failed to load projects');
+    return extractApiErrorMessage(err, this.copy().adminProjects.failedLoad);
   }
 
   private handleError(error: unknown, context: string, defaultMessage: string): string {
@@ -191,7 +203,7 @@ export default class AdminProjectsPage {
           this.showForm.set(false);
         },
         error: (err) => {
-          const msg = this.handleError(err, 'create project', 'Failed to create project');
+          const msg = this.handleError(err, 'create project', this.copy().adminProjects.failedCreate);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
         }
@@ -199,7 +211,7 @@ export default class AdminProjectsPage {
   }
 
   deleteProject(project: Project) {
-    if (!confirm(`Are you sure you want to delete the project "${project.title}"?`)) return;
+    if (!confirm(this.copy().adminProjects.confirmDelete.replace('{title}', project.title))) return;
 
     this.adminProjectsService
       .deleteProject(project.id)
@@ -215,7 +227,7 @@ export default class AdminProjectsPage {
           this.deleteError.set(null);
         },
         error: (err) => {
-          const msg = this.handleError(err, 'delete project', 'Failed to delete project');
+          const msg = this.handleError(err, 'delete project', this.copy().adminProjects.failedDelete);
           this.deleteError.set(msg);
         }
       });

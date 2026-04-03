@@ -1,8 +1,10 @@
-import {afterRenderEffect, Component, ElementRef, inject, SecurityContext, signal, viewChild} from '@angular/core';
+import {afterRenderEffect, Component, computed, ElementRef, inject, SecurityContext, signal, viewChild} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {marked} from 'marked';
 import {ChatStore} from '../../store/chat.store';
 import {RealtimeService} from '../../services/realtime.service';
+import {getSiteCopy} from '../../shared/i18n/site-copy';
+import {LocaleService} from '../../shared/services/locale.service';
 
 @Component({
   selector: 'chat-widget',
@@ -51,8 +53,8 @@ import {RealtimeService} from '../../services/realtime.service';
                   class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
               </div>
               <div>
-                <h3 class="text-white font-bold text-sm">Digital Twin</h3>
-                <p class="text-xs text-gray-400">Ask me anything about Robert</p>
+                <h3 class="text-white font-bold text-sm">{{ copy().chat.title }}</h3>
+                <p class="text-xs text-gray-400">{{ copy().chat.subtitle }}</p>
               </div>
             </div>
           </div>
@@ -61,20 +63,20 @@ import {RealtimeService} from '../../services/realtime.service';
           <div #messagesContainer class="flex-1 overflow-y-contains p-4 space-y-4 bg-background scroll-smooth">
             @if (chatStore.messages().length === 0) {
               <div class="text-center text-gray-500 mt-10">
-                <p class="text-sm">Hi! I'm Robert's AI Digital Twin.</p>
-                <p class="text-sm mt-2">I know his projects, stack, and experience.</p>
+                <p class="text-sm">{{ copy().chat.introLine1 }}</p>
+                <p class="text-sm mt-2">{{ copy().chat.introLine2 }}</p>
                 <div class="mt-4 space-y-2">
                   <button
-                    (click)="newMessage.set('Tell me about your Angular experience'); sendMessage()"
+                    (click)="newMessage.set(copy().chat.promptAngular); sendMessage()"
                     class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left"
                   >
-                    "Tell me about your Angular experience"
+                    {{ copy().chat.promptAngular }}
                   </button>
                   <button
-                    (click)="newMessage.set('Are you available for freelance work?'); sendMessage()"
+                    (click)="newMessage.set(copy().chat.promptFreelance); sendMessage()"
                     class="text-xs bg-[#0a2912] hover:bg-[#143c1a] text-primary py-2 px-3 rounded-full transition-colors w-full text-left"
                   >
-                    "Are you available for freelance?"
+                    {{ copy().chat.promptFreelance }}
                   </button>
                 </div>
               </div>
@@ -106,7 +108,7 @@ import {RealtimeService} from '../../services/realtime.service';
                   <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                   <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
                 </div>
-                <span class="sr-only">AI is typing...</span>
+                <span class="sr-only">{{ copy().chat.typingSrOnly }}</span>
               </div>
             }
           </div>
@@ -119,7 +121,7 @@ import {RealtimeService} from '../../services/realtime.service';
                 [value]="newMessage()"
                 (input)="onInputChange($event)"
                 (keyup.enter)="sendMessage()"
-                placeholder="Type your message..."
+                [placeholder]="copy().chat.placeholder"
                 class="flex-1 bg-background border border-[#143c1a] rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors"
                 autocomplete="off"
               />
@@ -144,6 +146,9 @@ export class ChatWidgetComponent {
   public chatStore = inject(ChatStore);
   public realtimeService = inject(RealtimeService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly localeService = inject(LocaleService);
+  protected locale = this.localeService.locale;
+  protected copy = computed(() => getSiteCopy(this.locale()));
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 

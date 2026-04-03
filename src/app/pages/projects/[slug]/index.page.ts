@@ -1,5 +1,6 @@
-import {Component, computed, inject, PLATFORM_ID, signal} from '@angular/core';
-import {DatePipe, isPlatformBrowser} from '@angular/common';
+import {Component, computed, PLATFORM_ID, inject, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {DatePipe} from '@angular/common';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {httpResource} from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -8,6 +9,9 @@ import type {Project} from '../../../shared/types/project.types';
 import type {ApiSuccess} from '../../../shared/types/api.types';
 import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
 import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
+import {getSiteCopy} from '../../../shared/i18n/site-copy';
+import {toAngularLocale} from '../../../shared/i18n/app-locale';
+import {LocaleService} from '../../../shared/services/locale.service';
 
 @Component({
   selector: 'project-overview-page',
@@ -20,11 +24,11 @@ import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
             decoration-transparent underline-offset-4 transition-all duration-700 ease-in-out
             hover:underline hover:decoration-current hover:font-bold">
           <span aria-hidden="true" class="text-current">←</span>
-          Back to projects
+          {{ copy().projectDetail.backToProjects }}
         </a>
 
         @if (projectResource.isLoading()) {
-          <div class="py-24 text-center text-gray-400 font-mono">Loading project...</div>
+          <div class="py-24 text-center text-gray-400 font-mono">{{ copy().projectDetail.loading }}</div>
         } @else if (projectResource.error()) {
           <div class="rounded-xl border border-red-900 bg-red-950/30 p-6">
             <h1 class="text-2xl font-bold text-red-300 mb-2">{{ getErrorTitle(projectResource.error()) }}</h1>
@@ -35,9 +39,9 @@ import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
             <header class="space-y-4">
               <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
                 <span class="rounded-full border border-[#143c1a] px-2 py-1 text-primary">
-                  {{ project.isPublished ? 'Published' : 'Draft' }}
+                  {{ project.isPublished ? copy().projectDetail.published : copy().projectDetail.draft }}
                 </span>
-                <time [attr.datetime]="project.createdAt">{{ project.createdAt | date: 'mediumDate' }}</time>
+                <time [attr.datetime]="project.createdAt">{{ project.createdAt | date: 'mediumDate' : undefined : angularLocale() }}</time>
               </div>
 
               <h1 class="text-4xl md:text-5xl font-bold leading-tight text-primary">{{ project.title }}</h1>
@@ -65,13 +69,12 @@ import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
             }
 
             <section class="rounded-2xl border border-[#143c1a] bg-surface p-6 md:p-8 space-y-4">
-              <h2 class="text-xl font-semibold text-white">Overview</h2>
+              <h2 class="text-xl font-semibold text-white">{{ copy().projectDetail.overview }}</h2>
               @if (project.contentMarkdown) {
                 <div class="prose prose-invert max-w-none text-gray-300"
                      [innerHTML]="renderedMarkdown(project.contentMarkdown)"></div>
               } @else {
-                <p class="text-gray-300 leading-7">This project does not have a long-form description yet. The summary
-                  above is the current overview.</p>
+                <p class="text-gray-300 leading-7">{{ copy().projectDetail.emptyDescription }}</p>
               }
             </section>
           </article>
@@ -83,10 +86,15 @@ import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
 export default class ProjectOverviewPage {
   private readonly route = inject(ActivatedRoute);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
   private readonly previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
+  private readonly localeService = inject(LocaleService);
 
-  private readonly clientReady = isPlatformBrowser(inject(PLATFORM_ID));
+  protected clientReady = isPlatformBrowser(this.platformId);
+  protected locale = this.localeService.locale;
+  protected angularLocale = computed(() => toAngularLocale(this.locale()));
+  protected copy = computed(() => getSiteCopy(this.locale()));
 
   private readonly renderer = this.setupRenderer();
 
@@ -152,13 +160,13 @@ export default class ProjectOverviewPage {
 
   getErrorTitle(error: unknown): string {
     const status = (error as { status?: number })?.status;
-    if (status === 404) return 'Project not found';
-    return 'Could not load project';
+    if (status === 404) return this.copy().projectDetail.notFoundTitle;
+    return this.copy().projectDetail.loadErrorTitle;
   }
 
   getErrorMessage(error: unknown): string {
     const e = error as { status?: number };
-    if (e?.status === 404) return 'The project slug does not exist or the project is not published yet.';
-    return extractApiErrorMessage(error, 'Failed to load project details.');
+    if (e?.status === 404) return this.copy().projectDetail.notFoundMessage;
+    return extractApiErrorMessage(error, this.copy().projectDetail.loadErrorMessage);
   }
 }

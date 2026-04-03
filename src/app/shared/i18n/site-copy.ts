@@ -24,6 +24,84 @@ type SiteCopy = {
     empty: string;
     openProject: string;
   };
+  projectsPage: {
+    title: string;
+    backToPortfolio: string;
+    loading: string;
+    error: string;
+    empty: string;
+  };
+  projectDetail: {
+    backToProjects: string;
+    loading: string;
+    published: string;
+    draft: string;
+    overview: string;
+    emptyDescription: string;
+    notFoundTitle: string;
+    loadErrorTitle: string;
+    notFoundMessage: string;
+    loadErrorMessage: string;
+  };
+  devProxy: {
+    label: string;
+    back: string;
+    home: string;
+  };
+  chat: {
+    title: string;
+    subtitle: string;
+    introLine1: string;
+    introLine2: string;
+    promptAngular: string;
+    promptFreelance: string;
+    typingSrOnly: string;
+    placeholder: string;
+  };
+  adminLogin: {
+    title: string;
+    email: string;
+    password: string;
+    login: string;
+    loggingIn: string;
+    invalidCredentials: string;
+    accessDenied: string;
+    accessDeniedToast: string;
+  };
+  adminProjects: {
+    newProject: string;
+    cancel: string;
+    title: string;
+    subtitle: string;
+    createSuccess: string;
+    createFormTitle: string;
+    createSubmitLabel: string;
+    createSubmittingLabel: string;
+    loading: string;
+    loadingIdle: string;
+    published: string;
+    draft: string;
+    view: string;
+    edit: string;
+    delete: string;
+    empty: string;
+    failedLoad: string;
+    failedCreate: string;
+    failedDelete: string;
+    confirmDelete: string;
+  };
+  projectForm: {
+    titleLabel: string;
+    slugLabel: string;
+    descriptionLabel: string;
+    coverImageUrlLabel: string;
+    tagsLabel: string;
+    tagsPlaceholder: string;
+    cancel: string;
+    publishImmediately: string;
+    titleRequired: string;
+    slugRequired: string;
+  };
   about: {
     adaptiveTitle: {
       recruiter: string;
@@ -65,6 +143,7 @@ type SiteCopy = {
     placeholderEmail: string;
   };
   hero: {
+    defaultTitle: string;
     adaptiveTitle: {
       recruiter: string;
       founder: string;
@@ -166,6 +245,84 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       empty: 'No projects published yet.',
       openProject: 'Open project →',
     },
+    projectsPage: {
+      title: 'Projects',
+      backToPortfolio: 'Back to Portfolio',
+      loading: 'Loading projects...',
+      error: 'Could not load projects.',
+      empty: 'No projects published yet.',
+    },
+    projectDetail: {
+      backToProjects: 'Back to projects',
+      loading: 'Loading project...',
+      published: 'Published',
+      draft: 'Draft',
+      overview: 'Overview',
+      emptyDescription: 'This project does not have a long-form description yet. The summary above is the current overview.',
+      notFoundTitle: 'Project not found',
+      loadErrorTitle: 'Could not load project',
+      notFoundMessage: 'The project slug does not exist or the project is not published yet.',
+      loadErrorMessage: 'Failed to load project details.',
+    },
+    devProxy: {
+      label: 'AI Dev Proxy',
+      back: 'Back',
+      home: 'Home',
+    },
+    chat: {
+      title: 'Digital Twin',
+      subtitle: 'Ask me anything about Robert',
+      introLine1: "Hi! I'm Robert's AI Digital Twin.",
+      introLine2: 'I know his projects, stack, and experience.',
+      promptAngular: 'Tell me about your Angular experience',
+      promptFreelance: 'Are you available for freelance work?',
+      typingSrOnly: 'AI is typing...',
+      placeholder: 'Type your message...',
+    },
+    adminLogin: {
+      title: 'Admin Login',
+      email: 'Email',
+      password: 'Password',
+      login: 'Login',
+      loggingIn: 'Logging in...',
+      invalidCredentials: 'Invalid credentials.',
+      accessDenied: 'Access denied: admins only.',
+      accessDeniedToast: 'Only administrators can log into the portfolio. Please contact the site owner if needed.',
+    },
+    adminProjects: {
+      newProject: 'New Project',
+      cancel: 'Cancel',
+      title: 'Projects',
+      subtitle: 'Manage published and draft projects',
+      createSuccess: 'Project created successfully.',
+      createFormTitle: 'Create Project',
+      createSubmitLabel: 'Create Project',
+      createSubmittingLabel: 'Creating...',
+      loading: 'Loading projects...',
+      loadingIdle: 'Loading...',
+      published: 'Published',
+      draft: 'Draft',
+      view: 'View👁️',
+      edit: 'Edit ✏️',
+      delete: 'Delete🗑️',
+      empty: 'No projects yet. Create your first one.',
+      failedLoad: 'Failed to load projects',
+      failedCreate: 'Failed to create project',
+      failedDelete: 'Failed to delete project',
+      confirmDelete: 'Are you sure you want to delete the project "{title}"?',
+    },
+    projectForm: {
+      titleLabel: 'Title *',
+      slugLabel: 'Slug *',
+      descriptionLabel: 'Description',
+      coverImageUrlLabel: 'Cover Image URL',
+      tagsLabel: 'Tags (comma-separated)',
+      tagsPlaceholder: 'Angular, TypeScript, SSR',
+      cancel: 'Cancel',
+      publishImmediately: 'Publish immediately',
+      titleRequired: 'Title is required',
+      slugRequired: 'Slug is required',
+    },
     about: {
       adaptiveTitle: {
         recruiter: 'A Reliable Engineering Partner',
@@ -216,6 +373,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       placeholderEmail: 'Email',
     },
     hero: {
+      defaultTitle: 'Technical Lead Frontend Specialist',
       adaptiveTitle: {
         recruiter: 'Senior Engineer Ready to Drive Your Next Project',
         founder: 'Architecting Scalable Solutions for Ambitious Startups',
@@ -315,6 +473,84 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       empty: 'Noch keine Projekte veröffentlicht.',
       openProject: 'Projekt öffnen →',
     },
+    projectsPage: {
+      title: 'Projekte',
+      backToPortfolio: 'Zurück zum Portfolio',
+      loading: 'Projekte werden geladen...',
+      error: 'Projekte konnten nicht geladen werden.',
+      empty: 'Noch keine Projekte veröffentlicht.',
+    },
+    projectDetail: {
+      backToProjects: 'Zurück zu den Projekten',
+      loading: 'Projekt wird geladen...',
+      published: 'Veröffentlicht',
+      draft: 'Entwurf',
+      overview: 'Überblick',
+      emptyDescription: 'Dieses Projekt hat aktuell noch keine ausführliche Beschreibung. Die Zusammenfassung oben ist derzeit die Übersicht.',
+      notFoundTitle: 'Projekt nicht gefunden',
+      loadErrorTitle: 'Projekt konnte nicht geladen werden',
+      notFoundMessage: 'Der Projekt-Slug existiert nicht oder das Projekt ist noch nicht veröffentlicht.',
+      loadErrorMessage: 'Projektdetails konnten nicht geladen werden.',
+    },
+    devProxy: {
+      label: 'AI Dev Proxy',
+      back: 'Zurück',
+      home: 'Startseite',
+    },
+    chat: {
+      title: 'Digital Twin',
+      subtitle: 'Frag mich alles über Robert',
+      introLine1: 'Hi! Ich bin Roberts AI Digital Twin.',
+      introLine2: 'Ich kenne seine Projekte, seinen Stack und seine Erfahrung.',
+      promptAngular: 'Erzähl mir von deiner Angular-Erfahrung',
+      promptFreelance: 'Bist du für Freelance-Projekte verfügbar?',
+      typingSrOnly: 'AI schreibt gerade...',
+      placeholder: 'Schreibe deine Nachricht...',
+    },
+    adminLogin: {
+      title: 'Admin-Anmeldung',
+      email: 'E-Mail',
+      password: 'Passwort',
+      login: 'Anmelden',
+      loggingIn: 'Anmeldung läuft...',
+      invalidCredentials: 'Ungültige Zugangsdaten.',
+      accessDenied: 'Zugriff verweigert: Nur Admins.',
+      accessDeniedToast: 'Nur Administratoren können sich im Portfolio anmelden. Bitte kontaktiere bei Bedarf den Seiteninhaber.',
+    },
+    adminProjects: {
+      newProject: 'Neues Projekt',
+      cancel: 'Abbrechen',
+      title: 'Projekte',
+      subtitle: 'Veröffentlichte Projekte und Entwürfe verwalten',
+      createSuccess: 'Projekt erfolgreich erstellt.',
+      createFormTitle: 'Projekt erstellen',
+      createSubmitLabel: 'Projekt erstellen',
+      createSubmittingLabel: 'Wird erstellt...',
+      loading: 'Projekte werden geladen...',
+      loadingIdle: 'Lade...',
+      published: 'Veröffentlicht',
+      draft: 'Entwurf',
+      view: 'Ansehen👁️',
+      edit: 'Bearbeiten ✏️',
+      delete: 'Löschen🗑️',
+      empty: 'Noch keine Projekte. Erstelle dein erstes Projekt.',
+      failedLoad: 'Projekte konnten nicht geladen werden',
+      failedCreate: 'Projekt konnte nicht erstellt werden',
+      failedDelete: 'Projekt konnte nicht gelöscht werden',
+      confirmDelete: 'Möchtest du das Projekt "{title}" wirklich löschen?',
+    },
+    projectForm: {
+      titleLabel: 'Titel *',
+      slugLabel: 'Slug *',
+      descriptionLabel: 'Beschreibung',
+      coverImageUrlLabel: 'Cover-Bild-URL',
+      tagsLabel: 'Tags (kommagetrennt)',
+      tagsPlaceholder: 'Angular, TypeScript, SSR',
+      cancel: 'Abbrechen',
+      publishImmediately: 'Sofort veröffentlichen',
+      titleRequired: 'Titel ist erforderlich',
+      slugRequired: 'Slug ist erforderlich',
+    },
     about: {
       adaptiveTitle: {
         recruiter: 'Ein verlässlicher Engineering-Partner',
@@ -365,6 +601,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       placeholderEmail: 'E-Mail',
     },
     hero: {
+      defaultTitle: 'Technischer Lead Frontend Spezialist',
       adaptiveTitle: {
         recruiter: 'Senior Engineer, bereit dein nächstes Projekt voranzutreiben',
         founder: 'Skalierbare Lösungen für ambitionierte Startups',

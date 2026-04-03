@@ -21,13 +21,30 @@ function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): n
   return parsed;
 }
 
-const ANALYSIS_COOLDOWN_MS = readPositiveIntFromEnv('AI_ANALYSIS_COOLDOWN_MS', 90_000);
-const MIN_NEW_EVENTS_FOR_REANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_NEW_EVENTS', 4);
-const ANALYSIS_RATE_WINDOW_MS = readPositiveIntFromEnv('AI_ANALYSIS_RATE_WINDOW_MS', 60_000);
-const ANALYSIS_RATE_MAX_REQUESTS = readPositiveIntFromEnv('AI_ANALYSIS_RATE_MAX_REQUESTS', 3);
+const ANALYSIS_COOLDOWN_MS = readPositiveIntFromEnv('AI_ANALYSIS_COOLDOWN_MS', 300_000);
+const MIN_NEW_EVENTS_FOR_REANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_NEW_EVENTS', 8);
+const ANALYSIS_RATE_WINDOW_MS = readPositiveIntFromEnv('AI_ANALYSIS_RATE_WINDOW_MS', 300_000);
+const ANALYSIS_RATE_MAX_REQUESTS = readPositiveIntFromEnv('AI_ANALYSIS_RATE_MAX_REQUESTS', 1);
+const MIN_EVENTS_FOR_FIRST_ANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_EVENTS_FIRST', 10);
+const GLOBAL_RATE_WINDOW_MS = readPositiveIntFromEnv('AI_GLOBAL_RATE_WINDOW_MS', 3_600_000);
+const GLOBAL_RATE_MAX_REQUESTS = readPositiveIntFromEnv('AI_GLOBAL_RATE_MAX_REQUESTS', 4);
 
 const inFlightAnalyses = new Map<string, Promise<void>>();
 const sessionRateWindow = new Map<string, number[]>();
+const globalRequestTimestamps: number[] = [];
+
+function isGlobalRateLimited(): boolean {
+  const now = Date.now();
+  const windowStart = now - GLOBAL_RATE_WINDOW_MS;
+  const valid = globalRequestTimestamps.filter((ts) => ts >= windowStart);
+  globalRequestTimestamps.length = 0;
+  globalRequestTimestamps.push(...valid);
+  if (valid.length >= GLOBAL_RATE_MAX_REQUESTS) {
+    return true;
+  }
+  globalRequestTimestamps.push(now);
+  return false;
+}
 
 function hasSessionRateLimit(sessionId: string): boolean {
   const now = Date.now();
@@ -74,6 +91,20 @@ export default defineEventHandler(async (event) => {
   if (inFlightAnalyses.has(session.id)) {
     event.node.res.statusCode = 202;
     return { status: 'skipped', reason: 'analysis_in_flight' };
+  }
+
+  if (isGlobalRateLimited()) {
+    event.node.res.statusCode = 202;
+    return { status: 'skipped', reason: 'global_rate_limited' };
+  }
+
+  const totalEventCount = await prisma.analyticsEvent.count({
+    where: { sessionId: session.id },
+  });
+
+  if (totalEventCount < MIN_EVENTS_FOR_FIRST_ANALYSIS) {
+    event.node.res.statusCode = 202;
+    return { status: 'skipped', reason: 'insufficient_events' };
   }
 
   const latestDecision = await prisma.aiDecision.findFirst({

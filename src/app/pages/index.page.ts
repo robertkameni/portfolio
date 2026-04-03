@@ -145,6 +145,7 @@ export default class HomeComponent implements OnInit {
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
 
+
   setMockProfile(type: any) {
     if (!type) {
       this.visitorStore.setProfile(null);

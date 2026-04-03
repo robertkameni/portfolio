@@ -1,4 +1,4 @@
-import { createError, defineEventHandler } from 'h3';
+import { defineEventHandler } from 'h3';
 import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
 import { localizeProfile } from '../../../data/localized-profile';
@@ -11,11 +11,11 @@ export default defineEventHandler(async (event) => {
     return localizeProfile(defaultProfile, locale);
   }
 
-  const profile = await profileRepository.find();
-
-  if (!profile) {
-    throw createError({ statusCode: 404, statusMessage: 'Profile not found.' });
+  try {
+    const profile = await profileRepository.find();
+    return localizeProfile(profile ?? defaultProfile, locale);
+  } catch (error) {
+    console.error('[Profile] DB error, falling back to default profile:', error);
+    return localizeProfile(defaultProfile, locale);
   }
-
-  return localizeProfile(profile, locale);
 });

@@ -24,6 +24,9 @@ function ensurePool(): Pool {
   const newPool = new Pool({
     connectionString: databaseUrl,
     allowExitOnIdle: true,
+    connectionTimeoutMillis: 5000,
+    idleTimeoutMillis: 30000,
+    max: 10,
   });
 
   newPool.on('error', (error) => {
