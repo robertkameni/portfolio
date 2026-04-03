@@ -1,14 +1,6 @@
 import { prisma } from '../client';
 import type { Project } from '../../../../prisma/generated/client';
-
-// Default cover images for projects without provided URLs
-const DEFAULT_IMAGES = [
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=80',
-];
+import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
 
 /**
  * Data Transfer Object for creating a project.
@@ -75,7 +67,7 @@ export const projectRepository = {
    */
   async create(data: CreateProjectDto): Promise<Project> {
     // Only use defaults when no URL was provided
-    const coverImageUrl = data.coverImageUrl?.trim() ? data.coverImageUrl : DEFAULT_IMAGES[Math.floor(Math.random() * DEFAULT_IMAGES.length)];
+    const coverImageUrl = data.coverImageUrl?.trim() ? data.coverImageUrl : DEFAULT_PROJECT_COVER_IMAGES[Math.floor(Math.random() * DEFAULT_PROJECT_COVER_IMAGES.length)];
 
     return prisma.project.create({
       data: {

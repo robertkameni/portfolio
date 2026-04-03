@@ -1,10 +1,11 @@
-import {defineEventHandler, getQuery} from 'h3';
+import {defineEventHandler} from 'h3';
 import {broadcastService} from '../realtime/broadcast.service';
+import {getSingleQueryString} from '../utils/query-params';
 
 export default defineEventHandler(async (event) => {
-  const {sessionId} = getQuery(event);
+  const sessionId = getSingleQueryString(event, 'sessionId');
 
-  if (!sessionId || typeof sessionId !== 'string') {
+  if (!sessionId) {
     event.node.res.statusCode = 400;
     event.node.res.end('Session ID is required.');
     return;

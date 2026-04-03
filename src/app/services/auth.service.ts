@@ -5,11 +5,14 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, tap, finalize } from 'rxjs/operators';
 import type { User } from '../shared/types/user.types';
+import type { ApiAck, ApiSuccess } from '../shared/types/api.types';
 
-interface LoginResponse {
+interface AuthPayload {
   user: User;
   accessToken: string;
 }
+
+type AuthResponse = ApiSuccess<AuthPayload>;
 
 @Injectable({
   providedIn: 'root',
@@ -54,7 +57,8 @@ export class AuthService {
         return this.#initialAuthStatus$;
       }
 
-      this.#initialAuthStatus$ = this.http.get<User>('/api/auth/me').pipe(
+      this.#initialAuthStatus$ = this.http.get<ApiSuccess<User>>('/api/auth/me').pipe(
+        map((response) => response.data),
         tap((user) => this.#currentUser.set(user)),
         catchError((error) => {
           if ((error as { status?: number }).status === 401) {
@@ -72,12 +76,12 @@ export class AuthService {
   }
 
   private refreshSession(): Observable<User | null> {
-    return this.http.post<LoginResponse>('/api/auth/refresh', {}).pipe(
+    return this.http.post<AuthResponse>('/api/auth/refresh', {}).pipe(
       tap((response) => {
-        this.#accessToken.set(response.accessToken);
-        this.#currentUser.set(response.user);
+        this.#accessToken.set(response.data.accessToken);
+        this.#currentUser.set(response.data.user);
       }),
-      map((response) => response.user),
+      map((response) => response.data.user),
       catchError((error) => {
         console.error('[AuthService] refreshSession error', error);
         this.#currentUser.set(null);
@@ -88,15 +92,15 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<User> {
-    return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
-      tap((response) => this.#accessToken.set(response.accessToken)),
-      map((response) => response.user),
+    return this.http.post<AuthResponse>('/api/auth/login', credentials).pipe(
+      tap((response) => this.#accessToken.set(response.data.accessToken)),
+      map((response) => response.data.user),
       tap((user) => this.#currentUser.set(user)),
     );
   }
 
-  logout(): Observable<any> {
-    return this.http.post('/api/auth/logout', {}).pipe(
+  logout(): Observable<ApiAck> {
+    return this.http.post<ApiAck>('/api/auth/logout', {}).pipe(
       tap(() => {
         this.#currentUser.set(null);
         this.#accessToken.set(null);

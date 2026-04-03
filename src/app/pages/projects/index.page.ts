@@ -3,6 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { ProjectsListComponent } from '../components/projects/projects-list.component';
 import type { Project } from '../../shared/types/project.types';
 import { RouterLink } from '@angular/router';
+import type { ApiSuccess } from '../../shared/types/api.types';
 
 @Component({
   selector: 'projects-page',
@@ -31,15 +32,15 @@ import { RouterLink } from '@angular/router';
           <div class="flex items-center justify-center py-24 text-gray-400 font-mono">Loading projects...</div>
         } @else if (projectsResource.error()) {
           <div class="text-red-400 py-12">Could not load projects.</div>
-        } @else if ((projectsResource.value() ?? []).length === 0) {
+        } @else if ((projectsResource.value()?.data ?? []).length === 0) {
           <div class="text-gray-500 py-12">No projects published yet.</div>
         } @else {
-          <projects-list [projects]="projectsResource.value()!" />
+          <projects-list [projects]="projectsResource.value()!.data" />
         }
       </div>
     </main>
   `,
 })
 export default class ProjectsPage {
-  projectsResource = httpResource<Project[]>(() => '/api/projects');
+  projectsResource = httpResource<ApiSuccess<Project[]>>(() => '/api/projects');
 }

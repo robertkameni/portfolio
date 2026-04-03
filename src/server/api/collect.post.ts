@@ -1,5 +1,8 @@
-import { defineEventHandler, readBody, createError, getRequestIP, getHeader } from 'h3';
+import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../db/repositories/analytics.repository';
+import { badRequest, withApiErrorHandling } from '../utils/api-errors';
+import { apiAck } from '../utils/api-response';
+import { hasRequiredFields, hasRequiredStringFields } from '../utils/request-validation';
 
 type EventRequestBody = {
   clientSessionId: string;
@@ -15,31 +18,30 @@ type EventRequestBody = {
 export default defineEventHandler(async (event) => {
   const body = await readBody<EventRequestBody>(event);
 
-  if (!body?.clientSessionId || !body?.eventType || !body?.payload) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request: clientSessionId, eventType, and payload are required.',
-    });
+  if (!hasRequiredStringFields(body, ['clientSessionId', 'eventType']) || !hasRequiredFields(body, ['payload'])) {
+    throw badRequest('Bad Request: clientSessionId, eventType, and payload are required.');
   }
 
-  try {
-    const session = await analyticsRepository.findOrCreateSession(body.clientSessionId, {
-      ipAddress: getRequestIP(event),
-      userAgent: getHeader(event, 'user-agent'),
-      initialReferrer: getHeader(event, 'referer'),
-    });
+  await withApiErrorHandling(
+    async () => {
+      const session = await analyticsRepository.findOrCreateSession(body.clientSessionId, {
+        ipAddress: getRequestIP(event),
+        userAgent: getHeader(event, 'user-agent'),
+        initialReferrer: getHeader(event, 'referer'),
+      });
 
-    const eventData: AnalyticsEventDto = {
-      sessionId: session.id,
-      eventType: body.eventType,
-      payload: body.payload,
-    };
-    await analyticsRepository.logEvent(eventData);
+      const eventData: AnalyticsEventDto = {
+        sessionId: session.id,
+        eventType: body.eventType,
+        payload: body.payload,
+      };
 
-    event.node.res.statusCode = 202;
-    return { status: 'accepted' };
-  } catch (error) {
-    console.error('Analytics ingestion error:', error);
-    throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' });
-  }
+      await analyticsRepository.logEvent(eventData);
+    },
+    'Internal Server Error',
+    { logMessage: 'Analytics ingestion error:' }
+  );
+
+  event.node.res.statusCode = 202;
+  return apiAck('Analytics events accepted.', 'ANALYTICS_ACCEPTED');
 });

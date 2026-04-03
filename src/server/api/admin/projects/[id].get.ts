@@ -1,7 +1,9 @@
-import { createError, defineEventHandler } from 'h3';
-import { projectRepository } from '../../../db/repositories/project.repository';
-import { adminGuard } from '../../../utils/authGuard';
-import { requireRouterParamFromAliases } from '../../../utils/route-params';
+import {defineEventHandler} from 'h3';
+import {projectRepository} from '../../../db/repositories/project.repository';
+import {adminGuard} from '../../../utils/authGuard';
+import {requireRouterParamFromAliases} from '../../../utils/route-params';
+import {notFound} from '../../../utils/api-errors';
+import {apiSuccess} from '../../../utils/api-response';
 
 /**
  * Admin-only endpoint to fetch any project by slug (published or draft).
@@ -16,8 +18,8 @@ export default defineEventHandler(async (event) => {
 
   const project = await projectRepository.findBySlug(slug);
   if (!project) {
-    throw createError({ statusCode: 404, statusMessage: 'Project not found' });
+    throw notFound(`Project not found: ${slug}`);
   }
 
-  return project;
+  return apiSuccess(project, 'Project fetched.', 'ADMIN_PROJECT_FETCHED');
 });

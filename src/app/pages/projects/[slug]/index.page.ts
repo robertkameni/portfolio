@@ -5,6 +5,8 @@ import {httpResource} from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
 import {marked, Renderer} from 'marked';
 import type {Project} from '../../../shared/types/project.types';
+import type {ApiSuccess} from '../../../shared/types/api.types';
+import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
 import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
 
 @Component({
@@ -28,7 +30,7 @@ import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
             <h1 class="text-2xl font-bold text-red-300 mb-2">{{ getErrorTitle(projectResource.error()) }}</h1>
             <p class="text-sm text-red-200/80">{{ getErrorMessage(projectResource.error()) }}</p>
           </div>
-        } @else if (projectResource.value(); as project) {
+        } @else if (projectResource.value()?.data; as project) {
           <article class="mt-3 space-y-8">
             <header class="space-y-4">
               <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
@@ -90,7 +92,7 @@ export default class ProjectOverviewPage {
 
   goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
 
-  projectResource = httpResource<Project>(() => {
+  projectResource = httpResource<ApiSuccess<Project>>(() => {
     const slug = this.slug();
     if (!slug) return undefined;
 
@@ -155,8 +157,8 @@ export default class ProjectOverviewPage {
   }
 
   getErrorMessage(error: unknown): string {
-    const e = error as { error?: { statusMessage?: string }; message?: string; status?: number };
+    const e = error as { status?: number };
     if (e?.status === 404) return 'The project slug does not exist or the project is not published yet.';
-    return e?.error?.statusMessage || e?.message || 'Failed to load project details.';
+    return extractApiErrorMessage(error, 'Failed to load project details.');
   }
 }

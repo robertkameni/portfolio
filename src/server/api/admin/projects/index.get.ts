@@ -1,5 +1,9 @@
-import { createError, defineEventHandler, getQuery } from 'h3';
-import { projectRepository } from '../../../db/repositories/project.repository';
+import {defineEventHandler} from 'h3';
+import {projectRepository} from '../../../db/repositories/project.repository';
+import {adminGuard} from '../../../utils/authGuard';
+import {notFound, withApiErrorHandling} from '../../../utils/api-errors';
+import {getSingleQueryString} from '../../../utils/query-params';
+import {apiSuccess} from '../../../utils/api-response';
 
 /**
  * Admin API – fetch all projects (published + drafts).
@@ -7,23 +11,22 @@ import { projectRepository } from '../../../db/repositories/project.repository';
  * Protected by the auth middleware.
  */
 export default defineEventHandler(async (event) => {
-  if (!event.context.user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
-  }
+  adminGuard(event);
 
-  const { slug } = getQuery(event) as { slug?: string };
+  const slug = getSingleQueryString(event, 'slug');
 
   if (slug) {
     const project = await projectRepository.findBySlug(slug);
     if (!project) {
-      throw createError({ statusCode: 404, statusMessage: 'Project not found' });
+      throw notFound(`Project not found: ${slug}`);
     }
-    return project;
+    return apiSuccess(project, 'Project fetched.', 'ADMIN_PROJECT_FETCHED');
   }
 
-  try {
-    return await projectRepository.findAll();
-  } catch (error) {
-    throw createError({ statusCode: 500, statusMessage: 'Internal Server Error: Could not fetch projects.' });
-  }
+  const projects = await withApiErrorHandling(
+    () => projectRepository.findAll(),
+    'Internal Server Error: Could not fetch projects.'
+  );
+
+  return apiSuccess(projects, 'Projects fetched.', 'ADMIN_PROJECTS_FETCHED');
 });

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { httpResource } from '@angular/common/http';
 import type { Project } from '../../../shared/types/project.types';
+import type { ApiSuccess } from '../../../shared/types/api.types';
 import { ProjectsListComponent } from './projects-list.component';
 import { RestoreScrollPositionDirective } from '../../../shared/directives/restore-scroll-position.directive';
 
@@ -33,15 +34,15 @@ import { RestoreScrollPositionDirective } from '../../../shared/directives/resto
           <div class="py-12 text-gray-400 font-mono text-center">Loading projects...</div>
         } @else if (projectsResource.error()) {
           <div class="py-12 text-red-400 text-center text-sm">Could not load projects.</div>
-        } @else if ((projectsResource.value() ?? []).length === 0) {
+        } @else if ((projectsResource.value()?.data ?? []).length === 0) {
           <div class="py-12 text-gray-500 text-center text-sm">No projects published yet.</div>
         } @else {
-          <projects-list [projects]="(projectsResource.value() ?? []).slice(0, 3)" />
+          <projects-list [projects]="(projectsResource.value()?.data ?? []).slice(0, 3)" />
         }
       </div>
     </section>
   `,
 })
 export class ProjectsSectionComponent {
-  protected readonly projectsResource = httpResource<Project[]>(() => '/api/projects');
+  protected readonly projectsResource = httpResource<ApiSuccess<Project[]>>(() => '/api/projects');
 }

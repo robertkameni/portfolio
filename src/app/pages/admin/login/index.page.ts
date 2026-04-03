@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
+import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 
 function resolveReturnUrl(value: string | null): string {
@@ -89,7 +90,7 @@ export default class LoginPageComponent implements OnInit {
           this.errorMessage.set('Zugriff verweigert: Nur Admins.');
           this.showToast('Nur Administratoren können sich im Portfolio anmelden. Bitte kontaktieren Sie den Seiteninhaber, falls nötig.');
         } else {
-          this.errorMessage.set(err.error?.statusMessage || 'Invalid credentials.');
+          this.errorMessage.set(extractApiErrorMessage(err, 'Invalid credentials.'));
         }
       },
       complete: () => this.isLoading.set(false),

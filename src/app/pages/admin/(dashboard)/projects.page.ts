@@ -1,14 +1,16 @@
-import { Component, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { httpResource } from '@angular/common/http';
-import { Router, RouterLink } from '@angular/router';
-import type { Project } from '../../../shared/types/project.types';
-import { AdminProjectsService } from '../../../services/admin-projects.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form.component';
-import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
-import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.component';
-import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
+import {Component, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {httpResource} from '@angular/common/http';
+import {Router, RouterLink} from '@angular/router';
+import type {Project} from '../../../shared/types/project.types';
+import type {ApiSuccess} from '../../../shared/types/api.types';
+import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
+import {AdminProjectsService} from '../../../services/admin-projects.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/project-form.component';
+import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar.component';
+import {StatusAlertComponent} from '../../../shared/components/status-alert.component';
 
 @Component({
   selector: 'admin-projects',
@@ -45,6 +47,10 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
         <status-alert type="error">{{ submitError() }}</status-alert>
       }
 
+      @if (deleteError()) {
+        <status-alert type="error">{{ deleteError() }}</status-alert>
+      }
+
       @if (showForm()) {
         <div class="mb-8">
           <project-form
@@ -68,10 +74,11 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
         </div>
       } @else {
         <div class="space-y-3" fadeIn>
-          @for (project of projectsResource.value(); track project.id) {
+          @for (project of (projectsResource.value()?.data ?? []); track project.id) {
             <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex items-center justify-between">
               <div class="flex items-center gap-4">
-                <span class="px-2 py-0.5 rounded text-xs font-medium" [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
+                <span class="px-2 py-0.5 rounded text-xs font-medium"
+                      [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
                   {{ project.isPublished ? 'Published' : 'Draft' }}
                 </span>
                 <div>
@@ -90,7 +97,8 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
                   </div>
                 }
 
-                <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }" class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }"
+                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
                   View👁️
                 </a>
 
@@ -102,7 +110,8 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
                   Edit ✏️
                 </a>
 
-                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project)">Delete🗑️</a>
+                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+                   (click)="deleteProject(project)">Delete🗑️</a>
               </div>
             </div>
           } @empty {
@@ -111,7 +120,7 @@ import { StatusAlertComponent } from '../../../shared/components/status-alert.co
         </div>
       }
     </div>
-  `,
+  `
 })
 export default class AdminProjectsPage {
   private platformId = inject(PLATFORM_ID);
@@ -120,12 +129,13 @@ export default class AdminProjectsPage {
   private readonly clientReady = isPlatformBrowser(this.platformId);
   private readonly adminProjectsService = inject(AdminProjectsService);
 
-  projectsResource = httpResource<Project[] | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
+  projectsResource = httpResource<ApiSuccess<Project[]> | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
 
   showForm = signal(false);
   submitError = signal<string | null>(null);
   submitSuccess = signal(false);
   isSubmitting = signal(false);
+  deleteError = signal<string | null>(null);
 
   navigateHome() {
     this.router.navigate(['/']);
@@ -135,12 +145,32 @@ export default class AdminProjectsPage {
     this.showForm.set(!this.showForm());
     this.submitError.set(null);
     this.submitSuccess.set(false);
+    this.deleteError.set(null);
   }
 
   getErrorMessage(err: unknown): string {
-    if (!err) return '';
-    const e = err as any;
-    return e?.error?.statusMessage || e?.message || 'Failed to load projects';
+    return extractApiErrorMessage(err, 'Failed to load projects');
+  }
+
+  private handleError(error: unknown, context: string, defaultMessage: string): string {
+    const contextualDefaultMessage = `${defaultMessage} while trying to ${context}`;
+    const message = extractApiErrorMessage(error, contextualDefaultMessage);
+    console.error(`[AdminProjects] ${context}:`, error instanceof Error ? error.message : error);
+    return message;
+  }
+
+  private updateProjectsResource(data: Project[]): void {
+    const current = this.projectsResource.value();
+    this.projectsResource.set(
+      current
+        ? {...current, data}
+        : {
+          status: 'success',
+          message: 'Projects updated.',
+          code: 'ADMIN_PROJECTS_UPDATED',
+          data
+        }
+    );
   }
 
   createProject(payload: ProjectPayload) {
@@ -150,21 +180,21 @@ export default class AdminProjectsPage {
     this.submitSuccess.set(false);
 
     this.adminProjectsService
-      .createProject({ ...payload, contentMarkdown: null })
+      .createProject({...payload, contentMarkdown: null})
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {
-          this.projectsResource.set([project, ...(this.projectsResource.value() ?? [])]);
+          const current = this.projectsResource.value();
+          this.updateProjectsResource([project, ...(current?.data ?? [])]);
           this.submitSuccess.set(true);
           this.isSubmitting.set(false);
           this.showForm.set(false);
         },
         error: (err) => {
-          const msg = err?.error?.statusMessage || err?.message || 'Failed to create project';
-          console.error('[AdminProjects] create error:', err.status, msg);
+          const msg = this.handleError(err, 'create project', 'Failed to create project');
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        },
+        }
       });
   }
 
@@ -176,9 +206,18 @@ export default class AdminProjectsPage {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.projectsResource.set((this.projectsResource.value() ?? []).filter((p) => p.id !== project.id));
+          const current = this.projectsResource.value();
+          if (!current) {
+            return;
+          }
+
+          this.updateProjectsResource(current.data.filter((p) => p.id !== project.id));
+          this.deleteError.set(null);
         },
-        error: (err) => console.error('[AdminProjects] delete error:', err),
+        error: (err) => {
+          const msg = this.handleError(err, 'delete project', 'Failed to delete project');
+          this.deleteError.set(msg);
+        }
       });
   }
 }

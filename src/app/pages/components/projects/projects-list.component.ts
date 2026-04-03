@@ -1,13 +1,13 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import type { Project } from '../../../shared/types/project.types';
 
 @Component({
   selector: 'projects-list',
   standalone: true,
-  imports: [TrackBehaviorDirective, DatePipe, RouterLink],
+  imports: [TrackBehaviorDirective, DatePipe, RouterLink, NgOptimizedImage],
   template: `
     <section class="max-w-6xl mx-auto">
       <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
@@ -18,8 +18,14 @@ import type { Project } from '../../../shared/types/project.types';
             class="group rounded-xl overflow-hidden border border-gray-800 bg-surface h-full grid grid-rows-[auto_1fr] transition duration-300 ease-out transform hover:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:border-primary focus:scale-105 focus:-translate-y-1 focus:shadow-2xl focus:border-primary outline-none"
           >
             @if (project.coverImageUrl) {
-              <div class="h-40 w-full overflow-hidden">
-                <img [src]="project.coverImageUrl" [alt]="project.title" class="object-cover w-full h-full" />
+              <div class="relative h-40 w-full overflow-hidden">
+                <img
+                  [ngSrc]="project.coverImageUrl"
+                  [alt]="project.title"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  class="object-cover"
+                />
               </div>
             }
 

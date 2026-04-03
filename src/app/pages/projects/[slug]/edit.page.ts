@@ -1,19 +1,25 @@
-import { Component, computed, DestroyRef, inject, input, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser, JsonPipe } from '@angular/common';
-import { Router } from '@angular/router';
-import { httpResource } from '@angular/common/http';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouteMeta } from '@analogjs/router';
-import { authGuard } from '../../../guards/auth.guard';
-import type { Project } from '../../../shared/types/project.types';
-import { AdminProjectsService } from '../../../services/admin-projects.service';
-import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form.component';
-import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
-import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.component';
-import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
+import {Component, computed, DestroyRef, inject, input, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser, JsonPipe} from '@angular/common';
+import {Router} from '@angular/router';
+import {httpResource} from '@angular/common/http';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {RouteMeta} from '@analogjs/router';
+import {authGuard} from '../../../guards/auth.guard';
+import type {Project} from '../../../shared/types/project.types';
+import type {ApiSuccess} from '../../../shared/types/api.types';
+import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
+import {AdminProjectsService} from '../../../services/admin-projects.service';
+import {
+  ProjectFormComponent,
+  ProjectFormModel,
+  ProjectPayload
+} from '../../../shared/components/project-form.component';
+import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar.component';
+import {StatusAlertComponent} from '../../../shared/components/status-alert.component';
 
 export const routeMeta: RouteMeta = {
-  canActivate: [authGuard],
+  canActivate: [authGuard]
 };
 
 @Component({
@@ -21,7 +27,7 @@ export const routeMeta: RouteMeta = {
   standalone: true,
   imports: [ProjectFormComponent, FadeInDirective, JsonPipe, DevProxyBarComponent, StatusAlertComponent],
   template: `
-    <dev-proxy-bar backUrl="/admin/projects" />
+    <dev-proxy-bar backUrl="/admin/projects"/>
 
     <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
       <div class="mb-8">
@@ -42,10 +48,12 @@ export const routeMeta: RouteMeta = {
       } @else if (projectResource.status() === 'idle') {
         <div class="text-gray-400 font-mono py-12 text-center">Waiting for data...</div>
       } @else if (projectResource.error()) {
-        <div class="text-red-400 py-8 text-center text-sm">Failed to load project: {{ projectResource.error() | json }}</div>
-      } @else if (projectResource.value()) {
+        <div class="text-red-400 py-8 text-center text-sm">Failed to load
+          project: {{ projectResource.error() | json }}
+        </div>
+      } @else if (projectResource.value()?.data) {
         <project-form
-          [formTitle]="'Edit: ' + projectResource.value()!.title"
+          [formTitle]="'Edit: ' + projectResource.value()!.data.title"
           submitLabel="Save Changes"
           submittingLabel="Saving..."
           publishLabel="Published"
@@ -56,7 +64,7 @@ export const routeMeta: RouteMeta = {
         />
       }
     </div>
-  `,
+  `
 })
 export default class EditProjectPage {
   readonly router = inject(Router);
@@ -70,7 +78,7 @@ export default class EditProjectPage {
 
   private readonly clientReady = isPlatformBrowser(this.platformId);
 
-  projectResource = httpResource<Project>(() => {
+  projectResource = httpResource<ApiSuccess<Project>>(() => {
     const slug = this.slug();
     if (!slug) return undefined;
 
@@ -83,7 +91,7 @@ export default class EditProjectPage {
   });
 
   initialData = computed<ProjectFormModel | null>(() => {
-    const project = this.projectResource.value();
+    const project = this.projectResource.value()?.data;
     if (!project) return null;
     return {
       title: project.title,
@@ -91,7 +99,7 @@ export default class EditProjectPage {
       description: project.description ?? '',
       coverImageUrl: project.coverImageUrl ?? '',
       tags: project.tags.join(', '),
-      isPublished: project.isPublished,
+      isPublished: project.isPublished
     };
   });
 
@@ -104,7 +112,7 @@ export default class EditProjectPage {
   }
 
   updateProject(payload: ProjectPayload) {
-    const project = this.projectResource.value();
+    const project = this.projectResource.value()?.data;
     if (!project || this.isSubmitting()) return;
 
     this.isSubmitting.set(true);
@@ -114,7 +122,7 @@ export default class EditProjectPage {
     this.adminProjectsService
       .updateProject(project.id, {
         ...payload,
-        contentMarkdown: project.contentMarkdown,
+        contentMarkdown: project.contentMarkdown
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -124,11 +132,11 @@ export default class EditProjectPage {
           setTimeout(() => this.router.navigate(['/admin/projects']), 1200);
         },
         error: (err) => {
-          const msg = err?.error?.statusMessage || err?.message || 'Failed to update project';
+          const msg = extractApiErrorMessage(err, 'Failed to update project');
           console.error('[EditProjectPage] update error:', err.status, msg);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        },
+        }
       });
   }
 }

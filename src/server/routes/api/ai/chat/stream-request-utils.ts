@@ -1,5 +1,6 @@
-import { getQuery, readBody, type H3Event } from 'h3';
+import { readBody, type H3Event } from 'h3';
 import { validateChatInput } from '../../../../ai/chat-security';
+import { getSingleQueryString } from '../../../../utils/query-params';
 import { writeSseError } from './stream-utils';
 
 type ChatRequestBody = {
@@ -23,7 +24,9 @@ type ChatLogFn = (
 ) => void;
 
 export function parseAndValidateGetChatRequest(event: H3Event): ChatRequest | null {
-  const { sessionId, message, history } = getQuery(event);
+  const sessionId = getSingleQueryString(event, 'sessionId');
+  const message = getSingleQueryString(event, 'message');
+  const history = getSingleQueryString(event, 'history');
 
   if (typeof message !== 'string') {
     writeSseError(event, 'No message provided.');
@@ -48,7 +51,7 @@ export function parseAndValidateGetChatRequest(event: H3Event): ChatRequest | nu
   return {
     message,
     history: parsedHistory,
-    sessionId: typeof sessionId === 'string' ? sessionId : undefined,
+    sessionId,
   };
 }
 

@@ -7,7 +7,9 @@ const toJson = (v: unknown) => JSON.parse(JSON.stringify(v));
 
 export const profileRepository = {
   async find(): Promise<ProfileData | null> {
-    const row = await prisma.profile.findFirst();
+    const row = await prisma.profile.findFirst({
+      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+    });
     if (!row) return null;
 
     const { id: _id, updatedAt: _updatedAt, ...profile } = row;
@@ -27,7 +29,9 @@ export const profileRepository = {
       contact: toJson(data.contact),
     };
 
-    const existing = await prisma.profile.findFirst();
+    const existing = await prisma.profile.findFirst({
+      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+    });
     if (existing) {
       await prisma.profile.update({ where: { id: existing.id }, data: payload });
     } else {

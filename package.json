@@ -12,6 +12,7 @@
     "build": "vite build",
     "watch": "vite build --watch",
     "test": "vitest",
+    "backfill:project-images": "tsx scripts/backfill-project-cover-images.ts",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
     "preview": "node dist/analog/server/index.mjs",
