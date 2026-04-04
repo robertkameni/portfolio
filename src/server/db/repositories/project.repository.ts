@@ -2,59 +2,47 @@ import { prisma } from '../client';
 import type { Project } from '../../../../prisma/generated/client';
 import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
 
-/**
- * Data Transfer Object for creating a project.
- */
 export type CreateProjectDto = Pick<Project, 'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl' | 'isPublished'>;
-
-/**
- * Data Transfer Object for updating a project.
- * All fields are optional.
- */
 export type UpdateProjectDto = Partial<CreateProjectDto & { isPublished: boolean }>;
+export type ProjectDetail = Project;
+export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
 
-/**
- * Repository for Project data access.
- * Encapsulates all database operations related to the Project model.
- */
+const LIST_SELECT = {
+  id: true,
+  slug: true,
+  title: true,
+  description: true,
+  tags: true,
+  coverImageUrl: true,
+  isPublished: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
 export const projectRepository = {
-  /**
-   * Finds all published projects, ordered by creation date descending.
-   * @returns A list of published projects.
-   */
-  async findAllPublished(): Promise<Project[]> {
+  async findAllPublished(): Promise<ProjectListItem[]> {
     return prisma.project.findMany({
+      select: LIST_SELECT,
       where: { isPublished: true },
       orderBy: { createdAt: 'desc' },
     });
   },
 
-  /**
-   * Finds a single published project by its unique slug.
-   * @param slug The slug of the project to find.
-   * @returns The project object or null if not found or not published.
-   */
-  async findPublishedBySlug(slug: string): Promise<Project | null> {
+  async findPublishedBySlug(slug: string): Promise<ProjectDetail | null> {
     return prisma.project.findFirst({
       where: { slug, isPublished: true },
     });
   },
 
-  /**
-   * Finds a project by its slug regardless of publish state (admin-only).
-   */
-  async findBySlug(slug: string): Promise<Project | null> {
+  async findBySlug(slug: string): Promise<ProjectDetail | null> {
     return prisma.project.findUnique({
       where: { slug },
     });
   },
 
-  /**
-   * Finds all projects, including drafts. (Admin only)
-   * @returns A list of all projects.
-   */
-  async findAll(): Promise<Project[]> {
+  async findAll(): Promise<ProjectListItem[]> {
     return prisma.project.findMany({
+      select: LIST_SELECT,
       orderBy: { createdAt: 'desc' },
     });
   },

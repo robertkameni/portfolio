@@ -1,11 +1,11 @@
-import {Component, computed, inject} from '@angular/core';
-import {httpResource} from '@angular/common/http';
-import {ProjectsListComponent} from '../components/projects/projects-list.component';
-import type {Project} from '../../shared/types/project.types';
-import {RouterLink} from '@angular/router';
-import type {ApiSuccess} from '../../shared/types/api.types';
-import {getSiteCopy} from '../../shared/i18n/site-copy';
-import {LocaleService} from '../../shared/services/locale.service';
+import { Component, computed, inject } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { ProjectsListComponent } from '../components/projects/projects-list.component';
+import type { ProjectListItem } from '../../shared/types/project.types';
+import { RouterLink } from '@angular/router';
+import type { ApiSuccess } from '../../shared/types/api.types';
+import { getSiteCopy } from '../../shared/i18n/site-copy';
+import { LocaleService } from '../../shared/services/locale.service';
 
 @Component({
   selector: 'projects-page',
@@ -41,11 +41,11 @@ import {LocaleService} from '../../shared/services/locale.service';
         }
       </div>
     </main>
-  `
+  `,
 })
 export default class ProjectsPage {
   private readonly localeService = inject(LocaleService);
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
-  projectsResource = httpResource<ApiSuccess<Project[]>>(() => '/api/projects');
+  projectsResource = httpResource<ApiSuccess<ProjectListItem[]>>(() => '/api/projects');
 }

@@ -1,11 +1,11 @@
-import {Component, input} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {TrackBehaviorDirective} from '../../../ai-engine/directives/track-behavior.directive';
-import {DatePipe, NgOptimizedImage} from '@angular/common';
-import type {Project} from '../../../shared/types/project.types';
-import type {AppLocale} from '../../../shared/i18n/app-locale';
-import {toAngularLocale} from '../../../shared/i18n/app-locale';
-import {getSiteCopy} from '../../../shared/i18n/site-copy';
+import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
+import type { ProjectListItem } from '../../../shared/types/project.types';
+import type { AppLocale } from '../../../shared/i18n/app-locale';
+import { toAngularLocale } from '../../../shared/i18n/app-locale';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'projects-list',
@@ -22,13 +22,7 @@ import {getSiteCopy} from '../../../shared/i18n/site-copy';
           >
             @if (project.coverImageUrl) {
               <div class="relative h-40 w-full overflow-hidden">
-                <img
-                  [ngSrc]="project.coverImageUrl"
-                  [alt]="project.title"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                  class="object-cover"
-                />
+                <img [ngSrc]="project.coverImageUrl" [alt]="project.title" fill sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" class="object-cover" />
               </div>
             }
 
@@ -57,19 +51,17 @@ import {getSiteCopy} from '../../../shared/i18n/site-copy';
                 >
                   {{ projectCopy().openProject }}
                 </a>
-                <time
-                  class="text-xs text-gray-500">{{ project.createdAt | date: undefined : undefined : currentDateLocale() }}
-                </time>
+                <time class="text-xs text-gray-500">{{ project.createdAt | date: undefined : undefined : currentDateLocale() }}</time>
               </div>
             </div>
           </article>
         }
       </div>
     </section>
-  `
+  `,
 })
 export class ProjectsListComponent {
-  projects = input.required<Project[]>();
+  projects = input.required<ProjectListItem[]>();
   locale = input<AppLocale>('en');
 
   protected projectCopy() {

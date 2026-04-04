@@ -1,18 +1,18 @@
-import {Component, computed, DestroyRef, inject, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {httpResource} from '@angular/common/http';
-import {Router, RouterLink} from '@angular/router';
-import type {Project} from '../../../shared/types/project.types';
-import type {ApiSuccess} from '../../../shared/types/api.types';
-import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
-import {AdminProjectsService} from '../../../services/admin-projects.service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/project-form.component';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
-import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar.component';
-import {StatusAlertComponent} from '../../../shared/components/status-alert.component';
-import {getSiteCopy} from '../../../shared/i18n/site-copy';
-import {LocaleService} from '../../../shared/services/locale.service';
+import { Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
+import type { ProjectListItem } from '../../../shared/types/project.types';
+import type { ApiSuccess } from '../../../shared/types/api.types';
+import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
+import { AdminProjectsService } from '../../../services/admin-projects.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form.component';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.component';
+import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { LocaleService } from '../../../shared/services/locale.service';
 
 @Component({
   selector: 'admin-projects',
@@ -77,14 +77,10 @@ import {LocaleService} from '../../../shared/services/locale.service';
         </div>
       } @else {
         <div class="space-y-3" fadeIn>
-          @for (project of (projectsResource.value()?.data ?? []); track project.id) {
-            <div
-              class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-
+          @for (project of projectsResource.value()?.data ?? []; track project.id) {
+            <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
               <div class="flex items-center gap-4 min-w-0 flex-wrap flex-1">
-                <span
-                  class="px-2 py-0.5 rounded text-xs font-medium"
-                  [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
+                <span class="px-2 py-0.5 rounded text-xs font-medium" [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
                   {{ project.isPublished ? copy().adminProjects.published : copy().adminProjects.draft }}
                 </span>
 
@@ -104,22 +100,21 @@ import {LocaleService} from '../../../shared/services/locale.service';
                     }
                   }
                 </div>
-
               </div>
               <div class="flex gap-4 justify-start">
-                <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }"
-                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }" class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
                   {{ copy().adminProjects.view }}
                 </a>
 
-                <a [routerLink]="['/projects', project.slug, 'edit']" [queryParams]="{ preview: 'admin' }"
-                   class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
+                <a
+                  [routerLink]="['/projects', project.slug, 'edit']"
+                  [queryParams]="{ preview: 'admin' }"
+                  class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+                >
                   {{ copy().adminProjects.edit }}
                 </a>
 
-                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
-                   (click)="deleteProject(project)">{{ copy().adminProjects.delete }}
-                </a>
+                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project)">{{ copy().adminProjects.delete }}</a>
               </div>
             </div>
           } @empty {
@@ -128,7 +123,7 @@ import {LocaleService} from '../../../shared/services/locale.service';
         </div>
       }
     </div>
-  `
+  `,
 })
 export default class AdminProjectsPage {
   private router = inject(Router);
@@ -141,7 +136,7 @@ export default class AdminProjectsPage {
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
 
-  projectsResource = httpResource<ApiSuccess<Project[]> | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
+  projectsResource = httpResource<ApiSuccess<ProjectListItem[]> | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
 
   showForm = signal(false);
   submitError = signal<string | null>(null);
@@ -171,17 +166,17 @@ export default class AdminProjectsPage {
     return message;
   }
 
-  private updateProjectsResource(data: Project[]): void {
+  private updateProjectsResource(data: ProjectListItem[]): void {
     const current = this.projectsResource.value();
     this.projectsResource.set(
       current
-        ? {...current, data}
+        ? { ...current, data }
         : {
-          status: 'success',
-          message: 'Projects updated.',
-          code: 'ADMIN_PROJECTS_UPDATED',
-          data
-        }
+            status: 'success',
+            message: 'Projects updated.',
+            code: 'ADMIN_PROJECTS_UPDATED',
+            data,
+          },
     );
   }
 
@@ -192,12 +187,13 @@ export default class AdminProjectsPage {
     this.submitSuccess.set(false);
 
     this.adminProjectsService
-      .createProject({...payload, contentMarkdown: null})
+      .createProject({ ...payload, contentMarkdown: null })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {
           const current = this.projectsResource.value();
-          this.updateProjectsResource([project, ...(current?.data ?? [])]);
+          const { contentMarkdown: _cm, ...listItem } = project;
+          this.updateProjectsResource([listItem, ...(current?.data ?? [])]);
           this.submitSuccess.set(true);
           this.isSubmitting.set(false);
           this.showForm.set(false);
@@ -206,11 +202,11 @@ export default class AdminProjectsPage {
           const msg = this.handleError(err, 'create project', this.copy().adminProjects.failedCreate);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        }
+        },
       });
   }
 
-  deleteProject(project: Project) {
+  deleteProject(project: ProjectListItem) {
     if (!confirm(this.copy().adminProjects.confirmDelete.replace('{title}', project.title))) return;
 
     this.adminProjectsService
@@ -229,7 +225,7 @@ export default class AdminProjectsPage {
         error: (err) => {
           const msg = this.handleError(err, 'delete project', this.copy().adminProjects.failedDelete);
           this.deleteError.set(msg);
-        }
+        },
       });
   }
 }

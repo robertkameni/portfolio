@@ -10,3 +10,5 @@ export type Project = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
