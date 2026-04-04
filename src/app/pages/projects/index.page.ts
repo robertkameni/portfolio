@@ -1,11 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
-import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { ProjectsListComponent } from '../components/projects/projects-list.component';
-import type { ProjectListItem } from '../../shared/types/project.types';
 import { RouterLink } from '@angular/router';
-import type { ApiSuccess } from '../../shared/types/api.types';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
+import { ProjectsStore } from '../../store/projects.store';
 
 @Component({
   selector: 'projects-page',
@@ -30,22 +28,26 @@ import { LocaleService } from '../../shared/services/locale.service';
           </a>
         </div>
 
-        @if (projectsResource.isLoading()) {
+        @if (store.isLoading()) {
           <div class="flex items-center justify-center py-24 text-gray-400 font-mono">{{ copy().projectsPage.loading }}</div>
-        } @else if (projectsResource.error()) {
+        } @else if (store.error()) {
           <div class="text-red-400 py-12">{{ copy().projectsPage.error }}</div>
-        } @else if ((projectsResource.value()?.data ?? []).length === 0) {
+        } @else if ((store.data() ?? []).length === 0) {
           <div class="text-gray-500 py-12">{{ copy().projectsPage.empty }}</div>
         } @else {
-          <projects-list [projects]="projectsResource.value()!.data" [locale]="locale()" />
+          <projects-list [projects]="store.data()!" [locale]="locale()" />
         }
       </div>
     </main>
   `,
 })
-export default class ProjectsPage {
+export default class ProjectsPage implements OnInit {
   private readonly localeService = inject(LocaleService);
+  protected readonly store = inject(ProjectsStore);
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
-  projectsResource = httpResource<ApiSuccess<ProjectListItem[]>>(() => '/api/projects');
+
+  ngOnInit() {
+    this.store.load();
+  }
 }

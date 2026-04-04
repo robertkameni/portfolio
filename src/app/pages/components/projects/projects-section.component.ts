@@ -1,12 +1,10 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { httpResource } from '@angular/common/http';
-import type { Project } from '../../../shared/types/project.types';
-import type { ApiSuccess } from '../../../shared/types/api.types';
 import { ProjectsListComponent } from './projects-list.component';
 import { RestoreScrollPositionDirective } from '../../../shared/directives/restore-scroll-position.directive';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { ProjectsStore } from '../../../store/projects.store';
 
 @Component({
   selector: 'projects-section',
@@ -32,21 +30,25 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
           </a>
         </div>
 
-        @if (projectsResource.isLoading()) {
+        @if (store.isLoading()) {
           <div class="py-12 text-gray-400 font-mono text-center">{{ copy().projects.loading }}</div>
-        } @else if (projectsResource.error()) {
+        } @else if (store.error()) {
           <div class="py-12 text-red-400 text-center text-sm">{{ copy().projects.error }}</div>
-        } @else if ((projectsResource.value()?.data ?? []).length === 0) {
+        } @else if ((store.data() ?? []).length === 0) {
           <div class="py-12 text-gray-500 text-center text-sm">{{ copy().projects.empty }}</div>
         } @else {
-          <projects-list [projects]="(projectsResource.value()?.data ?? []).slice(0, 3)" [locale]="locale()" />
+          <projects-list [projects]="(store.data() ?? []).slice(0, 3)" [locale]="locale()" />
         }
       </div>
     </section>
   `,
 })
-export class ProjectsSectionComponent {
+export class ProjectsSectionComponent implements OnInit {
   locale = input<AppLocale>('en');
+  protected readonly store = inject(ProjectsStore);
   protected readonly copy = computed(() => getSiteCopy(this.locale()));
-  protected readonly projectsResource = httpResource<ApiSuccess<Project[]>>(() => '/api/projects');
+
+  ngOnInit() {
+    this.store.load();
+  }
 }

@@ -1,9 +1,5 @@
-import { Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { httpResource } from '@angular/common/http';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import type { ProjectListItem } from '../../../shared/types/project.types';
-import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,6 +9,7 @@ import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar.c
 import { StatusAlertComponent } from '../../../shared/components/status-alert.component';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { AdminProjectsStore } from '../../../store/projects.store';
 
 @Component({
   selector: 'admin-projects',
@@ -67,17 +64,17 @@ import { LocaleService } from '../../../shared/services/locale.service';
         </div>
       }
 
-      @if (projectsResource.isLoading()) {
+      @if (store.isLoading()) {
         <div class="text-gray-400 font-mono py-12 text-center">{{ copy().adminProjects.loading }}</div>
-      } @else if (projectsResource.status() === 'idle') {
+      } @else if (store.data() === null) {
         <div class="text-gray-500 py-12 text-center text-sm">{{ copy().adminProjects.loadingIdle }}</div>
-      } @else if (projectsResource.error()) {
+      } @else if (store.error()) {
         <div class="text-red-400 py-8 text-center text-sm">
-          {{ getErrorMessage(projectsResource.error()) }}
+          {{ store.error() }}
         </div>
       } @else {
         <div class="space-y-3" fadeIn>
-          @for (project of projectsResource.value()?.data ?? []; track project.id) {
+          @for (project of store.data() ?? []; track project.id) {
             <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
               <div class="flex items-center gap-4 min-w-0 flex-wrap flex-1">
                 <span class="px-2 py-0.5 rounded text-xs font-medium" [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
@@ -114,7 +111,9 @@ import { LocaleService } from '../../../shared/services/locale.service';
                   {{ copy().adminProjects.edit }}
                 </a>
 
-                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project)">{{ copy().adminProjects.delete }}</a>
+                <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project.id, project.title)">
+                  {{ copy().adminProjects.delete }}
+                </a>
               </div>
             </div>
           } @empty {
@@ -125,24 +124,25 @@ import { LocaleService } from '../../../shared/services/locale.service';
     </div>
   `,
 })
-export default class AdminProjectsPage {
+export default class AdminProjectsPage implements OnInit {
   private router = inject(Router);
   private readonly adminProjectsService = inject(AdminProjectsService);
   private readonly localeService = inject(LocaleService);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly store = inject(AdminProjectsStore);
 
-  protected clientReady = isPlatformBrowser(this.platformId);
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
-
-  projectsResource = httpResource<ApiSuccess<ProjectListItem[]> | undefined>(() => (this.clientReady ? '/api/admin/projects' : undefined));
 
   showForm = signal(false);
   submitError = signal<string | null>(null);
   submitSuccess = signal(false);
   isSubmitting = signal(false);
   deleteError = signal<string | null>(null);
+
+  ngOnInit() {
+    this.store.load();
+  }
 
   navigateHome() {
     this.router.navigate(['/']);
@@ -166,20 +166,6 @@ export default class AdminProjectsPage {
     return message;
   }
 
-  private updateProjectsResource(data: ProjectListItem[]): void {
-    const current = this.projectsResource.value();
-    this.projectsResource.set(
-      current
-        ? { ...current, data }
-        : {
-            status: 'success',
-            message: 'Projects updated.',
-            code: 'ADMIN_PROJECTS_UPDATED',
-            data,
-          },
-    );
-  }
-
   createProject(payload: ProjectPayload) {
     if (this.isSubmitting()) return;
     this.isSubmitting.set(true);
@@ -191,9 +177,7 @@ export default class AdminProjectsPage {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {
-          const current = this.projectsResource.value();
-          const { contentMarkdown: _cm, ...listItem } = project;
-          this.updateProjectsResource([listItem, ...(current?.data ?? [])]);
+          this.store.addProject(project);
           this.submitSuccess.set(true);
           this.isSubmitting.set(false);
           this.showForm.set(false);
@@ -206,20 +190,15 @@ export default class AdminProjectsPage {
       });
   }
 
-  deleteProject(project: ProjectListItem) {
-    if (!confirm(this.copy().adminProjects.confirmDelete.replace('{title}', project.title))) return;
+  deleteProject(id: string, title: string) {
+    if (!confirm(this.copy().adminProjects.confirmDelete.replace('{title}', title))) return;
 
     this.adminProjectsService
-      .deleteProject(project.id)
+      .deleteProject(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          const current = this.projectsResource.value();
-          if (!current) {
-            return;
-          }
-
-          this.updateProjectsResource(current.data.filter((p) => p.id !== project.id));
+          this.store.removeProject(id);
           this.deleteError.set(null);
         },
         error: (err) => {
