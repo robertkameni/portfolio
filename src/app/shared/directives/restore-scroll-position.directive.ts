@@ -1,6 +1,6 @@
-import { AfterViewInit, Directive, ElementRef, inject } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { ViewportScroller } from '@angular/common';
 
 @Directive({
   selector: '[restoreScrollPosition]',
@@ -9,17 +9,16 @@ import { ViewportScroller } from '@angular/common';
 export class RestoreScrollPositionDirective implements AfterViewInit {
   private readonly el = inject(ElementRef<HTMLElement>);
   private readonly router = inject(Router);
-  private readonly viewportScroller = inject(ViewportScroller);
+  private readonly platformId = inject(PLATFORM_ID);
 
   ngAfterViewInit() {
-    // previousNavigation is null on hard refresh / first page load → skip
+    if (!isPlatformBrowser(this.platformId)) return;
     if (!this.router.lastSuccessfulNavigation()?.previousNavigation) return;
 
-    // getBoundingClientRect gives position relative to viewport.
-    // Adding window.scrollY converts it to absolute document position.
-    const rect = this.el.nativeElement.getBoundingClientRect();
-    const absoluteTop = rect.top + (window.scrollY ?? 0);
-
-    this.viewportScroller.scrollToPosition([0, absoluteTop]);
+    // setTimeout(0) queues as a macrotask, ensuring it runs after Angular's
+    // scrollPositionRestoration has already fired — which wins over rAF on mobile.
+    setTimeout(() => {
+      this.el.nativeElement.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }, 0);
   }
 }
