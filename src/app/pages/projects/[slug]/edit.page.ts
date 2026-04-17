@@ -97,6 +97,7 @@ export default class EditProjectPage {
       title: project.title,
       slug: project.slug,
       description: project.description ?? '',
+      contentMarkdown: project.contentMarkdown ?? '',
       coverImageUrl: project.coverImageUrl ?? '',
       tags: project.tags.join(', '),
       isPublished: project.isPublished
@@ -122,7 +123,6 @@ export default class EditProjectPage {
     this.adminProjectsService
       .updateProject(project.id, {
         ...payload,
-        contentMarkdown: project.contentMarkdown
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

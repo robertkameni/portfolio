@@ -132,7 +132,7 @@ import { FooterComponent } from './components/footer/footer';
         <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
 
         <chat-widget />
-        
+
         <dev-footer />
       }
     </main>
@@ -148,7 +148,6 @@ export default class HomeComponent implements OnInit {
 
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
-
 
   setMockProfile(type: any) {
     if (!type) {

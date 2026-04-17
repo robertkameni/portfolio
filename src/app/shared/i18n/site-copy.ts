@@ -98,6 +98,7 @@ type SiteCopy = {
     titleLabel: string;
     slugLabel: string;
     descriptionLabel: string;
+    contentMarkdownLabel: string;
     coverImageUrlLabel: string;
     tagsLabel: string;
     tagsPlaceholder: string;
@@ -321,6 +322,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       titleLabel: 'Title *',
       slugLabel: 'Slug *',
       descriptionLabel: 'Description',
+      contentMarkdownLabel: 'Overview (Markdown)',
       coverImageUrlLabel: 'Cover Image URL',
       tagsLabel: 'Tags (comma-separated)',
       tagsPlaceholder: 'Angular, TypeScript, SSR',
@@ -551,6 +553,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       titleLabel: 'Titel *',
       slugLabel: 'Slug *',
       descriptionLabel: 'Beschreibung',
+      contentMarkdownLabel: 'Überblick (Markdown)',
       coverImageUrlLabel: 'Cover-Bild-URL',
       tagsLabel: 'Tags (kommagetrennt)',
       tagsPlaceholder: 'Angular, TypeScript, SSR',

@@ -173,7 +173,7 @@ export default class AdminProjectsPage implements OnInit {
     this.submitSuccess.set(false);
 
     this.adminProjectsService
-      .createProject({ ...payload, contentMarkdown: null })
+      .createProject({ ...payload })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {

@@ -16,7 +16,9 @@ import { LocaleService } from '../services/locale.service';
       <div class="flex items-center justify-center w-full sm:w-auto sm:mr-4">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span class="text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold">{{ copy().devProxy.label }}</span>
+          <span
+          (click)="navigateHome()"
+          class="cursor-pointer text-[10px] md:text-xs uppercase tracking-widest text-primary font-mono font-bold hover:text-primary/80 transition-colors duration-300">{{ copy().devProxy.label }}</span>
         </div>
       </div>
 

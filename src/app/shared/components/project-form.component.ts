@@ -2,24 +2,13 @@ import { Component, computed, input, linkedSignal, output } from '@angular/core'
 import { form, FormField, required } from '@angular/forms/signals';
 import type { AppLocale } from '../i18n/app-locale';
 import { getSiteCopy } from '../i18n/site-copy';
+import {
+  type ProjectFormModel,
+  type ProjectPayload,
+  toProjectPayload,
+} from '../types/project.types';
 
-export interface ProjectFormModel {
-  title: string;
-  slug: string;
-  description: string;
-  coverImageUrl: string;
-  tags: string;
-  isPublished: boolean;
-}
-
-export interface ProjectPayload {
-  title: string;
-  slug: string;
-  description: string | null;
-  coverImageUrl: string | null;
-  isPublished: boolean;
-  tags: string[];
-}
+export type { ProjectFormModel, ProjectPayload } from '../types/project.types';
 
 @Component({
   selector: 'project-form',
@@ -66,6 +55,15 @@ export interface ProjectPayload {
           [formField]="projectForm.description"
           rows="3"
           class="w-full bg-[#0a1a0f] border border-[#143c1a] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary resize-none"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">{{ copy().projectForm.contentMarkdownLabel }}</label>
+        <textarea
+          [formField]="projectForm.contentMarkdown"
+          rows="10"
+          class="w-full bg-[#0a1a0f] border border-[#143c1a] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary resize-y min-h-32 font-mono"
         ></textarea>
       </div>
 
@@ -131,6 +129,7 @@ export class ProjectFormComponent {
           title: '',
           slug: '',
           description: '',
+          contentMarkdown: '',
           coverImageUrl: '',
           tags: '',
           isPublished: false,
@@ -151,18 +150,6 @@ export class ProjectFormComponent {
     if (!this.isFormValid() || this.isSubmitting()) return;
 
     const data = this.formModel();
-    this.formSubmit.emit({
-      title: data?.title,
-      slug: data?.slug,
-      description: data?.description || null,
-      coverImageUrl: data?.coverImageUrl || null,
-      isPublished: data?.isPublished,
-      tags: data?.tags
-        ? data.tags
-            .split(',')
-            .map((t: string) => t.trim())
-            .filter(Boolean)
-        : [],
-    });
+    this.formSubmit.emit(toProjectPayload(data));
   }
 }
