@@ -36,7 +36,7 @@ import {getSiteCopy} from '../../../shared/i18n/site-copy';
                 <button type="button"
                         class="text-primary font-bold hover:underline cursor-pointer"
                         (click)="toggleAbout()">
-                  {{ isExpanded() ? copy().about.showLess : copy().about.showMore }}
+                  {{ isExpanded() ? copy().common.showLess : copy().common.showMore }}
                 </button>
               }
             </div>
@@ -120,16 +120,18 @@ export class AboutComponent {
     if (this.isExpanded() || paragraphs.length <= 3) {
       return paragraphs;
     }
-
+  
     const previewParagraphs = paragraphs.slice(0, 3);
-    const fourthParagraph = paragraphs[3] ?? '';
-    const tokenIndex = fourthParagraph.indexOf(this.copy().about.previewSplitToken);
-
+    const token = this.copy().about.previewSplitToken;
+    const fourthParagraph =
+      paragraphs.slice(3).find((p) => p.includes(token)) ?? paragraphs[3] ?? '';
+    const tokenIndex = fourthParagraph.indexOf(token);
+  
     if (tokenIndex > -1) {
       previewParagraphs.push(`${fourthParagraph.slice(0, tokenIndex).trim()}`);
       return previewParagraphs;
     }
-
+  
     previewParagraphs.push(`${fourthParagraph.slice(0, 180).trim()}`);
     return previewParagraphs;
   });

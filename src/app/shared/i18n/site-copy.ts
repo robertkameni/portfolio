@@ -1,6 +1,10 @@
 import type { AppLocale } from './app-locale';
 
 type SiteCopy = {
+  common: {
+    showMore: string;
+    showLess: string;
+  };
   home: {
     founder: string;
     recruiter: string;
@@ -112,8 +116,6 @@ type SiteCopy = {
     founderParagraphs: [string, string];
     recruiterParagraphs: [string, string];
     developerParagraphs: [string, string];
-    showMore: string;
-    showLess: string;
     previewSplitToken: string;
   };
   contact: {
@@ -222,6 +224,10 @@ type SiteCopy = {
 
 export const SITE_COPY: Record<AppLocale, SiteCopy> = {
   en: {
+    common: {
+      showMore: 'show more...',
+      showLess: 'show less...',
+    },
     home: {
       founder: 'Founder',
       recruiter: 'Recruiter',
@@ -342,8 +348,6 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
         'I am deeply passionate about the modern Angular ecosystem and pushing the framework to its limits. I love migrating legacy applications to zoneless architectures using Angular Signals and building robust, predictable state management systems with the NgRx Signal Store.',
         "I enjoy solving complex architectural challenges, setting up scalable Nx monorepo structures, and exploring how we can use AI logic and LLMs to power highly scalable, self-adapting application architectures. If you're interested in discussing reactive programming patterns or AI integration, let's connect.",
       ],
-      showMore: 'show more...',
-      showLess: 'show less...',
       previewSplitToken: 'Signals and NgRx Signal Store.',
     },
     contact: {
@@ -450,6 +454,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
     },
   },
   de: {
+    common: {
+      showMore: 'mehr anzeigen...',
+      showLess: 'weniger anzeigen...',
+    },
     home: {
       founder: 'Founder',
       recruiter: 'Recruiter',
@@ -570,8 +578,6 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
         'Ich bin stark im modernen Angular-Ökosystem verankert und reizt es aus. Besonders gern modernisiere ich Legacy-Anwendungen in Richtung zoneless Architektur mit Angular Signals und baue robuste, vorhersehbare State-Management-Lösungen mit dem NgRx Signal Store.',
         'Ich löse gern komplexe Architekturfragen, strukturiere skalierbare Nx-Monorepos und experimentiere damit, wie AI-Logik und LLMs selbstanpassende Architekturen ermöglichen können. Wenn du über reaktive Patterns oder AI-Integration sprechen willst, lass uns austauschen.',
       ],
-      showMore: 'mehr anzeigen...',
-      showLess: 'weniger anzeigen...',
       previewSplitToken: 'Signals und NgRx Signal Store.',
     },
     contact: {

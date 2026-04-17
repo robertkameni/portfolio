@@ -16,6 +16,7 @@ import { VisitorStore } from '../store/visitor.store';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { getSiteCopy } from '../shared/i18n/site-copy';
+import { FooterComponent } from './components/footer/footer';
 
 @Component({
   selector: 'home',
@@ -24,6 +25,7 @@ import { getSiteCopy } from '../shared/i18n/site-copy';
     SkillsBentoComponent,
     HeroComponent,
     AboutComponent,
+    FooterComponent,
     IntroComponent,
     ChatWidgetComponent,
     ContactComponent,
@@ -130,6 +132,8 @@ import { getSiteCopy } from '../shared/i18n/site-copy';
         <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
 
         <chat-widget />
+        
+        <dev-footer />
       }
     </main>
   `,

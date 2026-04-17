@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
@@ -13,7 +13,7 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   imports: [TrackBehaviorDirective, DatePipe, RouterLink, NgOptimizedImage],
   template: `
     <section class="max-w-6xl mx-auto">
-      <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+      <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));">
         @for (project of projects(); track project.id) {
           <article
             trackBehavior="project_viewed_{{ project.slug }}"
@@ -31,9 +31,18 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
                 {{ project.title }}
               </h3>
 
-              <div class="text-gray-300 text-sm overflow-hidden">
+              <div class="text-gray-300 text-sm min-h-0">
                 @if (project.description) {
-                  <p class="leading-relaxed">{{ project.description }}</p>
+                  <p class="leading-relaxed whitespace-pre-wrap">{{ visibleDescription(project) }}</p>
+                  @if (descriptionNeedsToggle(project.description)) {
+                    <button
+                      type="button"
+                      class="text-primary font-bold hover:underline cursor-pointer mt-1"
+                      (click)="toggleDescription(project.id, $event)"
+                    >
+                      {{ descriptionExpanded(project.id) ? commonCopy().showLess : commonCopy().showMore }}
+                    </button>
+                  }
                 }
               </div>
 
@@ -61,6 +70,10 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   `,
 })
 export class ProjectsListComponent {
+  private static readonly descriptionCollapsedMaxChars = 160;
+
+  private readonly descriptionExpandedIds = signal(new Set<string>());
+
   projects = input.required<ProjectListItem[]>();
   locale = input<AppLocale>('en');
 
@@ -68,7 +81,46 @@ export class ProjectsListComponent {
     return getSiteCopy(this.locale()).projects;
   }
 
+  protected commonCopy() {
+    return getSiteCopy(this.locale()).common;
+  }
+
   protected currentDateLocale() {
     return toAngularLocale(this.locale());
   }
+
+  protected descriptionNeedsToggle(text: string): boolean {
+    return text.length > ProjectsListComponent.descriptionCollapsedMaxChars;
+  }
+
+  protected visibleDescription(project: ProjectListItem): string {
+    const text = project.description ?? '';
+    if (!this.descriptionNeedsToggle(text) || this.descriptionExpandedIds().has(project.id)) {
+      return text;
+    }
+    return truncateDescriptionPreview(text, ProjectsListComponent.descriptionCollapsedMaxChars);
+  }
+
+  protected descriptionExpanded(projectId: string): boolean {
+    return this.descriptionExpandedIds().has(projectId);
+  }
+
+  protected toggleDescription(projectId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.descriptionExpandedIds.update((prev) => {
+      const next = new Set(prev);
+      if (next.has(projectId)) next.delete(projectId);
+      else next.add(projectId);
+      return next;
+    });
+  }
+}
+
+function truncateDescriptionPreview(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const slice = text.slice(0, max);
+  const lastSpace = slice.lastIndexOf(' ');
+  const end = lastSpace > max * 0.55 ? lastSpace : max;
+  return `${slice.slice(0, end).trimEnd()}…`;
 }
