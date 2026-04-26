@@ -1,0 +1,128 @@
+<dev-proxy-bar homeUrl="/">
+  <div class="hidden sm:block flex-1"></div>
+  <button
+    (click)="navigateToAdmin()"
+    class="text-xs cursor-pointer inline-flex items-center gap-1 px-4 py-1.5 bg-primary text-black font-semibold rounded-lg
+          hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+      <path d="M2 5h20v14H2V5zm10 7L3 6v12h18V6l-9 6z" />
+    </svg>
+    {{ copy().devProxy.admin }}
+  </button>
+  <div class="w-full sm:w-auto ml-auto flex justify-end">
+    <button
+      (click)="toggleForm()"
+      class="text-xs cursor-pointer inline-flex items-center gap-1 px-4 py-2 bg-primary text-black font-semibold rounded-lg
+          hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
+    >
+      <span>+</span>
+      {{ showForm() ? copy().adminProjects.cancel : copy().adminProjects.newProject }}
+    </button>
+  </div>
+</dev-proxy-bar>
+
+<div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-primary">{{ copy().adminProjects.title }}</h1>
+      <p class="text-gray-400 text-sm mt-1">{{ copy().adminProjects.subtitle }}</p>
+    </div>
+  </div>
+
+  @if (submitSuccess()) {
+    <status-alert type="success">{{ copy().adminProjects.createSuccess }}</status-alert>
+  }
+
+  @if (submitError()) {
+    <status-alert type="error">{{ submitError() }}</status-alert>
+  }
+
+  @if (deleteError()) {
+    <status-alert type="error">{{ deleteError() }}</status-alert>
+  }
+
+  @if (showForm()) {
+    <div class="mb-8">
+      <project-form
+        [locale]="locale()"
+        [formTitle]="copy().adminProjects.createFormTitle"
+        [submitLabel]="copy().adminProjects.createSubmitLabel"
+        [submittingLabel]="copy().adminProjects.createSubmittingLabel"
+        [isSubmitting]="isSubmitting()"
+        (formSubmit)="createProject($event)"
+        (cancel)="toggleForm()"
+      />
+    </div>
+  }
+
+  @if (store.isLoading()) {
+    <div class="text-gray-400 font-mono py-12 text-center">{{ copy().adminProjects.loading }}</div>
+  } @else if (store.data() === null) {
+    <div class="text-gray-500 py-12 text-center text-sm">{{ copy().adminProjects.loadingIdle }}</div>
+  } @else if (store.error()) {
+    <div class="text-red-400 py-8 text-center text-sm">
+      {{ store.error() }}
+    </div>
+  } @else {
+    <div class="space-y-3" fadeIn>
+      @for (project of store.data() ?? []; track project.id) {
+        <div
+          class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4"
+        >
+          <div class="flex items-center gap-4 min-w-0 flex-wrap flex-1">
+            <span
+              class="px-2 py-0.5 rounded text-xs font-medium"
+              [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'"
+            >
+              {{ project.isPublished ? copy().adminProjects.published : copy().adminProjects.draft }}
+            </span>
+
+            <div class="min-w-0">
+              <p class="text-white font-medium truncate">{{ project.title }}</p>
+              <p class="text-gray-500 text-xs truncate">/projects/{{ project.slug }}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-3 md:gap-4 min-w-0">
+            <div class="hidden md:flex items-center justify-start gap-1 flex-wrap w-60">
+              @if (project.tags && project.tags.length > 0) {
+                @for (tag of firstTags(project.tags); track tag) {
+                  <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded whitespace-nowrap shrink-0">
+                    {{ tag }}
+                  </span>
+                }
+              }
+            </div>
+          </div>
+          <div class="flex gap-4 justify-start">
+            <a
+              [routerLink]="['/projects', project.slug]"
+              [queryParams]="{ preview: 'admin' }"
+              class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+            >
+              {{ copy().adminProjects.view }}
+            </a>
+
+            <a
+              [routerLink]="['/projects', project.slug, 'edit']"
+              [queryParams]="{ preview: 'admin' }"
+              class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+            >
+              {{ copy().adminProjects.edit }}
+            </a>
+
+            <a
+              class="text-sm text-gray-400 transition cursor-pointer hover:text-primary"
+              (click)="deleteProject(project.id, project.title)"
+            >
+              {{ copy().adminProjects.delete }}
+            </a>
+          </div>
+        </div>
+      } @empty {
+        <p class="text-gray-500 text-center py-12">{{ copy().adminProjects.empty }}</p>
+      }
+    </div>
+  }
+</div>

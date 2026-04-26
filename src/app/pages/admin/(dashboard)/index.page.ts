@@ -1,44 +1,37 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {isPlatformBrowser} from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'admin-dashboard',
   standalone: true,
   imports: [RouterLink],
-  template: `
-    <div class="p-4 md:p-8 text-white">
-      <h1 class="text-3xl font-bold mb-6 text-primary">Intelligence Dashboard</h1>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-          <h2 class="text-xl font-semibold mb-2">Live Visitors</h2>
-          <p class="text-3xl text-primary font-mono">0</p>
-        </div>
-        <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-          <h2 class="text-xl font-semibold mb-2">New Messages</h2>
-          <p class="text-3xl text-primary font-mono">0</p>
-        </div>
-        <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-          <h2 class="text-xl font-semibold mb-2">AI Insights</h2>
-          <p class="text-3xl text-primary font-mono">0</p>
-        </div>
-      </div>
-
-      <h2 class="text-xl font-semibold text-gray-300 mb-4">Quick Navigation</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a routerLink="/admin/projects" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-          <p class="text-primary font-bold text-lg group-hover:underline">Projects →</p>
-          <p class="text-gray-400 text-sm mt-1">Create and manage portfolio projects</p>
-        </a>
-        <a routerLink="/admin/messages" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-          <p class="text-primary font-bold text-lg group-hover:underline">Messages →</p>
-          <p class="text-gray-400 text-sm mt-1">View contact form submissions</p>
-        </a>
-        <a routerLink="/admin/intelligence" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-          <p class="text-primary font-bold text-lg group-hover:underline">Intelligence →</p>
-          <p class="text-gray-400 text-sm mt-1">AI visitor analysis and insights</p>
-        </a>
-      </div>
-    </div>
-  `,
+  templateUrl: './index.page.html',
 })
-export default class AdminDashboardComponent {}
+export default class AdminDashboardComponent implements OnInit {
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  protected readonly newMessagesCount = signal(0);
+
+  ngOnInit() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    this.loadNewMessagesCount();
+  }
+
+  private loadNewMessagesCount() {
+    this.http.get<{data: Array<{status: 'UNREAD' | 'READ' | 'ARCHIVED'}>}>('/api/admin/messages').subscribe({
+      next: (response) => {
+        const messages = Array.isArray(response?.data) ? response.data : [];
+        const unreadCount = messages.filter((message) => message.status === 'UNREAD').length;
+        this.newMessagesCount.set(unreadCount);
+      },
+      error: (err) => {
+        console.error('Failed to load new messages count:', err);
+      }
+    });
+  }
+}

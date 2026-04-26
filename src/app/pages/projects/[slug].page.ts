@@ -5,8 +5,6 @@ import { RouterOutlet } from '@angular/router';
   selector: 'project-slug-layout',
   standalone: true,
   imports: [RouterOutlet],
-  template: `
-    <router-outlet />
-  `,
+  templateUrl: './[slug]/layout/project-slug-layout.html',
 })
 export default class ProjectSlugLayout {}

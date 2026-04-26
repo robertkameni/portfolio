@@ -7,27 +7,7 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
 @Component({
   selector: 'skills-bento',
   standalone: true,
-  template: `
-    <section trackBehavior="skills_viewed" class="py-6 md:py-10">
-      <div class="max-w-6xl w-full mx-auto px-4">
-        <h2 class="text-center text-primary text-3xl font-bold mb-8">{{ copy().skills.title }}</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          @for (skill of skills(); track skill) {
-            <div
-              trackBehavior="skill_viewed_{{ skill.name }}"
-              class="bg-surface border border-[#143c1a] p-6 rounded-xl hover:border-primary transition-colors flex flex-col items-center justify-center text-center shadow-lg group"
-            >
-              <svg class="w-10 h-10 text-gray-400 group-hover:text-primary transition-colors mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="skill.iconPath"></path>
-              </svg>
-
-              <span class="font-mono text-sm text-gray-300 group-hover:text-white transition-colors">{{ skill.name }}</span>
-            </div>
-          }
-        </div>
-      </div>
-    </section>
-  `,
+  templateUrl: './page/skills-bento.html',
   imports: [TrackBehaviorDirective],
 })
 export class SkillsBentoComponent {

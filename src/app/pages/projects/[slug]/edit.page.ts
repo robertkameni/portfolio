@@ -1,22 +1,22 @@
-import {Component, computed, DestroyRef, inject, input, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser, JsonPipe} from '@angular/common';
-import {Router} from '@angular/router';
-import {httpResource} from '@angular/common/http';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {RouteMeta} from '@analogjs/router';
-import {authGuard} from '../../../guards/auth.guard';
-import type {Project} from '../../../shared/types/project.types';
-import type {ApiSuccess} from '../../../shared/types/api.types';
-import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
-import {AdminProjectsService} from '../../../services/admin-projects.service';
+import { Component, computed, DestroyRef, inject, input, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { httpResource } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouteMeta } from '@analogjs/router';
+import { authGuard } from '../../../guards/auth.guard';
+import type { Project } from '../../../shared/types/project.types';
+import type { ApiSuccess } from '../../../shared/types/api.types';
+import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
+import { AdminProjectsService } from '../../../services/admin-projects.service';
 import {
   ProjectFormComponent,
   ProjectFormModel,
   ProjectPayload
-} from '../../../shared/components/project-form.component';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
-import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar.component';
-import {StatusAlertComponent} from '../../../shared/components/status-alert.component';
+} from '../../../shared/components/project-form/project-form.component';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
+import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
 
 export const routeMeta: RouteMeta = {
   canActivate: [authGuard]
@@ -26,45 +26,7 @@ export const routeMeta: RouteMeta = {
   selector: 'edit-project-page',
   standalone: true,
   imports: [ProjectFormComponent, FadeInDirective, JsonPipe, DevProxyBarComponent, StatusAlertComponent],
-  template: `
-    <dev-proxy-bar backUrl="/admin/projects"/>
-
-    <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-primary">Edit Project</h1>
-        <p class="text-gray-400 text-sm mt-1">Update the project details below</p>
-      </div>
-
-      @if (submitSuccess()) {
-        <status-alert type="success">Project updated successfully. Redirecting...</status-alert>
-      }
-
-      @if (submitError()) {
-        <status-alert type="error">{{ submitError() }}</status-alert>
-      }
-
-      @if (projectResource.isLoading()) {
-        <div class="text-gray-400 font-mono py-12 text-center">Loading project...</div>
-      } @else if (projectResource.status() === 'idle') {
-        <div class="text-gray-400 font-mono py-12 text-center">Waiting for data...</div>
-      } @else if (projectResource.error()) {
-        <div class="text-red-400 py-8 text-center text-sm">Failed to load
-          project: {{ projectResource.error() | json }}
-        </div>
-      } @else if (projectResource.value()?.data) {
-        <project-form
-          [formTitle]="'Edit: ' + projectResource.value()!.data.title"
-          submitLabel="Save Changes"
-          submittingLabel="Saving..."
-          publishLabel="Published"
-          [isSubmitting]="isSubmitting()"
-          [initialData]="initialData()"
-          (formSubmit)="updateProject($event)"
-          (cancel)="navigateBack()"
-        />
-      }
-    </div>
-  `
+  templateUrl: './edit.page.html',
 })
 export default class EditProjectPage {
   readonly router = inject(Router);

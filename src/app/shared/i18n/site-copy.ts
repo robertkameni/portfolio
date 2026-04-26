@@ -1,4 +1,4 @@
-import type { AppLocale } from './app-locale';
+import type {AppLocale} from './app-locale';
 
 type SiteCopy = {
   common: {
@@ -51,6 +51,7 @@ type SiteCopy = {
     label: string;
     back: string;
     home: string;
+    admin: string;
   };
   chat: {
     title: string;
@@ -227,7 +228,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
   en: {
     common: {
       showMore: 'show more...',
-      showLess: 'show less...',
+      showLess: 'show less...'
     },
     home: {
       founder: 'Founder',
@@ -237,10 +238,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       adminPage: 'Admin Page',
       admin: 'Admin',
       loadingProfile: 'Loading system architecture...',
-      failedProfile: 'Failed to load profile. Please refresh.',
+      failedProfile: 'Failed to load profile. Please refresh.'
     },
     skills: {
-      title: 'Technical Arsenal',
+      title: 'Technical Arsenal'
     },
     projects: {
       eyebrow: 'Selected work',
@@ -250,14 +251,14 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loading: 'Loading projects...',
       error: 'Could not load projects.',
       empty: 'No projects published yet.',
-      openProject: 'Open project →',
+      openProject: 'Open project →'
     },
     projectsPage: {
       title: 'Projects',
       backToPortfolio: 'Back to Portfolio',
       loading: 'Loading projects...',
       error: 'Could not load projects.',
-      empty: 'No projects published yet.',
+      empty: 'No projects published yet.'
     },
     projectDetail: {
       backToProjects: 'Back to projects',
@@ -269,12 +270,13 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       notFoundTitle: 'Project not found',
       loadErrorTitle: 'Could not load project',
       notFoundMessage: 'The project slug does not exist or the project is not published yet.',
-      loadErrorMessage: 'Failed to load project details.',
+      loadErrorMessage: 'Failed to load project details.'
     },
     devProxy: {
       label: 'AI Dev Proxy',
       back: 'Back',
       home: 'Home',
+      admin: 'Admin'
     },
     chat: {
       title: 'Digital Twin',
@@ -284,7 +286,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       promptAngular: 'Tell me about your Angular experience',
       promptFreelance: 'Are you available for freelance work?',
       typingSrOnly: 'AI is typing...',
-      placeholder: 'Type your message...',
+      placeholder: 'Type your message...'
     },
     adminLogin: {
       title: 'Admin Login',
@@ -294,7 +296,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loggingIn: 'Logging in...',
       invalidCredentials: 'Invalid credentials.',
       accessDenied: 'Access denied: admins only.',
-      accessDeniedToast: 'Only administrators can log into the portfolio. Please contact the site owner if needed.',
+      accessDeniedToast: 'Only administrators can log into the portfolio. Please contact the site owner if needed.'
     },
     adminProjects: {
       newProject: 'New Project',
@@ -316,7 +318,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       failedLoad: 'Failed to load projects',
       failedCreate: 'Failed to create project',
       failedDelete: 'Failed to delete project',
-      confirmDelete: 'Are you sure you want to delete the project "{title}"?',
+      confirmDelete: 'Are you sure you want to delete the project "{title}"?'
     },
     projectForm: {
       titleLabel: 'Title *',
@@ -329,136 +331,208 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       cancel: 'Cancel',
       publishImmediately: 'Publish immediately',
       titleRequired: 'Title is required',
-      slugRequired: 'Slug is required',
+      slugRequired: 'Slug is required'
     },
     about: {
       adaptiveTitle: {
         recruiter: 'A Reliable Engineering Partner',
         founder: 'Building Your Vision, End-to-End',
         developer: 'An Architect Who Loves the Code',
-        hiringManager: 'Ready to Lead & Deliver',
+        hiringManager: 'Ready to Lead & Deliver'
       },
       founderParagraphs: [
         'I specialize in bringing ambitious SaaS products from 0 to 1. My focus is on establishing a clean, scalable architecture early on, ensuring your application can handle rapid growth without accumulating technical debt.',
-        'Founders need speed to market without sacrificing product stability. I architect end-to-end solutions using modern Angular and Nitro backends that allow your product to pivot quickly. Furthermore, I leverage Large Language Models (LLMs) and custom AI agents to build highly intelligent, scalable features that give your platform a competitive edge from day one.',
+        'Founders need speed to market without sacrificing product stability. I architect end-to-end solutions using modern Angular and Nitro backends that allow your product to pivot quickly. Furthermore, I leverage Large Language Models (LLMs) and custom AI agents to build highly intelligent, scalable features that give your platform a competitive edge from day one.'
       ],
       recruiterParagraphs: [
         'As a Technical Lead, I bring a proven track record of significantly increasing development team efficiency, establishing strict code quality standards, and successfully delivering highly complex enterprise-grade Angular applications.',
-        'I excel in large-scale, multi-team Scrum environments. Beyond writing clean code, I focus heavily on mentoring junior and mid-level developers, streamlining CI/CD pipelines, and integrating AI-driven tooling to accelerate the software development lifecycle across the engineering department.',
+        'I excel in large-scale, multi-team Scrum environments. Beyond writing clean code, I focus heavily on mentoring junior and mid-level developers, streamlining CI/CD pipelines, and integrating AI-driven tooling to accelerate the software development lifecycle across the engineering department.'
       ],
       developerParagraphs: [
         'I am deeply passionate about the modern Angular ecosystem and pushing the framework to its limits. I love migrating legacy applications to zoneless architectures using Angular Signals and building robust, predictable state management systems with the NgRx Signal Store.',
-        "I enjoy solving complex architectural challenges, setting up scalable Nx monorepo structures, and exploring how we can use AI logic and LLMs to power highly scalable, self-adapting application architectures. If you're interested in discussing reactive programming patterns or AI integration, let's connect.",
+        "I enjoy solving complex architectural challenges, setting up scalable Nx monorepo structures, and exploring how we can use AI logic and LLMs to power highly scalable, self-adapting application architectures. If you're interested in discussing reactive programming patterns or AI integration, let's connect."
       ],
-      previewSplitToken: 'Signals and NgRx Signal Store.',
+      previewSplitToken: 'Signals and NgRx Signal Store.'
     },
     contact: {
       validation: {
         emailRequired: 'Email is required',
-        messageRequired: 'Message is required',
+        messageRequired: 'Message is required'
       },
       adaptiveTitle: {
         recruiter: "Let's Talk About Your Next Big Hire",
-        founder: "Let's Bring Your Idea to Life",
+        founder: "Let's Bring Your Idea to Life"
       },
       adaptiveDescription: {
         recruiter: "Looking for a seasoned Angular engineer? Drop me a message and let's schedule an interview.",
-        founder: "Ready to start building? Contact me and let's discuss your product's architecture and roadmap.",
+        founder: "Ready to start building? Contact me and let's discuss your product's architecture and roadmap."
       },
       adaptivePlaceholder: {
         recruiter: "Hi Robert, we're looking for an Angular expert...",
         founder: 'Hi Robert, I have an idea for a SaaS...',
-        default: 'Message',
+        default: 'Message'
       },
       adaptiveButtonText: {
         recruiter: 'Schedule an Interview',
         founder: 'Discuss My Project',
-        default: 'Send Message',
+        default: 'Send Message'
       },
       placeholderName: 'Name',
-      placeholderEmail: 'Email',
+      placeholderEmail: 'Email'
     },
     hero: {
       defaultTitle: 'Technical Lead Frontend Specialist',
       adaptiveTitle: {
         recruiter: 'Senior Engineer Ready to Drive Your Next Project',
         founder: 'Architecting Scalable Solutions for Ambitious Startups',
-        developer: 'Deep Dives into Angular, Node, and AI Architecture',
+        developer: 'Deep Dives into Angular, Node, and AI Architecture'
       },
       frontend: {
         default: {
           description: "Engineering modern, high-performance web applications using Angular's latest reactive primitives.",
           items: [
-            { title: 'Reactive UI Architecture:', description: 'Zoneless Angular, Signals, and NgRx SignalStore for highly predictable state management.' },
-            { title: 'Frontend Quality Assurance:', description: 'Implementing strict end-to-end testing with Playwright and rapid unit coverage via Jest.' },
-            { title: 'Performance & Scaling:', description: 'Deep optimization of Core Web Vitals, SSR hydration, and structuring scalable Nx monorepos.' },
-          ],
+            {
+              title: 'Reactive UI Architecture:',
+              description: 'Zoneless Angular, Signals, and NgRx SignalStore for highly predictable state management.'
+            },
+            {
+              title: 'Frontend Quality Assurance:',
+              description: 'Implementing strict end-to-end testing with Playwright and rapid unit coverage via Jest.'
+            },
+            {
+              title: 'Performance & Scaling:',
+              description: 'Deep optimization of Core Web Vitals, SSR hydration, and structuring scalable Nx monorepos.'
+            }
+          ]
         },
         founder: {
           description: 'Building highly responsive, conversion-optimized interfaces that adapt instantly to your changing business needs.',
           items: [
-            { title: 'Rapid Execution:', description: 'Leveraging modern toolchains for fast MVP delivery without accumulating technical debt.' },
-            { title: 'Conversion-First:', description: 'Lightning-fast load times and seamless SSR to maximize user retention and SEO.' },
-            { title: 'Reliable Releases:', description: 'Automated frontend testing with Playwright and Jest to ensure UI features never break.' },
-          ],
+            {
+              title: 'Rapid Execution:',
+              description: 'Leveraging modern toolchains for fast MVP delivery without accumulating technical debt.'
+            },
+            {
+              title: 'Conversion-First:',
+              description: 'Lightning-fast load times and seamless SSR to maximize user retention and SEO.'
+            },
+            {
+              title: 'Reliable Releases:',
+              description: 'Automated frontend testing with Playwright and Jest to ensure UI features never break.'
+            }
+          ]
         },
         recruiter: {
           description: 'Delivering enterprise-grade frontend applications with a focus on code maintainability, team scalability, and UI consistency.',
           items: [
-            { title: 'Technical Leadership:', description: 'Mentoring teams on modern Angular paradigms and enforcing clean architectural standards.' },
-            { title: 'Testing Culture:', description: 'Spearheading UI test automation with Jest and Playwright to guarantee stability across releases.' },
-            { title: 'Scalable Workflows:', description: 'Structuring Nx workspaces and CI/CD pipelines for large, multi-team enterprise environments.' },
-          ],
+            {
+              title: 'Technical Leadership:',
+              description: 'Mentoring teams on modern Angular paradigms and enforcing clean architectural standards.'
+            },
+            {
+              title: 'Testing Culture:',
+              description: 'Spearheading UI test automation with Jest and Playwright to guarantee stability across releases.'
+            },
+            {
+              title: 'Scalable Workflows:',
+              description: 'Structuring Nx workspaces and CI/CD pipelines for large, multi-team enterprise environments.'
+            }
+          ]
         },
         developer: {
           description: 'Pushing the boundaries of the Angular ecosystem with advanced reactivity, strict typing, and elegant design patterns.',
           items: [
-            { title: 'Signal Architecture:', description: 'Deep integration of Signals, complex RxJS streams, and strictly zoneless state engines.' },
-            { title: 'Type-Safe Tooling:', description: 'Leveraging strictly typed templates and enforcing deterministic behavioral testing via Playwright.' },
-            { title: 'Performance Primitives:', description: 'Optimizing hydration strategies, lazy-loaded routes, and efficient change detection cycles.' },
-          ],
-        },
+            {
+              title: 'Signal Architecture:',
+              description: 'Deep integration of Signals, complex RxJS streams, and strictly zoneless state engines.'
+            },
+            {
+              title: 'Type-Safe Tooling:',
+              description: 'Leveraging strictly typed templates and enforcing deterministic behavioral testing via Playwright.'
+            },
+            {
+              title: 'Performance Primitives:',
+              description: 'Optimizing hydration strategies, lazy-loaded routes, and efficient change detection cycles.'
+            }
+          ]
+        }
       },
       backend: {
         default: {
           description: 'Architecting resilient APIs and maintaining uncompromising software quality across the entire stack.',
           items: [
-            { title: 'API & Microservices:', description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.' },
-            { title: 'Quality Assurance:', description: 'Implementing comprehensive unit and integration tests using JUnit 5, Mockito, and Testcontainers.' },
-            { title: 'Cloud & Data:', description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.' },
-          ],
+            {
+              title: 'API & Microservices:',
+              description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.'
+            },
+            {
+              title: 'Quality Assurance:',
+              description: 'Implementing comprehensive unit and integration tests using JUnit 5, Mockito, and Testcontainers.'
+            },
+            {
+              title: 'Cloud & Data:',
+              description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.'
+            }
+          ]
         },
         founder: {
           description: 'Deploying highly reliable, cost-effective infrastructure enhanced with custom AI capabilities.',
           items: [
-            { title: 'AI-Powered Features:', description: "Embedding intelligent agents and LLM logic natively into your product's API layer." },
-            { title: 'Serverless Scaling:', description: 'Leveraging cloud-edge environments that scale perfectly alongside user demand drops and spikes.' },
-            { title: 'Continuous Delivery:', description: 'Automated deployment pipelines to continuously ship business value without breaking things.' },
-          ],
+            {
+              title: 'AI-Powered Features:',
+              description: "Embedding intelligent agents and LLM logic natively into your product's API layer."
+            },
+            {
+              title: 'Serverless Scaling:',
+              description: 'Leveraging cloud-edge environments that scale perfectly alongside user demand drops and spikes.'
+            },
+            {
+              title: 'Continuous Delivery:',
+              description: 'Automated deployment pipelines to continuously ship business value without breaking things.'
+            }
+          ]
         },
         recruiter: {
           description: 'Driving engineering excellence through strict QA cultures and highly reliable, scalable service architectures.',
           items: [
-            { title: 'API & Microservices:', description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.' },
-            { title: 'Testing Culture:', description: 'Enforcing TDD methodologies and rigorous API integration testing to guarantee enterprise platform stability.' },
-            { title: 'CI/CD & Delivery:', description: 'Automating reliable build pipelines to guarantee frictionless software delivery processes.' },
-          ],
+            {
+              title: 'API & Microservices:',
+              description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.'
+            },
+            {
+              title: 'Testing Culture:',
+              description: 'Enforcing TDD methodologies and rigorous API integration testing to guarantee enterprise platform stability.'
+            },
+            {
+              title: 'CI/CD & Delivery:',
+              description: 'Automating reliable build pipelines to guarantee frictionless software delivery processes.'
+            }
+          ]
         },
         developer: {
           description: 'Building strictly typed, highly optimized backends obsessed with clean architecture and execution speed.',
           items: [
-            { title: 'Type-Safe Ecosystem:', description: 'Unifying the full stack with end-to-end type safety via Prisma, Nitro, and deep generics.' },
-            { title: 'Robust Testing:', description: 'Writing deterministic backend test suites using JUnit 5, Mockito, and Testcontainers for real DB integration.' },
-            { title: 'Cloud & Data:', description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.' },
-          ],
-        },
-      },
-    },
+            {
+              title: 'Type-Safe Ecosystem:',
+              description: 'Unifying the full stack with end-to-end type safety via Prisma, Nitro, and deep generics.'
+            },
+            {
+              title: 'Robust Testing:',
+              description: 'Writing deterministic backend test suites using JUnit 5, Mockito, and Testcontainers for real DB integration.'
+            },
+            {
+              title: 'Cloud & Data:',
+              description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.'
+            }
+          ]
+        }
+      }
+    }
   },
   de: {
     common: {
       showMore: 'mehr anzeigen...',
-      showLess: 'weniger anzeigen...',
+      showLess: 'weniger anzeigen...'
     },
     home: {
       founder: 'Founder',
@@ -468,10 +542,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       adminPage: 'Admin-Bereich',
       admin: 'Admin',
       loadingProfile: 'Profil wird geladen...',
-      failedProfile: 'Profil konnte nicht geladen werden. Bitte aktualisieren.',
+      failedProfile: 'Profil konnte nicht geladen werden. Bitte aktualisieren.'
     },
     skills: {
-      title: 'Technisches Arsenal',
+      title: 'Technisches Arsenal'
     },
     projects: {
       eyebrow: 'Ausgewählte Arbeiten',
@@ -481,14 +555,14 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loading: 'Projekte werden geladen...',
       error: 'Projekte konnten nicht geladen werden.',
       empty: 'Noch keine Projekte veröffentlicht.',
-      openProject: 'Projekt öffnen →',
+      openProject: 'Projekt öffnen →'
     },
     projectsPage: {
       title: 'Projekte',
       backToPortfolio: 'Zurück zum Portfolio',
       loading: 'Projekte werden geladen...',
       error: 'Projekte konnten nicht geladen werden.',
-      empty: 'Noch keine Projekte veröffentlicht.',
+      empty: 'Noch keine Projekte veröffentlicht.'
     },
     projectDetail: {
       backToProjects: 'Zurück zu den Projekten',
@@ -500,12 +574,13 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       notFoundTitle: 'Projekt nicht gefunden',
       loadErrorTitle: 'Projekt konnte nicht geladen werden',
       notFoundMessage: 'Der Projekt-Slug existiert nicht oder das Projekt ist noch nicht veröffentlicht.',
-      loadErrorMessage: 'Projektdetails konnten nicht geladen werden.',
+      loadErrorMessage: 'Projektdetails konnten nicht geladen werden.'
     },
     devProxy: {
       label: 'AI Dev Proxy',
       back: 'Zurück',
       home: 'Startseite',
+      admin: 'Admin'
     },
     chat: {
       title: 'Digital Twin',
@@ -515,7 +590,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       promptAngular: 'Erzähl mir von deiner Angular-Erfahrung',
       promptFreelance: 'Bist du für Freelance-Projekte verfügbar?',
       typingSrOnly: 'AI schreibt gerade...',
-      placeholder: 'Schreibe deine Nachricht...',
+      placeholder: 'Schreibe deine Nachricht...'
     },
     adminLogin: {
       title: 'Admin-Anmeldung',
@@ -525,7 +600,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loggingIn: 'Anmeldung läuft...',
       invalidCredentials: 'Ungültige Zugangsdaten.',
       accessDenied: 'Zugriff verweigert: Nur Admins.',
-      accessDeniedToast: 'Nur Administratoren können sich im Portfolio anmelden. Bitte kontaktiere bei Bedarf den Seiteninhaber.',
+      accessDeniedToast: 'Nur Administratoren können sich im Portfolio anmelden. Bitte kontaktiere bei Bedarf den Seiteninhaber.'
     },
     adminProjects: {
       newProject: 'Neues Projekt',
@@ -547,7 +622,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       failedLoad: 'Projekte konnten nicht geladen werden',
       failedCreate: 'Projekt konnte nicht erstellt werden',
       failedDelete: 'Projekt konnte nicht gelöscht werden',
-      confirmDelete: 'Möchtest du das Projekt "{title}" wirklich löschen?',
+      confirmDelete: 'Möchtest du das Projekt "{title}" wirklich löschen?'
     },
     projectForm: {
       titleLabel: 'Titel *',
@@ -560,132 +635,204 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       cancel: 'Abbrechen',
       publishImmediately: 'Sofort veröffentlichen',
       titleRequired: 'Titel ist erforderlich',
-      slugRequired: 'Slug ist erforderlich',
+      slugRequired: 'Slug ist erforderlich'
     },
     about: {
       adaptiveTitle: {
         recruiter: 'Ein verlässlicher Engineering-Partner',
         founder: 'Deine Vision ganzheitlich umsetzen',
         developer: 'Ein Architekt, der Code liebt',
-        hiringManager: 'Bereit zu führen und zu liefern',
+        hiringManager: 'Bereit zu führen und zu liefern'
       },
       founderParagraphs: [
         'Ich spezialisiere mich darauf, ambitionierte SaaS-Produkte von 0 auf 1 zu bringen. Mein Fokus liegt darauf, früh eine saubere und skalierbare Architektur zu etablieren, damit deine Anwendung schnell wachsen kann, ohne technische Schulden aufzubauen.',
-        'Founders brauchen Geschwindigkeit, ohne Stabilität zu verlieren. Ich konzipiere End-to-End-Lösungen mit modernem Angular und Nitro-Backends, damit sich dein Produkt schnell an neue Anforderungen anpassen kann. Zusätzlich nutze ich Large Language Models und individuelle AI-Agents, um intelligente, skalierbare Features zu entwickeln, die deiner Plattform vom ersten Tag an einen echten Vorsprung geben.',
+        'Founders brauchen Geschwindigkeit, ohne Stabilität zu verlieren. Ich konzipiere End-to-End-Lösungen mit modernem Angular und Nitro-Backends, damit sich dein Produkt schnell an neue Anforderungen anpassen kann. Zusätzlich nutze ich Large Language Models und individuelle AI-Agents, um intelligente, skalierbare Features zu entwickeln, die deiner Plattform vom ersten Tag an einen echten Vorsprung geben.'
       ],
       recruiterParagraphs: [
         'Als Technical Lead bringe ich nachweislich Teams zu höherer Entwicklungseffizienz, etabliere klare Qualitätsstandards und liefere komplexe Enterprise-Anwendungen mit Angular zuverlässig aus.',
-        'Ich arbeite souverän in großen, teamübergreifenden Scrum-Umgebungen. Neben sauberem Code fokussiere ich mich auf Mentoring, effizientere CI/CD-Abläufe und den gezielten Einsatz AI-gestützter Tools, um den gesamten Entwicklungsprozess zu beschleunigen.',
+        'Ich arbeite souverän in großen, teamübergreifenden Scrum-Umgebungen. Neben sauberem Code fokussiere ich mich auf Mentoring, effizientere CI/CD-Abläufe und den gezielten Einsatz AI-gestützter Tools, um den gesamten Entwicklungsprozess zu beschleunigen.'
       ],
       developerParagraphs: [
         'Ich bin stark im modernen Angular-Ökosystem verankert und reizt es aus. Besonders gern modernisiere ich Legacy-Anwendungen in Richtung zoneless Architektur mit Angular Signals und baue robuste, vorhersehbare State-Management-Lösungen mit dem NgRx Signal Store.',
-        'Ich löse gern komplexe Architekturfragen, strukturiere skalierbare Nx-Monorepos und experimentiere damit, wie AI-Logik und LLMs selbstanpassende Architekturen ermöglichen können. Wenn du über reaktive Patterns oder AI-Integration sprechen willst, lass uns austauschen.',
+        'Ich löse gern komplexe Architekturfragen, strukturiere skalierbare Nx-Monorepos und experimentiere damit, wie AI-Logik und LLMs selbstanpassende Architekturen ermöglichen können. Wenn du über reaktive Patterns oder AI-Integration sprechen willst, lass uns austauschen.'
       ],
-      previewSplitToken: 'Signals und NgRx Signal Store.',
+      previewSplitToken: 'Signals und NgRx Signal Store.'
     },
     contact: {
       validation: {
         emailRequired: 'E-Mail ist erforderlich',
-        messageRequired: 'Nachricht ist erforderlich',
+        messageRequired: 'Nachricht ist erforderlich'
       },
       adaptiveTitle: {
         recruiter: 'Lass uns über deinen nächsten Top-Hire sprechen',
-        founder: 'Lass uns deine Idee zum Leben erwecken',
+        founder: 'Lass uns deine Idee zum Leben erwecken'
       },
       adaptiveDescription: {
         recruiter: 'Du suchst einen erfahrenen Angular Engineer? Schreib mir und wir vereinbaren ein Gespräch.',
-        founder: 'Bereit loszulegen? Schreib mir und wir sprechen über Produktarchitektur und Roadmap.',
+        founder: 'Bereit loszulegen? Schreib mir und wir sprechen über Produktarchitektur und Roadmap.'
       },
       adaptivePlaceholder: {
         recruiter: 'Hallo Robert, wir suchen einen Angular-Experten...',
         founder: 'Hallo Robert, ich habe eine Idee für ein SaaS...',
-        default: 'Nachricht',
+        default: 'Nachricht'
       },
       adaptiveButtonText: {
         recruiter: 'Interview vereinbaren',
         founder: 'Mein Projekt besprechen',
-        default: 'Nachricht senden',
+        default: 'Nachricht senden'
       },
       placeholderName: 'Name',
-      placeholderEmail: 'E-Mail',
+      placeholderEmail: 'E-Mail'
     },
     hero: {
       defaultTitle: 'Technischer Lead Frontend Spezialist',
       adaptiveTitle: {
         recruiter: 'Senior Engineer, bereit dein nächstes Projekt voranzutreiben',
         founder: 'Skalierbare Lösungen für ambitionierte Startups',
-        developer: 'Tiefe Einblicke in Angular-, Node- und AI-Architektur',
+        developer: 'Tiefe Einblicke in Angular-, Node- und AI-Architektur'
       },
       frontend: {
         default: {
           description: 'Entwicklung moderner, performanter Webanwendungen mit den neuesten reaktiven Angular-Primitiven.',
           items: [
-            { title: 'Reaktive UI-Architektur:', description: 'Zoneless Angular, Signals und NgRx Signal Store für klar vorhersehbares State Management.' },
-            { title: 'Frontend-Qualitätssicherung:', description: 'Strikte End-to-End-Tests mit Playwright und schnelle Unit-Abdeckung mit Jest.' },
-            { title: 'Performance & Skalierung:', description: 'Optimierung von Core Web Vitals, SSR-Hydration und Aufbau skalierbarer Nx-Monorepos.' },
-          ],
+            {
+              title: 'Reaktive UI-Architektur:',
+              description: 'Zoneless Angular, Signals und NgRx Signal Store für klar vorhersehbares State Management.'
+            },
+            {
+              title: 'Frontend-Qualitätssicherung:',
+              description: 'Strikte End-to-End-Tests mit Playwright und schnelle Unit-Abdeckung mit Jest.'
+            },
+            {
+              title: 'Performance & Skalierung:',
+              description: 'Optimierung von Core Web Vitals, SSR-Hydration und Aufbau skalierbarer Nx-Monorepos.'
+            }
+          ]
         },
         founder: {
           description: 'Aufbau hochreaktiver, conversion-optimierter Oberflächen, die sich schnell an veränderte Geschäftsanforderungen anpassen.',
           items: [
-            { title: 'Schnelle Umsetzung:', description: 'Moderne Toolchains für schnelle MVP-Lieferung ohne technische Schulden.' },
-            { title: 'Conversion-First:', description: 'Extrem kurze Ladezeiten und sauberes SSR für bessere Retention und SEO.' },
-            { title: 'Verlässliche Releases:', description: 'Automatisierte Frontend-Tests mit Playwright und Jest, damit UI-Features stabil bleiben.' },
-          ],
+            {
+              title: 'Schnelle Umsetzung:',
+              description: 'Moderne Toolchains für schnelle MVP-Lieferung ohne technische Schulden.'
+            },
+            {
+              title: 'Conversion-First:',
+              description: 'Extrem kurze Ladezeiten und sauberes SSR für bessere Retention und SEO.'
+            },
+            {
+              title: 'Verlässliche Releases:',
+              description: 'Automatisierte Frontend-Tests mit Playwright und Jest, damit UI-Features stabil bleiben.'
+            }
+          ]
         },
         recruiter: {
           description: 'Lieferung von Enterprise-Frontend-Anwendungen mit Fokus auf Wartbarkeit, Team-Skalierung und UI-Konsistenz.',
           items: [
-            { title: 'Technische Führung:', description: 'Mentoring für Teams in modernen Angular-Paradigmen und Durchsetzung sauberer Architekturstandards.' },
-            { title: 'Testing-Kultur:', description: 'Aufbau automatisierter UI-Tests mit Jest und Playwright für stabile Releases.' },
-            { title: 'Skalierbare Workflows:', description: 'Strukturierung von Nx-Workspaces und CI/CD-Pipelines für große Multi-Team-Umgebungen.' },
-          ],
+            {
+              title: 'Technische Führung:',
+              description: 'Mentoring für Teams in modernen Angular-Paradigmen und Durchsetzung sauberer Architekturstandards.'
+            },
+            {
+              title: 'Testing-Kultur:',
+              description: 'Aufbau automatisierter UI-Tests mit Jest und Playwright für stabile Releases.'
+            },
+            {
+              title: 'Skalierbare Workflows:',
+              description: 'Strukturierung von Nx-Workspaces und CI/CD-Pipelines für große Multi-Team-Umgebungen.'
+            }
+          ]
         },
         developer: {
           description: 'Ausreizen des Angular-Ökosystems mit fortgeschrittener Reaktivität, strikter Typisierung und eleganten Designmustern.',
           items: [
-            { title: 'Signal-Architektur:', description: 'Tiefe Integration von Signals, komplexen RxJS-Streams und konsequent zoneless State Engines.' },
-            { title: 'Typsichere Tooling-Strategien:', description: 'Strikt typisierte Templates und deterministische Verhaltenstests mit Playwright.' },
-            { title: 'Performance-Primitiven:', description: 'Optimierung von Hydration-Strategien, Lazy-Loaded-Routes und effizienter Change Detection.' },
-          ],
-        },
+            {
+              title: 'Signal-Architektur:',
+              description: 'Tiefe Integration von Signals, komplexen RxJS-Streams und konsequent zoneless State Engines.'
+            },
+            {
+              title: 'Typsichere Tooling-Strategien:',
+              description: 'Strikt typisierte Templates und deterministische Verhaltenstests mit Playwright.'
+            },
+            {
+              title: 'Performance-Primitiven:',
+              description: 'Optimierung von Hydration-Strategien, Lazy-Loaded-Routes und effizienter Change Detection.'
+            }
+          ]
+        }
       },
       backend: {
         default: {
           description: 'Architektur robuster APIs und kompromisslose Softwarequalität über den gesamten Stack hinweg.',
           items: [
-            { title: 'APIs & Microservices:', description: 'Typsichere, skalierbare REST- und Realtime-APIs mit Node.js (Nitro) und Java Spring Boot.' },
-            { title: 'Qualitätssicherung:', description: 'Umfassende Unit- und Integrationstests mit JUnit 5, Mockito und Testcontainers.' },
-            { title: 'Cloud & Daten:', description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.' },
-          ],
+            {
+              title: 'APIs & Microservices:',
+              description: 'Typsichere, skalierbare REST- und Realtime-APIs mit Node.js (Nitro) und Java Spring Boot.'
+            },
+            {
+              title: 'Qualitätssicherung:',
+              description: 'Umfassende Unit- und Integrationstests mit JUnit 5, Mockito und Testcontainers.'
+            },
+            {
+              title: 'Cloud & Daten:',
+              description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.'
+            }
+          ]
         },
         founder: {
           description: 'Aufbau zuverlässiger, kosteneffizienter Infrastruktur mit individuell integrierten AI-Funktionen.',
           items: [
-            { title: 'AI-gestützte Features:', description: 'Einbettung intelligenter Agents und LLM-Logik direkt in die API-Schicht deines Produkts.' },
-            { title: 'Serverless-Skalierung:', description: 'Cloud-Edge-Umgebungen, die bei Lastspitzen und Ruhephasen sauber mitwachsen.' },
-            { title: 'Continuous Delivery:', description: 'Automatisierte Deployments, um fortlaufend Business Value auszuliefern.' },
-          ],
+            {
+              title: 'AI-gestützte Features:',
+              description: 'Einbettung intelligenter Agents und LLM-Logik direkt in die API-Schicht deines Produkts.'
+            },
+            {
+              title: 'Serverless-Skalierung:',
+              description: 'Cloud-Edge-Umgebungen, die bei Lastspitzen und Ruhephasen sauber mitwachsen.'
+            },
+            {
+              title: 'Continuous Delivery:',
+              description: 'Automatisierte Deployments, um fortlaufend Business Value auszuliefern.'
+            }
+          ]
         },
         recruiter: {
           description: 'Engineering Excellence durch klare QA-Kultur und hochzuverlässige, skalierbare Service-Architekturen.',
           items: [
-            { title: 'APIs & Microservices:', description: 'Typsichere, skalierbare REST- und Realtime-APIs mit Node.js (Nitro) und Java Spring Boot.' },
-            { title: 'Testing-Kultur:', description: 'Durchsetzung von TDD und rigorosen API-Integrationstests für Enterprise-Stabilität.' },
-            { title: 'CI/CD & Delivery:', description: 'Automatisierung verlässlicher Build- und Delivery-Prozesse für reibungslose Auslieferung.' },
-          ],
+            {
+              title: 'APIs & Microservices:',
+              description: 'Typsichere, skalierbare REST- und Realtime-APIs mit Node.js (Nitro) und Java Spring Boot.'
+            },
+            {
+              title: 'Testing-Kultur:',
+              description: 'Durchsetzung von TDD und rigorosen API-Integrationstests für Enterprise-Stabilität.'
+            },
+            {
+              title: 'CI/CD & Delivery:',
+              description: 'Automatisierung verlässlicher Build- und Delivery-Prozesse für reibungslose Auslieferung.'
+            }
+          ]
         },
         developer: {
           description: 'Aufbau streng typisierter, hochoptimierter Backends mit Fokus auf Clean Architecture und Ausführungsgeschwindigkeit.',
           items: [
-            { title: 'Typsicheres Ökosystem:', description: 'End-to-End-Typsicherheit über Prisma, Nitro und tiefgehende Generics im gesamten Stack.' },
-            { title: 'Robuste Tests:', description: 'Deterministische Backend-Test-Suiten mit JUnit 5, Mockito und Testcontainers gegen reale Datenbanken.' },
-            { title: 'Cloud & Daten:', description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.' },
-          ],
-        },
-      },
-    },
-  },
+            {
+              title: 'Typsicheres Ökosystem:',
+              description: 'End-to-End-Typsicherheit über Prisma, Nitro und tiefgehende Generics im gesamten Stack.'
+            },
+            {
+              title: 'Robuste Tests:',
+              description: 'Deterministische Backend-Test-Suiten mit JUnit 5, Mockito und Testcontainers gegen reale Datenbanken.'
+            },
+            {
+              title: 'Cloud & Daten:',
+              description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.'
+            }
+          ]
+        }
+      }
+    }
+  }
 };
 
 export function getSiteCopy(locale: AppLocale): SiteCopy {

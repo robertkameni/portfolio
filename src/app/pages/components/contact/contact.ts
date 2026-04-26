@@ -1,8 +1,11 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { form, FormField, required } from '@angular/forms/signals';
 import { ContactData } from './interface/contact-data';
-import { FormFieldComponent } from '../../../shared/components/form-field.component';
+import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
+import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
 import { VisitorStore } from '../../../store/visitor.store';
+import { AnalyticsService } from '../../../services/analytics.service';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
@@ -10,78 +13,13 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
 @Component({
   selector: 'contact',
   standalone: true,
-  imports: [FormFieldComponent, TrackBehaviorDirective, FormField],
-  template: `
-    <section trackBehavior="contact_viewed" class="flex px-4 py-4 md:py-12 justify-center text-white">
-      <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-6 md:p-10 shadow-2xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-12">
-          <div class="flex flex-col justify-center text-left">
-            <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>
-            <p class="text-gray-300 mb-10 text-lg">{{ adaptiveDescription() }}</p>
-
-            <div class="space-y-8 text-left">
-              @for (feature of data().features; track feature.title) {
-                <div class="flex items-start">
-                  <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
-                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="feature.iconPath"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 class="text-white font-bold text-lg">{{ feature.title }}</h4>
-                    <p class="text-gray-400 text-sm mt-1">{{ feature.description }}</p>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-
-          <div class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
-            <form (submit)="submit($event)" class="flex flex-col gap-4 w-full text-left">
-              <!-- Wrapped each input in the custom app-form-field component -->
-              <form-field [control]="form.name()">
-                <input
-                  type="text"
-                  [formField]="form.name"
-                  [placeholder]="copy().contact.placeholderName"
-                  class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
-                />
-              </form-field>
-
-              <form-field [control]="form.email()">
-                <input
-                  type="email"
-                  [formField]="form.email"
-                  [placeholder]="copy().contact.placeholderEmail"
-                  class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
-                />
-              </form-field>
-
-              <form-field [control]="form.message()">
-                <textarea
-                  [formField]="form.message"
-                  [placeholder]="adaptivePlaceholder()"
-                  rows="4"
-                  class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors resize-none"
-                ></textarea>
-              </form-field>
-
-              <button
-                type="submit"
-                [disabled]="!form().valid()"
-                class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black font-bold py-4 px-6 rounded-lg transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ adaptiveButtonText() }}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-  `,
+  imports: [FormFieldComponent, StatusAlertComponent, TrackBehaviorDirective, FormField],
+  templateUrl: './page/contact.html',
 })
 export class ContactComponent {
+  private readonly http = inject(HttpClient);
   private readonly visitorStore = inject(VisitorStore);
+  private readonly analytics = inject(AnalyticsService);
 
   data = input.required<ContactData>();
   locale = input<AppLocale>('en');
@@ -94,9 +32,17 @@ export class ContactComponent {
   });
 
   form = form(this.formModel, (schema) => {
-    required(schema.email, { message: this.copy().contact.validation.emailRequired });
-    required(schema.message, { message: this.copy().contact.validation.messageRequired });
+    required(schema.email, {
+      message: () => this.copy().contact.validation.emailRequired,
+    });
+    required(schema.message, {
+      message: () => this.copy().contact.validation.messageRequired,
+    });
   });
+
+  isSubmitting = signal(false);
+  statusMessage = signal<string | null>(null);
+  statusType = signal<'success' | 'error'>('success');
 
   adaptiveTitle = computed(() => {
     const profile = this.visitorStore.profile();
@@ -129,13 +75,41 @@ export class ContactComponent {
   submit(event: Event) {
     event?.preventDefault();
 
-    // Check if the form is valid before dispatching
-    if (!this.form().valid()) {
+    if (!this.form().valid() || this.isSubmitting()) {
       return;
     }
 
-    const value = this.formModel();
+    this.isSubmitting.set(true);
+    this.statusMessage.set(null);
 
-    console.log('Dispatching message:', value);
+    const value = this.formModel();
+    const sessionId = this.analytics.getClientSessionId();
+
+    this.http.post('/api/contact', {
+      name: value.name || undefined,
+      email: value.email,
+      message: value.message,
+      sessionId,
+    }).subscribe({
+      next: () => {
+        this.statusType.set('success');
+        this.statusMessage.set('Message sent successfully! I will get back to you soon.');
+
+        // Reset the form data AND the touched/dirty state so validation errors disappear
+        this.form().reset({ name: '', email: '', message: '' });
+        this.isSubmitting.set(false);
+
+        // Auto-dismiss success message after 6 seconds
+        setTimeout(() => {
+          this.statusMessage.set(null);
+        }, 6000);
+      },
+      error: (err) => {
+        console.error('Failed to send message:', err);
+        this.statusType.set('error');
+        this.statusMessage.set('Failed to send message. Please try again or email me directly.');
+        this.isSubmitting.set(false);
+      },
+    });
   }
 }

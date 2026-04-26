@@ -19,48 +19,7 @@ function resolveReturnUrl(value: string | null): string {
   selector: 'app-login-page',
   standalone: true,
   imports: [FormsModule, FadeInDirective],
-  template: `
-    <div fadeIn class="flex items-center justify-center min-h-screen bg-gray-900 relative z-10001">
-      <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-center text-white">{{ copy().adminLogin.title }}</h1>
-        <form (ngSubmit)="submit()" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.email }}</label>
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              required
-              class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.password }}</label>
-            <input
-              type="password"
-              [(ngModel)]="password"
-              name="password"
-              required
-              class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          @if (errorMessage()) {
-            <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
-          }
-          <button type="submit" [disabled]="isLoading()" class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
-            {{ isLoading() ? copy().adminLogin.loggingIn : copy().adminLogin.login }}
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Toast -->
-    @if (toastMessage()) {
-      <div role="status" aria-live="polite" class="fixed bottom-6 right-6 z-10002">
-        <div class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow">{{ toastMessage() }}</div>
-      </div>
-    }
-  `,
+  templateUrl: './index.page.html',
 })
 export default class LoginPageComponent implements OnInit {
   private readonly authService = inject(AuthService);

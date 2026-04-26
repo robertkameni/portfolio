@@ -1,0 +1,101 @@
+<dev-proxy-bar>
+  @if (devMode) {
+    <button
+      (click)="setMockProfile('founder')"
+      class="w-full sm:w-auto text-xs px-4 py-1.5 bg-green-950/30 hover:bg-green-900/50 text-green-400 border
+          border-green-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+    >
+      {{ copy().home.founder }}
+    </button>
+    <button
+      (click)="setMockProfile('recruiter')"
+      class="w-full sm:w-auto text-xs px-4 py-1.5 bg-blue-950/30 hover:bg-blue-900/50 text-blue-400 border
+        border-blue-900/50 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+    >
+      {{ copy().home.recruiter }}
+    </button>
+    <button
+      (click)="setMockProfile('developer')"
+      class="px-4 py-1.5 text-xs bg-purple-950/30 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50
+        rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer w-full sm:w-auto"
+    >
+      {{ copy().home.developer }}
+    </button>
+
+    <div class="hidden sm:block w-px h-4 bg-gray-800 mx-1 sm:mx-2"></div>
+
+    <button
+      (click)="setMockProfile(null)"
+      class="w-full sm:w-auto px-4 py-1.5 text-xs bg-gray-900/50 hover:bg-gray-800 text-gray-400 border
+        border-gray-800 rounded-full transition-colors duration-700 whitespace-nowrap cursor-pointer"
+    >
+      {{ copy().home.reset }}
+    </button>
+  }
+
+  <div class="w-full sm:w-auto sm:ml-auto">
+    @if (auth.authInitialized() && auth.isAuthenticated() && auth.isAdmin()) {
+      <button
+        (click)="navigateToAdminProjects()"
+        title="Admin Projects"
+        aria-label="Admin projects dashboard"
+        class="w-full sm:w-auto text-xs cursor-pointer inline-flex items-center justify-center sm:justify-start gap-1 px-3 py-1.5
+            bg-primary text-black rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path
+            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>{{ copy().home.adminPage }}</span>
+      </button>
+    } @else if (auth.authInitialized() && !auth.isAuthenticated()) {
+      <button
+        (click)="onAdminClick()"
+        title="Admin"
+        aria-label="Admin login"
+        class="w-full sm:w-auto text-xs cursor-pointer inline-flex items-center justify-center sm:justify-start gap-1 px-3 py-1.5
+            bg-green-600 text-white rounded-md shadow hover:bg-green-500 transition-colors duration-300"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path
+            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM4 20v-1a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v1"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>{{ copy().home.admin }}</span>
+      </button>
+    }
+  </div>
+</dev-proxy-bar>
+
+<main class="bg-background min-h-screen font-sans selection:bg-blue-500 pt-4 xs:pt-0 selection:text-white" fadeIn>
+  @if (store.isLoading()) {
+    <page-loader [message]="copy().home.loadingProfile"></page-loader>
+  } @else if (store.error()) {
+    <page-loader [message]="copy().home.failedProfile"></page-loader>
+  } @else if (store.data(); as profile) {
+    <intro [data]="profile.intro" fadeIn></intro>
+
+    <hero [name]="profile.title" [cards]="profile.heroCards" [locale]="profile.locale" fadeIn></hero>
+
+    <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn></skills-bento>
+
+    <about [data]="profile.about" [locale]="profile.locale" fadeIn></about>
+
+    <projects-section [locale]="profile.locale" fadeIn></projects-section>
+
+    <contact [data]="profile.contact" [locale]="profile.locale" fadeIn></contact>
+
+    <chat-widget></chat-widget>
+
+    <dev-footer></dev-footer>
+  }
+</main>
