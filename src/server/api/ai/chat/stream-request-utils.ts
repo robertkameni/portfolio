@@ -1,6 +1,6 @@
 import { readBody, type H3Event } from 'h3';
-import { validateChatInput } from '../../../../ai/chat-security';
-import { getSingleQueryString } from '../../../../utils/query-params';
+import { validateChatInput } from '../../../ai/chat-security';
+import { getSingleQueryString } from '../../../utils/query-params';
 import { writeSseError } from './stream-utils';
 
 type ChatRequestBody = {
@@ -85,4 +85,3 @@ export async function parseAndValidatePostChatRequest(event: H3Event, requestId:
 
   return { message, history, sessionId };
 }
-

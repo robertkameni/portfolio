@@ -54,12 +54,7 @@ export function createChatModelSafe(event: H3Event, factory: () => GenerativeMod
   }
 }
 
-export async function streamChatResponseSafe(
-  event: H3Event,
-  chat: StreamingChat,
-  message: string,
-  options: StreamOptions = {}
-): Promise<boolean> {
+export async function streamChatResponseSafe(event: H3Event, chat: StreamingChat, message: string, options: StreamOptions = {}): Promise<boolean> {
   try {
     const stream = await chat.sendMessageStream(message);
 
@@ -80,4 +75,3 @@ export async function streamChatResponseSafe(
     return false;
   }
 }
-

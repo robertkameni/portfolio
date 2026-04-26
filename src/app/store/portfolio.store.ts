@@ -4,29 +4,8 @@ import {isPlatformBrowser} from '@angular/common';
 import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
-import type {IntroData} from '../pages/components/intro/interface/intro-data';
-import type {SkillCard} from '../pages/components/hero/interface/skill-card';
-import type {SkillBentoData} from '../pages/components/skills-bento/interface/skill-bento-data';
-import type {AboutData} from '../pages/components/about/interface/about-data';
-import type {ContactData} from '../pages/components/contact/interface/contact-data';
-import {type AppLocale} from '../shared/i18n/app-locale';
+import {type LocalizedProfileData} from '../shared/types/profile-data';
 import {LocaleService} from '../shared/services/locale.service';
-
-export interface ProfileData {
-  name: string;
-  title: string;
-  phone: string;
-  email: string;
-  intro: IntroData;
-  heroCards: SkillCard[];
-  skills: SkillBentoData[];
-  about: AboutData;
-  contact: ContactData;
-}
-
-export interface LocalizedProfileData extends ProfileData {
-  locale: AppLocale;
-}
 
 type ProfileState = {
   data: LocalizedProfileData | null;

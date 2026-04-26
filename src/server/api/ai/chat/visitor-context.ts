@@ -1,4 +1,4 @@
-import { prisma } from '../../../../db/client';
+import { prisma } from '../../../db/client';
 
 export async function resolveVisitorContextString(sessionId: string | undefined, logPrefix: string): Promise<string> {
   if (typeof sessionId !== 'string') {
@@ -24,4 +24,3 @@ export async function resolveVisitorContextString(sessionId: string | undefined,
     return '';
   }
 }
-

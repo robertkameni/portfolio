@@ -40,15 +40,14 @@ export default defineEventHandler(async (event) => {
 
     return apiSuccess(
       {
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      accessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
       },
       'Login successful.',
-      'AUTH_LOGIN_SUCCESS'
+      'AUTH_LOGIN_SUCCESS',
     );
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in error) {

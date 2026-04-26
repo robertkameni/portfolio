@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3';
 import { projectRepository } from '../../db/repositories/project.repository';
-import { authGuard } from '../../utils/authGuard';
+import { adminGuard } from '../../utils/authGuard';
 import { requireRouterParam } from '../../utils/route-params';
 import type { Project } from '../../../../prisma/generated/client';
 import { notFound, withApiErrorHandling } from '../../utils/api-errors';
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const previewMode = queryEquals(event, 'preview', 'admin');
 
   if (previewMode) {
-    authGuard(event);
+    adminGuard(event);
   }
 
   const project: Project | null = await withApiErrorHandling(

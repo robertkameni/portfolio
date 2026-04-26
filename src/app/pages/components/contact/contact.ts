@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { form, FormField, required } from '@angular/forms/signals';
 import { ContactData } from './interface/contact-data';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
@@ -9,6 +8,7 @@ import { AnalyticsService } from '../../../services/analytics.service';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { ContactService } from '../../../shared/services/contact.service';
 
 @Component({
   selector: 'contact',
@@ -17,7 +17,7 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   templateUrl: './page/contact.html',
 })
 export class ContactComponent {
-  private readonly http = inject(HttpClient);
+  private readonly contactService = inject(ContactService);
   private readonly visitorStore = inject(VisitorStore);
   private readonly analytics = inject(AnalyticsService);
 
@@ -85,7 +85,7 @@ export class ContactComponent {
     const value = this.formModel();
     const sessionId = this.analytics.getClientSessionId();
 
-    this.http.post('/api/contact', {
+    this.contactService.sendContactMessage({
       name: value.name || undefined,
       email: value.email,
       message: value.message,

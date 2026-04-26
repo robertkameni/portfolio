@@ -34,13 +34,12 @@ export default defineEventHandler(async (event) => {
 
   return apiSuccess(
     {
-    user: {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-    },
-    accessToken: newAccessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
     },
     'Session refreshed.',
     'AUTH_REFRESH_SUCCESS'

@@ -1,6 +1,14 @@
 import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../../db/repositories/analytics.repository';
-import { apiAck } from '../../utils/api-response';
+import { apiSuccess } from '../../utils/api-response';
+
+type SyncResult = {
+  result: 'ignored' | 'accepted';
+  totalEvents: number;
+  persistedEvents: number;
+  failedEvents: number;
+  skippedEvents: number;
+};
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -8,8 +16,23 @@ export default defineEventHandler(async (event) => {
   const clientSessionId = events[0]?.clientSessionId;
 
   if (!events.length || !clientSessionId) {
-    return apiAck('Sync payload ignored.', 'SYNC_IGNORED');
+    event.node.res.statusCode = 202;
+    return apiSuccess<SyncResult>(
+      {
+        result: 'ignored',
+        totalEvents: events.length,
+        persistedEvents: 0,
+        failedEvents: 0,
+        skippedEvents: events.length,
+      },
+      'Sync payload ignored.',
+      'SYNC_IGNORED'
+    );
   }
+
+  let persistedEvents = 0;
+  let failedEvents = 0;
+  let skippedEvents = 0;
 
   try {
     const session = await analyticsRepository.findOrCreateSession(clientSessionId, {
@@ -17,10 +40,6 @@ export default defineEventHandler(async (event) => {
       userAgent: getHeader(event, 'user-agent'),
       initialReferrer: getHeader(event, 'referer'),
     });
-
-    let persistedEvents = 0;
-    let failedEvents = 0;
-    let skippedEvents = 0;
 
     for (const [index, e] of events.entries()) {
       if (!e?.eventType || !e?.payload) {
@@ -67,5 +86,15 @@ export default defineEventHandler(async (event) => {
   }
 
   event.node.res.statusCode = 202;
-  return apiAck('Sync accepted.', 'SYNC_ACCEPTED');
+  return apiSuccess<SyncResult>(
+    {
+      result: 'accepted',
+      totalEvents: events.length,
+      persistedEvents,
+      failedEvents,
+      skippedEvents,
+    },
+    'Sync accepted.',
+    'SYNC_ACCEPTED'
+  );
 });

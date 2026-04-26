@@ -1,8 +1,8 @@
 import { defineEventHandler, setResponseHeader } from 'h3';
-import { profileRepository } from '../../../db/repositories/profile.repository';
-import { defaultProfile } from '../../../data/default-profile';
-import { localizeProfile } from '../../../data/localized-profile';
-import { resolveRequestLocale } from '../../../utils/locale';
+import { profileRepository } from '../../db/repositories/profile.repository';
+import { defaultProfile } from '../../data/default-profile';
+import { localizeProfile } from '../../data/localized-profile';
+import { resolveRequestLocale } from '../../utils/locale';
 
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=600');

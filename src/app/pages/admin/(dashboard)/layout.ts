@@ -19,7 +19,11 @@ export default class AdminLayoutComponent {
   }
 
   logout() {
-    this.auth.logout();
+    this.auth.logout().subscribe({
+      error: () => {
+        this.router.navigateByUrl('/admin/login');
+      },
+    });
   }
 }
 

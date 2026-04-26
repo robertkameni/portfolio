@@ -1,25 +1,19 @@
-import { createError, defineEventHandler, readBody } from 'h3';
-import { visitorAgent } from '../../../ai/agents/visitor.agent';
-import { prisma } from '../../../db/client';
-import { pushUpdateToClient } from '../../../api/realtime.get';
+import { defineEventHandler, readBody } from 'h3';
+import { visitorAgent } from '../../ai/agents/visitor.agent';
+import { prisma } from '../../db/client';
+import { pushUpdateToClient } from '../realtime.get';
+import { badRequest, notFound } from '../../utils/api-errors';
+import { apiSuccess } from '../../utils/api-response';
+import { readPositiveIntFromEnv, rateLimiter } from '../../utils/rate-limiter';
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;
 };
 
-function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
-  const rawValue = process.env[name];
-  if (!rawValue) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(rawValue, 10);
-  if (!Number.isFinite(parsed) || parsed < minValue) {
-    return fallback;
-  }
-
-  return parsed;
-}
+type AnalyzeVisitorOutcome = {
+  result: 'skipped' | 'accepted';
+  reason: string;
+};
 
 const ANALYSIS_COOLDOWN_MS = readPositiveIntFromEnv('AI_ANALYSIS_COOLDOWN_MS', 300_000);
 const MIN_NEW_EVENTS_FOR_REANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_NEW_EVENTS', 8);
@@ -28,48 +22,14 @@ const ANALYSIS_RATE_MAX_REQUESTS = readPositiveIntFromEnv('AI_ANALYSIS_RATE_MAX_
 const MIN_EVENTS_FOR_FIRST_ANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_EVENTS_FIRST', 10);
 const GLOBAL_RATE_WINDOW_MS = readPositiveIntFromEnv('AI_GLOBAL_RATE_WINDOW_MS', 3_600_000);
 const GLOBAL_RATE_MAX_REQUESTS = readPositiveIntFromEnv('AI_GLOBAL_RATE_MAX_REQUESTS', 4);
-
-const inFlightAnalyses = new Map<string, Promise<void>>();
-const sessionRateWindow = new Map<string, number[]>();
-const globalRequestTimestamps: number[] = [];
-
-function isGlobalRateLimited(): boolean {
-  const now = Date.now();
-  const windowStart = now - GLOBAL_RATE_WINDOW_MS;
-  const valid = globalRequestTimestamps.filter((ts) => ts >= windowStart);
-  globalRequestTimestamps.length = 0;
-  globalRequestTimestamps.push(...valid);
-  if (valid.length >= GLOBAL_RATE_MAX_REQUESTS) {
-    return true;
-  }
-  globalRequestTimestamps.push(now);
-  return false;
-}
-
-function hasSessionRateLimit(sessionId: string): boolean {
-  const now = Date.now();
-  const windowStart = now - ANALYSIS_RATE_WINDOW_MS;
-  const timestamps = sessionRateWindow.get(sessionId) ?? [];
-  const validTimestamps = timestamps.filter((timestamp) => timestamp >= windowStart);
-
-  if (validTimestamps.length >= ANALYSIS_RATE_MAX_REQUESTS) {
-    sessionRateWindow.set(sessionId, validTimestamps);
-    return true;
-  }
-
-  validTimestamps.push(now);
-  sessionRateWindow.set(sessionId, validTimestamps);
-  return false;
-}
+const ANALYZE_VISITOR_IN_FLIGHT_TTL_MS = readPositiveIntFromEnv('AI_ANALYZE_VISITOR_IN_FLIGHT_TTL_MS', 180_000);
+const ANALYZE_VISITOR_REDIS_NAMESPACE = 'ai:analyze-visitor';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<AnalyzeVisitorBody>(event);
 
   if (!body.clientSessionId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request: clientSessionId is required.',
-    });
+    throw badRequest('Bad Request: clientSessionId is required.');
   }
 
   const session = await prisma.visitorSession.findUnique({
@@ -77,25 +37,48 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!session) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not Found: Session not found.',
-    });
+    throw notFound('Not Found: Session not found.');
   }
 
-  if (hasSessionRateLimit(session.id)) {
+  const sessionRateLimit = await rateLimiter.checkRateLimit(
+    ANALYZE_VISITOR_REDIS_NAMESPACE,
+    `session:${session.id}`,
+    {
+      maxRequests: ANALYSIS_RATE_MAX_REQUESTS,
+      windowMs: ANALYSIS_RATE_WINDOW_MS,
+    },
+  );
+  if (!sessionRateLimit.allowed) {
     event.node.res.statusCode = 202;
-    return { status: 'skipped', reason: 'session_rate_limited' };
+    return apiSuccess<AnalyzeVisitorOutcome>(
+      { result: 'skipped', reason: 'session_rate_limited' },
+      'Analysis skipped: session rate limited.',
+      'ANALYSIS_SKIPPED'
+    );
   }
 
-  if (inFlightAnalyses.has(session.id)) {
+  const inFlightLease = await rateLimiter.acquireLease(ANALYZE_VISITOR_REDIS_NAMESPACE, `in-flight:${session.id}`, ANALYZE_VISITOR_IN_FLIGHT_TTL_MS);
+  if (!inFlightLease.acquired) {
     event.node.res.statusCode = 202;
-    return { status: 'skipped', reason: 'analysis_in_flight' };
+    return apiSuccess<AnalyzeVisitorOutcome>(
+      { result: 'skipped', reason: 'analysis_in_flight' },
+      'Analysis skipped: analysis already in flight.',
+      'ANALYSIS_SKIPPED'
+    );
   }
 
-  if (isGlobalRateLimited()) {
+  const globalRateLimit = await rateLimiter.checkRateLimit(ANALYZE_VISITOR_REDIS_NAMESPACE, 'global', {
+    maxRequests: GLOBAL_RATE_MAX_REQUESTS,
+    windowMs: GLOBAL_RATE_WINDOW_MS,
+  });
+  if (!globalRateLimit.allowed) {
+    await inFlightLease.release();
     event.node.res.statusCode = 202;
-    return { status: 'skipped', reason: 'global_rate_limited' };
+    return apiSuccess<AnalyzeVisitorOutcome>(
+      { result: 'skipped', reason: 'global_rate_limited' },
+      'Analysis skipped: global rate limited.',
+      'ANALYSIS_SKIPPED'
+    );
   }
 
   const totalEventCount = await prisma.analyticsEvent.count({
@@ -103,8 +86,13 @@ export default defineEventHandler(async (event) => {
   });
 
   if (totalEventCount < MIN_EVENTS_FOR_FIRST_ANALYSIS) {
+    await inFlightLease.release();
     event.node.res.statusCode = 202;
-    return { status: 'skipped', reason: 'insufficient_events' };
+    return apiSuccess<AnalyzeVisitorOutcome>(
+      { result: 'skipped', reason: 'insufficient_events' },
+      'Analysis skipped: insufficient events.',
+      'ANALYSIS_SKIPPED'
+    );
   }
 
   const latestDecision = await prisma.aiDecision.findFirst({
@@ -120,8 +108,13 @@ export default defineEventHandler(async (event) => {
   if (latestDecision) {
     const elapsedMs = Date.now() - latestDecision.createdAt.getTime();
     if (elapsedMs < ANALYSIS_COOLDOWN_MS) {
+      await inFlightLease.release();
       event.node.res.statusCode = 202;
-      return { status: 'skipped', reason: 'cooldown_active' };
+      return apiSuccess<AnalyzeVisitorOutcome>(
+        { result: 'skipped', reason: 'cooldown_active' },
+        'Analysis skipped: cooldown active.',
+        'ANALYSIS_SKIPPED'
+      );
     }
 
     const newEventsCount = await prisma.analyticsEvent.count({
@@ -132,12 +125,17 @@ export default defineEventHandler(async (event) => {
     });
 
     if (newEventsCount < MIN_NEW_EVENTS_FOR_REANALYSIS) {
+      await inFlightLease.release();
       event.node.res.statusCode = 202;
-      return { status: 'skipped', reason: 'not_enough_new_events' };
+      return apiSuccess<AnalyzeVisitorOutcome>(
+        { result: 'skipped', reason: 'not_enough_new_events' },
+        'Analysis skipped: not enough new events.',
+        'ANALYSIS_SKIPPED'
+      );
     }
   }
 
-  const analysisTask = (async () => {
+  void (async () => {
     try {
       const analysis = await visitorAgent.analyze(session.id);
 
@@ -163,12 +161,14 @@ export default defineEventHandler(async (event) => {
     } catch (error) {
       console.error('[Background Analysis] Error:', error);
     } finally {
-      inFlightAnalyses.delete(session.id);
+      await inFlightLease.release();
     }
   })();
 
-  inFlightAnalyses.set(session.id, analysisTask);
-
   event.node.res.statusCode = 202;
-  return { status: 'accepted', message: 'Analysis started in background' };
+  return apiSuccess<AnalyzeVisitorOutcome>(
+    { result: 'accepted', reason: 'analysis_started' },
+    'Analysis started in background.',
+    'ANALYSIS_ACCEPTED'
+  );
 });

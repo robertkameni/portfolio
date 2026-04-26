@@ -1,15 +1,67 @@
-import {defineEventHandler} from 'h3';
+import {defineEventHandler, getRequestIP} from 'h3';
 import {broadcastService} from '../realtime/broadcast.service';
 import {getSingleQueryString} from '../utils/query-params';
+import { prisma } from '../db/client';
+import {badRequest, serverError} from '../utils/api-errors';
+import { unauthorized } from '../utils/api-errors';
+import { rateLimiter } from '../utils/rate-limiter';
+import { createHmac, timingSafeEqual } from 'crypto';
+
+const REALTIME_TOKEN_NAMESPACE = 'realtime-token';
+const REALTIME_TOKEN_SECRET = process.env['REALTIME_SESSION_TOKEN_SECRET'] || process.env['SESSION_SECRET'] || process.env['JWT_SECRET'] || 'change-me-in-production';
 
 export default defineEventHandler(async (event) => {
   const sessionId = getSingleQueryString(event, 'sessionId');
+  const token = getSingleQueryString(event, 'token');
 
   if (!sessionId) {
-    event.node.res.statusCode = 400;
-    event.node.res.end('Session ID is required.');
-    return;
+    throw badRequest('Session ID is required.');
   }
+  if (!token) {
+    throw badRequest('Bad Request: token is required.');
+  }
+
+  const session = await prisma.visitorSession.findUnique({
+    where: {clientSessionId: sessionId},
+  });
+
+  if (!session) {
+    throw unauthorized('Unauthorized: Invalid session.');
+  }
+
+  const requestIp = getRequestIP(event);
+  if (session.ipAddress && requestIp && session.ipAddress !== requestIp) {
+    throw unauthorized('Unauthorized: Session fingerprint mismatch.');
+  }
+
+  const [nonce, expiresAtString, signature] = token.split('.');
+  if (!nonce || !expiresAtString || !signature) {
+    throw badRequest('Bad Request: invalid token format.');
+  }
+
+  const expiresAt = Number.parseInt(expiresAtString, 10);
+  if (!Number.isFinite(expiresAt) || expiresAt < Date.now()) {
+    throw unauthorized('Unauthorized: Realtime token expired.');
+  }
+
+  const expectedSignature = createHmac('sha256', REALTIME_TOKEN_SECRET).update(
+    `${session.clientSessionId}.${nonce}.${expiresAt}`,
+  ).digest('hex');
+
+  if (!constantTimeEquals(signature, expectedSignature)) {
+    throw unauthorized('Unauthorized: Invalid token signature.');
+  }
+
+  const tokenKey = `session:${session.id}:${nonce}`;
+  const tokenValid = await rateLimiter.consumeOnce(REALTIME_TOKEN_NAMESPACE, tokenKey, expectedSignature);
+  if (!tokenValid) {
+    throw unauthorized('Unauthorized: Invalid or expired token.');
+  }
+
+  await prisma.visitorSession.update({
+    where: {id: session.id},
+    data: {lastSeenAt: new Date()},
+  });
 
   // Set headers for Server-Sent Events
   event.node.res.setHeader('Content-Type', 'text/event-stream');
@@ -50,8 +102,7 @@ export default defineEventHandler(async (event) => {
     // H3 will automatically handle not closing the response.
   } catch (error) {
     console.error('[realtime] subscription error:', error);
-    event.node.res.statusCode = 500;
-    event.node.res.end('Realtime service unavailable');
+    throw serverError('Realtime service unavailable');
   }
 });
 
@@ -64,5 +115,13 @@ export async function pushUpdateToClient(targetSessionId: string, eventName: str
     await broadcastService.publish({targetSessionId, eventName, payload});
   } catch (error) {
     console.error(`[realtime] push failed for session ${targetSessionId}:`, error);
+  }
+}
+
+function constantTimeEquals(left: string, right: string): boolean {
+  try {
+    return timingSafeEqual(Buffer.from(left, 'hex'), Buffer.from(right, 'hex'));
+  } catch {
+    return false;
   }
 }

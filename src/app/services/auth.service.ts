@@ -9,10 +9,10 @@ import type { ApiAck, ApiSuccess } from '../shared/types/api.types';
 
 interface AuthPayload {
   user: User;
-  accessToken: string;
 }
 
-type AuthResponse = ApiSuccess<AuthPayload>;
+type LoginResponse = ApiSuccess<AuthPayload>;
+type RefreshResponse = ApiSuccess<{ user: User }>;
 
 @Injectable({
   providedIn: 'root',
@@ -23,14 +23,12 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
 
   #currentUser = signal<User | null>(null);
-  #accessToken = signal<string | null>(null);
   #authInitialized = signal(false);
   #initialAuthStatus$?: Observable<User | null>;
 
   public readonly isAuthenticated = computed(() => !!this.#currentUser());
   public readonly isAdmin = computed(() => this.#currentUser()?.role === 'ADMIN');
   public readonly authInitialized = this.#authInitialized.asReadonly();
-  public readonly accessToken = this.#accessToken.asReadonly();
 
   checkInitialAuthStatus(): Observable<User | null> {
     if (!this.#initialAuthStatus$) {
@@ -76,24 +74,21 @@ export class AuthService {
   }
 
   private refreshSession(): Observable<User | null> {
-    return this.http.post<AuthResponse>('/api/auth/refresh', {}).pipe(
+    return this.http.post<RefreshResponse>('/api/auth/refresh', {}).pipe(
       tap((response) => {
-        this.#accessToken.set(response.data.accessToken);
         this.#currentUser.set(response.data.user);
       }),
       map((response) => response.data.user),
       catchError((error) => {
         console.error('[AuthService] refreshSession error', error);
         this.#currentUser.set(null);
-        this.#accessToken.set(null);
         return of(null);
       }),
     );
   }
 
   login(credentials: { email: string; password: string }): Observable<User> {
-    return this.http.post<AuthResponse>('/api/auth/login', credentials).pipe(
-      tap((response) => this.#accessToken.set(response.data.accessToken)),
+    return this.http.post<LoginResponse>('/api/auth/login', credentials).pipe(
       map((response) => response.data.user),
       tap((user) => this.#currentUser.set(user)),
     );
@@ -103,14 +98,12 @@ export class AuthService {
     return this.http.post<ApiAck>('/api/auth/logout', {}).pipe(
       tap(() => {
         this.#currentUser.set(null);
-        this.#accessToken.set(null);
         this.#initialAuthStatus$ = undefined;
         this.router.navigateByUrl('/admin/login');
       }),
       catchError((err) => {
         // Even if logout fails on server, clear user on client
         this.#currentUser.set(null);
-        this.#accessToken.set(null);
         this.#initialAuthStatus$ = undefined;
         this.router.navigateByUrl('/admin/login');
         throw err;

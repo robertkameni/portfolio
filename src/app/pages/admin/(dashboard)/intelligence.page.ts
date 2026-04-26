@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {isPlatformBrowser} from '@angular/common';
+import {AdminMessagesService} from '../../../shared/services/admin-messages.service';
 
 @Component({
   selector: 'admin-intelligence',
@@ -8,7 +8,7 @@ import {isPlatformBrowser} from '@angular/common';
   templateUrl: './intelligence/intelligence.page.html',
 })
 export default class AdminIntelligenceComponent implements OnInit {
-  private readonly http = inject(HttpClient);
+  private readonly adminMessagesService = inject(AdminMessagesService);
   private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly loading = signal(true);
@@ -27,7 +27,7 @@ export default class AdminIntelligenceComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.http.get<{data: Array<{intelligence: unknown | null}>}>('/api/admin/messages').subscribe({
+    this.adminMessagesService.getMessages().subscribe({
       next: (response) => {
         const messages = Array.isArray(response?.data) ? response.data : [];
         const count = messages.filter((message) => message.intelligence !== null).length;

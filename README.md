@@ -89,7 +89,7 @@ sequenceDiagram
 - **Framework:** Angular 21 (Signals, Standalone Components, Directives)
 - **State Management:** NgRx, Signal Store, RxJS (Advanced Patterns)
 - **UI Frameworks:** Tailwind CSS, Angular Material, Bootstrap, AG-Grid, Native CSS
-- **Testing:** Cypress (E2E), Jest, Jasmine/Karma (Unit Tests)
+- **Testing:** Vitest (Unit), Angular Vitest Builder
 - **Performance:** SSR, PWA, Lazy Loading, Change Detection Optimization, Bundle Analysis
 
 ### Software Development Expertise
@@ -137,5 +137,5 @@ This isn't just a static portfolio. It's a full-stack application built with a m
 | **Backend**        | Nitro, H3 (Server Engine), Prisma ORM                         |
 | **Database**       | PostgreSQL (Neon Postgres)                                    |
 | **AI & Analytics** | Google Gemini, Custom Analytics Engine                        |
-| **Testing**        | Jest (Unit)                                                   |
+| **Testing**        | Vitest (Unit)                                                 |
 | **DevOps**         | Vercel (Deployment)                                           |

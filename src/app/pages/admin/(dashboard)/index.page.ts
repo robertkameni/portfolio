@@ -1,7 +1,7 @@
 import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {isPlatformBrowser} from '@angular/common';
 import { RouterLink } from '@angular/router';
+import {AdminMessagesService} from '../../../shared/services/admin-messages.service';
 
 @Component({
   selector: 'admin-dashboard',
@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './index.page.html',
 })
 export default class AdminDashboardComponent implements OnInit {
-  private readonly http = inject(HttpClient);
+  private readonly adminMessagesService = inject(AdminMessagesService);
   private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly newMessagesCount = signal(0);
@@ -23,7 +23,7 @@ export default class AdminDashboardComponent implements OnInit {
   }
 
   private loadNewMessagesCount() {
-    this.http.get<{data: Array<{status: 'UNREAD' | 'READ' | 'ARCHIVED'}>}>('/api/admin/messages').subscribe({
+    this.adminMessagesService.getMessages().subscribe({
       next: (response) => {
         const messages = Array.isArray(response?.data) ? response.data : [];
         const unreadCount = messages.filter((message) => message.status === 'UNREAD').length;

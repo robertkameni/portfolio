@@ -1,28 +1,8 @@
 import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {DatePipe, isPlatformBrowser} from '@angular/common';
 import {catchError, EMPTY, finalize, tap} from 'rxjs';
-
-type MessageStatus = 'UNREAD' | 'READ' | 'ARCHIVED';
-
-type MessageIntelligence = {
-  classification: string | null;
-  sentiment: string | null;
-  urgencyScore: number | null;
-  priorityScore: number | null;
-  suggestedReply: string | null;
-};
-
-type Message = {
-  id: string;
-  senderName: string | null;
-  senderEmail: string;
-  body: string;
-  status: MessageStatus;
-  createdAt: string;
-  intelligence: MessageIntelligence | null;
-  session: { id: string; visitorId: string; startedAt: string } | null;
-};
+import {type AdminMessage, type MessageStatus} from '../../../shared/types/admin-message';
+import {AdminMessagesService} from '../../../shared/services/admin-messages.service';
 
 @Component({
   selector: 'admin-messages',
@@ -31,10 +11,10 @@ type Message = {
   templateUrl: './messages/messages.page.html',
 })
 export default class AdminMessagesComponent implements OnInit {
-  private http = inject(HttpClient);
+  private readonly adminMessagesService = inject(AdminMessagesService);
   private platformId = inject(PLATFORM_ID);
 
-  messages = signal<Message[]>([]);
+  messages = signal<AdminMessage[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   filter: 'ALL' | 'UNREAD' | 'ARCHIVED' = 'ALL';
@@ -52,8 +32,8 @@ export default class AdminMessagesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.http
-      .get<{ data: Message[] }>('/api/admin/messages')
+    this.adminMessagesService
+      .getMessages()
       .pipe(
         tap((res) => {
           const all = res.data;
@@ -89,7 +69,7 @@ export default class AdminMessagesComponent implements OnInit {
   }
 
   updateStatus(id: string, status: MessageStatus) {
-    this.http.put<{ data: Message }>(`/api/admin/messages/${id}`, {status}).subscribe({
+    this.adminMessagesService.updateStatus(id, status).subscribe({
       next: () => this.loadMessages(),
       error: (err) => console.error('Failed to update message:', err)
     });

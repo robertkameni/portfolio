@@ -3,10 +3,17 @@ import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
 import { isPlatformBrowser } from '@angular/common';
 import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
+import type { ApiSuccess } from '../shared/types/api.types';
 
 type VisitorProfileEvent = {
   profileData: VisitorProfileAnalysis;
   [key: string]: any;
+};
+
+type RealtimeTokenResponse = {
+  sessionId: string;
+  token: string;
+  expiresInMs: number;
 };
 
 @Injectable({
@@ -32,7 +39,32 @@ export class RealtimeService implements OnDestroy {
 
     this.currentSessionId = clientSessionId;
     this.connectionStatus.set('connecting');
-    this.eventSource = new EventSource(`/api/realtime?sessionId=${clientSessionId}`);
+
+    fetch('/api/realtime/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientSessionId }),
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse>;
+        if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
+          throw new Error('Realtime token request failed.');
+        }
+
+        const query = new URLSearchParams({
+          sessionId: payload.data.sessionId,
+          token: payload.data.token,
+        }).toString();
+        this.connectEventStream(query);
+      })
+      .catch((error) => {
+        this.connectionStatus.set('disconnected');
+        console.error('[RealtimeService] failed to connect:', error);
+      });
+  }
+
+  private connectEventStream(query: string): void {
+    this.eventSource = new EventSource(`/api/realtime?${query}`);
 
     this.eventSource.onopen = () => {
       this.connectionStatus.set('connected');
