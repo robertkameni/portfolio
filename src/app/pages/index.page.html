@@ -36,7 +36,7 @@
   <div class="w-full sm:w-auto sm:ml-auto">
     @if (auth.authInitialized() && auth.isAuthenticated() && auth.isAdmin()) {
       <button
-        (click)="navigateToAdminProjects()"
+        (click)="navigateToAdmin()"
         title="Admin Projects"
         aria-label="Admin projects dashboard"
         class="w-full sm:w-auto text-xs cursor-pointer inline-flex items-center justify-center sm:justify-start gap-1 px-3 py-1.5

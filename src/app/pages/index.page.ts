@@ -79,8 +79,8 @@ export default class HomeComponent implements OnInit {
     }
   }
 
-  navigateToAdminProjects() {
-    this.router.navigate(['/admin/projects']);
+  navigateToAdmin() {
+    this.router.navigate(['/admin']);
   }
 
   logout() {
