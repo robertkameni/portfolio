@@ -1,10 +1,18 @@
-import type { GenerativeModel } from '@google/generative-ai';
 import type { H3Event } from 'h3';
 
 type StreamChunk = { text(): string };
 type StreamResponse = { stream: AsyncIterable<StreamChunk> };
 type StreamingChat = {
   sendMessageStream(message: string): Promise<StreamResponse>;
+};
+
+type ChatModel = {
+  startChat: (options: {
+    history?: unknown[];
+    generationConfig?: {
+      maxOutputTokens?: number;
+    };
+  }) => StreamingChat;
 };
 
 type CreateModelOptions = {
@@ -44,7 +52,7 @@ export function writeSseError(event: H3Event, message: string): void {
   endSse(event);
 }
 
-export function createChatModelSafe(event: H3Event, factory: () => GenerativeModel, options: CreateModelOptions = {}): GenerativeModel | null {
+export function createChatModelSafe(event: H3Event, factory: () => ChatModel, options: CreateModelOptions = {}): ChatModel | null {
   try {
     return factory();
   } catch (error) {
