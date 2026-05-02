@@ -42,17 +42,10 @@ export const PortfolioStore = signalStore(
             }
           }),
           switchMap(() => {
-            if (!isPlatformBrowser(platformId)) {
-              patchState(store, {isLoading: false});
-              console.log('Not on browser, skipping profile load');
-              return EMPTY;
-            }
-
             const currentData = store.data();
-            const desiredLocale = localeService.locale();
+            const desiredLocale = isPlatformBrowser(platformId) ? localeService.locale() : currentData?.locale ?? 'en';
 
             if (currentData && currentData.locale === desiredLocale) {
-              console.log('Profile already loaded for this locale, skipping');
               return EMPTY;
             }
 
