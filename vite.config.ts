@@ -13,11 +13,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     analog({
       prerender: isWindows
-        ? {
-            discover: false,
-            routes: [],
-          }
-        : undefined,
+        ? { discover: false, routes: [] }
+        : { discover: false, routes: ['/'] },
       nitro: {
         preset: 'vercel'
       }

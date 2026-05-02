@@ -23,6 +23,8 @@ export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
   private readonly chatStore = inject(ChatStore);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly MAX_TOKEN_RETRIES = 4;
+  private readonly TOKEN_RETRY_BASE_DELAY_MS = 300;
 
   private eventSource: EventSource | null = null;
   private currentChatStream: EventSource | null = null;
@@ -40,20 +42,11 @@ export class RealtimeService implements OnDestroy {
     this.currentSessionId = clientSessionId;
     this.connectionStatus.set('connecting');
 
-    fetch('/api/realtime/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientSessionId }),
-    })
-      .then(async (response) => {
-        const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse>;
-        if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
-          throw new Error('Realtime token request failed.');
-        }
-
+    this.obtainRealtimeTokenWithRetry(clientSessionId)
+      .then((payload) => {
         const query = new URLSearchParams({
-          sessionId: payload.data.sessionId,
-          token: payload.data.token,
+          sessionId: payload.sessionId,
+          token: payload.token,
         }).toString();
         this.connectEventStream(query);
       })
@@ -61,6 +54,53 @@ export class RealtimeService implements OnDestroy {
         this.connectionStatus.set('disconnected');
         console.error('[RealtimeService] failed to connect:', error);
       });
+  }
+
+  private async obtainRealtimeTokenWithRetry(
+    clientSessionId: string,
+    attempt = 0,
+  ): Promise<RealtimeTokenResponse> {
+    try {
+      return await this.requestRealtimeToken(clientSessionId);
+    } catch (error) {
+      if (this.shouldRetryForTokenError(error) && attempt < this.MAX_TOKEN_RETRIES - 1) {
+        const delayMs = this.TOKEN_RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        return this.obtainRealtimeTokenWithRetry(clientSessionId, attempt + 1);
+      }
+
+      throw error;
+    }
+  }
+
+  private async requestRealtimeToken(clientSessionId: string): Promise<RealtimeTokenResponse> {
+    const response = await fetch('/api/realtime/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientSessionId }),
+    });
+
+    const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse> & {
+      message?: string;
+    };
+
+    if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
+      const error = new Error(
+        `Failed to fetch realtime token: ${response.status} ${payload.message ?? payload.status}`,
+      ) as Error & { status?: number; statusText?: string; body?: unknown };
+      error.status = response.status;
+      error.statusText = response.statusText;
+      error.body = payload;
+      throw error;
+    }
+
+    return payload.data;
+  }
+
+  private shouldRetryForTokenError(error: unknown): boolean {
+    const typed = error as { status?: number; message?: string; body?: { message?: string } };
+    const message = typed.message?.toLowerCase() ?? typed.body?.message?.toLowerCase() ?? '';
+    return typed.status === 401 && message.includes('invalid session');
   }
 
   private connectEventStream(query: string): void {
