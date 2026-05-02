@@ -2,6 +2,8 @@ import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../../db/repositories/analytics.repository';
 import { apiSuccess } from '../../utils/api-response';
 
+const SYNC_BATCH_SIZE = 100;
+
 type SyncResult = {
   result: 'ignored' | 'accepted';
   totalEvents: number;
@@ -41,27 +43,48 @@ export default defineEventHandler(async (event) => {
       initialReferrer: getHeader(event, 'referer'),
     });
 
-    for (const [index, e] of events.entries()) {
+    const eventsByChunk: AnalyticsEventDto[] = [];
+
+    for (const e of events) {
       if (!e?.eventType || !e?.payload) {
         skippedEvents++;
         continue;
       }
+      eventsByChunk.push({
+        sessionId: session.id,
+        eventType: e.eventType,
+        payload: e.payload,
+      } as AnalyticsEventDto);
 
-      try {
-        await analyticsRepository.logEvent({
-          sessionId: session.id,
-          eventType: e.eventType,
-          payload: e.payload,
-        } as AnalyticsEventDto);
-        persistedEvents++;
-      } catch (error) {
-        failedEvents++;
-        console.error('[Analytics Sync] Failed to persist event.', {
+      if (eventsByChunk.length < SYNC_BATCH_SIZE) {
+        continue;
+      }
+
+      const batchResult = await analyticsRepository.logEvents(session.id, eventsByChunk.splice(0, eventsByChunk.length));
+      persistedEvents += batchResult.persistedEvents;
+      failedEvents += batchResult.failedEvents;
+      if (batchResult.failedEvents > 0) {
+        console.error('[Analytics Sync] Failed to persist some events in batch.', {
           clientSessionId,
           sessionId: session.id,
-          eventIndex: index,
-          eventType: e.eventType,
-          error: error instanceof Error ? error.message : String(error),
+          batchSize: SYNC_BATCH_SIZE,
+          failedEvents: batchResult.failedEvents,
+          failedIndexes: batchResult.failedIndexes,
+        });
+      }
+    }
+
+    if (eventsByChunk.length > 0) {
+      const batchResult = await analyticsRepository.logEvents(session.id, eventsByChunk);
+      persistedEvents += batchResult.persistedEvents;
+      failedEvents += batchResult.failedEvents;
+      if (batchResult.failedEvents > 0) {
+        console.error('[Analytics Sync] Failed to persist some events in final batch.', {
+          clientSessionId,
+          sessionId: session.id,
+          batchSize: eventsByChunk.length,
+          failedEvents: batchResult.failedEvents,
+          failedIndexes: batchResult.failedIndexes,
         });
       }
     }

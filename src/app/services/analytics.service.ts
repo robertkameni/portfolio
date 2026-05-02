@@ -28,6 +28,7 @@ export class AnalyticsService {
   private readonly EVENTS_BEFORE_ANALYSIS = 25;
   private readonly ANALYSIS_DEBOUNCE_MS = 45_000;
   private readonly ANALYSIS_COOLDOWN_MS = 600_000;
+  private readonly SYNC_BATCH_SIZE = 50;
 
   private readonly SYNC_ENDPOINT = '/api/sys/sync';
 
@@ -71,9 +72,9 @@ export class AnalyticsService {
     }
 
     this.isFlushing = true;
-    const batch = [...this.eventQueue];
+    const batch = this.eventQueue.splice(0, this.SYNC_BATCH_SIZE);
     const batchSize = batch.length;
-    this.eventQueue = [];
+    let shouldRetryLater = false;
 
     try {
       await firstValueFrom(this.http.post(this.SYNC_ENDPOINT, batch));
@@ -83,8 +84,16 @@ export class AnalyticsService {
         this.scheduleAnalysis();
       }
     } catch {
-      // Analytics should not block UI.
+      this.eventQueue = [...batch, ...this.eventQueue];
+      shouldRetryLater = true;
     } finally {
+      if (shouldRetryLater) {
+        setTimeout(() => {
+          void this.flushQueue();
+        }, 500);
+        return;
+      }
+
       if (this.eventQueue.length > 0) {
         void this.flushQueue();
       } else {

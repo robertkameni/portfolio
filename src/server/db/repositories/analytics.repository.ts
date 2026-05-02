@@ -7,6 +7,67 @@ export type AnalyticsEventDto = {
   payload: Record<string, any>;
 };
 
+type LogEventBatchResult = {
+  persistedEvents: number;
+  failedEvents: number;
+  failedIndexes: number[];
+};
+
+const MAX_SESSION_RETRIES = 2;
+const SESSION_RETRY_DELAY_MS = 120;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableDbError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const message = error instanceof Error ? error.message.toLowerCase() : '';
+  const code = 'code' in error ? (error as { code?: string }).code : undefined;
+
+  if (code === 'P2028' || code === 'P1001' || code === 'P1008' || code === 'P2024' || code === 'P2034') {
+    return true;
+  }
+
+  return message.includes('transaction') && message.includes('time');
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const message = error instanceof Error ? error.message.toLowerCase() : '';
+  const code = 'code' in error ? (error as { code?: string }).code : undefined;
+
+  return code === 'P2002' || (message.includes('unique') && message.includes('clientsessionid'));
+}
+
+function buildSessionUpdate(context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }) {
+  const now = new Date();
+  const data: {
+    lastSeenAt: Date;
+    userAgent?: string;
+    ipAddress?: string;
+    initialReferrer?: string;
+  } = { lastSeenAt: now };
+
+  if (context.userAgent) {
+    data.userAgent = context.userAgent;
+  }
+  if (context.ipAddress) {
+    data.ipAddress = context.ipAddress;
+  }
+  if (context.initialReferrer) {
+    data.initialReferrer = context.initialReferrer;
+  }
+
+  return data;
+}
+
 /**
  * Repository for analytics data access.
  * Encapsulates all database operations for visitors, sessions, and events.
@@ -20,34 +81,46 @@ export const analyticsRepository = {
    * @returns The existing or newly created visitor session.
    */
   async findOrCreateSession(clientSessionId: string, context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }): Promise<VisitorSession> {
-    // Use a transaction to ensure atomicity
-    return prisma.$transaction(async (tx) => {
-      const existingSession = await tx.visitorSession.findUnique({
-        where: { clientSessionId },
-      });
+    const updates = buildSessionUpdate(context);
+    const now = updates.lastSeenAt;
 
-      if (existingSession) {
-        // If session exists, just update its last_seen_at timestamp
-        return tx.visitorSession.update({
-          where: { id: existingSession.id },
-          data: { lastSeenAt: new Date() },
+    for (let attempt = 0; attempt < MAX_SESSION_RETRIES; attempt++) {
+      try {
+        return await prisma.visitorSession.upsert({
+          where: { clientSessionId },
+          create: {
+            clientSessionId,
+            visitor: {
+              create: {},
+            },
+            lastSeenAt: now,
+            userAgent: context.userAgent,
+            ipAddress: context.ipAddress,
+            initialReferrer: context.initialReferrer,
+          },
+          update: updates,
         });
+      } catch (error) {
+        if (isUniqueViolation(error)) {
+          const existingSession = await prisma.visitorSession.findUnique({
+            where: { clientSessionId },
+          });
+
+          if (existingSession) {
+            return existingSession;
+          }
+        }
+
+        const shouldRetry = isRetryableDbError(error) && attempt + 1 < MAX_SESSION_RETRIES;
+        if (shouldRetry) {
+          await sleep(SESSION_RETRY_DELAY_MS * (attempt + 1));
+          continue;
+        }
+
+        throw error;
       }
-
-      // If no session, create a new visitor and a new session for them.
-      const newVisitor = await tx.visitor.create({ data: {} });
-
-      return tx.visitorSession.create({
-        data: {
-          clientSessionId,
-          visitorId: newVisitor.id,
-          userAgent: context.userAgent,
-          ipAddress: context.ipAddress,
-          initialReferrer: context.initialReferrer,
-          lastSeenAt: new Date(),
-        },
-      });
-    });
+    }
+    throw new Error(`Unable to create or update visitor session for clientSessionId: ${clientSessionId}`);
   },
 
   /**
@@ -63,5 +136,55 @@ export const analyticsRepository = {
         payload: eventData.payload,
       },
     });
+  },
+
+  async logEvents(sessionId: string, eventDataList: AnalyticsEventDto[]): Promise<LogEventBatchResult> {
+    if (eventDataList.length === 0) {
+      return { persistedEvents: 0, failedEvents: 0, failedIndexes: [] };
+    }
+
+    try {
+      const result = await prisma.analyticsEvent.createMany({
+        data: eventDataList,
+        skipDuplicates: false,
+      });
+
+      return {
+        persistedEvents: result.count,
+        failedEvents: eventDataList.length - result.count,
+        failedIndexes: [],
+      };
+    } catch (error) {
+      let persistedEvents = 0;
+      const failedIndexes: number[] = [];
+
+      for (let index = 0; index < eventDataList.length; index++) {
+        const eventData = eventDataList[index];
+        try {
+          await prisma.analyticsEvent.create({
+            data: {
+              sessionId: eventData.sessionId,
+              eventType: eventData.eventType,
+              payload: eventData.payload,
+            },
+          });
+          persistedEvents += 1;
+        } catch (batchError) {
+          failedIndexes.push(index);
+          console.error('[AnalyticsRepository] Failed to persist analytics event.', {
+            sessionId,
+            index,
+            eventType: eventData.eventType,
+            error: batchError instanceof Error ? batchError.message : String(batchError),
+          });
+        }
+      }
+
+      return {
+        persistedEvents,
+        failedEvents: eventDataList.length - persistedEvents,
+        failedIndexes,
+      };
+    }
   },
 };
