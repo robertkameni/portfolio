@@ -42,8 +42,13 @@ export const PortfolioStore = signalStore(
             }
           }),
           switchMap(() => {
+            if (!isPlatformBrowser(platformId)) {
+              patchState(store, {isLoading: false});
+              return EMPTY;
+            }
+
             const currentData = store.data();
-            const desiredLocale = isPlatformBrowser(platformId) ? localeService.locale() : currentData?.locale ?? 'en';
+            const desiredLocale = localeService.locale();
 
             if (currentData && currentData.locale === desiredLocale) {
               return EMPTY;
