@@ -1,6 +1,6 @@
 import { contextEngine } from '../context.engine';
 import { prisma } from '../../db/client';
-import { getGeminiClient, withGeminiRetry } from '../gemini.client';
+import { DEFAULT_DEEPSEEK_VISITOR_MODEL, getAIClient, withAIRetry } from '../deepseek.client';
 
 const VISITOR_AI_QUOTA_BACKOFF_MS = Number.parseInt(process.env['VISITOR_AI_QUOTA_BACKOFF_MS'] ?? '900000', 10);
 let quotaBlockedUntil = 0;
@@ -73,11 +73,11 @@ export const visitorAgent = {
     try {
       if (Date.now() < quotaBlockedUntil) {
         const fb = fallback();
-        await persistFallbackDecision(sessionId, fb, 'Fallback due to active Gemini quota backoff window.');
+        await persistFallbackDecision(sessionId, fb, 'Fallback due to active DeepSeek quota backoff window.');
         return fb;
       }
 
-      const gemini = getGeminiClient();
+      const ai = getAIClient();
       const sessionHistory = await contextEngine.getSessionHistoryAsText(sessionId);
 
       if (!sessionHistory || sessionHistory.includes('No activity')) {
@@ -113,14 +113,14 @@ export const visitorAgent = {
         }
       `;
 
-      const model = gemini.getGenerativeModel({
-        model: 'gemini-3-flash-preview',
+      const model = ai.getGenerativeModel({
+        model: DEFAULT_DEEPSEEK_VISITOR_MODEL,
         generationConfig: {
           responseMimeType: 'application/json',
         },
       });
 
-      const aiResponse = await withGeminiRetry(() => model.generateContent(prompt));
+      const aiResponse = await withAIRetry(() => model.generateContent(prompt));
       const responseText = aiResponse.response.text();
       const result = JSON.parse(responseText);
 

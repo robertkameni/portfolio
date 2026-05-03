@@ -157,7 +157,7 @@ export class RealtimeService implements OnDestroy {
   sendChatMessage(message: string): void {
     if (!isPlatformBrowser(this.platformId) || !this.currentSessionId) return;
 
-    // Format history for Gemini
+    // Format history for chat API (model role → assistant)
     const allMessages = this.chatStore.messages();
     const history = allMessages
       .slice(0, allMessages.length - 1) // exclude the message currently being sent

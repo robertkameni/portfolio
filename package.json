@@ -34,7 +34,6 @@
     "@angular/platform-browser": "^21.2.6",
     "@angular/platform-server": "^21.2.6",
     "@angular/router": "^21.2.6",
-    "@google/generative-ai": "^0.24.1",
     "@ngrx/signals": "^21.1.0",
     "@oxc-project/runtime": "^0.127.0",
     "@prisma/adapter-pg": "^7.6.0",

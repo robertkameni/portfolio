@@ -41,7 +41,7 @@ sequenceDiagram
     participant API_Sync as Backend_api_sys_sync
     participant DB as PostgreSQL_DB
     participant API_AI as Backend_api_ai_analyze
-    participant Gemini as Google_Gemini
+    participant DeepSeek as DeepSeek_API
     participant SSE as Server_Sent_Events
 
     Note over User,Browser: Phase 1 - Silent Batching (Non-Blocking)
@@ -58,11 +58,11 @@ sequenceDiagram
         API_AI-->>Browser: 202 Accepted
         Note over Browser: UI remains responsive
         
-        Note over API_AI,Gemini: Phase 3 - Background processing
+        Note over API_AI,DeepSeek: Phase 3 - Background processing
         API_AI->>DB: Fetch user journey
         DB-->>API_AI: Return history
-        API_AI->>Gemini: Send history and heuristics
-        Gemini-->>API_AI: Return JSON profile
+        API_AI->>DeepSeek: Send history and heuristics
+        DeepSeek-->>API_AI: Return JSON profile
         API_AI->>DB: Save profile
         
         Note over API_AI,Browser: Phase 4 - Realtime update
@@ -77,7 +77,7 @@ sequenceDiagram
 
 1. **Intelligent Batching:** Sending a network request for every single scroll event would spam the server and hit browser rate limits. The Angular client queues events locally and sends them in lightweight batches.
 2. **"Fire-and-Forget" Analysis:** When the frontend triggers an analysis, the backend instantly returns a `202 Accepted` status. The frontend **never waits** for the AI. This completely eliminates HTTP hanging and ensures the UI thread remains buttery smooth.
-3. **Background Processing & SSE:** The heavy lifting (talking to Google Gemini, which takes 3-10 seconds) happens entirely in the background on the Nitro server. Once finished, the server pushes the data down an already-open, highly efficient Server-Sent Events (SSE) pipeline.
+3. **Background Processing & SSE:** The heavy lifting (calling the DeepSeek API, which typically takes a few seconds) happens entirely in the background on the Nitro server. Once finished, the server pushes the data down an already-open, highly efficient Server-Sent Events (SSE) pipeline.
 4. **Signal Reactivity:** The moment the SSE payload hits the Angular `VisitorStore`, the framework's reactive `computed()` signals instantly surgically update only the text nodes that need to change, without heavy DOM diffing.
 
 ---
@@ -136,6 +136,20 @@ This isn't just a static portfolio. It's a full-stack application built with a m
 | **Frontend**       | Angular 21, TypeScript, RxJS, NgRx Signal Store, Tailwind CSS |
 | **Backend**        | Nitro, H3 (Server Engine), Prisma ORM                         |
 | **Database**       | PostgreSQL (Neon Postgres)                                    |
-| **AI & Analytics** | Google Gemini, Custom Analytics Engine                        |
+| **AI & Analytics** | DeepSeek (chat completions), Custom Analytics Engine          |
 | **Testing**        | Vitest (Unit)                                                 |
 | **DevOps**         | Vercel (Deployment)                                           |
+
+### AI environment variables (e.g. Vercel)
+
+| Variable | Purpose |
+|----------|---------|
+| `DEEPSEEK_API_KEY` | Required. Bearer token for the DeepSeek API. |
+| `DEEPSEEK_CHAT_MODEL` | Optional. Defaults to `deepseek-chat`. |
+| `DEEPSEEK_VISITOR_MODEL` | Optional. Visitor classification model; defaults to the chat model value. |
+| `DEEPSEEK_API_BASE_URL` | Optional. Override API URL (default `https://api.deepseek.com/chat/completions`). |
+| `AI_RETRY_MAX_RETRIES` | Optional. Max retries on transient DeepSeek errors (integer; `0` allowed). |
+| `AI_RETRY_BASE_DELAY_MS` | Optional. Base backoff delay between retries. |
+| `AI_RETRY_MAX_DELAY_MS` | Optional. Cap on backoff delay. |
+
+Older `GEMINI_RETRY_*` variables are no longer read; rename them to `AI_RETRY_*` and copy the same values.

@@ -45,11 +45,11 @@ type UniversalGenerativeModel = {
   generateContent: (prompt: string) => Promise<{ response: { text: () => string } }>;
 };
 
-type AIModelClient = {
+export type AIModelClient = {
   getGenerativeModel: (options: UniversalModelOptions) => UniversalGenerativeModel;
 };
 
-let genAI: AIModelClient | undefined;
+let cachedClient: AIModelClient | undefined;
 
 const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
   maxRetries: 4,
@@ -59,10 +59,15 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
 
 const DEFAULT_DEEPSEEK_API_BASE = 'https://api.deepseek.com';
 const DEFAULT_DEEPSEEK_CHAT_PATH = '/chat/completions';
-const DEEPSEEK_JSON_MODEL = 'deepseek-chat';
 
-const CHAT_MODEL_NAME = 'gemini-2.5-flash';
-const VISITOR_MODEL_NAME = 'gemini-3-flash-preview';
+const trimmedChatModelEnv = process.env['DEEPSEEK_CHAT_MODEL']?.trim();
+const trimmedVisitorModelEnv = process.env['DEEPSEEK_VISITOR_MODEL']?.trim();
+
+/** Chat streaming + portfolio twin (OpenAI-compatible id sent to DeepSeek). */
+export const DEFAULT_DEEPSEEK_CHAT_MODEL = trimmedChatModelEnv || 'deepseek-chat';
+
+/** Visitor classification JSON call (defaults to chat model). */
+export const DEFAULT_DEEPSEEK_VISITOR_MODEL = trimmedVisitorModelEnv || DEFAULT_DEEPSEEK_CHAT_MODEL;
 
 function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
   const rawValue = process.env[name];
@@ -80,9 +85,9 @@ function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): n
 
 function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
   const envDefaults: Required<RetryOptions> = {
-    maxRetries: readPositiveIntFromEnv('GEMINI_RETRY_MAX_RETRIES', DEFAULT_RETRY_OPTIONS.maxRetries, 0),
-    baseDelayMs: readPositiveIntFromEnv('GEMINI_RETRY_BASE_DELAY_MS', DEFAULT_RETRY_OPTIONS.baseDelayMs),
-    maxDelayMs: readPositiveIntFromEnv('GEMINI_RETRY_MAX_DELAY_MS', DEFAULT_RETRY_OPTIONS.maxDelayMs),
+    maxRetries: readPositiveIntFromEnv('AI_RETRY_MAX_RETRIES', DEFAULT_RETRY_OPTIONS.maxRetries, 0),
+    baseDelayMs: readPositiveIntFromEnv('AI_RETRY_BASE_DELAY_MS', DEFAULT_RETRY_OPTIONS.baseDelayMs),
+    maxDelayMs: readPositiveIntFromEnv('AI_RETRY_MAX_DELAY_MS', DEFAULT_RETRY_OPTIONS.maxDelayMs),
   };
 
   return {
@@ -135,17 +140,14 @@ function isRetryableAIRequestError(error: unknown): boolean {
 function resolveApiKey(): string {
   const apiKey = process.env['DEEPSEEK_API_KEY'] ?? process.env['GEMINI_API_KEY'];
   if (!apiKey) {
-    throw new Error('Neither DEEPSEEK_API_KEY nor GEMINI_API_KEY is set. Please check your .env file.');
+    throw new Error('DEEPSEEK_API_KEY is not set (GEMINI_API_KEY is accepted only as a legacy alias). Check your .env file.');
   }
   return apiKey;
 }
 
 function resolveModelName(requestedModel: string): string {
   const model = requestedModel?.trim() ?? '';
-  if (model === CHAT_MODEL_NAME || model === VISITOR_MODEL_NAME) {
-    return DEEPSEEK_JSON_MODEL;
-  }
-  return model || DEEPSEEK_JSON_MODEL;
+  return model || DEFAULT_DEEPSEEK_CHAT_MODEL;
 }
 
 function normalizeChatHistoryItem(item: ChatHistoryItem): ChatMessage | null {
@@ -310,11 +312,11 @@ function computeBackoffDelay(attempt: number, baseDelayMs: number, maxDelayMs: n
   return expDelay + jitter;
 }
 
-export function getGeminiClient(): AIModelClient {
-  if (!genAI) {
+export function getAIClient(): AIModelClient {
+  if (!cachedClient) {
     resolveApiKey();
 
-    genAI = {
+    cachedClient = {
       getGenerativeModel: (options) => {
         const modelName = resolveModelName(options.model);
         const systemInstruction = options.systemInstruction?.trim() ?? '';
@@ -359,10 +361,10 @@ export function getGeminiClient(): AIModelClient {
       },
     };
   }
-  return genAI;
+  return cachedClient;
 }
 
-export async function withGeminiRetry<T>(operation: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
+export async function withAIRetry<T>(operation: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const { maxRetries, baseDelayMs, maxDelayMs } = resolveRetryOptions(options);
 
   for (let attempt = 0; ; attempt++) {
@@ -379,8 +381,4 @@ export async function withGeminiRetry<T>(operation: () => Promise<T>, options: R
       await sleep(delayMs);
     }
   }
-}
-
-export function getAIClient(): AIModelClient {
-  return getGeminiClient();
 }

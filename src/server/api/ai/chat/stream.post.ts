@@ -1,5 +1,5 @@
 import { defineEventHandler, getRequestIP, setHeader } from 'h3';
-import { getGeminiClient } from '../../../ai/gemini.client';
+import { DEFAULT_DEEPSEEK_CHAT_MODEL, getAIClient } from '../../../ai/deepseek.client';
 import { prisma } from '../../../db/client';
 import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
@@ -72,8 +72,8 @@ export default defineEventHandler(async (event) => {
     const model = createChatModelSafe(
       event,
       () =>
-        getGeminiClient().getGenerativeModel({
-          model: 'gemini-2.5-flash',
+        getAIClient().getGenerativeModel({
+          model: DEFAULT_DEEPSEEK_CHAT_MODEL,
           systemInstruction: buildSystemInstruction(baseProfile, projectSummary, visitorContextString, responseMode, intentHint),
         }),
       {
