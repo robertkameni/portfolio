@@ -1,0 +1,3 @@
+# Ensures Analog treats this repo as routes-based API mounting (hasAPIDir=true).
+# Real handlers remain under ../api; without this marker, Analog's middleware
+# strips /api in production and SSR HTML is served for GET /api/*.
