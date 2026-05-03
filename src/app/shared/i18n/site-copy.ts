@@ -836,6 +836,6 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
 };
 
 export function getSiteCopy(locale: AppLocale): SiteCopy {
-  return SITE_COPY[locale];
+  return SITE_COPY[locale] ?? SITE_COPY['en'];
 }
 

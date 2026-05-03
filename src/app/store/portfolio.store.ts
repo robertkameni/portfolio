@@ -32,9 +32,10 @@ export const PortfolioStore = signalStore(
       loadProfile: rxMethod<void>(
         pipe(
           tap(() => {
-            const currentData = store.data();
-            const desiredLocale = isPlatformBrowser(platformId) ? localeService.locale() : currentData?.locale ?? 'en';
+            if (!isPlatformBrowser(platformId)) return;
 
+            const currentData = store.data();
+            const desiredLocale = localeService.locale();
             const shouldFetch = !currentData || currentData.locale !== desiredLocale;
 
             if (shouldFetch) {
@@ -42,8 +43,13 @@ export const PortfolioStore = signalStore(
             }
           }),
           switchMap(() => {
+            if (!isPlatformBrowser(platformId)) {
+              patchState(store, {isLoading: false});
+              return EMPTY;
+            }
+
             const currentData = store.data();
-            const desiredLocale = isPlatformBrowser(platformId) ? localeService.locale() : currentData?.locale ?? 'en';
+            const desiredLocale = localeService.locale();
 
             if (currentData && currentData.locale === desiredLocale) {
               return EMPTY;
