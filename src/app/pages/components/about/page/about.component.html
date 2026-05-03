@@ -3,21 +3,18 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-12 w-full items-start">
       <div class="md:col-span-5 flex justify-center md:justify-start md:self-start">
         <div class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
-          <picture>
-            <source srcset="/assets/lucas-800.avif" type="image/avif" />
-            <source srcset="/assets/lucas-800.webp" type="image/webp" />
-            <img
-              src="/assets/lucas-800.jpg"
-              width="711"
-              height="1067"
-              alt="Robert Kameni"
-              decoding="async"
-              loading="lazy"
-              fetchpriority="low"
-              sizes="(max-width: 768px) min(92vw, 384px), 384px"
-              class="object-cover w-full h-full grayscale hover:grayscale-0 transition-[filter] duration-500"
-            />
-          </picture>
+          <img
+            src="/assets/lucas-600.jpg"
+            srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
+            width="711"
+            height="1067"
+            alt="Robert Kameni"
+            decoding="async"
+            loading="lazy"
+            fetchpriority="low"
+            sizes="(max-width: 768px) min(92vw, 384px), 384px"
+            class="object-cover w-full h-full grayscale hover:grayscale-0 transition-[filter] duration-500"
+          />
         </div>
       </div>
 
