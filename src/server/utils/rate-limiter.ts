@@ -165,7 +165,15 @@ class RedisRateLimiter implements RateLimiter {
         throw new Error('UPSTASH_REDIS_URL or REDIS_URL is required for redis rate limiter.');
       }
 
-      this.client = createClient({url: redisUrl});
+      const connectTimeout = readPositiveIntFromEnv('AI_REDIS_CONNECT_TIMEOUT_MS', 5000, 500);
+
+      this.client = createClient({
+        url: redisUrl,
+        socket: {
+          connectTimeout,
+          reconnectStrategy: false,
+        },
+      });
       await this.client.connect();
       registerRateLimiterCleanup(async () => {
         if (!this.client) {
@@ -256,10 +264,21 @@ function createRateLimiter(): RateLimiter {
   const fallback = new InMemoryRateLimiter();
   let redisHealthy = true;
 
+  const rateLimitOpTimeoutMs = readPositiveIntFromEnv('AI_RATE_LIMIT_OP_TIMEOUT_MS', 5000, 500);
+
+  const withRedisTimeout = <T>(promise: Promise<T>): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        setTimeout(() => reject(new Error(`Redis rate limit operation exceeded ${rateLimitOpTimeoutMs}ms`)), rateLimitOpTimeoutMs);
+      }),
+    ]);
+  };
+
   return {
     checkRateLimit: (namespace, key, options) =>
-      executeRateLimitCheck(redisHealthy, redisLimiter, fallback, namespace, key, options).catch((error) => {
-        console.error('[RateLimiter] Redis health check failed. Falling back to in-memory:', error);
+      (redisHealthy ? withRedisTimeout(executeRateLimitCheck(redisHealthy, redisLimiter, fallback, namespace, key, options)) : fallback.checkRateLimit(namespace, key, options)).catch((error) => {
+        console.error('[RateLimiter] Redis rate limit failed. Falling back to in-memory:', error);
         redisHealthy = false;
         return fallback.checkRateLimit(namespace, key, options);
       }),

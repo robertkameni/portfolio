@@ -42,21 +42,21 @@ export function clearAuthSessionCookies(event: H3Event): void {
   deleteCookie(event, 'auth_token', {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite: 'strict',
     path: AUTH_COOKIE_PATH,
   });
 
   deleteCookie(event, 'refreshToken', {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite: 'strict',
     path: AUTH_COOKIE_PATH,
   });
 
   deleteCookie(event, 'auth_hint', {
     httpOnly: false,
     secure,
-    sameSite: 'lax',
+    sameSite: 'strict',
     path: AUTH_COOKIE_PATH,
   });
 }

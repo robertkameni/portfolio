@@ -73,6 +73,22 @@ export class AuthService {
     return this.#initialAuthStatus$;
   }
 
+  private clearStaleAuthHintCookie(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    try {
+      const loc =
+        typeof globalThis !== 'undefined' && 'location' in globalThis
+          ? (globalThis as { location?: { protocol?: string } }).location
+          : undefined;
+      const securePart = loc?.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `auth_hint=; Path=/; Max-Age=0; SameSite=Strict${securePart}`;
+    } catch {
+      // ignore document access errors
+    }
+  }
+
   private refreshSession(): Observable<User | null> {
     return this.http.post<RefreshResponse>('/api/auth/refresh', {}).pipe(
       tap((response) => {
@@ -81,6 +97,7 @@ export class AuthService {
       map((response) => response.data.user),
       catchError((error) => {
         console.error('[AuthService] refreshSession error', error);
+        this.clearStaleAuthHintCookie();
         this.#currentUser.set(null);
         return of(null);
       }),

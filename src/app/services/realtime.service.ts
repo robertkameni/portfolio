@@ -1,6 +1,7 @@
 import { inject, Injectable, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
 import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
+import { AnalyticsService } from './analytics.service';
 import { isPlatformBrowser } from '@angular/common';
 import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
 import type { ApiSuccess } from '../shared/types/api.types';
@@ -22,6 +23,7 @@ type RealtimeTokenResponse = {
 export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
   private readonly chatStore = inject(ChatStore);
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly MAX_TOKEN_RETRIES = 4;
   private readonly TOKEN_RETRY_BASE_DELAY_MS = 300;
@@ -155,7 +157,11 @@ export class RealtimeService implements OnDestroy {
   }
 
   sendChatMessage(message: string): void {
-    if (!isPlatformBrowser(this.platformId) || !this.currentSessionId) return;
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const sessionIdForChat = this.currentSessionId ?? this.analyticsService.getClientSessionId();
 
     // Format history for chat API (model role → assistant)
     const allMessages = this.chatStore.messages();
@@ -169,7 +175,7 @@ export class RealtimeService implements OnDestroy {
     const requestBody = {
       message,
       history,
-      sessionId: this.currentSessionId,
+      sessionId: sessionIdForChat,
     };
 
     this.chatStore.setTyping(true);
@@ -178,6 +184,7 @@ export class RealtimeService implements OnDestroy {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
+      cache: 'no-store',
     })
       .then((response) => {
         if (!response.ok) {
@@ -194,12 +201,13 @@ export class RealtimeService implements OnDestroy {
         const reader = body.getReader();
         const decoder = new TextDecoder();
 
-        const handleDataLine = (line: string): boolean => {
+        const handleDataLine = (rawLine: string): boolean => {
+          const line = rawLine.replace(/\r$/, '').trim();
           if (!line.startsWith('data: ')) {
             return false;
           }
 
-          const jsonStr = line.substring(6);
+          const jsonStr = line.slice(6).trim();
 
           try {
             const data = JSON.parse(jsonStr);
@@ -240,16 +248,16 @@ export class RealtimeService implements OnDestroy {
               const lines = buffer.split('\n');
               buffer = lines.pop() ?? '';
 
-              for (const line of lines) {
-                if (handleDataLine(line)) {
+              for (const rawLine of lines) {
+                if (handleDataLine(rawLine)) {
                   shouldStop = true;
                   break;
                 }
               }
             }
 
-            if (!shouldStop && buffer.trim().length > 0) {
-              handleDataLine(buffer.trim());
+            if (!shouldStop && buffer.replace(/\r$/, '').trim().length > 0) {
+              handleDataLine(buffer);
             }
           } finally {
             this.chatStore.setTyping(false);

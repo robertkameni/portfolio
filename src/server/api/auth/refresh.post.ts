@@ -8,16 +8,19 @@ import { apiSuccess } from '../../utils/api-response';
 export default defineEventHandler(async (event) => {
   const refreshToken = getCookie(event, 'refreshToken');
   if (!refreshToken) {
+    clearAuthSessionCookies(event);
     throw unauthorized('Unauthorized: Missing refresh token.');
   }
 
   const payload = authService.verifyRefreshToken<{ userId: string }>(refreshToken);
   if (!payload) {
+    clearAuthSessionCookies(event);
     throw unauthorized('Unauthorized: Invalid refresh token.');
   }
 
   const user = await userRepository.findById(payload.userId);
   if (!user) {
+    clearAuthSessionCookies(event);
     throw unauthorized('Unauthorized: User no longer exists.');
   }
 

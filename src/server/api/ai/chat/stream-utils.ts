@@ -28,7 +28,7 @@ type StreamOptions = {
 
 export function applySseHeaders(event: H3Event): void {
   event.node.res.setHeader('Content-Type', 'text/event-stream');
-  event.node.res.setHeader('Cache-Control', 'no-cache');
+  event.node.res.setHeader('Cache-Control', 'no-cache, no-transform');
   event.node.res.setHeader('Connection', 'keep-alive');
   event.node.res.setHeader('X-Accel-Buffering', 'no');
 }
@@ -64,6 +64,7 @@ export function createChatModelSafe(event: H3Event, factory: () => ChatModel, op
 
 export async function streamChatResponseSafe(event: H3Event, chat: StreamingChat, message: string, options: StreamOptions = {}): Promise<boolean> {
   try {
+    writeSseData(event, { ready: true }, true);
     const stream = await chat.sendMessageStream(message);
 
     for await (const chunk of stream.stream) {

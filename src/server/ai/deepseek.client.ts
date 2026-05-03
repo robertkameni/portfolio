@@ -176,6 +176,23 @@ function toMessages(history: unknown[] = []): ChatMessage[] {
   }));
 }
 
+function isDeepSeekThinkingEnabled(): boolean {
+  const raw = process.env['DEEPSEEK_THINKING_ENABLED']?.trim().toLowerCase();
+  return raw === 'true' || raw === '1';
+}
+
+function resolveDeepSeekFetchTimeoutMs(): number {
+  const raw = process.env['DEEPSEEK_FETCH_TIMEOUT_MS']?.trim();
+  if (!raw) {
+    return 120_000;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 10_000) {
+    return 120_000;
+  }
+  return parsed;
+}
+
 async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options: {
   stream: boolean;
   model: string;
@@ -190,6 +207,7 @@ async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options:
     stream: boolean;
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
+    thinking?: { type: 'disabled' | 'enabled' };
   } = {
     model: options.model,
     messages: promptMessages,
@@ -197,10 +215,15 @@ async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options:
     max_tokens: options.maxOutputTokens,
   };
 
+  if (!isDeepSeekThinkingEnabled()) {
+    payload.thinking = { type: 'disabled' };
+  }
+
   if (options.responseMimeType === 'application/json') {
     payload.response_format = { type: 'json_object' };
   }
 
+  const timeoutMs = resolveDeepSeekFetchTimeoutMs();
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -208,6 +231,7 @@ async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options:
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   if (!response.ok) {
@@ -220,7 +244,28 @@ async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options:
   return response;
 }
 
-async function createStreamingResponse(response: Response): Promise<StreamResponse> {
+function textFromCompletionDelta(delta: unknown): string {
+  if (!delta || typeof delta !== 'object') {
+    return '';
+  }
+
+  const record = delta as Record<string, unknown>;
+  const content = record['content'];
+  if (typeof content === 'string' && content.length > 0) {
+    return content;
+  }
+
+  if (isDeepSeekThinkingEnabled()) {
+    const reasoning = record['reasoning_content'];
+    if (typeof reasoning === 'string' && reasoning.length > 0) {
+      return reasoning;
+    }
+  }
+
+  return '';
+}
+
+async function* streamDeepSeekCompletionChunks(response: Response): AsyncGenerator<StreamChunk> {
   if (!response.body) {
     throw new Error('DeepSeek response did not include a stream body.');
   }
@@ -228,59 +273,77 @@ async function createStreamingResponse(response: Response): Promise<StreamRespon
   const decoder = new TextDecoder();
   const reader = response.body.getReader();
 
-  async function* stream(): AsyncGenerator<StreamChunk> {
-    let buffer = '';
+  let buffer = '';
 
-    try {
-      while (true) {
-        const chunk = await reader.read();
-        if (chunk.done) {
-          break;
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) {
+        break;
+      }
+
+      buffer += decoder.decode(chunk.value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data: ')) {
+          continue;
         }
 
-        buffer += decoder.decode(chunk.value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
+        const data = trimmed.slice(6).trim();
+        if (!data || data === '[DONE]') {
+          continue;
+        }
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith('data: ')) {
-            continue;
+        try {
+          const parsed = JSON.parse(data);
+          const delta = parsed?.choices?.[0]?.delta;
+          const text = textFromCompletionDelta(delta);
+          if (text.length > 0) {
+            yield { text: () => text };
           }
-
-          const data = trimmed.slice(6);
-          if (!data || data === '[DONE]') {
-            continue;
-          }
-
-          try {
-            const parsed = JSON.parse(data);
-            const delta = parsed?.choices?.[0]?.delta?.content;
-            if (typeof delta === 'string' && delta.length > 0) {
-              yield { text: () => delta };
-            }
-          } catch (error) {
-            console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
-          }
+        } catch (error) {
+          console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
         }
       }
-      if (buffer.startsWith('data: ')) {
-        const data = buffer.slice(6);
-        if (data && data !== '[DONE]') {
-          try {
-            const parsed = JSON.parse(data);
-            const delta = parsed?.choices?.[0]?.delta?.content;
-            if (typeof delta === 'string' && delta.length > 0) {
-              yield { text: () => delta };
-            }
-          } catch (error) {
-            console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
     }
+    if (buffer.startsWith('data: ')) {
+      const data = buffer.slice(6).trim();
+      if (data && data !== '[DONE]') {
+        try {
+          const parsed = JSON.parse(data);
+          const delta = parsed?.choices?.[0]?.delta;
+          const text = textFromCompletionDelta(delta);
+          if (text.length > 0) {
+            yield { text: () => text };
+          }
+        } catch (error) {
+          console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+type StreamCompletionOptions = {
+  model: string;
+  maxOutputTokens?: number;
+  responseMimeType?: string;
+};
+
+function createLazyStreamResponse(messages: ChatMessage[], streamOptions: StreamCompletionOptions): StreamResponse {
+  async function* stream(): AsyncGenerator<StreamChunk> {
+    const response = await requestDeepSeekCompletion(messages, {
+      stream: true,
+      model: streamOptions.model,
+      maxOutputTokens: streamOptions.maxOutputTokens,
+      responseMimeType: streamOptions.responseMimeType,
+    });
+    yield* streamDeepSeekCompletionChunks(response);
   }
 
   return { stream: stream() };
@@ -298,7 +361,11 @@ async function runDeepSeekCompletion(promptMessages: ChatMessage[], options: {
     responseMimeType: options.responseMimeType,
   });
   const payload = await response.json();
-  const responseText = payload?.choices?.[0]?.message?.content ?? '';
+  const message = payload?.choices?.[0]?.message as Record<string, unknown> | undefined;
+  const responseText =
+    (typeof message?.['content'] === 'string' ? message['content'] : '') ||
+    (isDeepSeekThinkingEnabled() && typeof message?.['reasoning_content'] === 'string' ? message['reasoning_content'] : '') ||
+    '';
   return {
     response: {
       text: () => String(responseText),
@@ -332,16 +399,14 @@ export function getAIClient(): AIModelClient {
               chatOptions?.generationConfig?.maxOutputTokens ?? options.generationConfig?.maxOutputTokens;
 
             return {
-              sendMessageStream: async (message: string) => {
-                const response = await requestDeepSeekCompletion([...baseMessages, { role: 'user', content: message }], {
-                  stream: true,
-                  model: modelName,
-                  maxOutputTokens,
-                  responseMimeType: options.generationConfig?.responseMimeType,
-                });
-                const streamed = await createStreamingResponse(response);
-                return streamed;
-              },
+              sendMessageStream: (message: string) =>
+                Promise.resolve(
+                  createLazyStreamResponse([...baseMessages, { role: 'user', content: message }], {
+                    model: modelName,
+                    maxOutputTokens,
+                    responseMimeType: options.generationConfig?.responseMimeType,
+                  }),
+                ),
             };
           },
           generateContent: async (prompt) => {
