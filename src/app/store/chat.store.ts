@@ -21,6 +21,9 @@ export const ChatStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withMethods((store) => ({
+    openChat() {
+      patchState(store, { isOpen: true });
+    },
     toggleChat() {
       patchState(store, { isOpen: !store.isOpen() });
     },

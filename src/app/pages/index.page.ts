@@ -16,6 +16,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { getSiteCopy } from '../shared/i18n/site-copy';
 import { FooterComponent } from './components/footer/footer';
+import { ChatStore } from '../store/chat.store';
 
 @Component({
   selector: 'home',
@@ -41,6 +42,7 @@ export default class HomeComponent implements OnInit {
   auth = inject(AuthService);
   private router = inject(Router);
   private analytics = inject(AnalyticsService);
+  private chatStore = inject(ChatStore);
 
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
@@ -84,5 +86,9 @@ export default class HomeComponent implements OnInit {
       next: () => this.router.navigateByUrl('/'),
       error: () => this.router.navigateByUrl('/admin/login'),
     });
+  }
+
+  openChatFromLauncher() {
+    this.chatStore.openChat();
   }
 }
