@@ -74,11 +74,28 @@ export class RealtimeService implements OnDestroy {
   }
 
   private async requestRealtimeToken(clientSessionId: string): Promise<RealtimeTokenResponse> {
-    const response = await fetch('/api/realtime/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientSessionId }),
-    });
+    let response: Response;
+    try {
+      response = await fetch('/api/realtime/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientSessionId }),
+      });
+    } catch {
+      const error = new Error('Network error fetching realtime token') as Error & { isNetworkError: boolean };
+      error.isNetworkError = true;
+      throw error;
+    }
+
+    const contentType = response.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/json')) {
+      const error = new Error(
+        `Failed to fetch realtime token: unexpected response type (${response.status})`,
+      ) as Error & { status?: number; isNetworkError: boolean };
+      error.status = response.status;
+      error.isNetworkError = true;
+      throw error;
+    }
 
     const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse> & {
       message?: string;
@@ -98,7 +115,12 @@ export class RealtimeService implements OnDestroy {
   }
 
   private shouldRetryForTokenError(error: unknown): boolean {
-    const typed = error as { status?: number; message?: string; body?: { message?: string } };
+    const typed = error as { status?: number; message?: string; body?: { message?: string }; isNetworkError?: boolean };
+
+    if (typed.isNetworkError) {
+      return true;
+    }
+
     const message = typed.message?.toLowerCase() ?? typed.body?.message?.toLowerCase() ?? '';
     return typed.status === 401 && message.includes('invalid session');
   }

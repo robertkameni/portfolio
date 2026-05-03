@@ -2,7 +2,7 @@ import { defineEventHandler, readBody, getRequestIP } from 'h3';
 import { createHmac, randomUUID } from 'crypto';
 import { prisma } from '../../db/client';
 import { apiSuccess } from '../../utils/api-response';
-import { badRequest, unauthorized } from '../../utils/api-errors';
+import { badRequest, unauthorized, serverError } from '../../utils/api-errors';
 import { readPositiveIntFromEnv, rateLimiter } from '../../utils/rate-limiter';
 
 type RealtimeTokenBody = {
@@ -24,13 +24,25 @@ function buildSignature(sessionId: string, nonce: string, expiresAt: number): st
 }
 
 export default defineEventHandler(async (event) => {
+  if (!process.env['DATABASE_URL']) {
+    throw serverError('Realtime service unavailable: database not configured.', 'SERVICE_UNAVAILABLE');
+  }
+
   const body = await readBody<RealtimeTokenBody>(event);
   if (!body?.clientSessionId) {
     throw badRequest('Bad Request: clientSessionId is required.');
   }
 
   const requestIp = getRequestIP(event) ?? 'unknown';
-  const session = await prisma.visitorSession.findUnique({ where: { clientSessionId: body.clientSessionId } });
+
+  let session: Awaited<ReturnType<typeof prisma.visitorSession.findUnique>>;
+  try {
+    session = await prisma.visitorSession.findUnique({ where: { clientSessionId: body.clientSessionId } });
+  } catch (err) {
+    console.error('[RealtimeToken] DB query failed:', err);
+    throw serverError('Realtime service temporarily unavailable.', 'DB_ERROR');
+  }
+
   if (!session) {
     throw unauthorized('Unauthorized: Invalid session.');
   }
