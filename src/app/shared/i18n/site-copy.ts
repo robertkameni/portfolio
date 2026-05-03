@@ -283,7 +283,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loadErrorMessage: 'Failed to load project details.'
     },
     devProxy: {
-      label: 'AI Dev Proxy',
+      label: 'Dev Preview',
       back: 'Back',
       home: 'Home',
       admin: 'Admin'
@@ -593,7 +593,7 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loadErrorMessage: 'Projektdetails konnten nicht geladen werden.'
     },
     devProxy: {
-      label: 'AI Dev Proxy',
+      label: 'Dev-Vorschau',
       back: 'Zurück',
       home: 'Startseite',
       admin: 'Admin'
