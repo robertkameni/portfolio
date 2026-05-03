@@ -1,4 +1,4 @@
 {
-  "buildCommand": "npm run build && echo '--- .vercel/output contents ---' && ls -la .vercel/output/ && cat .vercel/output/config.json && echo '--- static contents ---' && ls .vercel/output/static/ | head -20",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs"
 }
