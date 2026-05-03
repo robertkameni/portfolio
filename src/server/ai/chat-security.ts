@@ -88,24 +88,13 @@ export function validateChatInput(message: string, history: any[]): { valid: boo
 /**
  * Log chat interaction with request ID, redacted message, and no sensitive data in logs.
  */
-export function logChatInteraction(
-  requestId: string,
-  sessionId: string | undefined,
-  message: string,
-  status: 'started' | 'completed' | 'error',
-  error?: Error
-): void {
+export function logChatInteraction(requestId: string, sessionId: string | undefined, message: string, status: 'started' | 'completed' | 'error', error?: Error): void {
   const redacted = redactSensitiveData(message);
   const msgPreview = redacted.substring(0, 100);
 
   if (status === 'error') {
-    console.error(
-      `[chat-stream] requestId=${requestId} sessionId=${sessionId} status=error message="${msgPreview}" error=${error?.message}`
-    );
+    console.error(`[chat-stream] requestId=${requestId} sessionId=${sessionId} status=error message="${msgPreview}" error=${error?.message}`);
   } else {
-    console.log(
-      `[chat-stream] requestId=${requestId} sessionId=${sessionId} status=${status} message="${msgPreview}"`
-    );
+    console.log(`[chat-stream] requestId=${requestId} sessionId=${sessionId} status=${status} message="${msgPreview}"`);
   }
 }
-

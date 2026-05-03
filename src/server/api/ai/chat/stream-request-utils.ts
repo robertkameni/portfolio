@@ -15,13 +15,7 @@ type ChatRequest = {
   sessionId?: string;
 };
 
-type ChatLogFn = (
-  requestId: string,
-  sessionId: string | undefined,
-  message: string,
-  status: 'started' | 'completed' | 'error',
-  error?: Error
-) => void;
+type ChatLogFn = (requestId: string, sessionId: string | undefined, message: string, status: 'started' | 'completed' | 'error', error?: Error) => void;
 
 export function parseAndValidateGetChatRequest(event: H3Event): ChatRequest | null {
   const sessionId = getSingleQueryString(event, 'sessionId');

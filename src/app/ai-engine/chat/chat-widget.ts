@@ -1,10 +1,10 @@
-import {afterRenderEffect, Component, computed, ElementRef, inject, SecurityContext, signal, viewChild} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
-import {marked} from 'marked';
-import {ChatStore} from '../../store/chat.store';
-import {RealtimeService} from '../../services/realtime.service';
-import {getSiteCopy} from '../../shared/i18n/site-copy';
-import {LocaleService} from '../../shared/services/locale.service';
+import { afterRenderEffect, Component, computed, ElementRef, inject, SecurityContext, signal, viewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { marked } from 'marked';
+import { ChatStore } from '../../store/chat.store';
+import { RealtimeService } from '../../services/realtime.service';
+import { getSiteCopy } from '../../shared/i18n/site-copy';
+import { LocaleService } from '../../shared/services/locale.service';
 
 @Component({
   selector: 'chat-widget',
@@ -35,7 +35,7 @@ export class ChatWidgetComponent {
           const el = container.nativeElement;
           el.scrollTop = el.scrollHeight;
         }
-      }
+      },
     });
   }
 
@@ -67,7 +67,7 @@ export class ChatWidgetComponent {
   renderAssistantMessage(content: string): string {
     const markdownHtml = marked.parse(content, {
       gfm: true,
-      breaks: true
+      breaks: true,
     });
 
     const html = typeof markdownHtml === 'string' ? markdownHtml : content;

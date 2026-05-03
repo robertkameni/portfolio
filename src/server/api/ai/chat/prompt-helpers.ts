@@ -46,7 +46,12 @@ export function detectResponseMode(userMessage: string): ResponseMode {
 
 export function buildSystemInstruction(baseProfile: any, projectSummary: string, visitorContextString: string, mode: ResponseMode, intentHint: string): string {
   const about = baseProfile?.about?.paragraphs?.join(' ') ?? '';
-  const skills = Array.isArray(baseProfile?.skills) ? baseProfile.skills.map((skill: { name?: string }) => skill?.name).filter(Boolean).join(', ') : '';
+  const skills = Array.isArray(baseProfile?.skills)
+    ? baseProfile.skills
+        .map((skill: { name?: string }) => skill?.name)
+        .filter(Boolean)
+        .join(', ')
+    : '';
 
   const modeSpecificRules =
     mode === 'storytelling_recruiter'

@@ -78,10 +78,7 @@ export class AuthService {
       return;
     }
     try {
-      const loc =
-        typeof globalThis !== 'undefined' && 'location' in globalThis
-          ? (globalThis as { location?: { protocol?: string } }).location
-          : undefined;
+      const loc = typeof globalThis !== 'undefined' && 'location' in globalThis ? (globalThis as { location?: { protocol?: string } }).location : undefined;
       const securePart = loc?.protocol === 'https:' ? '; Secure' : '';
       document.cookie = `auth_hint=; Path=/; Max-Age=0; SameSite=Strict${securePart}`;
     } catch {

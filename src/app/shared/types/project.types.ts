@@ -16,10 +16,7 @@ export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
 /** Body for POST / PUT project admin APIs (matches server CreateProjectDto fields). */
 export type ProjectPayload = Omit<Project, 'id' | 'createdAt' | 'updatedAt'>;
 
-export type ProjectFormModel = Omit<
-  ProjectPayload,
-  'description' | 'contentMarkdown' | 'coverImageUrl' | 'tags'
-> & {
+export type ProjectFormModel = Omit<ProjectPayload, 'description' | 'contentMarkdown' | 'coverImageUrl' | 'tags'> & {
   description: string;
   contentMarkdown: string;
   coverImageUrl: string;
@@ -36,9 +33,9 @@ export function toProjectPayload(form: ProjectFormModel): ProjectPayload {
     isPublished: form.isPublished,
     tags: form.tags.trim()
       ? form.tags
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean)
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
       : [],
   };
 }

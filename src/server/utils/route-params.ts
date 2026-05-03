@@ -19,4 +19,3 @@ export function requireRouterParamFromAliases(event: H3Event, keys: string[], me
 
   throw badRequest(message);
 }
-

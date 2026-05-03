@@ -58,10 +58,7 @@ export class RealtimeService implements OnDestroy {
       });
   }
 
-  private async obtainRealtimeTokenWithRetry(
-    clientSessionId: string,
-    attempt = 0,
-  ): Promise<RealtimeTokenResponse> {
+  private async obtainRealtimeTokenWithRetry(clientSessionId: string, attempt = 0): Promise<RealtimeTokenResponse> {
     try {
       return await this.requestRealtimeToken(clientSessionId);
     } catch (error) {
@@ -91,9 +88,7 @@ export class RealtimeService implements OnDestroy {
 
     const contentType = response.headers.get('content-type') ?? '';
     if (!contentType.includes('application/json')) {
-      const error = new Error(
-        `Failed to fetch realtime token: unexpected response type (${response.status})`,
-      ) as Error & { status?: number; isNetworkError: boolean };
+      const error = new Error(`Failed to fetch realtime token: unexpected response type (${response.status})`) as Error & { status?: number; isNetworkError: boolean };
       error.status = response.status;
       error.isNetworkError = false;
       throw error;
@@ -104,9 +99,11 @@ export class RealtimeService implements OnDestroy {
     };
 
     if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
-      const error = new Error(
-        `Failed to fetch realtime token: ${response.status} ${payload.message ?? payload.status}`,
-      ) as Error & { status?: number; statusText?: string; body?: unknown };
+      const error = new Error(`Failed to fetch realtime token: ${response.status} ${payload.message ?? payload.status}`) as Error & {
+        status?: number;
+        statusText?: string;
+        body?: unknown;
+      };
       error.status = response.status;
       error.statusText = response.statusText;
       error.body = payload;

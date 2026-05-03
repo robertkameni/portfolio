@@ -40,31 +40,19 @@ export default defineEventHandler(async (event) => {
     throw notFound('Not Found: Session not found.');
   }
 
-  const sessionRateLimit = await rateLimiter.checkRateLimit(
-    ANALYZE_VISITOR_REDIS_NAMESPACE,
-    `session:${session.id}`,
-    {
-      maxRequests: ANALYSIS_RATE_MAX_REQUESTS,
-      windowMs: ANALYSIS_RATE_WINDOW_MS,
-    },
-  );
+  const sessionRateLimit = await rateLimiter.checkRateLimit(ANALYZE_VISITOR_REDIS_NAMESPACE, `session:${session.id}`, {
+    maxRequests: ANALYSIS_RATE_MAX_REQUESTS,
+    windowMs: ANALYSIS_RATE_WINDOW_MS,
+  });
   if (!sessionRateLimit.allowed) {
     event.node.res.statusCode = 202;
-    return apiSuccess<AnalyzeVisitorOutcome>(
-      { result: 'skipped', reason: 'session_rate_limited' },
-      'Analysis skipped: session rate limited.',
-      'ANALYSIS_SKIPPED'
-    );
+    return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'session_rate_limited' }, 'Analysis skipped: session rate limited.', 'ANALYSIS_SKIPPED');
   }
 
   const inFlightLease = await rateLimiter.acquireLease(ANALYZE_VISITOR_REDIS_NAMESPACE, `in-flight:${session.id}`, ANALYZE_VISITOR_IN_FLIGHT_TTL_MS);
   if (!inFlightLease.acquired) {
     event.node.res.statusCode = 202;
-    return apiSuccess<AnalyzeVisitorOutcome>(
-      { result: 'skipped', reason: 'analysis_in_flight' },
-      'Analysis skipped: analysis already in flight.',
-      'ANALYSIS_SKIPPED'
-    );
+    return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'analysis_in_flight' }, 'Analysis skipped: analysis already in flight.', 'ANALYSIS_SKIPPED');
   }
 
   const globalRateLimit = await rateLimiter.checkRateLimit(ANALYZE_VISITOR_REDIS_NAMESPACE, 'global', {
@@ -74,11 +62,7 @@ export default defineEventHandler(async (event) => {
   if (!globalRateLimit.allowed) {
     await inFlightLease.release();
     event.node.res.statusCode = 202;
-    return apiSuccess<AnalyzeVisitorOutcome>(
-      { result: 'skipped', reason: 'global_rate_limited' },
-      'Analysis skipped: global rate limited.',
-      'ANALYSIS_SKIPPED'
-    );
+    return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'global_rate_limited' }, 'Analysis skipped: global rate limited.', 'ANALYSIS_SKIPPED');
   }
 
   const totalEventCount = await prisma.analyticsEvent.count({
@@ -88,11 +72,7 @@ export default defineEventHandler(async (event) => {
   if (totalEventCount < MIN_EVENTS_FOR_FIRST_ANALYSIS) {
     await inFlightLease.release();
     event.node.res.statusCode = 202;
-    return apiSuccess<AnalyzeVisitorOutcome>(
-      { result: 'skipped', reason: 'insufficient_events' },
-      'Analysis skipped: insufficient events.',
-      'ANALYSIS_SKIPPED'
-    );
+    return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'insufficient_events' }, 'Analysis skipped: insufficient events.', 'ANALYSIS_SKIPPED');
   }
 
   const latestDecision = await prisma.aiDecision.findFirst({
@@ -110,11 +90,7 @@ export default defineEventHandler(async (event) => {
     if (elapsedMs < ANALYSIS_COOLDOWN_MS) {
       await inFlightLease.release();
       event.node.res.statusCode = 202;
-      return apiSuccess<AnalyzeVisitorOutcome>(
-        { result: 'skipped', reason: 'cooldown_active' },
-        'Analysis skipped: cooldown active.',
-        'ANALYSIS_SKIPPED'
-      );
+      return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'cooldown_active' }, 'Analysis skipped: cooldown active.', 'ANALYSIS_SKIPPED');
     }
 
     const newEventsCount = await prisma.analyticsEvent.count({
@@ -127,11 +103,7 @@ export default defineEventHandler(async (event) => {
     if (newEventsCount < MIN_NEW_EVENTS_FOR_REANALYSIS) {
       await inFlightLease.release();
       event.node.res.statusCode = 202;
-      return apiSuccess<AnalyzeVisitorOutcome>(
-        { result: 'skipped', reason: 'not_enough_new_events' },
-        'Analysis skipped: not enough new events.',
-        'ANALYSIS_SKIPPED'
-      );
+      return apiSuccess<AnalyzeVisitorOutcome>({ result: 'skipped', reason: 'not_enough_new_events' }, 'Analysis skipped: not enough new events.', 'ANALYSIS_SKIPPED');
     }
   }
 
@@ -166,9 +138,5 @@ export default defineEventHandler(async (event) => {
   })();
 
   event.node.res.statusCode = 202;
-  return apiSuccess<AnalyzeVisitorOutcome>(
-    { result: 'accepted', reason: 'analysis_started' },
-    'Analysis started in background.',
-    'ANALYSIS_ACCEPTED'
-  );
+  return apiSuccess<AnalyzeVisitorOutcome>({ result: 'accepted', reason: 'analysis_started' }, 'Analysis started in background.', 'ANALYSIS_ACCEPTED');
 });

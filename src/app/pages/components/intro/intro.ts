@@ -24,9 +24,9 @@ type IntroViewModel = {
 export class IntroComponent {
   data = input.required<IntroData>();
   locale = input<AppLocale>('en');
-  
+
   protected readonly copy = computed(() => getSiteCopy(this.locale()));
-  
+
   safeData = computed(() => {
     const data = this.data();
     return {

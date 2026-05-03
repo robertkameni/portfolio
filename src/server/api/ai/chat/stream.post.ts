@@ -30,14 +30,10 @@ export default defineEventHandler(async (event) => {
     const { message, history, sessionId } = request;
     const limiterKey = sessionId ?? `ip:${getRequestIP(event) ?? 'unknown'}`;
 
-    const sessionRateLimit = await rateLimiter.checkRateLimit(
-      CHAT_RATE_LIMITER_NAMESPACE,
-      `session:${limiterKey}`,
-      {
-        maxRequests: CHAT_SESSION_MAX_REQUESTS,
-        windowMs: CHAT_SESSION_WINDOW_MS,
-      },
-    );
+    const sessionRateLimit = await rateLimiter.checkRateLimit(CHAT_RATE_LIMITER_NAMESPACE, `session:${limiterKey}`, {
+      maxRequests: CHAT_SESSION_MAX_REQUESTS,
+      windowMs: CHAT_SESSION_WINDOW_MS,
+    });
     if (!sessionRateLimit.allowed) {
       event.node.res.statusCode = 429;
       writeSseError(event, 'Chat rate limit exceeded. Please slow down.');
@@ -78,7 +74,7 @@ export default defineEventHandler(async (event) => {
         }),
       {
         onError: (error) => logChatInteraction(requestId, sessionId, message, 'error', error as Error),
-      }
+      },
     );
 
     if (!model) {

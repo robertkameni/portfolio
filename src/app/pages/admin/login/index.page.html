@@ -24,13 +24,9 @@
         />
       </div>
       @if (errorMessage()) {
-        <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
+      <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
       }
-      <button
-        type="submit"
-        [disabled]="isLoading()"
-        class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
-      >
+      <button type="submit" [disabled]="isLoading()" class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
         {{ isLoading() ? copy().adminLogin.loggingIn : copy().adminLogin.login }}
       </button>
     </form>
@@ -38,7 +34,7 @@
 </div>
 
 @if (toastMessage()) {
-  <div role="status" aria-live="polite" class="fixed bottom-6 right-6 z-10002">
-    <div class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow">{{ toastMessage() }}</div>
-  </div>
+<div role="status" aria-live="polite" class="fixed bottom-6 right-6 z-10002">
+  <div class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow">{{ toastMessage() }}</div>
+</div>
 }

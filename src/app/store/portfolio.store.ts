@@ -1,11 +1,11 @@
-import {inject, PLATFORM_ID} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {isPlatformBrowser} from '@angular/common';
-import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
-import {rxMethod} from '@ngrx/signals/rxjs-interop';
-import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
-import {type LocalizedProfileData} from '../shared/types/profile-data';
-import {LocaleService} from '../shared/services/locale.service';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
+import { type LocalizedProfileData } from '../shared/types/profile-data';
+import { LocaleService } from '../shared/services/locale.service';
 
 type ProfileState = {
   data: LocalizedProfileData | null;
@@ -16,18 +16,13 @@ type ProfileState = {
 const initialState: ProfileState = {
   data: null,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 export const PortfolioStore = signalStore(
-  {providedIn: 'root'},
+  { providedIn: 'root' },
   withState(initialState),
-  withMethods((
-    store,
-    http = inject(HttpClient),
-    platformId = inject(PLATFORM_ID),
-    localeService = inject(LocaleService)
-  ) => {
+  withMethods((store, http = inject(HttpClient), platformId = inject(PLATFORM_ID), localeService = inject(LocaleService)) => {
     return {
       loadProfile: rxMethod<void>(
         pipe(
@@ -39,12 +34,12 @@ export const PortfolioStore = signalStore(
             const shouldFetch = !currentData || currentData.locale !== desiredLocale;
 
             if (shouldFetch) {
-              patchState(store, {isLoading: !currentData, error: null});
+              patchState(store, { isLoading: !currentData, error: null });
             }
           }),
           switchMap(() => {
             if (!isPlatformBrowser(platformId)) {
-              patchState(store, {isLoading: false});
+              patchState(store, { isLoading: false });
               return EMPTY;
             }
 
@@ -58,15 +53,15 @@ export const PortfolioStore = signalStore(
             const profileUrl = `/api/v1/profile?locale=${desiredLocale}`;
 
             return http.get<LocalizedProfileData>(profileUrl).pipe(
-              tap((data) => patchState(store, {data, isLoading: false, error: null})),
+              tap((data) => patchState(store, { data, isLoading: false, error: null })),
               catchError(() => {
-                patchState(store, {isLoading: false, error: 'Failed to load profile.'});
+                patchState(store, { isLoading: false, error: 'Failed to load profile.' });
                 return EMPTY;
-              })
+              }),
             );
-          })
-        )
-      )
+          }),
+        ),
+      ),
     };
-  })
+  }),
 );

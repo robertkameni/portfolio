@@ -1,6 +1,6 @@
-import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {AdminMessagesService} from '../../../shared/services/admin-messages.service';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AdminMessagesService } from '../../../shared/services/admin-messages.service';
 
 @Component({
   selector: 'admin-intelligence',
@@ -38,7 +38,7 @@ export default class AdminIntelligenceComponent implements OnInit {
         console.error('Failed to load intelligence insights:', err);
         this.error.set('Failed to load AI insights.');
         this.loading.set(false);
-      }
+      },
     });
   }
 }

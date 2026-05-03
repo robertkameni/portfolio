@@ -7,29 +7,25 @@
   </div>
 
   @if (submitSuccess()) {
-    <status-alert type="success">Project updated successfully. Redirecting...</status-alert>
-  }
-
-  @if (submitError()) {
-    <status-alert type="error">{{ submitError() }}</status-alert>
-  }
-
-  @if (projectResource.isLoading()) {
-    <div class="text-gray-400 font-mono py-12 text-center">Loading project...</div>
+  <status-alert type="success">Project updated successfully. Redirecting...</status-alert>
+  } @if (submitError()) {
+  <status-alert type="error">{{ submitError() }}</status-alert>
+  } @if (projectResource.isLoading()) {
+  <div class="text-gray-400 font-mono py-12 text-center">Loading project...</div>
   } @else if (projectResource.status() === 'idle') {
-    <div class="text-gray-400 font-mono py-12 text-center">Waiting for data...</div>
+  <div class="text-gray-400 font-mono py-12 text-center">Waiting for data...</div>
   } @else if (projectResource.error()) {
-    <div class="text-red-400 py-8 text-center text-sm">Failed to load project: {{ projectResource.error() | json }}</div>
+  <div class="text-red-400 py-8 text-center text-sm">Failed to load project: {{ projectResource.error() | json }}</div>
   } @else if (projectResource.value()?.data) {
-    <project-form
-      [formTitle]="'Edit: ' + projectResource.value()!.data.title"
-      submitLabel="Save Changes"
-      submittingLabel="Saving..."
-      publishLabel="Published"
-      [isSubmitting]="isSubmitting()"
-      [initialData]="initialData()"
-      (formSubmit)="updateProject($event)"
-      (cancel)="navigateBack()"
-    />
+  <project-form
+    [formTitle]="'Edit: ' + projectResource.value()!.data.title"
+    submitLabel="Save Changes"
+    submittingLabel="Saving..."
+    publishLabel="Published"
+    [isSubmitting]="isSubmitting()"
+    [initialData]="initialData()"
+    (formSubmit)="updateProject($event)"
+    (cancel)="navigateBack()"
+  />
   }
 </div>

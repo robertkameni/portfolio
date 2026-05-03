@@ -64,11 +64,7 @@ type ApiErrorHandlingOptions = {
   fallbackCode?: string;
 };
 
-export async function withApiErrorHandling<T>(
-  operation: () => Promise<T>,
-  fallbackStatusMessage: string,
-  options: ApiErrorHandlingOptions = {}
-): Promise<T> {
+export async function withApiErrorHandling<T>(operation: () => Promise<T>, fallbackStatusMessage: string, options: ApiErrorHandlingOptions = {}): Promise<T> {
   try {
     return await operation();
   } catch (error) {
@@ -79,4 +75,3 @@ export async function withApiErrorHandling<T>(
     throw mapApiError(error, fallbackStatusMessage, options.fallbackStatusCode ?? 500, options.fallbackCode ?? 'INTERNAL_SERVER_ERROR');
   }
 }
-

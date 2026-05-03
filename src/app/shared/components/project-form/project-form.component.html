@@ -8,9 +8,7 @@
         [formField]="projectForm.title"
         type="text"
         class="w-full bg-[#0a1a0f] border rounded-lg px-3 py-2 text-white text-sm focus:outline-none transition"
-        [class]="
-          projectForm.title().touched() && !projectForm.title().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'
-        "
+        [class]="projectForm.title().touched() && !projectForm.title().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'"
       />
       @if (projectForm.title().touched() && projectForm.title().errors().length > 0) {
         <p class="text-red-400 text-xs mt-1">
@@ -24,9 +22,7 @@
         [formField]="projectForm.slug"
         type="text"
         class="w-full bg-[#0a1a0f] border rounded-lg px-3 py-2 text-white text-sm focus:outline-none transition"
-        [class]="
-          projectForm.slug().touched() && !projectForm.slug().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'
-        "
+        [class]="projectForm.slug().touched() && !projectForm.slug().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'"
       />
       @if (projectForm.slug().touched() && projectForm.slug().errors().length > 0) {
         <p class="text-red-400 text-xs mt-1">

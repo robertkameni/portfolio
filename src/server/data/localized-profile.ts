@@ -92,4 +92,3 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
 
   return { ...baseProfile, locale };
 }
-

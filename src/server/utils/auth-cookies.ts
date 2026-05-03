@@ -60,4 +60,3 @@ export function clearAuthSessionCookies(event: H3Event): void {
     path: AUTH_COOKIE_PATH,
   });
 }
-

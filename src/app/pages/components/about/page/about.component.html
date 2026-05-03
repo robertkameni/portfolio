@@ -2,14 +2,22 @@
   <div class="max-w-6xl w-full mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-12 w-full items-start">
       <div class="md:col-span-5 flex justify-center md:justify-start md:self-start">
-        <div
-          class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]"
-        >
-          <img
-            src="/assets/lucas.jpg"
-            alt="Robert Kameni"
-            class="object-cover w-full h-full grayscale hover:grayscale-0 transition-all duration-500"
-          />
+        <div class="relative w-full max-w-sm aspect-3/4 rounded-lg overflow-hidden border border-gray-800 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+          <picture>
+            <source srcset="/assets/lucas-800.avif" type="image/avif" />
+            <source srcset="/assets/lucas-800.webp" type="image/webp" />
+            <img
+              src="/assets/lucas-800.jpg"
+              width="711"
+              height="1067"
+              alt="Robert Kameni"
+              decoding="async"
+              loading="lazy"
+              fetchpriority="low"
+              sizes="(max-width: 768px) min(92vw, 384px), 384px"
+              class="object-cover w-full h-full grayscale hover:grayscale-0 transition-[filter] duration-500"
+            />
+          </picture>
         </div>
       </div>
 
@@ -36,12 +44,7 @@
             <div class="flex items-start">
               <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    [attr.d]="item.iconPath"
-                  ></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.iconPath"></path>
                 </svg>
               </div>
               <div>

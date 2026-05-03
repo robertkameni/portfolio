@@ -166,9 +166,7 @@ function normalizeChatHistoryItem(item: ChatHistoryItem): ChatMessage | null {
 }
 
 function toMessages(history: unknown[] = []): ChatMessage[] {
-  const messages = history
-    .map((item) => normalizeChatHistoryItem(item as ChatHistoryItem))
-    .filter((item): item is ChatMessage => item !== null);
+  const messages = history.map((item) => normalizeChatHistoryItem(item as ChatHistoryItem)).filter((item): item is ChatMessage => item !== null);
 
   return messages.map((entry) => ({
     role: entry.role,
@@ -193,12 +191,15 @@ function resolveDeepSeekFetchTimeoutMs(): number {
   return parsed;
 }
 
-async function requestDeepSeekCompletion(promptMessages: ChatMessage[], options: {
-  stream: boolean;
-  model: string;
-  maxOutputTokens?: number;
-  responseMimeType?: string;
-}): Promise<Response> {
+async function requestDeepSeekCompletion(
+  promptMessages: ChatMessage[],
+  options: {
+    stream: boolean;
+    model: string;
+    maxOutputTokens?: number;
+    responseMimeType?: string;
+  },
+): Promise<Response> {
   const apiKey = resolveApiKey();
   const endpoint = process.env['DEEPSEEK_API_BASE_URL'] ?? `${DEFAULT_DEEPSEEK_API_BASE}${DEFAULT_DEEPSEEK_CHAT_PATH}`;
   const payload: {
@@ -349,11 +350,14 @@ function createLazyStreamResponse(messages: ChatMessage[], streamOptions: Stream
   return { stream: stream() };
 }
 
-async function runDeepSeekCompletion(promptMessages: ChatMessage[], options: {
-  model: string;
-  maxOutputTokens?: number;
-  responseMimeType?: string;
-}): Promise<{ response: { text: () => string } }> {
+async function runDeepSeekCompletion(
+  promptMessages: ChatMessage[],
+  options: {
+    model: string;
+    maxOutputTokens?: number;
+    responseMimeType?: string;
+  },
+): Promise<{ response: { text: () => string } }> {
   const response = await requestDeepSeekCompletion(promptMessages, {
     stream: false,
     model: options.model,
@@ -395,8 +399,7 @@ export function getAIClient(): AIModelClient {
               baseMessages.unshift({ role: 'system', content: systemInstruction });
             }
 
-            const maxOutputTokens =
-              chatOptions?.generationConfig?.maxOutputTokens ?? options.generationConfig?.maxOutputTokens;
+            const maxOutputTokens = chatOptions?.generationConfig?.maxOutputTokens ?? options.generationConfig?.maxOutputTokens;
 
             return {
               sendMessageStream: (message: string) =>

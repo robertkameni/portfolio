@@ -12,4 +12,3 @@ export function extractApiErrorMessage(error: unknown, fallback: string): string
 
   return candidate?.error?.data?.message || candidate?.error?.message || candidate?.error?.statusMessage || candidate?.message || fallback;
 }
-

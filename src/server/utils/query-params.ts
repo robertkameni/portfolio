@@ -8,4 +8,3 @@ export function getSingleQueryString(event: H3Event, key: string): string | unde
 export function queryEquals(event: H3Event, key: string, expected: string): boolean {
   return getSingleQueryString(event, key) === expected;
 }
-

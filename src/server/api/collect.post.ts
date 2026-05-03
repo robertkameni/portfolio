@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
       await analyticsRepository.logEvent(eventData);
     },
     'Internal Server Error',
-    { logMessage: 'Analytics ingestion error:' }
+    { logMessage: 'Analytics ingestion error:' },
   );
 
   event.node.res.statusCode = 202;

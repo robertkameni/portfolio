@@ -1,17 +1,17 @@
-import {Component, computed, PLATFORM_ID, inject, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute, RouterLink} from '@angular/router';
-import {httpResource} from '@angular/common/http';
-import {DomSanitizer} from '@angular/platform-browser';
-import {marked, Renderer} from 'marked';
-import type {Project} from '../../../shared/types/project.types';
-import type {ApiSuccess} from '../../../shared/types/api.types';
-import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
-import {FadeInDirective} from "../../../shared/directives/fade-in.directive";
-import {getSiteCopy} from '../../../shared/i18n/site-copy';
-import {toAngularLocale} from '../../../shared/i18n/app-locale';
-import {LocaleService} from '../../../shared/services/locale.service';
+import { Component, computed, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { httpResource } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
+import { marked, Renderer } from 'marked';
+import type { Project } from '../../../shared/types/project.types';
+import type { ApiSuccess } from '../../../shared/types/api.types';
+import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { toAngularLocale } from '../../../shared/i18n/app-locale';
+import { LocaleService } from '../../../shared/services/locale.service';
 
 @Component({
   selector: 'project-overview-page',
@@ -51,29 +51,29 @@ export default class ProjectOverviewPage {
   private setupRenderer(): Renderer {
     const renderer = new Renderer();
 
-    renderer.heading = ({text, depth}) => {
+    renderer.heading = ({ text, depth }) => {
       const sizeMap = {
         1: 'font-size: clamp(1.25rem, 3vw, 1.5rem)',
         2: 'font-size: clamp(1rem, 2.5vw, 1.25rem)',
-        3: 'font-size: clamp(0.875rem, 2vw, 1rem)'
+        3: 'font-size: clamp(0.875rem, 2vw, 1rem)',
       };
       const style = sizeMap[depth as 1 | 2 | 3] || 'font-size: clamp(0.875rem, 1.5vw, 1rem)';
       return `<h${depth} style="${style}" class="font-bold mt-6 mb-3 text-primary">${text}</h${depth}>`;
     };
 
-    renderer.paragraph = ({text}) => `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
+    renderer.paragraph = ({ text }) => `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
 
-    renderer.list = ({items, ordered}) => {
+    renderer.list = ({ items, ordered }) => {
       const listClass = ordered ? 'list-decimal' : 'list-disc';
-      const html = items.map(item => `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${item.text}</li>`).join('');
+      const html = items.map((item) => `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${item.text}</li>`).join('');
       return `<${ordered ? 'ol' : 'ul'} class="${listClass} ml-4 mb-4">${html}</${ordered ? 'ol' : 'ul'}>`;
     };
 
-    renderer.image = ({href, text, title}) => {
+    renderer.image = ({ href, text, title }) => {
       return `<img src="${href}" alt="${text}" title="${title || ''}" style="max-width: clamp(100%, 90vw, 100%); height: auto;" class="rounded-lg my-6"/>`;
     };
 
-    renderer.strong = ({text}) => `<strong class="font-semibold">${text}</strong>`;
+    renderer.strong = ({ text }) => `<strong class="font-semibold">${text}</strong>`;
 
     return renderer;
   }
@@ -82,11 +82,11 @@ export default class ProjectOverviewPage {
     try {
       const cleaned = markdown
         .split('\n')
-        .map(line => line.trimStart())
+        .map((line) => line.trimStart())
         .join('\n')
         .trim();
 
-      const html = marked.parse(cleaned, {renderer: this.renderer, async: false});
+      const html = marked.parse(cleaned, { renderer: this.renderer, async: false });
       return this.sanitizer.bypassSecurityTrustHtml(html as string);
     } catch (e) {
       console.error('Markdown parsing error:', e);

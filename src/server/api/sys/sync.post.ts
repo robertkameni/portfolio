@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
         skippedEvents: events.length,
       },
       'Sync payload ignored.',
-      'SYNC_IGNORED'
+      'SYNC_IGNORED',
     );
   }
 
@@ -99,7 +99,6 @@ export default defineEventHandler(async (event) => {
         skippedEvents,
       });
     }
-
   } catch (error) {
     console.error('[Analytics Sync] Failed to persist sync payload.', {
       clientSessionId,
@@ -118,6 +117,6 @@ export default defineEventHandler(async (event) => {
       skippedEvents,
     },
     'Sync accepted.',
-    'SYNC_ACCEPTED'
+    'SYNC_ACCEPTED',
   );
 });

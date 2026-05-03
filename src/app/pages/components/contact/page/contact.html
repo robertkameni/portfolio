@@ -7,34 +7,25 @@
 
         <div class="space-y-8 text-left">
           @for (feature of data().features; track feature.title) {
-            <div class="flex items-start">
-              <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
-                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    [attr.d]="feature.iconPath"
-                  ></path>
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-white font-bold text-lg">{{ feature.title }}</h3>
-                <p class="text-gray-400 text-sm mt-1">{{ feature.description }}</p>
-              </div>
+          <div class="flex items-start">
+            <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="feature.iconPath"></path>
+              </svg>
             </div>
+            <div>
+              <h3 class="text-white font-bold text-lg">{{ feature.title }}</h3>
+              <p class="text-gray-400 text-sm mt-1">{{ feature.description }}</p>
+            </div>
+          </div>
           }
         </div>
       </div>
 
-      <div
-        class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg"
-      >
+      <div class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
         <form (submit)="submit($event)" class="flex flex-col gap-4 w-full text-left">
           @if (statusMessage(); as msg) {
-            <status-alert [type]="statusType()">
-              {{ msg }}
-            </status-alert>
+          <status-alert [type]="statusType()">{{ msg }}</status-alert>
           }
 
           <form-field [control]="form.name()">

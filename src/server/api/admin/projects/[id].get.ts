@@ -1,9 +1,9 @@
-import {defineEventHandler} from 'h3';
-import {projectRepository} from '../../../db/repositories/project.repository';
-import {adminGuard} from '../../../utils/authGuard';
-import {requireRouterParamFromAliases} from '../../../utils/route-params';
-import {notFound} from '../../../utils/api-errors';
-import {apiSuccess} from '../../../utils/api-response';
+import { defineEventHandler } from 'h3';
+import { projectRepository } from '../../../db/repositories/project.repository';
+import { adminGuard } from '../../../utils/authGuard';
+import { requireRouterParamFromAliases } from '../../../utils/route-params';
+import { notFound } from '../../../utils/api-errors';
+import { apiSuccess } from '../../../utils/api-response';
 
 /**
  * Admin-only endpoint to fetch any project by slug (published or draft).

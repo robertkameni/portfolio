@@ -26,14 +26,10 @@ export default defineEventHandler(async (event) => {
   const { sessionId, message, history } = request;
   const limiterKey = sessionId ?? `ip:${getRequestIP(event) ?? 'unknown'}`;
 
-  const sessionRateLimit = await rateLimiter.checkRateLimit(
-    CHAT_RATE_LIMITER_NAMESPACE,
-    `session:${limiterKey}`,
-    {
-      maxRequests: CHAT_SESSION_MAX_REQUESTS,
-      windowMs: CHAT_SESSION_WINDOW_MS,
-    },
-  );
+  const sessionRateLimit = await rateLimiter.checkRateLimit(CHAT_RATE_LIMITER_NAMESPACE, `session:${limiterKey}`, {
+    maxRequests: CHAT_SESSION_MAX_REQUESTS,
+    windowMs: CHAT_SESSION_WINDOW_MS,
+  });
   if (!sessionRateLimit.allowed) {
     event.node.res.statusCode = 429;
     writeSseError(event, 'Chat rate limit exceeded. Please slow down.');
@@ -70,7 +66,7 @@ export default defineEventHandler(async (event) => {
     getAIClient().getGenerativeModel({
       model: DEFAULT_DEEPSEEK_CHAT_MODEL,
       systemInstruction: buildSystemInstruction(baseProfile, projectSummary, visitorContextString, responseMode, intentHint),
-    })
+    }),
   );
 
   if (!model) {

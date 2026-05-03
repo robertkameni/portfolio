@@ -31,7 +31,7 @@ import { FooterComponent } from './components/footer/footer';
     ProjectsSectionComponent,
     PageLoaderComponent,
     FadeInDirective,
-    DevProxyBarComponent
+    DevProxyBarComponent,
   ],
   templateUrl: './index.page.html',
 })
@@ -55,7 +55,7 @@ export default class HomeComponent implements OnInit {
       confidenceScore: 1,
       interests: ['Mock Data'],
       summary: 'Mocked profile for development',
-      reasoning: 'Dev Mode activated'
+      reasoning: 'Dev Mode activated',
     });
   }
 
@@ -82,7 +82,7 @@ export default class HomeComponent implements OnInit {
   logout() {
     this.auth.logout().subscribe({
       next: () => this.router.navigateByUrl('/'),
-      error: () => this.router.navigateByUrl('/admin/login')
+      error: () => this.router.navigateByUrl('/admin/login'),
     });
   }
 }

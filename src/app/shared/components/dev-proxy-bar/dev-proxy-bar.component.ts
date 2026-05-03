@@ -17,7 +17,7 @@ export class DevProxyBarComponent {
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   showBackUrl() {
     return !!this.backUrl();

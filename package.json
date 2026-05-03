@@ -19,7 +19,7 @@
     "backfill:project-images": "tsx scripts/backfill-project-cover-images.ts",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
-    "preview": "node dist/analog/server/index.mjs",
+    "preview": "vite preview --outDir dist/client --host localhost --port 4173 --strictPort",
     "postinstall": "prisma generate"
   },
   "private": true,

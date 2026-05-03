@@ -22,6 +22,6 @@ export default defineEventHandler(async (event) => {
       createdAt: user.createdAt,
     },
     'Authenticated user fetched.',
-    'AUTH_ME_SUCCESS'
+    'AUTH_ME_SUCCESS',
   );
 });

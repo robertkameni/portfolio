@@ -1,4 +1,4 @@
-import type {RedisClientType} from 'redis';
+import type { RedisClientType } from 'redis';
 
 type BroadcastPayload = {
   targetSessionId: string;
@@ -37,8 +37,8 @@ class RedisBroadcastService implements IBroadcastService {
 
   private async ensurePublisher(): Promise<RedisClientType> {
     if (!this.publisher) {
-      const {createClient} = await import('redis');
-      this.publisher = createClient({url: this.getRedisUrl()});
+      const { createClient } = await import('redis');
+      this.publisher = createClient({ url: this.getRedisUrl() });
       await this.publisher.connect();
     }
     return this.publisher;
@@ -46,8 +46,8 @@ class RedisBroadcastService implements IBroadcastService {
 
   private async ensureSubscriber(): Promise<RedisClientType> {
     if (!this.subscriber) {
-      const {createClient} = await import('redis');
-      this.subscriber = createClient({url: this.getRedisUrl()});
+      const { createClient } = await import('redis');
+      this.subscriber = createClient({ url: this.getRedisUrl() });
       await this.subscriber.connect();
     }
     return this.subscriber;
@@ -121,7 +121,6 @@ class RedisBroadcastService implements IBroadcastService {
       console.error('[RedisBroadcast] disconnect error:', error);
     }
   }
-
 }
 
 /**
@@ -150,7 +149,6 @@ class LocalBroadcastService implements IBroadcastService {
   async disconnect(): Promise<void> {
     this.subscriptions.clear();
   }
-
 }
 
 /**
@@ -182,5 +180,4 @@ function registerBroadcastCleanup(service: IBroadcastService): void {
 
 export const broadcastService = createBroadcastService();
 registerBroadcastCleanup(broadcastService);
-export type {IBroadcastService, BroadcastPayload};
-
+export type { IBroadcastService, BroadcastPayload };

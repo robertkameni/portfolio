@@ -1,8 +1,8 @@
-import {defineEventHandler, getRequestIP} from 'h3';
-import {broadcastService} from '../realtime/broadcast.service';
-import {getSingleQueryString} from '../utils/query-params';
+import { defineEventHandler, getRequestIP } from 'h3';
+import { broadcastService } from '../realtime/broadcast.service';
+import { getSingleQueryString } from '../utils/query-params';
 import { prisma } from '../db/client';
-import {badRequest, serverError} from '../utils/api-errors';
+import { badRequest, serverError } from '../utils/api-errors';
 import { unauthorized } from '../utils/api-errors';
 import { rateLimiter } from '../utils/rate-limiter';
 import { createHmac, timingSafeEqual } from 'crypto';
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const session = await prisma.visitorSession.findUnique({
-    where: {clientSessionId: sessionId},
+    where: { clientSessionId: sessionId },
   });
 
   if (!session) {
@@ -44,9 +44,7 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Realtime token expired.');
   }
 
-  const expectedSignature = createHmac('sha256', REALTIME_TOKEN_SECRET).update(
-    `${session.clientSessionId}.${nonce}.${expiresAt}`,
-  ).digest('hex');
+  const expectedSignature = createHmac('sha256', REALTIME_TOKEN_SECRET).update(`${session.clientSessionId}.${nonce}.${expiresAt}`).digest('hex');
 
   if (!constantTimeEquals(signature, expectedSignature)) {
     throw unauthorized('Unauthorized: Invalid token signature.');
@@ -59,8 +57,8 @@ export default defineEventHandler(async (event) => {
   }
 
   await prisma.visitorSession.update({
-    where: {id: session.id},
-    data: {lastSeenAt: new Date()},
+    where: { id: session.id },
+    data: { lastSeenAt: new Date() },
   });
 
   // Set headers for Server-Sent Events
@@ -82,7 +80,7 @@ export default defineEventHandler(async (event) => {
     });
 
     // Send a connection confirmation message
-    sendEvent('connected', {message: 'Connection established'});
+    sendEvent('connected', { message: 'Connection established' });
 
     let cleanedUp = false;
     const cleanup = () => {
@@ -112,7 +110,7 @@ export default defineEventHandler(async (event) => {
  */
 export async function pushUpdateToClient(targetSessionId: string, eventName: string, payload: any): Promise<void> {
   try {
-    await broadcastService.publish({targetSessionId, eventName, payload});
+    await broadcastService.publish({ targetSessionId, eventName, payload });
   } catch (error) {
     console.error(`[realtime] push failed for session ${targetSessionId}:`, error);
   }

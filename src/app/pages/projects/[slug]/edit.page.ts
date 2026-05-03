@@ -9,17 +9,13 @@ import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
-import {
-  ProjectFormComponent,
-  ProjectFormModel,
-  ProjectPayload
-} from '../../../shared/components/project-form/project-form.component';
+import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form/project-form.component';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
 import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
 
 export const routeMeta: RouteMeta = {
-  canActivate: [authGuard]
+  canActivate: [authGuard],
 };
 
 @Component({
@@ -62,7 +58,7 @@ export default class EditProjectPage {
       contentMarkdown: project.contentMarkdown ?? '',
       coverImageUrl: project.coverImageUrl ?? '',
       tags: project.tags.join(', '),
-      isPublished: project.isPublished
+      isPublished: project.isPublished,
     };
   });
 
@@ -98,7 +94,7 @@ export default class EditProjectPage {
           console.error('[EditProjectPage] update error:', err.status, msg);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        }
+        },
       });
   }
 }

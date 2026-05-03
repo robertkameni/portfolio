@@ -38,23 +38,14 @@ export class AboutComponent {
 
     switch (profile.visitorType) {
       case 'founder':
-        return [
-          ...this.copy().about.founderParagraphs,
-          ...baseParas.slice(1)
-        ];
+        return [...this.copy().about.founderParagraphs, ...baseParas.slice(1)];
 
       case 'recruiter':
       case 'hiring_manager':
-        return [
-          ...this.copy().about.recruiterParagraphs,
-          ...baseParas
-        ];
+        return [...this.copy().about.recruiterParagraphs, ...baseParas];
 
       case 'developer':
-        return [
-          ...this.copy().about.developerParagraphs,
-          ...baseParas.slice(2)
-        ];
+        return [...this.copy().about.developerParagraphs, ...baseParas.slice(2)];
 
       default:
         return baseParas;
@@ -71,8 +62,7 @@ export class AboutComponent {
 
     const previewParagraphs = paragraphs.slice(0, 3);
     const token = this.copy().about.previewSplitToken;
-    const fourthParagraph =
-      paragraphs.slice(3).find((p) => p.includes(token)) ?? paragraphs[3] ?? '';
+    const fourthParagraph = paragraphs.slice(3).find((p) => p.includes(token)) ?? paragraphs[3] ?? '';
     const tokenIndex = fourthParagraph.indexOf(token);
 
     if (tokenIndex > -1) {

@@ -1,7 +1,7 @@
-import {Component, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {AdminMessagesService} from '../../../shared/services/admin-messages.service';
+import { AdminMessagesService } from '../../../shared/services/admin-messages.service';
 
 @Component({
   selector: 'admin-dashboard',
@@ -31,7 +31,7 @@ export default class AdminDashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load new messages count:', err);
-      }
+      },
     });
   }
 }

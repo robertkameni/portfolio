@@ -8,8 +8,7 @@
       <a
         [routerLink]="['/']"
         fragment="projects-section"
-        class="inline-flex items-center gap-2 mb-3 text-base font-bold link-color-primary-hover decoration-transparent
-            underline-offset-4 transition-all duration-700 ease-in-out hover:underline hover:decoration-current hover:font-bold"
+        class="inline-flex items-center gap-2 mb-3 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current"
       >
         <span aria-hidden="true">←</span>
         {{ copy().projectsPage.backToPortfolio }}
@@ -17,13 +16,13 @@
     </div>
 
     @if (store.isLoading()) {
-      <div class="flex items-center justify-center py-24 text-gray-400 font-mono">{{ copy().projectsPage.loading }}</div>
+    <div class="flex items-center justify-center py-24 text-gray-400 font-mono">{{ copy().projectsPage.loading }}</div>
     } @else if (store.error()) {
-      <div class="text-red-400 py-12">{{ copy().projectsPage.error }}</div>
+    <div class="text-red-400 py-12">{{ copy().projectsPage.error }}</div>
     } @else if ((store.data() ?? []).length === 0) {
-      <div class="text-gray-500 py-12">{{ copy().projectsPage.empty }}</div>
+    <div class="text-gray-500 py-12">{{ copy().projectsPage.empty }}</div>
     } @else {
-      <projects-list [projects]="store.data()!" [locale]="locale()" />
+    <projects-list [projects]="store.data()!" [locale]="locale()" />
     }
   </div>
 </main>

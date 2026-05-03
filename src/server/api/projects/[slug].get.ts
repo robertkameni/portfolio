@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const project: Project | null = await withApiErrorHandling(
     () => (previewMode ? projectRepository.findBySlug(slug) : projectRepository.findPublishedBySlug(slug)),
     'Internal Server Error',
-    { logMessage: 'Database error fetching project by slug:' }
+    { logMessage: 'Database error fetching project by slug:' },
   );
 
   // Handle the "not found" case as part of the normal logic flow,

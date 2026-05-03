@@ -8,13 +8,7 @@
       >
         @if (project.coverImageUrl) {
           <div class="relative h-40 w-full overflow-hidden">
-            <img
-              [ngSrc]="project.coverImageUrl"
-              [alt]="project.title"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              class="object-cover"
-            />
+            <img [ngSrc]="project.coverImageUrl" [alt]="project.title" fill sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" class="object-cover" />
           </div>
         }
 
@@ -27,11 +21,7 @@
             @if (project.description) {
               <p class="leading-relaxed whitespace-pre-wrap">{{ visibleDescription(project) }}</p>
               @if (descriptionNeedsToggle(project.description)) {
-                <button
-                  type="button"
-                  class="text-primary font-bold hover:underline cursor-pointer mt-1"
-                  (click)="toggleDescription(project.id, $event)"
-                >
+                <button type="button" class="text-primary font-bold hover:underline cursor-pointer mt-1" (click)="toggleDescription(project.id, $event)">
                   {{ descriptionExpanded(project.id) ? commonCopy().showLess : commonCopy().showMore }}
                 </button>
               }
@@ -45,16 +35,15 @@
               }
             </div>
           }
-          <div class="flex items-center justify-between">
+          <div class="flex gap-2 items-center justify-between min-w-0">
             <a
-              class="link-color-primary-hover text-sm font-bold decoration-transparent underline-offset-4 transition-colors duration-800 ease-in-out group-hover:text-primary! hover:underline hover:decoration-current"
+              class="link-color-primary-hover text-sm font-bold underline-offset-4 group-hover:text-primary! hover:underline min-w-0 shrink whitespace-nowrap"
               [routerLink]="['/projects', project.slug]"
+              [attr.aria-label]="openProjectAriaLabel(project.title)"
             >
-              {{ projectCopy().openProject }}
+              {{ projectCopy().openProjectCta }}
             </a>
-            <time class="text-xs text-gray-500">{{
-              project.createdAt | date: undefined : undefined : currentDateLocale()
-            }}</time>
+            <time class="text-xs text-gray-500 shrink-0 tabular-nums">{{ project.createdAt | date: undefined : undefined : currentDateLocale() }}</time>
           </div>
         </div>
       </article>

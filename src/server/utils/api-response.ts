@@ -27,4 +27,3 @@ export function apiAck(message: string, code: string): ApiAckResponse {
     code,
   };
 }
-

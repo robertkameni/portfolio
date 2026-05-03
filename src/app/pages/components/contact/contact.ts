@@ -85,31 +85,33 @@ export class ContactComponent {
     const value = this.formModel();
     const sessionId = this.analytics.getClientSessionId();
 
-    this.contactService.sendContactMessage({
-      name: value.name || undefined,
-      email: value.email,
-      message: value.message,
-      sessionId,
-    }).subscribe({
-      next: () => {
-        this.statusType.set('success');
-        this.statusMessage.set('Message sent successfully! I will get back to you soon.');
+    this.contactService
+      .sendContactMessage({
+        name: value.name || undefined,
+        email: value.email,
+        message: value.message,
+        sessionId,
+      })
+      .subscribe({
+        next: () => {
+          this.statusType.set('success');
+          this.statusMessage.set('Message sent successfully! I will get back to you soon.');
 
-        // Reset the form data AND the touched/dirty state so validation errors disappear
-        this.form().reset({ name: '', email: '', message: '' });
-        this.isSubmitting.set(false);
+          // Reset the form data AND the touched/dirty state so validation errors disappear
+          this.form().reset({ name: '', email: '', message: '' });
+          this.isSubmitting.set(false);
 
-        // Auto-dismiss success message after 6 seconds
-        setTimeout(() => {
-          this.statusMessage.set(null);
-        }, 6000);
-      },
-      error: (err) => {
-        console.error('Failed to send message:', err);
-        this.statusType.set('error');
-        this.statusMessage.set('Failed to send message. Please try again or email me directly.');
-        this.isSubmitting.set(false);
-      },
-    });
+          // Auto-dismiss success message after 6 seconds
+          setTimeout(() => {
+            this.statusMessage.set(null);
+          }, 6000);
+        },
+        error: (err) => {
+          console.error('Failed to send message:', err);
+          this.statusType.set('error');
+          this.statusMessage.set('Failed to send message. Please try again or email me directly.');
+          this.isSubmitting.set(false);
+        },
+      });
   }
 }

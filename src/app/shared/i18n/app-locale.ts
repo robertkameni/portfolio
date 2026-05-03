@@ -26,4 +26,3 @@ export function resolveBrowserLocale(): AppLocale {
 export function toAngularLocale(locale: AppLocale): string {
   return locale === 'de' ? 'de-DE' : 'en-US';
 }
-

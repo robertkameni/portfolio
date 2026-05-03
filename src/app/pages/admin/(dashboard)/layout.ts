@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { authGuard } from '../../../guards/auth.guard';
 import { AuthService } from '../../../services/auth.service';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 
 @Component({
   selector: 'admin-layout',

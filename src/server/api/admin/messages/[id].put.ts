@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       });
     },
     'Internal Server Error: Could not update message.',
-    { logMessage: 'Admin message update error:' }
+    { logMessage: 'Admin message update error:' },
   );
 
   return apiSuccess(message, 'Message updated.', 'ADMIN_MESSAGE_UPDATED');

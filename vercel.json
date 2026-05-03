@@ -1,4 +1,19 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs"
+  "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' https: wss:"
+        }
+      ]
+    }
+  ]
 }

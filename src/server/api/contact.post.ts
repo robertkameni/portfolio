@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
       });
     },
     'Internal Server Error: Could not save your message.',
-    { logMessage: 'Contact form submission error:' }
+    { logMessage: 'Contact form submission error:' },
   );
 
   event.node.res.statusCode = 201;

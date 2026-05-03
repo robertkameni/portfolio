@@ -16,4 +16,3 @@ export const DEFAULT_PROJECT_COVER_IMAGE_BY_SLUG: Record<string, string> = {
 export function getDefaultProjectCoverImageBySlug(slug: string): string {
   return DEFAULT_PROJECT_COVER_IMAGE_BY_SLUG[slug] ?? DEFAULT_PROJECT_COVER_IMAGES[0];
 }
-

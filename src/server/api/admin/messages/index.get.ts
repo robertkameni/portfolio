@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
         },
       }),
     'Internal Server Error: Could not retrieve messages.',
-    { logMessage: 'Admin messages retrieval error:' }
+    { logMessage: 'Admin messages retrieval error:' },
   );
 
   return apiSuccess(messages, 'Messages retrieved.', 'ADMIN_MESSAGES_RETRIEVED');

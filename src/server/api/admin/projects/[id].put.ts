@@ -12,10 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<UpdateProjectDto>(event);
 
-  const project = await withApiErrorHandling(
-    () => projectRepository.update(projectId, body),
-    'Internal Server Error: Unable to update project.'
-  );
+  const project = await withApiErrorHandling(() => projectRepository.update(projectId, body), 'Internal Server Error: Unable to update project.');
 
   return apiSuccess(project, 'Project updated.', 'ADMIN_PROJECT_UPDATED');
 });

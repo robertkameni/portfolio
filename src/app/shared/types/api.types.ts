@@ -16,4 +16,3 @@ export type ApiAck = {
   message: string;
   code: string;
 };
-

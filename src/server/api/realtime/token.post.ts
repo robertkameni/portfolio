@@ -56,12 +56,7 @@ export default defineEventHandler(async (event) => {
   const signature = buildSignature(body.clientSessionId, nonce, expiresAt);
   const token = `${nonce}.${expiresAt}.${signature}`;
   const tokenKey = `session:${session.id}:${nonce}`;
-  const tokenStored = await rateLimiter.setIfAbsent(
-    REALTIME_TOKEN_NAMESPACE,
-    tokenKey,
-    signature,
-    REALTIME_TOKEN_TTL_MS,
-  );
+  const tokenStored = await rateLimiter.setIfAbsent(REALTIME_TOKEN_NAMESPACE, tokenKey, signature, REALTIME_TOKEN_TTL_MS);
   if (!tokenStored) {
     throw unauthorized('Unauthorized: Could not allocate realtime token.');
   }

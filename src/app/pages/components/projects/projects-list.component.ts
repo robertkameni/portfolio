@@ -29,6 +29,10 @@ export class ProjectsListComponent {
     return getSiteCopy(this.locale()).common;
   }
 
+  protected openProjectAriaLabel(title: string): string {
+    return this.projectCopy().openProjectAriaLabel.replaceAll('{title}', title);
+  }
+
   protected currentDateLocale() {
     return toAngularLocale(this.locale());
   }

@@ -60,12 +60,12 @@ class InMemoryRateLimiter implements RateLimiter {
 
     if (validWindow.length >= options.maxRequests) {
       this.buckets.set(bucket, validWindow);
-      return {allowed: false, retryAfterMs: Math.max(0, validWindow[0] + options.windowMs - now)};
+      return { allowed: false, retryAfterMs: Math.max(0, validWindow[0] + options.windowMs - now) };
     }
 
     validWindow.push(now);
     this.buckets.set(bucket, validWindow);
-    return {allowed: true};
+    return { allowed: true };
   }
 
   async acquireLease(namespace: string, key: string, ttlMs: number): Promise<Lease> {
@@ -121,7 +121,7 @@ class InMemoryRateLimiter implements RateLimiter {
     }
 
     this.cleanupExpiredSingleUse(now);
-    this.singleUse.set(mapKey, {value, expiresAt: now + ttlMs});
+    this.singleUse.set(mapKey, { value, expiresAt: now + ttlMs });
     return true;
   }
 
@@ -151,7 +151,6 @@ class InMemoryRateLimiter implements RateLimiter {
       }
     }
   }
-
 }
 
 class RedisRateLimiter implements RateLimiter {
@@ -201,21 +200,21 @@ class RedisRateLimiter implements RateLimiter {
 
     const allowed = count <= options.maxRequests;
     if (allowed) {
-      return {allowed: true};
+      return { allowed: true };
     }
 
     const windowEnd = (bucketStart + 1) * options.windowMs;
-    return {allowed: false, retryAfterMs: Math.max(0, windowEnd - now)};
+    return { allowed: false, retryAfterMs: Math.max(0, windowEnd - now) };
   }
 
   async acquireLease(namespace: string, key: string, ttlMs: number): Promise<Lease> {
     const client = await this.getClient();
     const leaseKey = this.formatKey(namespace, key);
     const token = `${Date.now()}:${Math.random().toString(36).slice(2)}`;
-    const result = await client.set(leaseKey, token, {PX: ttlMs, NX: true});
+    const result = await client.set(leaseKey, token, { PX: ttlMs, NX: true });
 
     if (!result) {
-      return {acquired: false, release: async () => {}};
+      return { acquired: false, release: async () => {} };
     }
 
     return {
@@ -245,7 +244,7 @@ class RedisRateLimiter implements RateLimiter {
   async setIfAbsent(namespace: string, key: string, value: string, ttlMs: number): Promise<boolean> {
     const client = await this.getClient();
     const challengeKey = this.formatKey(namespace, key);
-    const result = await client.set(challengeKey, value, {PX: ttlMs, NX: true});
+    const result = await client.set(challengeKey, value, { PX: ttlMs, NX: true });
     return result === 'OK';
   }
 
@@ -277,7 +276,10 @@ function createRateLimiter(): RateLimiter {
 
   return {
     checkRateLimit: (namespace, key, options) =>
-      (redisHealthy ? withRedisTimeout(executeRateLimitCheck(redisHealthy, redisLimiter, fallback, namespace, key, options)) : fallback.checkRateLimit(namespace, key, options)).catch((error) => {
+      (redisHealthy
+        ? withRedisTimeout(executeRateLimitCheck(redisHealthy, redisLimiter, fallback, namespace, key, options))
+        : fallback.checkRateLimit(namespace, key, options)
+      ).catch((error) => {
         console.error('[RateLimiter] Redis rate limit failed. Falling back to in-memory:', error);
         redisHealthy = false;
         return fallback.checkRateLimit(namespace, key, options);
@@ -354,4 +356,3 @@ export function readPositiveIntFromEnv(name: string, fallback: number, minValue 
 
   return parsed;
 }
-

@@ -1,15 +1,15 @@
-import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
-import {extractApiErrorMessage} from '../../../shared/utils/api-error.util';
-import {AdminProjectsService} from '../../../services/admin-projects.service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ProjectFormComponent, ProjectPayload} from '../../../shared/components/project-form/project-form.component';
-import {FadeInDirective} from '../../../shared/directives/fade-in.directive';
-import {DevProxyBarComponent} from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
-import {StatusAlertComponent} from '../../../shared/components/status-alert/status-alert.component';
-import {getSiteCopy} from '../../../shared/i18n/site-copy';
-import {LocaleService} from '../../../shared/services/locale.service';
-import {AdminProjectsStore} from '../../../store/projects.store';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
+import { AdminProjectsService } from '../../../services/admin-projects.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form/project-form.component';
+import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
+import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
+import { LocaleService } from '../../../shared/services/locale.service';
+import { AdminProjectsStore } from '../../../store/projects.store';
 
 @Component({
   selector: 'admin-projects',
@@ -74,7 +74,7 @@ export default class AdminProjectsPage implements OnInit {
     this.submitSuccess.set(false);
 
     this.adminProjectsService
-      .createProject({...payload})
+      .createProject({ ...payload })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (project) => {
@@ -87,7 +87,7 @@ export default class AdminProjectsPage implements OnInit {
           const msg = this.handleError(err, 'create project', this.copy().adminProjects.failedCreate);
           this.submitError.set(msg);
           this.isSubmitting.set(false);
-        }
+        },
       });
   }
 
@@ -105,7 +105,7 @@ export default class AdminProjectsPage implements OnInit {
         error: (err) => {
           const msg = this.handleError(err, 'delete project', this.copy().adminProjects.failedDelete);
           this.deleteError.set(msg);
-        }
+        },
       });
   }
 }

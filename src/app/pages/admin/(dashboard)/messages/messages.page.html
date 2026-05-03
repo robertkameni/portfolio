@@ -40,121 +40,100 @@
   </div>
 
   @if (loading()) {
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-      <p class="text-gray-400">Loading messages...</p>
-    </div>
+  <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
+    <p class="text-gray-400">Loading messages...</p>
+  </div>
   } @else if (error()) {
-    <div class="bg-red-900/30 border border-red-700 rounded-xl p-6 shadow-lg">
-      <p class="text-red-300">{{ error() }}</p>
-      <button (click)="loadMessages()" class="mt-3 text-sm text-primary hover:underline">Retry</button>
-    </div>
+  <div class="bg-red-900/30 border border-red-700 rounded-xl p-6 shadow-lg">
+    <p class="text-red-300">{{ error() }}</p>
+    <button (click)="loadMessages()" class="mt-3 text-sm text-primary hover:underline">Retry</button>
+  </div>
   } @else if (messages().length === 0) {
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg text-center">
-      <p class="text-gray-400 text-lg">No messages yet.</p>
-      <p class="text-gray-500 text-sm mt-1">Contact form submissions will appear here.</p>
-    </div>
+  <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg text-center">
+    <p class="text-gray-400 text-lg">No messages yet.</p>
+    <p class="text-gray-500 text-sm mt-1">Contact form submissions will appear here.</p>
+  </div>
   } @else {
-    <div class="space-y-4">
-      @for (msg of messages(); track msg.id) {
-        <div
-          class="bg-surface border rounded-xl p-6 shadow-lg transition"
-          [class.border-primary]="msg.status === 'UNREAD'"
-          [class.border-[#143c1a]]="msg.status !== 'UNREAD'"
-        >
-          <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <p class="font-bold text-white truncate">{{ msg.senderName || 'Anonymous' }}</p>
-                @if (msg.status === 'UNREAD') {
-                  <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 shrink-0" title="Unread"></span>
-                }
-              </div>
-              <a [href]="'mailto:' + msg.senderEmail" class="text-sm text-primary hover:underline break-all">
-                {{ msg.senderEmail }}
-              </a>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm text-gray-500">{{ msg.createdAt | date: 'MMM d, yyyy h:mm a' }}</p>
-              <span
-                class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium"
-                [class.bg-yellow-900/50]="msg.status === 'UNREAD'"
-                [class.text-yellow-400]="msg.status === 'UNREAD'"
-                [class.bg-green-900/50]="msg.status === 'READ'"
-                [class.text-green-400]="msg.status === 'READ'"
-                [class.bg-gray-700/50]="msg.status === 'ARCHIVED'"
-                [class.text-gray-400]="msg.status === 'ARCHIVED'"
-              >
-                {{ msg.status }}
-              </span>
-            </div>
-          </div>
-
-          <p class="text-gray-300 whitespace-pre-wrap leading-relaxed">{{ msg.body }}</p>
-
-          @if (msg.intelligence) {
-            <div class="mt-4 pt-4 border-t border-[#143c1a]">
-              <details class="text-sm">
-                <summary class="text-primary cursor-pointer hover:underline font-medium">AI Analysis</summary>
-                <div class="mt-2 space-y-1 text-gray-400">
-                  @if (msg.intelligence.classification) {
-                    <p><span class="text-gray-500">Classification:</span> {{ msg.intelligence.classification }}</p>
-                  }
-                  @if (msg.intelligence.sentiment) {
-                    <p><span class="text-gray-500">Sentiment:</span> {{ msg.intelligence.sentiment }}</p>
-                  }
-                  @if (msg.intelligence.urgencyScore != null) {
-                    <p><span class="text-gray-500">Urgency:</span> {{ msg.intelligence.urgencyScore }}/10</p>
-                  }
-                  @if (msg.intelligence.priorityScore != null) {
-                    <p><span class="text-gray-500">Priority:</span> {{ msg.intelligence.priorityScore }}/10</p>
-                  }
-                  @if (msg.intelligence.suggestedReply) {
-                    <div class="mt-2">
-                      <p class="text-gray-500 mb-1">Suggested Reply:</p>
-                      <p class="text-gray-300 italic bg-[#0a2912] p-3 rounded-lg">{{ msg.intelligence.suggestedReply }}</p>
-                    </div>
-                  }
-                </div>
-              </details>
-            </div>
-          }
-
-          <div class="mt-4 pt-4 border-t border-[#143c1a] flex gap-3">
+  <div class="space-y-4">
+    @for (msg of messages(); track msg.id) {
+    <div class="bg-surface border rounded-xl p-6 shadow-lg transition" [class.border-primary]="msg.status === 'UNREAD'" [class.border-[#143c1a]]="msg.status !== 'UNREAD'">
+      <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <p class="font-bold text-white truncate">{{ msg.senderName || 'Anonymous' }}</p>
             @if (msg.status === 'UNREAD') {
-              <button
-                (click)="updateStatus(msg.id, 'READ')"
-                class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition"
-              >
-                Mark as read
-              </button>
-            }
-            @if (msg.status === 'READ') {
-              <button
-                (click)="updateStatus(msg.id, 'UNREAD')"
-                class="cursor-pointer text-sm text-yellow-400 hover:text-yellow-300 transition"
-              >
-                Mark as unread
-              </button>
-            }
-            @if (msg.status !== 'ARCHIVED') {
-              <button
-                (click)="updateStatus(msg.id, 'ARCHIVED')"
-                class="cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition"
-              >
-                Archive
-              </button>
-            }
-            @if (msg.status === 'ARCHIVED') {
-              <button
-                (click)="updateStatus(msg.id, 'READ')"
-                class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition"
-              >
-                Restore
-              </button>
+            <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 shrink-0" title="Unread"></span>
             }
           </div>
+          <a [href]="'mailto:' + msg.senderEmail" class="text-sm text-primary hover:underline break-all">{{ msg.senderEmail }}</a>
         </div>
+        <div class="text-right shrink-0">
+          <p class="text-sm text-gray-500">{{ msg.createdAt | date: 'MMM d, yyyy h:mm a' }}</p>
+          <span
+            class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium"
+            [class.bg-yellow-900/50]="msg.status === 'UNREAD'"
+            [class.text-yellow-400]="msg.status === 'UNREAD'"
+            [class.bg-green-900/50]="msg.status === 'READ'"
+            [class.text-green-400]="msg.status === 'READ'"
+            [class.bg-gray-700/50]="msg.status === 'ARCHIVED'"
+            [class.text-gray-400]="msg.status === 'ARCHIVED'"
+          >
+            {{ msg.status }}
+          </span>
+        </div>
+      </div>
+
+      <p class="text-gray-300 whitespace-pre-wrap leading-relaxed">{{ msg.body }}</p>
+
+      @if (msg.intelligence) {
+      <div class="mt-4 pt-4 border-t border-[#143c1a]">
+        <details class="text-sm">
+          <summary class="text-primary cursor-pointer hover:underline font-medium">AI Analysis</summary>
+          <div class="mt-2 space-y-1 text-gray-400">
+            @if (msg.intelligence.classification) {
+            <p>
+              <span class="text-gray-500">Classification:</span>
+              {{ msg.intelligence.classification }}
+            </p>
+            } @if (msg.intelligence.sentiment) {
+            <p>
+              <span class="text-gray-500">Sentiment:</span>
+              {{ msg.intelligence.sentiment }}
+            </p>
+            } @if (msg.intelligence.urgencyScore != null) {
+            <p>
+              <span class="text-gray-500">Urgency:</span>
+              {{ msg.intelligence.urgencyScore }}/10
+            </p>
+            } @if (msg.intelligence.priorityScore != null) {
+            <p>
+              <span class="text-gray-500">Priority:</span>
+              {{ msg.intelligence.priorityScore }}/10
+            </p>
+            } @if (msg.intelligence.suggestedReply) {
+            <div class="mt-2">
+              <p class="text-gray-500 mb-1">Suggested Reply:</p>
+              <p class="text-gray-300 italic bg-[#0a2912] p-3 rounded-lg">{{ msg.intelligence.suggestedReply }}</p>
+            </div>
+            }
+          </div>
+        </details>
+      </div>
       }
+
+      <div class="mt-4 pt-4 border-t border-[#143c1a] flex gap-3">
+        @if (msg.status === 'UNREAD') {
+        <button (click)="updateStatus(msg.id, 'READ')" class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Mark as read</button>
+        } @if (msg.status === 'READ') {
+        <button (click)="updateStatus(msg.id, 'UNREAD')" class="cursor-pointer text-sm text-yellow-400 hover:text-yellow-300 transition">Mark as unread</button>
+        } @if (msg.status !== 'ARCHIVED') {
+        <button (click)="updateStatus(msg.id, 'ARCHIVED')" class="cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition">Archive</button>
+        } @if (msg.status === 'ARCHIVED') {
+        <button (click)="updateStatus(msg.id, 'READ')" class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Restore</button>
+        }
+      </div>
     </div>
+    }
+  </div>
   }
 </div>

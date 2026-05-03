@@ -20,10 +20,7 @@ export default defineEventHandler(async (event) => {
     throw badRequest('Bad Request: Title and slug are required.');
   }
 
-  const project = await withApiErrorHandling(
-    () => projectRepository.create(body),
-    'Internal Server Error: Could not create project.'
-  );
+  const project = await withApiErrorHandling(() => projectRepository.create(body), 'Internal Server Error: Could not create project.');
 
   return apiSuccess(project, 'Project created.', 'ADMIN_PROJECT_CREATED');
 });

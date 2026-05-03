@@ -45,6 +45,6 @@ export default defineEventHandler(async (event) => {
       },
     },
     'Session refreshed.',
-    'AUTH_REFRESH_SUCCESS'
+    'AUTH_REFRESH_SUCCESS',
   );
 });

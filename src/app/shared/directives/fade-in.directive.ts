@@ -26,7 +26,7 @@ export class FadeInDirective implements OnInit, OnDestroy {
       if (this.observer) {
         try {
           this.observer.unobserve(this.el.nativeElement);
-        } catch { }
+        } catch {}
       }
     };
 

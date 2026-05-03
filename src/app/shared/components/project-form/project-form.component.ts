@@ -2,11 +2,7 @@ import { Component, computed, input, linkedSignal, output } from '@angular/core'
 import { form, FormField, required } from '@angular/forms/signals';
 import type { AppLocale } from '../../i18n/app-locale';
 import { getSiteCopy } from '../../i18n/site-copy';
-import {
-  type ProjectFormModel,
-  type ProjectPayload,
-  toProjectPayload,
-} from '../../types/project.types';
+import { type ProjectFormModel, type ProjectPayload, toProjectPayload } from '../../types/project.types';
 
 export type { ProjectFormModel, ProjectPayload } from '../../types/project.types';
 

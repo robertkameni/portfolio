@@ -23,4 +23,3 @@ export function resolveRequestLocale(event: H3Event): AppLocale {
 
   return 'en';
 }
-
