@@ -20,9 +20,16 @@
             [href]="social.url"
             target="_blank"
             rel="noopener noreferrer"
+            [attr.aria-label]="socialAriaLabel(social.platform)"
             class="link-color-primary-hover transition-all duration-700"
           >
-            <svg class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-current" fill="currentColor" viewBox="0 0 24 24">
+            <svg
+              class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-current"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
               <path [attr.d]="social.iconPath"></path>
             </svg>
           </a>

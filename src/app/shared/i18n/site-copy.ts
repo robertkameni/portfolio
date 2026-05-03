@@ -15,6 +15,10 @@ type SiteCopy = {
     loadingProfile: string;
     failedProfile: string;
   };
+  intro: {
+    /** Use `{platform}` — replaced with LinkedIn, Xing, etc. */
+    socialLinkAriaLabel: string;
+  };
   skills: {
     title: string;
   };
@@ -62,6 +66,9 @@ type SiteCopy = {
     promptFreelance: string;
     typingSrOnly: string;
     placeholder: string;
+    toggleOpenAriaLabel: string;
+    toggleCloseAriaLabel: string;
+    sendAriaLabel: string;
   };
   adminLogin: {
     title: string;
@@ -240,6 +247,9 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loadingProfile: 'Loading system architecture...',
       failedProfile: 'Failed to load profile. Please refresh.'
     },
+    intro: {
+      socialLinkAriaLabel: "Visit Robert's {platform} profile (opens in a new tab)"
+    },
     skills: {
       title: 'Technical Arsenal'
     },
@@ -286,7 +296,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       promptAngular: 'Tell me about your Angular experience',
       promptFreelance: 'Are you available for freelance work?',
       typingSrOnly: 'AI is typing...',
-      placeholder: 'Type your message...'
+      placeholder: 'Type your message...',
+      toggleOpenAriaLabel: 'Open chat with the digital twin',
+      toggleCloseAriaLabel: 'Close chat',
+      sendAriaLabel: 'Send message'
     },
     adminLogin: {
       title: 'Admin Login',
@@ -544,6 +557,9 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       loadingProfile: 'Profil wird geladen...',
       failedProfile: 'Profil konnte nicht geladen werden. Bitte aktualisieren.'
     },
+    intro: {
+      socialLinkAriaLabel: 'Profil von Robert auf {platform} besuchen (öffnet in neuem Tab)'
+    },
     skills: {
       title: 'Technisches Arsenal'
     },
@@ -590,7 +606,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       promptAngular: 'Erzähl mir von deiner Angular-Erfahrung',
       promptFreelance: 'Bist du für Freelance-Projekte verfügbar?',
       typingSrOnly: 'AI schreibt gerade...',
-      placeholder: 'Schreibe deine Nachricht...'
+      placeholder: 'Schreibe deine Nachricht...',
+      toggleOpenAriaLabel: 'Chat mit dem Digital Twin öffnen',
+      toggleCloseAriaLabel: 'Chat schließen',
+      sendAriaLabel: 'Nachricht senden'
     },
     adminLogin: {
       title: 'Admin-Anmeldung',

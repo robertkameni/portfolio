@@ -1,15 +1,18 @@
 <!-- Floating Action Button -->
 <div class="fixed bottom-6 right-6 z-50">
   <button
+    type="button"
     (click)="toggleChat()"
+    [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
+    [attr.aria-expanded]="chatStore.isOpen()"
     class="bg-primary hover:bg-[#16a34a] text-black w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
   >
-    @if (chatStore.isOpen()) {
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      @if (chatStore.isOpen()) {
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     } @else {
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -109,9 +112,10 @@
           <button
             type="submit"
             [disabled]="!newMessage().trim() || chatStore.isTyping()"
+            [attr.aria-label]="copy().chat.sendAriaLabel"
             class="bg-primary hover:bg-[#16a34a] disabled:bg-gray-600 disabled:cursor-not-allowed text-black w-9 h-9 rounded-full flex items-center justify-center transition-colors"
           >
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
             </svg>
           </button>

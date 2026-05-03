@@ -1,9 +1,9 @@
 <section trackBehavior="hero_viewed" class="flex flex-col items-center justify-center text-white py-6 md:py-10">
   <div class="max-w-6xl w-full mx-auto px-4 pt-4">
     <div class="text-center mb-12">
-      <h1 class="text-4xl md:text-6xl font-bold text-primary mb-4 transition-all duration-1000">
+      <h2 class="text-4xl md:text-6xl font-bold text-primary mb-4 transition-all duration-1000">
         {{ adaptiveTitle() }}
-      </h1>
+      </h2>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
@@ -18,7 +18,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="card.iconPath"></path>
               </svg>
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2">{{ card.title }}</h2>
+            <h3 class="text-2xl font-bold text-white mb-2">{{ card.title }}</h3>
             <p class="text-sm text-gray-400">{{ card.subtitle }}</p>
           </div>
           <p class="text-gray-300 text-sm leading-relaxed mb-6 pl-5 pr-5">{{ card.description }}</p>

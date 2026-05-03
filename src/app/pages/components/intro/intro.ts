@@ -1,6 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 import { IntroData } from './interface/intro-data';
 import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import type { AppLocale } from '../../../shared/i18n/app-locale';
+import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 type IntroViewModel = {
   name: string;
@@ -21,6 +23,10 @@ type IntroViewModel = {
 })
 export class IntroComponent {
   data = input.required<IntroData>();
+  locale = input<AppLocale>('en');
+  
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
+  
   safeData = computed(() => {
     const data = this.data();
     return {
@@ -37,4 +43,8 @@ export class IntroComponent {
   });
 
   nameLetters = computed(() => this.safeData().name.split(''));
+
+  socialAriaLabel(platform: string): string {
+    return this.copy().intro.socialLinkAriaLabel.replaceAll('{platform}', platform);
+  }
 }

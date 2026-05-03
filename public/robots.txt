@@ -1,0 +1,40 @@
+# =============================================================================
+# Robert Kameni — portfolio crawl directives
+# Analog.js + Nitro (Vercel). Plain-text robots.txt — no HTML.
+#
+# Canonical host (production, matches README live demo):
+#   https://robert-kameni-personal-portfolio.vercel.app
+#
+# Custom domain checklist:
+#   - Update the "Sitemap:" URL at the bottom of this file (same host + HTTPS).
+#   - Update every <loc> in public/sitemap.xml to that same origin.
+#   - Add new published project detail URLs to sitemap.xml when slugs go live.
+#
+# Path wildcards such as /projects/*/edit are honored by Googlebot, Bingbot, and
+# other common crawlers; unknown tokens are ignored by simple bots.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Default policy — all crawlers unless overridden by a more-specific User-agent.
+# -----------------------------------------------------------------------------
+User-agent: *
+
+# Entire public Angular app is allowed (SPA + static assets under this origin).
+Allow: /
+
+# -----------------------------------------------------------------------------
+# Do not index authenticated or non-public surfaces
+# -----------------------------------------------------------------------------
+# Admin application (login, dashboards, draft tooling, visitor intelligence).
+Disallow: /admin
+
+# Nitro / server JSON and streaming API surface (not HTML index pages).
+Disallow: /api
+
+# In-app project markdown editor (session-gated; still exclude from naive crawls).
+Disallow: /projects/*/edit
+
+# =============================================================================
+# Sitemap — keep host + paths identical to public/sitemap.xml
+# =============================================================================
+Sitemap: https://robert-kameni-personal-portfolio.vercel.app/sitemap.xml

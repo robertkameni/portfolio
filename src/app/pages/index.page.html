@@ -59,7 +59,7 @@
         title="Admin"
         aria-label="Admin login"
         class="w-full sm:w-auto text-xs cursor-pointer inline-flex items-center justify-center sm:justify-start gap-1 px-3 py-1.5
-            bg-green-600 text-white rounded-md shadow hover:bg-green-500 transition-colors duration-300"
+            bg-primary text-black rounded-md shadow hover:bg-[#16a34a] transition-colors duration-300 font-semibold"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path
@@ -82,7 +82,7 @@
   } @else if (store.error()) {
     <page-loader [message]="copy().home.failedProfile"></page-loader>
   } @else if (store.data(); as profile) {
-    <intro [data]="profile.intro" fadeIn></intro>
+    <intro [data]="profile.intro" [locale]="profile.locale" fadeIn></intro>
 
     <hero [name]="profile.title" [cards]="profile.heroCards" [locale]="profile.locale" fadeIn></hero>
 
