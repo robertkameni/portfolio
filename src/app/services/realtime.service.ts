@@ -93,7 +93,7 @@ export class RealtimeService implements OnDestroy {
         `Failed to fetch realtime token: unexpected response type (${response.status})`,
       ) as Error & { status?: number; isNetworkError: boolean };
       error.status = response.status;
-      error.isNetworkError = true;
+      error.isNetworkError = false;
       throw error;
     }
 
@@ -118,6 +118,10 @@ export class RealtimeService implements OnDestroy {
     const typed = error as { status?: number; message?: string; body?: { message?: string }; isNetworkError?: boolean };
 
     if (typed.isNetworkError) {
+      return true;
+    }
+
+    if (typed.status && typed.status >= 500) {
       return true;
     }
 

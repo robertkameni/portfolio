@@ -1,7 +1,6 @@
 import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
 import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
-import { RealtimeService } from '../services/realtime.service';
 import { AboutComponent } from './components/about/about.component';
 import { SkillsBentoComponent } from './components/skills-bento/skills-bento';
 import { HeroComponent } from './components/hero/hero';
@@ -42,7 +41,6 @@ export default class HomeComponent implements OnInit {
   auth = inject(AuthService);
   private router = inject(Router);
   private analytics = inject(AnalyticsService);
-  private realtime = inject(RealtimeService);
 
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
@@ -63,8 +61,6 @@ export default class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.store.loadProfile();
-    const sessionId = this.analytics.getClientSessionId();
-    this.realtime.connect(sessionId);
   }
 
   onAdminClick() {

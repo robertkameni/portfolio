@@ -16,7 +16,11 @@ export default defineConfig(({ mode }) => ({
         ? { discover: false, routes: [] }
         : { discover: false, routes: ['/'] },
       nitro: {
-        preset: 'vercel'
+        preset: 'vercel',
+        output: {
+          dir: '.vercel/output',
+          publicDir: '.vercel/output/static',
+        },
       }
     })
   ],
