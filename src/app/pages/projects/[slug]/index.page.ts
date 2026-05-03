@@ -24,9 +24,9 @@ export default class ProjectOverviewPage {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
-  private readonly previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
   private readonly localeService = inject(LocaleService);
 
+  protected previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
   protected clientReady = isPlatformBrowser(this.platformId);
   protected locale = this.localeService.locale;
   protected angularLocale = computed(() => toAngularLocale(this.locale()));

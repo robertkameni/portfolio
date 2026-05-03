@@ -100,12 +100,7 @@ export class ChatWidgetComponent {
   }
 
   private renderPlainText(content: string): string {
-    const escaped = content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     return `<p>${escaped.replace(/\n/g, '<br/>')}</p>`;
   }
 }

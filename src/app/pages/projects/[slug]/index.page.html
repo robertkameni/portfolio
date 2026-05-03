@@ -1,6 +1,10 @@
 <main class="min-h-screen bg-background text-white px-4 py-8 md:py-12 md:px-8" fadeIn>
   <div class="max-w-5xl mx-auto">
-    <a [routerLink]="goBackLink()" class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current">
+    <a
+      [routerLink]="goBackLink()"
+      [fragment]="previewMode() ? '' : 'projects-section'"
+      class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current"
+    >
       <span aria-hidden="true" class="text-current">←</span>
       {{ copy().projectDetail.backToProjects }}
     </a>
