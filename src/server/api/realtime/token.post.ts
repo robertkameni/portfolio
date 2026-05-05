@@ -4,7 +4,7 @@ import { prisma } from '../../db/client';
 import { apiSuccess } from '../../utils/api-response';
 import { badRequest, unauthorized, serverError } from '../../utils/api-errors';
 import { requireRealtimeRedisUrl, requireRealtimeTokenSecret } from '../../realtime/realtime-prerequisites';
-import { readPositiveIntFromEnv, rateLimiter } from '../../utils/rate-limiter';
+import { getRealtimeTokenDistributedStore, readPositiveIntFromEnv } from '../../utils/rate-limiter';
 
 type RealtimeTokenBody = {
   clientSessionId: string;
@@ -59,7 +59,8 @@ export default defineEventHandler(async (event) => {
   const signature = buildSignature(tokenSecret, body.clientSessionId, nonce, expiresAt);
   const token = `${nonce}.${expiresAt}.${signature}`;
   const tokenKey = `session:${session.id}:${nonce}`;
-  const tokenStored = await rateLimiter.setIfAbsent(REALTIME_TOKEN_NAMESPACE, tokenKey, signature, REALTIME_TOKEN_TTL_MS);
+  const tokenStore = getRealtimeTokenDistributedStore();
+  const tokenStored = await tokenStore.setIfAbsent(REALTIME_TOKEN_NAMESPACE, tokenKey, signature, REALTIME_TOKEN_TTL_MS);
   if (!tokenStored) {
     throw unauthorized('Unauthorized: Could not allocate realtime token.');
   }

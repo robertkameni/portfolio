@@ -5,7 +5,7 @@ import { prisma } from '../db/client';
 import { requireRealtimeRedisUrl, requireRealtimeTokenSecret } from '../realtime/realtime-prerequisites';
 import { badRequest, serverError } from '../utils/api-errors';
 import { unauthorized } from '../utils/api-errors';
-import { rateLimiter } from '../utils/rate-limiter';
+import { getRealtimeTokenDistributedStore } from '../utils/rate-limiter';
 import { createHmac, timingSafeEqual } from 'crypto';
 
 const REALTIME_TOKEN_NAMESPACE = 'realtime-token';
@@ -54,7 +54,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const tokenKey = `session:${session.id}:${nonce}`;
-  const tokenValid = await rateLimiter.consumeOnce(REALTIME_TOKEN_NAMESPACE, tokenKey, expectedSignature);
+  const tokenStore = getRealtimeTokenDistributedStore();
+  const tokenValid = await tokenStore.consumeOnce(REALTIME_TOKEN_NAMESPACE, tokenKey, expectedSignature);
   if (!tokenValid) {
     throw unauthorized('Unauthorized: Invalid or expired token.');
   }
