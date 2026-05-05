@@ -151,13 +151,15 @@ export class AnalyticsService {
         next: (res) => {
           const data = res?.data;
 
-          if (data?.result === 'accepted') {
+          if (data?.result === 'accepted' && typeof data.profileNotBeforeMs === 'number') {
             this.lastAnalysisAt = Date.now();
             this.unanalyzedEventCount = 0;
+            this.pollVisitorProfileAfterAnalysis(data.profileNotBeforeMs);
+            return;
+          }
 
-            if (typeof data.profileNotBeforeMs === 'number') {
-              this.pollVisitorProfileAfterAnalysis(data.profileNotBeforeMs);
-            }
+          if (data?.result === 'accepted') {
+            console.warn('[Analytics] Analysis accepted without profileNotBeforeMs; client counters unchanged.');
             return;
           }
 
