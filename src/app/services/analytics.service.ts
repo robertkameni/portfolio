@@ -2,11 +2,20 @@ import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
+import type { ApiSuccess } from '../shared/types/api.types';
 
 type QueuedAnalyticsEvent = {
   clientSessionId: string;
   eventType: string;
   payload: Record<string, unknown>;
+};
+
+type SyncResultBody = {
+  result: 'ignored' | 'accepted' | 'partial';
+  totalEvents: number;
+  persistedEvents: number;
+  failedEvents: number;
+  skippedEvents: number;
 };
 
 @Injectable({
@@ -73,13 +82,13 @@ export class AnalyticsService {
 
     this.isFlushing = true;
     const batch = this.eventQueue.splice(0, this.SYNC_BATCH_SIZE);
-    const batchSize = batch.length;
     let shouldRetryLater = false;
 
     try {
-      await firstValueFrom(this.http.post(this.SYNC_ENDPOINT, batch));
+      const res = await firstValueFrom(this.http.post<ApiSuccess<SyncResultBody>>(this.SYNC_ENDPOINT, batch));
+      const persisted = res.data?.persistedEvents ?? 0;
 
-      this.unanalyzedEventCount += batchSize;
+      this.unanalyzedEventCount += persisted;
       if (this.unanalyzedEventCount >= this.EVENTS_BEFORE_ANALYSIS) {
         this.scheduleAnalysis();
       }
