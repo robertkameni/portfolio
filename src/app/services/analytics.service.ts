@@ -34,7 +34,7 @@ export class AnalyticsService {
   private lastAnalysisAt = 0;
   private analysisTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private readonly EVENTS_BEFORE_ANALYSIS = 5;
+  private readonly EVENTS_BEFORE_ANALYSIS = 4;
   private readonly ANALYSIS_DEBOUNCE_MS = 15_000;
   private readonly ANALYSIS_COOLDOWN_MS = 120_000;
   private readonly SYNC_BATCH_SIZE = 50;
