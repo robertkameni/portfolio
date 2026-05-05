@@ -36,6 +36,10 @@ export function notFound(statusMessage: string, code = 'NOT_FOUND') {
   return createError({ statusCode: 404, statusMessage, data: buildErrorData(statusMessage, code) });
 }
 
+export function tooManyRequests(statusMessage: string, code = 'TOO_MANY_REQUESTS') {
+  return createError({ statusCode: 429, statusMessage, data: buildErrorData(statusMessage, code) });
+}
+
 export function serverError(statusMessage: string, code = 'INTERNAL_SERVER_ERROR') {
   return createError({ statusCode: 500, statusMessage, data: buildErrorData(statusMessage, code) });
 }

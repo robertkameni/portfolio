@@ -1,8 +1,13 @@
 import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../../db/repositories/analytics.repository';
+import { badRequest, serverError } from '../../utils/api-errors';
 import { apiSuccess } from '../../utils/api-response';
+import { enforceIngestRateLimit } from '../../utils/ingestion-guards';
+import { readPositiveIntFromEnv } from '../../utils/rate-limiter';
 
+const INGEST_SYNC_NAMESPACE = 'ingest:sync';
 const SYNC_BATCH_SIZE = 100;
+
 
 type SyncResult = {
   result: 'ignored' | 'accepted';
@@ -30,6 +35,13 @@ export default defineEventHandler(async (event) => {
       'Sync payload ignored.',
       'SYNC_IGNORED',
     );
+  }
+
+  await enforceIngestRateLimit(event, INGEST_SYNC_NAMESPACE, 'INGEST_SYNC_IP_MAX', 'INGEST_SYNC_WINDOW_MS', 45, 60_000);
+
+  const syncMaxEvents = readPositiveIntFromEnv('SYNC_MAX_EVENTS_PER_REQUEST', 500, 50);
+  if (events.length > syncMaxEvents) {
+    throw badRequest(`Bad Request: at most ${syncMaxEvents} events per sync request.`, 'SYNC_BATCH_TOO_LARGE');
   }
 
   let persistedEvents = 0;
@@ -105,6 +117,7 @@ export default defineEventHandler(async (event) => {
       eventCount: events.length,
       error: error instanceof Error ? error.message : String(error),
     });
+    throw serverError('Analytics sync could not persist events. Please retry later.', 'SYNC_PERSISTENCE_FAILED');
   }
 
   event.node.res.statusCode = 202;

@@ -3,6 +3,10 @@ import { prisma } from '../db/client';
 import { badRequest, withApiErrorHandling } from '../utils/api-errors';
 import { apiAck } from '../utils/api-response';
 import { hasRequiredStringFields } from '../utils/request-validation';
+import { assertMaxUtf8ByteLength, enforceIngestRateLimit } from '../utils/ingestion-guards';
+import { readPositiveIntFromEnv } from '../utils/rate-limiter';
+
+const INGEST_CONTACT_NAMESPACE = 'ingest:contact';
 
 type ContactRequestBody = {
   name?: string;
@@ -22,6 +26,19 @@ export default defineEventHandler(async (event) => {
   if (!hasRequiredStringFields(body, ['email', 'message'])) {
     throw badRequest('Bad Request: Email and message are required.');
   }
+
+  await enforceIngestRateLimit(event, INGEST_CONTACT_NAMESPACE, 'INGEST_CONTACT_IP_MAX', 'INGEST_CONTACT_WINDOW_MS', 15, 3_600_000);
+
+  const emailMaxBytes = readPositiveIntFromEnv('INGEST_CONTACT_EMAIL_MAX_BYTES', 320, 32);
+  assertMaxUtf8ByteLength('email', body.email, emailMaxBytes);
+
+  const nameMaxBytes = readPositiveIntFromEnv('INGEST_CONTACT_NAME_MAX_BYTES', 256, 32);
+  if (body.name != null && body.name.length > 0) {
+    assertMaxUtf8ByteLength('name', body.name, nameMaxBytes);
+  }
+
+  const messageMaxBytes = readPositiveIntFromEnv('INGEST_CONTACT_MESSAGE_MAX_BYTES', 16_384, 256);
+  assertMaxUtf8ByteLength('message', body.message, messageMaxBytes);
 
   // Basic email format validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
