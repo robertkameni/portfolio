@@ -10,10 +10,7 @@ type AnalyzeVisitorBody = {
   clientSessionId: string;
 };
 
-type AnalyzeVisitorOutcome = {
-  result: 'skipped' | 'accepted';
-  reason: string;
-};
+type AnalyzeVisitorOutcome = { result: 'skipped'; reason: string } | { result: 'accepted'; reason: string; profileNotBeforeMs: number };
 
 const ANALYSIS_COOLDOWN_MS = readPositiveIntFromEnv('AI_ANALYSIS_COOLDOWN_MS', 300_000);
 const MIN_NEW_EVENTS_FOR_REANALYSIS = readPositiveIntFromEnv('AI_ANALYSIS_MIN_NEW_EVENTS', 8);
@@ -107,7 +104,9 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  void (async () => {
+  const profileNotBeforeMs = Date.now();
+
+  const backgroundAnalysis = (async () => {
     try {
       const analysis = await visitorAgent.analyze(session.id);
 
@@ -127,7 +126,7 @@ export default defineEventHandler(async (event) => {
           },
         });
 
-        // Push update to the client after the asynchronous analysis finishes.
+        // Push update to subscribers on this runtime; with Redis configured, SSE on other lambdas receives it too.
         pushUpdateToClient(body.clientSessionId, 'visitor_profile_updated', savedProfile);
       }
     } catch (error) {
@@ -137,6 +136,14 @@ export default defineEventHandler(async (event) => {
     }
   })();
 
+  // Vercel / serverless: keep the invocation alive until the background job finishes publishing.
+  const waitUntil = (event as { waitUntil?(p: Promise<unknown>): void }).waitUntil;
+  if (typeof waitUntil === 'function') {
+    waitUntil(backgroundAnalysis.catch((error) => console.error('[Background Analysis] Unhandled rejection:', error)));
+  } else {
+    void backgroundAnalysis.catch((error) => console.error('[Background Analysis] Unhandled rejection:', error));
+  }
+
   event.node.res.statusCode = 202;
-  return apiSuccess<AnalyzeVisitorOutcome>({ result: 'accepted', reason: 'analysis_started' }, 'Analysis started in background.', 'ANALYSIS_ACCEPTED');
+  return apiSuccess<AnalyzeVisitorOutcome>({ result: 'accepted', reason: 'analysis_started', profileNotBeforeMs }, 'Analysis started in background.', 'ANALYSIS_ACCEPTED');
 });

@@ -9,6 +9,14 @@ import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-beha
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { ContactService } from '../../../shared/services/contact.service';
+import type { VisitorProfileAnalysis } from '../../../shared/types/visitor.types';
+
+function contactAudienceBucket(visitorType: VisitorProfileAnalysis['visitorType'] | undefined): 'founder' | 'recruiter' | 'developer' | null {
+  if (!visitorType) return null;
+  if (visitorType === 'founder') return 'founder';
+  if (visitorType === 'recruiter' || visitorType === 'hiring_manager') return 'recruiter';
+  return 'developer';
+}
 
 @Component({
   selector: 'contact',
@@ -44,33 +52,57 @@ export class ContactComponent {
   statusMessage = signal<string | null>(null);
   statusType = signal<'success' | 'error'>('success');
 
-  adaptiveTitle = computed(() => {
+  /**
+   * Three contact audiences (Founder, Recruiter, Entwickler). AI may emit finer types;
+   * hiring managers use Recruiter copy; student/other use Entwickler copy.
+   */
+  private readonly adaptiveContact = computed(() => {
     const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveTitle.recruiter;
-    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveTitle.founder;
-    return this.data().title;
+    const c = this.copy().contact;
+    const defaultTitle = this.data().title;
+    const defaultDescription = this.data().description;
+
+    const bucket = contactAudienceBucket(profile?.visitorType);
+
+    switch (bucket) {
+      case 'recruiter':
+        return {
+          title: c.adaptiveTitle.recruiter,
+          description: c.adaptiveDescription.recruiter,
+          placeholder: c.adaptivePlaceholder.recruiter,
+          button: c.adaptiveButtonText.recruiter,
+        };
+      case 'founder':
+        return {
+          title: c.adaptiveTitle.founder,
+          description: c.adaptiveDescription.founder,
+          placeholder: c.adaptivePlaceholder.founder,
+          button: c.adaptiveButtonText.founder,
+        };
+      case 'developer':
+        return {
+          title: c.adaptiveTitle.developer,
+          description: c.adaptiveDescription.developer,
+          placeholder: c.adaptivePlaceholder.developer,
+          button: c.adaptiveButtonText.developer,
+        };
+      default:
+        return {
+          title: defaultTitle,
+          description: defaultDescription,
+          placeholder: c.adaptivePlaceholder.default,
+          button: c.adaptiveButtonText.default,
+        };
+    }
   });
 
-  adaptiveDescription = computed(() => {
-    const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveDescription.recruiter;
-    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveDescription.founder;
-    return this.data().description;
-  });
+  adaptiveTitle = computed(() => this.adaptiveContact().title);
 
-  adaptivePlaceholder = computed(() => {
-    const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptivePlaceholder.recruiter;
-    if (profile?.visitorType === 'founder') return this.copy().contact.adaptivePlaceholder.founder;
-    return this.copy().contact.adaptivePlaceholder.default;
-  });
+  adaptiveDescription = computed(() => this.adaptiveContact().description);
 
-  adaptiveButtonText = computed(() => {
-    const profile = this.visitorStore.profile();
-    if (profile?.visitorType === 'recruiter') return this.copy().contact.adaptiveButtonText.recruiter;
-    if (profile?.visitorType === 'founder') return this.copy().contact.adaptiveButtonText.founder;
-    return this.copy().contact.adaptiveButtonText.default;
-  });
+  adaptivePlaceholder = computed(() => this.adaptiveContact().placeholder);
+
+  adaptiveButtonText = computed(() => this.adaptiveContact().button);
 
   submit(event: Event) {
     event?.preventDefault();

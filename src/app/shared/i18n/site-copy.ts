@@ -138,19 +138,23 @@ type SiteCopy = {
     adaptiveTitle: {
       recruiter: string;
       founder: string;
+      developer: string;
     };
     adaptiveDescription: {
       recruiter: string;
       founder: string;
+      developer: string;
     };
     adaptivePlaceholder: {
       recruiter: string;
       founder: string;
+      developer: string;
       default: string;
     };
     adaptiveButtonText: {
       recruiter: string;
       founder: string;
+      developer: string;
       default: string;
     };
     placeholderName: string;
@@ -347,19 +351,23 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       adaptiveTitle: {
         recruiter: "Let's Talk About Your Next Big Hire",
         founder: "Let's Bring Your Idea to Life",
+        developer: 'Trade Notes on Angular, SSR & Tooling',
       },
       adaptiveDescription: {
         recruiter: "Looking for a seasoned Angular engineer? Drop me a message and let's schedule an interview.",
         founder: "Ready to start building? Contact me and let's discuss your product's architecture and roadmap.",
+        developer: "Into Signals, SSR, Nitro, or pragmatic AI integration? Leave a technical question or something you're working on, and we can compare approaches.",
       },
       adaptivePlaceholder: {
         recruiter: "Hi Robert, we're looking for an Angular expert...",
         founder: 'Hi Robert, I have an idea for a SaaS...',
+        developer: 'Hi Robert, curious how you handled …',
         default: 'Message',
       },
       adaptiveButtonText: {
         recruiter: 'Schedule an Interview',
         founder: 'Discuss My Project',
+        developer: 'Send Message',
         default: 'Send Message',
       },
       placeholderName: 'Name',
@@ -658,19 +666,23 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       adaptiveTitle: {
         recruiter: 'Lass uns über deinen nächsten Top-Hire sprechen',
         founder: 'Lass uns deine Idee zum Leben erwecken',
+        developer: 'Austausch zu Angular, SSR & Tooling',
       },
       adaptiveDescription: {
         recruiter: 'Du suchst einen erfahrenen Angular Engineer? Schreib mir und wir vereinbaren ein Gespräch.',
         founder: 'Bereit loszulegen? Schreib mir und wir sprechen über Produktarchitektur und Roadmap.',
+        developer: 'Interesse an Signals, SSR, Nitro oder pragmatischer KI-Anbindung? Schick eine konkrete Frage oder Kontext zum Projekt, dann tauschen wir uns gern aus.',
       },
       adaptivePlaceholder: {
         recruiter: 'Hallo Robert, wir suchen einen Angular-Experten...',
         founder: 'Hallo Robert, ich habe eine Idee für ein SaaS...',
+        developer: 'Hallo Robert, wie hast du … gelöst?',
         default: 'Nachricht',
       },
       adaptiveButtonText: {
         recruiter: 'Interview vereinbaren',
         founder: 'Mein Projekt besprechen',
+        developer: 'Nachricht senden',
         default: 'Nachricht senden',
       },
       placeholderName: 'Name',

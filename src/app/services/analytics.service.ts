@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import type { ApiSuccess } from '../shared/types/api.types';
+import type { VisitorProfileAnalysis } from '../shared/types/visitor.types';
+import { VisitorStore } from '../store/visitor.store';
 
 type QueuedAnalyticsEvent = {
   clientSessionId: string;
@@ -18,12 +20,17 @@ type SyncResultBody = {
   skippedEvents: number;
 };
 
+type AnalyzeVisitorOutcome = { result: 'skipped'; reason: string } | { result: 'accepted'; reason: string; profileNotBeforeMs: number };
+
+type VisitorIntelPollData = { ready: false } | { ready: true; profileData: VisitorProfileAnalysis; updatedAt: string };
+
 @Injectable({
   providedIn: 'root',
 })
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly visitorStore = inject(VisitorStore);
   private readonly clientSessionId?: string;
 
   private eventQueue: QueuedAnalyticsEvent[] = [];
@@ -33,6 +40,8 @@ export class AnalyticsService {
   private isAnalysisInFlight = false;
   private lastAnalysisAt = 0;
   private analysisTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Browser timers use numeric handles; avoids NodeJS `Timeout` vs `number` typing clashes. */
+  private intelPollHandle: number | null = null;
 
   private readonly EVENTS_BEFORE_ANALYSIS = 4;
   private readonly ANALYSIS_DEBOUNCE_MS = 15_000;
@@ -134,17 +143,79 @@ export class AnalyticsService {
     this.isAnalysisInFlight = true;
     this.lastAnalysisAt = now;
 
-    // Fire-and-forget. The RealtimeService (SSE) handles updates.
-    this.http.post('/api/ai/analyze-visitor', { clientSessionId: this.getClientSessionId() }).subscribe({
-      next: () => {
-        this.unanalyzedEventCount = 0;
-      },
-      error: (err) => {
-        console.error('[AI Analysis] Trigger error:', err);
-      },
-      complete: () => {
-        this.isAnalysisInFlight = false;
-      },
-    });
+    // Fire-and-forget. Realtime SSE can push visitor_profile_updated; polling uses profileNotBeforeMs from the API (same clock as DB).
+    this.http
+      .post<ApiSuccess<AnalyzeVisitorOutcome>>('/api/ai/analyze-visitor', {
+        clientSessionId: this.getClientSessionId(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.unanalyzedEventCount = 0;
+
+          const data = res?.data;
+          const accepted = res?.code === 'ANALYSIS_ACCEPTED' && data?.result === 'accepted' && typeof data.profileNotBeforeMs === 'number';
+
+          if (accepted) {
+            this.pollVisitorProfileAfterAnalysis(data.profileNotBeforeMs);
+          }
+        },
+        error: (err) => {
+          console.error('[AI Analysis] Trigger error:', err);
+        },
+        complete: () => {
+          this.isAnalysisInFlight = false;
+        },
+      });
+  }
+
+  private clearIntelPolling(): void {
+    if (this.intelPollHandle != null) {
+      clearTimeout(this.intelPollHandle);
+      this.intelPollHandle = null;
+    }
+  }
+
+  private pollVisitorProfileAfterAnalysis(profileNotBeforeMs: number): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    this.clearIntelPolling();
+
+    const delayMs = 2500;
+    const maxAttempts = 40;
+
+    let attempt = 0;
+
+    const poll = (): void => {
+      if (++attempt > maxAttempts) {
+        return;
+      }
+
+      this.http
+        .get<ApiSuccess<VisitorIntelPollData>>('/api/ai/visitor-intelligence', {
+          params: {
+            clientSessionId: this.getClientSessionId(),
+            sinceMs: String(profileNotBeforeMs),
+          },
+        })
+        .subscribe({
+          next: (res) => {
+            const d = res?.data;
+
+            if (d?.ready && d.profileData) {
+              this.visitorStore.setProfile(d.profileData);
+              return;
+            }
+
+            this.intelPollHandle = window.setTimeout(poll, delayMs);
+          },
+          error: () => {
+            this.intelPollHandle = window.setTimeout(poll, delayMs + 1500);
+          },
+        });
+    };
+
+    poll();
   }
 }

@@ -21,7 +21,11 @@ function getConfiguredRedisBroadcastUrl(): string | undefined {
   return primary || fallback;
 }
 
-/** In-process pub/sub: works for one server instance (typical Vercel function + SSE on same instance). */
+/**
+ * In-process pub/sub only. On serverless / multiple instances (e.g. Vercel + Redis unset),
+ * the analyze job and the SSE connection run on different workers, so publishes never reach the browser.
+ * Set UPSTASH_REDIS_URL or REDIS_URL for cross-invocation realtime.
+ */
 class LocalBroadcastService implements IBroadcastService {
   private subscriptions = new Map<string, BroadcastSubscriber[]>();
 
