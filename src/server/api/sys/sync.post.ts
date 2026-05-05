@@ -62,6 +62,10 @@ export default defineEventHandler(async (event) => {
         skippedEvents++;
         continue;
       }
+      if (e.clientSessionId != null && e.clientSessionId !== clientSessionId) {
+        skippedEvents++;
+        continue;
+      }
       eventsByChunk.push({
         sessionId: session.id,
         eventType: e.eventType,
