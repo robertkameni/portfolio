@@ -152,4 +152,25 @@ This isn't just a static portfolio. It's a full-stack application built with a m
 | `AI_RETRY_BASE_DELAY_MS` | Optional. Base backoff delay between retries. |
 | `AI_RETRY_MAX_DELAY_MS` | Optional. Cap on backoff delay. |
 
+### Realtime, Redis, and public ingestion env
+
+Realtime token mint (`/api/realtime/token`), SSE (`/api/realtime`), and Redis pub/sub require **Redis** and a dedicated signing secret:
+
+| Variable | Purpose |
+|----------|---------|
+| `UPSTASH_REDIS_URL` or `REDIS_URL` | Required for realtime SSE, one-time tokens, ingestion rate limits where Redis is used, and optional AI rate-limit consistency. |
+| `REALTIME_SESSION_TOKEN_SECRET` | Required. Secret for HMAC signing of realtime session tokens (do not reuse JWT vars). |
+| `REALTIME_SESSION_TOKEN_TTL_MS` | Optional. Token lifetime (default `120000`). |
+
+Public ingestion tuning (optional overrides):
+
+| Variable | Purpose |
+|----------|---------|
+| `INGEST_COLLECT_IP_MAX` / `INGEST_COLLECT_WINDOW_MS` | Rate limit for `/api/collect` per IP (defaults: 120 / 60000 ms). |
+| `INGEST_COLLECT_EVENT_TYPE_MAX_BYTES` / `INGEST_COLLECT_PAYLOAD_MAX_BYTES` | Max UTF-8 size for event type string and serialized payload. |
+| `INGEST_CONTACT_IP_MAX` / `INGEST_CONTACT_WINDOW_MS` | Rate limit for `/api/contact` per IP (defaults: 15 / 3600000 ms). |
+| `INGEST_CONTACT_EMAIL_MAX_BYTES` / `INGEST_CONTACT_NAME_MAX_BYTES` / `INGEST_CONTACT_MESSAGE_MAX_BYTES` | Contact field size caps. |
+| `INGEST_SYNC_IP_MAX` / `INGEST_SYNC_WINDOW_MS` | Rate limit for `/api/sys/sync` per IP (defaults: 45 / 60000 ms). |
+| `SYNC_MAX_EVENTS_PER_REQUEST` | Max events per sync body (default 500, minimum 50). |
+
 Older `GEMINI_RETRY_*` variables are no longer read; rename them to `AI_RETRY_*` and copy the same values.
