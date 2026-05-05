@@ -127,7 +127,7 @@ export class ContactComponent {
       .subscribe({
         next: () => {
           this.statusType.set('success');
-          this.statusMessage.set('Message sent successfully! I will get back to you soon.');
+          this.statusMessage.set(this.copy().contact.submitSuccess);
 
           // Reset the form data AND the touched/dirty state so validation errors disappear
           this.form().reset({ name: '', email: '', message: '' });
@@ -141,7 +141,7 @@ export class ContactComponent {
         error: (err) => {
           console.error('Failed to send message:', err);
           this.statusType.set('error');
-          this.statusMessage.set('Failed to send message. Please try again or email me directly.');
+          this.statusMessage.set(this.copy().contact.submitError);
           this.isSubmitting.set(false);
         },
       });
