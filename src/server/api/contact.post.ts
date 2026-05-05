@@ -46,6 +46,18 @@ export default defineEventHandler(async (event) => {
     throw badRequest('Bad Request: Invalid email format.');
   }
 
+  let sessionClientId: string | undefined =
+    typeof body.sessionId === 'string' && body.sessionId.trim().length > 0 ? body.sessionId.trim() : undefined;
+  if (sessionClientId) {
+    const sessionExists = await prisma.visitorSession.findUnique({
+      where: { clientSessionId: sessionClientId },
+      select: { id: true },
+    });
+    if (!sessionExists) {
+      sessionClientId = undefined;
+    }
+  }
+
   await withApiErrorHandling(
     async () => {
       await prisma.message.create({
@@ -55,10 +67,10 @@ export default defineEventHandler(async (event) => {
           body: body.message,
           status: 'UNREAD',
           // Link to visitor session if available
-          ...(body.sessionId
+          ...(sessionClientId
             ? {
                 session: {
-                  connect: { clientSessionId: body.sessionId },
+                  connect: { clientSessionId: sessionClientId },
                 },
               }
             : {}),
