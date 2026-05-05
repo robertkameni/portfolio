@@ -141,7 +141,6 @@ export class AnalyticsService {
     }
 
     this.isAnalysisInFlight = true;
-    this.lastAnalysisAt = now;
 
     // Fire-and-forget. Realtime SSE can push visitor_profile_updated; polling uses profileNotBeforeMs from the API (same clock as DB).
     this.http
@@ -150,13 +149,20 @@ export class AnalyticsService {
       })
       .subscribe({
         next: (res) => {
-          this.unanalyzedEventCount = 0;
-
           const data = res?.data;
-          const accepted = res?.code === 'ANALYSIS_ACCEPTED' && data?.result === 'accepted' && typeof data.profileNotBeforeMs === 'number';
 
-          if (accepted) {
-            this.pollVisitorProfileAfterAnalysis(data.profileNotBeforeMs);
+          if (data?.result === 'accepted') {
+            this.lastAnalysisAt = Date.now();
+            this.unanalyzedEventCount = 0;
+
+            if (typeof data.profileNotBeforeMs === 'number') {
+              this.pollVisitorProfileAfterAnalysis(data.profileNotBeforeMs);
+            }
+            return;
+          }
+
+          if (data?.result === 'skipped') {
+            console.debug('[Analytics] Analysis skipped:', res.code, data.reason);
           }
         },
         error: (err) => {
