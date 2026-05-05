@@ -21,8 +21,16 @@ jobs:
           node-version: 24
           cache: npm
 
+      # Mirrors vercel.json installCommand
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Run verify
+      - name: Lint, typecheck, and tests
         run: npm run verify
+
+      # Mirrors vercel.json buildCommand (BUILD_PRESET + ensure output)
+      - name: Build
+        env:
+          BUILD_PRESET: vercel
+        run: npm run build && node scripts/ensure-vercel-build-output.mjs
+  
