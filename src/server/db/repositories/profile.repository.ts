@@ -1,5 +1,6 @@
 import { prisma } from '../client';
-import type { ProfileData } from '../../../app/store/portfolio.store';
+import type { ProfileData } from '../../../app/shared/types/profile-data';
+import { validateProfileData } from '../../domain/profile/profile.schema';
 
 // Serializes typed objects to plain JSON for Prisma write operations.
 // Only needed on the write path — Prisma already returns parsed objects on reads.
@@ -13,7 +14,12 @@ export const profileRepository = {
     if (!row) return null;
 
     const { id: _id, updatedAt: _updatedAt, ...profile } = row;
-    return profile as unknown as ProfileData;
+    const validated = validateProfileData(profile);
+    if (!validated) {
+      console.error('[ProfileRepository] DB row failed schema validation — falling back to default');
+      return null;
+    }
+    return validated;
   },
 
   async upsert(data: ProfileData): Promise<void> {

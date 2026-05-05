@@ -1,11 +1,59 @@
-# /review
+/review {{SCOPE}} with strict focus on runtime correctness in a portfolio-grade Angular + AnalogJS application.
 
-Perform a deeper architecture review or flow analysis. Output:
+## CONTEXT (MANDATORY INTERPRETATION RULE)
 
-- **Context**: What is being reviewed.
-- **Architecture/Flow Description**: Concise summary.
-- **Good Practices**: Exactly 3 reasons why specific aspects are good, citing modern patterns.
-- **Issues/Poor Practices**: Exactly 3 reasons why specific aspects are not good, with fixes.
-- **Alternative Approach** (optional): If a better pattern exists, 1-2 lines.
+This project is:
+- single-instance (Vercel deployment)
+- NOT a distributed system
+- NOT a backend platform
+- NOT expected to scale horizontally
 
-All points must reference current technology standards. No vague statements; tie each reason to a clear architectural principle or pattern. No other output.
+All backend logic exists ONLY to support UI features (AI, analytics, SSE, ingestion).
+
+You MUST evaluate it as a UI-enhancement backend, not an infrastructure system.
+
+---
+
+## HARD RULES (MANDATORY)
+
+- Only report issues that are **actually reachable in current runtime execution**
+- Do NOT propose distributed systems design
+- Do NOT introduce architectural redesigns unless a real runtime bug exists
+- Do NOT suggest redundancy "for safety" unless a failure is demonstrably possible
+- Do NOT evaluate scalability, load balancing, clustering, or multi-instance correctness
+
+Before reporting an issue, verify:
+- Does this break actual runtime behavior?
+- Or is it already prevented by an existing layer?
+
+If not runtime-impacting → ignore it.
+
+---
+
+## OUTPUT
+
+- **Context**: What part of src/server is actually being reviewed
+- **Architecture/Flow Description**: factual runtime flow only (no design interpretation)
+- **Good Practices (exactly 3)**:
+  - must reflect real implementation decisions
+- **Issues (exactly 3 max)**:
+  Each issue must include:
+  - concrete file/module
+  - runtime impact only
+  - why it is reachable in THIS deployment model
+  - minimal fix (no redesigns)
+- **Optional Improvement (max 1)**:
+  only if it improves runtime correctness directly
+
+---
+
+## STRICT ENFORCEMENT
+
+- No theoretical problems
+- No distributed systems concerns
+- No “could scale better” suggestions
+- No duplicated concerns across layers
+- No multi-step architectural refactors
+- No speculative failure modes
+
+Every statement must be tied to observable runtime behavior in code.

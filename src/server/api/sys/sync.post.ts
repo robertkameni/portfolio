@@ -8,7 +8,6 @@ import { readPositiveIntFromEnv } from '../../utils/rate-limiter';
 const INGEST_SYNC_NAMESPACE = 'ingest:sync';
 const SYNC_BATCH_SIZE = 100;
 
-
 type SyncResult = {
   result: 'ignored' | 'accepted' | 'partial';
   totalEvents: number;

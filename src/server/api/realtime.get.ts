@@ -49,9 +49,7 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Realtime token expired.');
   }
 
-  const expectedSignature = createHmac('sha256', tokenSecret)
-    .update(`${session.clientSessionId}.${nonce}.${expiresAt}`)
-    .digest('hex');
+  const expectedSignature = createHmac('sha256', tokenSecret).update(`${session.clientSessionId}.${nonce}.${expiresAt}`).digest('hex');
 
   if (!constantTimeEquals(signature, expectedSignature)) {
     throw unauthorized('Unauthorized: Invalid token signature.');

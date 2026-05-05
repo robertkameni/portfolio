@@ -253,24 +253,6 @@ class RedisRateLimiter implements RateLimiter {
   }
 }
 
-let realtimeTokenDistributedStore: RedisRateLimiter | null = null;
-
-/**
- * Single-use token keys for realtime (mint vs SSE) must be consistent across instances.
- * Uses Redis only — no in-memory fallback. Callers must verify Redis is configured first.
- */
-export function getRealtimeTokenDistributedStore(): Pick<RateLimiter, 'setIfAbsent' | 'consumeOnce'> {
-  if (!getRedisUrl()?.trim()) {
-    throw new Error('Redis URL is required for realtime token storage.');
-  }
-
-  if (!realtimeTokenDistributedStore) {
-    realtimeTokenDistributedStore = new RedisRateLimiter();
-  }
-
-  return realtimeTokenDistributedStore;
-}
-
 function createRateLimiter(): RateLimiter {
   const useRedis = Boolean(getRedisUrl());
   if (!useRedis) {

@@ -1,5 +1,20 @@
 # AGENTS.md
 
+## CONTEXT BOUNDARY:
+This project is a personal portfolio built with Angular + AnalogJS on Vercel.
+It is SINGLE-INSTANCE, not a distributed system.
+
+All backend features (SSE, analytics, AI, ingestion) are:
+- UX enhancements
+- best-effort
+- non-critical
+- allowed to degrade gracefully
+
+- Do NOT apply distributed systems design assumptions.
+- Do NOT suggest Redis clustering, message queues, or scaling architecture unless there is a real runtime bug.
+
+Focus only on correctness in this deployment model.
+
 ## OUTPUT SANITIZATION (CRITICAL)
 
 * Never expose internal reasoning

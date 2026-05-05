@@ -1,12 +1,57 @@
-# /analyse
-Deeply analyze a repository, file, or specified problem. Output:
+/analyse {{SCOPE}} with strict focus on factual runtime behavior only.
 
-- **Scope**: What is being analyzed (entire repo, directory, file, or problem statement).
-- **Structure**: Key modules, dependencies, entry points.
-- **Issues**: Potential bugs, performance bottlenecks, security concerns, architectural violations.
-- **Dependencies**: Critical external and internal dependencies, version constraints.
-- **Opportunities**: Modernization, simplification, or improvements based on latest best practices.
-- **Risk Assessment**: High/medium/low impact areas.
-Format as a structured report with clear sections. No code unless it illustrates a critical issue.
+## CONTEXT RULE
 
-No code unless it illustrates a critical issue. No other output.
+This is a portfolio-grade Angular + AnalogJS application.
+
+It is:
+- single-instance
+- UI-first backend
+- not a distributed system
+- not infrastructure-critical
+
+Only evaluate actual runtime behavior.
+
+---
+
+## HARD RULES (MANDATORY)
+
+- Separate FACTS from INTERPRETATION
+- Only report issues that are observable in code execution
+- Do NOT assume failure scenarios unless code path proves it
+- Do NOT suggest architectural redesigns
+- Do NOT treat missing enterprise patterns as issues
+
+If something is not causing runtime risk → it is NOT an issue.
+
+---
+
+## OUTPUT
+
+- **Scope**: what is actually analyzed
+- **Structure**: factual modules + entry points only
+- **Issues (only real runtime issues)**:
+  Each must include:
+  - file/module
+  - runtime impact
+  - why it is reachable in execution
+  - severity (high/medium/low)
+
+- **Dependencies**:
+  only real external/internal dependencies
+
+- **Opportunities**:
+  only improvements that do NOT change architecture
+
+- **Risk Assessment**:
+  only runtime risks, not theoretical risks
+
+---
+
+## STRICT
+
+- No speculative problems
+- No distributed systems reasoning
+- No architecture redesign suggestions
+- No duplication across sections
+- No “this could scale better” statements

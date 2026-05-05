@@ -46,8 +46,7 @@ export default defineEventHandler(async (event) => {
     throw badRequest('Bad Request: Invalid email format.');
   }
 
-  let sessionClientId: string | undefined =
-    typeof body.sessionId === 'string' && body.sessionId.trim().length > 0 ? body.sessionId.trim() : undefined;
+  let sessionClientId: string | undefined = typeof body.sessionId === 'string' && body.sessionId.trim().length > 0 ? body.sessionId.trim() : undefined;
   if (sessionClientId) {
     const sessionExists = await prisma.visitorSession.findUnique({
       where: { clientSessionId: sessionClientId },

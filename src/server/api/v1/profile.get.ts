@@ -1,11 +1,17 @@
-import { defineEventHandler, setResponseHeader } from 'h3';
+import { defineEventHandler, getQuery, setResponseHeader } from 'h3';
 import { profileRepository } from '../../db/repositories/profile.repository';
 import { defaultProfile } from '../../data/default-profile';
 import { localizeProfile } from '../../data/localized-profile';
 import { resolveRequestLocale } from '../../utils/locale';
 
 export default defineEventHandler(async (event) => {
-  setResponseHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+  const localeFromQuery = getQuery(event)['locale'];
+  if (localeFromQuery) {
+    setResponseHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+  } else {
+    setResponseHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    setResponseHeader(event, 'Vary', 'Accept-Language');
+  }
   const locale = resolveRequestLocale(event);
 
   if (!process.env['DATABASE_URL']) {

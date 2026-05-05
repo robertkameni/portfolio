@@ -10,24 +10,43 @@ type BroadcastSubscriber = (data: BroadcastPayload) => void;
 
 interface IBroadcastService {
   publish(data: BroadcastPayload): Promise<void>;
-
   subscribe(channel: string, handler: BroadcastSubscriber): Promise<void>;
-
   unsubscribe(channel: string): Promise<void>;
-
   disconnect(): Promise<void>;
 }
 
-/**
- * Redis-backed broadcast service for scalable realtime updates.
- */
 function getConfiguredRedisBroadcastUrl(): string | undefined {
   const primary = process.env['UPSTASH_REDIS_URL']?.trim();
   const fallback = process.env['REDIS_URL']?.trim();
   return primary || fallback;
 }
 
-/** Supports multi-instance deployments when Redis URL is configured. */
+/** In-process pub/sub: works for one server instance (typical Vercel function + SSE on same instance). */
+class LocalBroadcastService implements IBroadcastService {
+  private subscriptions = new Map<string, BroadcastSubscriber[]>();
+
+  async publish(data: BroadcastPayload): Promise<void> {
+    const channel = `realtime:${data.targetSessionId}`;
+    const handlers = this.subscriptions.get(channel) || [];
+    handlers.forEach((h) => h(data));
+  }
+
+  async subscribe(channel: string, handler: BroadcastSubscriber): Promise<void> {
+    if (!this.subscriptions.has(channel)) {
+      this.subscriptions.set(channel, []);
+    }
+    this.subscriptions.get(channel)!.push(handler);
+  }
+
+  async unsubscribe(channel: string): Promise<void> {
+    this.subscriptions.delete(channel);
+  }
+
+  async disconnect(): Promise<void> {
+    this.subscriptions.clear();
+  }
+}
+
 class RedisBroadcastService implements IBroadcastService {
   private publisher: RedisClientType | null = null;
   private subscriber: RedisClientType | null = null;
@@ -74,11 +93,10 @@ class RedisBroadcastService implements IBroadcastService {
     try {
       const sub = await this.ensureSubscriber();
       this.subscriptions.set(channel, handler);
-
       await sub.subscribe(channel, (message) => {
         try {
-          const data = JSON.parse(message) as BroadcastPayload;
-          handler(data);
+          const parsed = JSON.parse(message) as BroadcastPayload;
+          handler(parsed);
         } catch (error) {
           console.error('[RedisBroadcast] message parse error:', error);
         }
@@ -103,7 +121,6 @@ class RedisBroadcastService implements IBroadcastService {
     try {
       const publisher = this.publisher;
       const subscriber = this.subscriber;
-
       this.publisher = null;
       this.subscriber = null;
       this.subscriptions.clear();
@@ -115,7 +132,6 @@ class RedisBroadcastService implements IBroadcastService {
           await subscriber.disconnect();
         }
       }
-
       if (publisher) {
         try {
           await publisher.quit();
@@ -129,47 +145,18 @@ class RedisBroadcastService implements IBroadcastService {
   }
 }
 
-/** Fails closed: realtime cannot silently work cross-instance without Redis. */
-class DisabledRealtimeBroadcastService implements IBroadcastService {
-  private disabledError(): Error {
-    return new Error('Realtime broadcast requires UPSTASH_REDIS_URL or REDIS_URL.');
-  }
-
-  publish(): Promise<void> {
-    return Promise.reject(this.disabledError());
-  }
-
-  subscribe(): Promise<void> {
-    return Promise.reject(this.disabledError());
-  }
-
-  unsubscribe(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  disconnect(): Promise<void> {
-    return Promise.resolve();
-  }
-}
-
 function createBroadcastService(): IBroadcastService {
-  return getConfiguredRedisBroadcastUrl() ? new RedisBroadcastService() : new DisabledRealtimeBroadcastService();
+  return getConfiguredRedisBroadcastUrl() ? new RedisBroadcastService() : new LocalBroadcastService();
 }
 
 function registerBroadcastCleanup(service: IBroadcastService): void {
   const globalKey = '__realtimeBroadcastCleanupRegistered__';
   const state = globalThis as typeof globalThis & Record<string, boolean | undefined>;
-
   if (state[globalKey]) {
     return;
   }
-
   state[globalKey] = true;
-
-  const cleanup = () => {
-    void service.disconnect();
-  };
-
+  const cleanup = () => void service.disconnect();
   process.once('beforeExit', cleanup);
   process.once('SIGINT', cleanup);
   process.once('SIGTERM', cleanup);

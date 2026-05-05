@@ -1,5 +1,5 @@
-import type { ProfileData, LocalizedProfileData } from '../../app/store/portfolio.store';
 import type { AppLocale } from '../../app/shared/i18n/app-locale';
+import type { ProfileData, LocalizedProfileData } from '../../app/shared/types/profile-data';
 
 export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): LocalizedProfileData {
   if (locale === 'de') {

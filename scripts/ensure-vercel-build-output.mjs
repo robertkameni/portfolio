@@ -1,21 +1,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
-const configPath = path.join(process.cwd(), '.vercel', 'output', 'config.json');
+const OUTPUT_DIR = path.join(process.cwd(), '.vercel', 'output');
+const configPath = path.join(OUTPUT_DIR, 'config.json');
+const staticDir = path.join(OUTPUT_DIR, 'static');
+
+// ── 1. Validate config.json exists and has a supported version ────────────────
 
 if (!fs.existsSync(configPath)) {
   console.error(
     '[build] Missing .vercel/output/config.json — Nitro did not emit the Vercel Build Output API bundle.\n' +
       '  Fix: BUILD_PRESET=vercel during build (Vercel) and nitro.preset "vercel" in vite.config.ts.\n' +
-      '  Vercel Dashboard: Framework = Other and clear Output Directory override so .vercel/output is used.'
+      '  Vercel Dashboard: Framework = Other and clear Output Directory override so .vercel/output is used.',
   );
   process.exit(1);
 }
 
+let config;
 try {
-  const raw = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  if (typeof raw.version !== 'number' || raw.version < 3) {
-    console.error('[build] Unexpected .vercel/output/config.json version:', raw.version);
+  config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  if (typeof config.version !== 'number' || config.version < 3) {
+    console.error('[build] Unexpected .vercel/output/config.json version:', config.version);
     process.exit(1);
   }
 } catch (e) {
@@ -24,3 +30,63 @@ try {
 }
 
 console.log('[build] Vercel Build Output API present at .vercel/output/config.json');
+
+// ── 2. Collect SHA-256 hashes from every inline <script> in static HTML ───────
+
+function sha256Base64(content) {
+  return crypto.createHash('sha256').update(content).digest('base64');
+}
+
+function collectHtmlFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return collectHtmlFiles(fullPath);
+    if (entry.isFile() && entry.name.endsWith('.html')) return [fullPath];
+    return [];
+  });
+}
+
+const htmlFiles = collectHtmlFiles(staticDir);
+const inlineHashes = new Set();
+const inlineScriptPattern = /<script(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi;
+
+for (const file of htmlFiles) {
+  const content = fs.readFileSync(file, 'utf8');
+  let match;
+  while ((match = inlineScriptPattern.exec(content)) !== null) {
+    const body = match[1];
+    if (body && body.trim().length > 0) {
+      inlineHashes.add(`'sha256-${sha256Base64(body)}'`);
+    }
+  }
+  inlineScriptPattern.lastIndex = 0;
+}
+
+console.log(`[build] Detected ${inlineHashes.size} inline script hash(es) across ${htmlFiles.length} HTML file(s).`);
+
+// ── 3. Inject current hashes into the CSP header inside config.json ───────────
+
+if (inlineHashes.size > 0) {
+  const hashFragment = [...inlineHashes].join(' ');
+  const routes = config.routes ?? [];
+  let patched = false;
+
+  for (const route of routes) {
+    const headers = route.headers ?? {};
+    const cspKey = Object.keys(headers).find((k) => k.toLowerCase() === 'content-security-policy');
+    if (!cspKey) continue;
+
+    headers[cspKey] = headers[cspKey]
+      .replace(/'sha256-[A-Za-z0-9+/=]+'\s*/g, '')
+      .replace(/script-src([^;]*)/, (_, rest) => `script-src${rest.trimEnd()} ${hashFragment}`);
+    patched = true;
+  }
+
+  if (patched) {
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf8');
+    console.log('[build] CSP hashes injected into .vercel/output/config.json');
+  } else {
+    console.warn('[build] No Content-Security-Policy header found in config.json routes — hashes not injected.');
+  }
+}
