@@ -173,4 +173,14 @@ Public ingestion tuning (optional overrides):
 | `INGEST_SYNC_IP_MAX` / `INGEST_SYNC_WINDOW_MS` | Rate limit for `/api/sys/sync` per IP (defaults: 45 / 60000 ms). |
 | `SYNC_MAX_EVENTS_PER_REQUEST` | Max events per sync body (default 500, minimum 50). |
 
+**`POST /api/sys/sync` responses (success envelope `status: 'success'`):**
+
+| HTTP | `data.result` | `code` | Meaning |
+|------|---------------|--------|---------|
+| 202 | `ignored` | `SYNC_IGNORED` | Payload had nothing to apply (e.g. missing `clientSessionId`). |
+| 202 | `accepted` | `SYNC_ACCEPTED` | No write failures (`failedEvents === 0`): all valid events persisted or only invalid rows were skipped. |
+| 202 | `partial` | `SYNC_PARTIAL` | Some events persisted, some failed (`persistedEvents > 0` and `failedEvents > 0`). Inspect counters; consider client retry for missing events. |
+| 500 | — | `SYNC_PERSISTENCE_FAILED` | Unexpected error (session or DB throw). |
+| 500 | — | `SYNC_EVENTS_NOT_PERSISTED` | Writes were attempted but **none** persisted (`failedEvents > 0`, `persistedEvents === 0`). |
+
 Older `GEMINI_RETRY_*` variables are no longer read; rename them to `AI_RETRY_*` and copy the same values.
