@@ -20,15 +20,21 @@ interface IBroadcastService {
 
 /**
  * Redis-backed broadcast service for scalable realtime updates.
- * Supports multi-instance deployments on Vercel/serverless.
  */
+function getConfiguredRedisBroadcastUrl(): string | undefined {
+  const primary = process.env['UPSTASH_REDIS_URL']?.trim();
+  const fallback = process.env['REDIS_URL']?.trim();
+  return primary || fallback;
+}
+
+/** Supports multi-instance deployments when Redis URL is configured. */
 class RedisBroadcastService implements IBroadcastService {
   private publisher: RedisClientType | null = null;
   private subscriber: RedisClientType | null = null;
   private subscriptions = new Map<string, BroadcastSubscriber>();
 
   private getRedisUrl(): string {
-    const url = process.env['UPSTASH_REDIS_URL'] || process.env['REDIS_URL'];
+    const url = getConfiguredRedisBroadcastUrl();
     if (!url) {
       throw new Error('UPSTASH_REDIS_URL or REDIS_URL not configured');
     }
@@ -123,40 +129,31 @@ class RedisBroadcastService implements IBroadcastService {
   }
 }
 
-/**
- * Local-only fallback for dev/testing without Redis.
- */
-class LocalBroadcastService implements IBroadcastService {
-  private subscriptions = new Map<string, BroadcastSubscriber[]>();
-
-  async publish(data: BroadcastPayload): Promise<void> {
-    const channel = `realtime:${data.targetSessionId}`;
-    const handlers = this.subscriptions.get(channel) || [];
-    handlers.forEach((h) => h(data));
+/** Fails closed: realtime cannot silently work cross-instance without Redis. */
+class DisabledRealtimeBroadcastService implements IBroadcastService {
+  private disabledError(): Error {
+    return new Error('Realtime broadcast requires UPSTASH_REDIS_URL or REDIS_URL.');
   }
 
-  async subscribe(channel: string, handler: BroadcastSubscriber): Promise<void> {
-    if (!this.subscriptions.has(channel)) {
-      this.subscriptions.set(channel, []);
-    }
-    this.subscriptions.get(channel)!.push(handler);
+  publish(): Promise<void> {
+    return Promise.reject(this.disabledError());
   }
 
-  async unsubscribe(channel: string): Promise<void> {
-    this.subscriptions.delete(channel);
+  subscribe(): Promise<void> {
+    return Promise.reject(this.disabledError());
   }
 
-  async disconnect(): Promise<void> {
-    this.subscriptions.clear();
+  unsubscribe(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  disconnect(): Promise<void> {
+    return Promise.resolve();
   }
 }
 
-/**
- * Factory to create appropriate broadcast service.
- */
 function createBroadcastService(): IBroadcastService {
-  const useRedis = process.env['UPSTASH_REDIS_URL'] || process.env['REDIS_URL'];
-  return useRedis ? new RedisBroadcastService() : new LocalBroadcastService();
+  return getConfiguredRedisBroadcastUrl() ? new RedisBroadcastService() : new DisabledRealtimeBroadcastService();
 }
 
 function registerBroadcastCleanup(service: IBroadcastService): void {
