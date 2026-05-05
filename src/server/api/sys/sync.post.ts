@@ -101,12 +101,20 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    if (failedEvents > 0) {
-      console.error('[Analytics Sync] Batch completed with event persistence failures.', {
+    if (failedEvents > 0 && persistedEvents > 0) {
+      console.warn('[Analytics Sync] Partial persistence.', {
         clientSessionId,
         sessionId: session.id,
         totalEvents: events.length,
         persistedEvents,
+        failedEvents,
+        skippedEvents,
+      });
+    } else if (failedEvents > 0 && persistedEvents === 0) {
+      console.error('[Analytics Sync] No events persisted; all write attempts failed.', {
+        clientSessionId,
+        sessionId: session.id,
+        totalEvents: events.length,
         failedEvents,
         skippedEvents,
       });
@@ -120,7 +128,26 @@ export default defineEventHandler(async (event) => {
     throw serverError('Analytics sync could not persist events. Please retry later.', 'SYNC_PERSISTENCE_FAILED');
   }
 
+  if (failedEvents > 0 && persistedEvents === 0) {
+    throw serverError('Analytics sync failed to persist events. Please retry later.', 'SYNC_EVENTS_NOT_PERSISTED');
+  }
+
   event.node.res.statusCode = 202;
+
+  if (failedEvents > 0 && persistedEvents > 0) {
+    return apiSuccess<SyncResult>(
+      {
+        result: 'partial',
+        totalEvents: events.length,
+        persistedEvents,
+        failedEvents,
+        skippedEvents,
+      },
+      'Sync partially applied.',
+      'SYNC_PARTIAL',
+    );
+  }
+
   return apiSuccess<SyncResult>(
     {
       result: 'accepted',
