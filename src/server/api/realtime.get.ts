@@ -2,15 +2,18 @@ import { defineEventHandler, getRequestIP } from 'h3';
 import { broadcastService } from '../realtime/broadcast.service';
 import { getSingleQueryString } from '../utils/query-params';
 import { prisma } from '../db/client';
+import { requireRealtimeRedisUrl, requireRealtimeTokenSecret } from '../realtime/realtime-prerequisites';
 import { badRequest, serverError } from '../utils/api-errors';
 import { unauthorized } from '../utils/api-errors';
 import { rateLimiter } from '../utils/rate-limiter';
 import { createHmac, timingSafeEqual } from 'crypto';
 
 const REALTIME_TOKEN_NAMESPACE = 'realtime-token';
-const REALTIME_TOKEN_SECRET = process.env['REALTIME_SESSION_TOKEN_SECRET'] || process.env['SESSION_SECRET'] || process.env['JWT_SECRET'] || 'change-me-in-production';
 
 export default defineEventHandler(async (event) => {
+  const tokenSecret = requireRealtimeTokenSecret();
+  requireRealtimeRedisUrl();
+
   const sessionId = getSingleQueryString(event, 'sessionId');
   const token = getSingleQueryString(event, 'token');
 
@@ -29,8 +32,8 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Invalid session.');
   }
 
-  const requestIp = getRequestIP(event);
-  if (session.ipAddress && requestIp && session.ipAddress !== requestIp) {
+  const requestIp = getRequestIP(event) ?? 'unknown';
+  if (session.ipAddress && session.ipAddress !== requestIp) {
     throw unauthorized('Unauthorized: Session fingerprint mismatch.');
   }
 
@@ -44,7 +47,7 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Realtime token expired.');
   }
 
-  const expectedSignature = createHmac('sha256', REALTIME_TOKEN_SECRET).update(`${session.clientSessionId}.${nonce}.${expiresAt}`).digest('hex');
+  const expectedSignature = createHmac('sha256', tokenSecret).update(`${session.clientSessionId}.${nonce}.${expiresAt}`).digest('hex');
 
   if (!constantTimeEquals(signature, expectedSignature)) {
     throw unauthorized('Unauthorized: Invalid token signature.');

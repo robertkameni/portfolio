@@ -3,6 +3,7 @@ import { createHmac, randomUUID } from 'crypto';
 import { prisma } from '../../db/client';
 import { apiSuccess } from '../../utils/api-response';
 import { badRequest, unauthorized, serverError } from '../../utils/api-errors';
+import { requireRealtimeRedisUrl, requireRealtimeTokenSecret } from '../../realtime/realtime-prerequisites';
 import { readPositiveIntFromEnv, rateLimiter } from '../../utils/rate-limiter';
 
 type RealtimeTokenBody = {
@@ -17,16 +18,18 @@ type RealtimeTokenResponse = {
 
 const REALTIME_TOKEN_TTL_MS = readPositiveIntFromEnv('REALTIME_SESSION_TOKEN_TTL_MS', 120_000);
 const REALTIME_TOKEN_NAMESPACE = 'realtime-token';
-const REALTIME_TOKEN_SECRET = process.env['REALTIME_SESSION_TOKEN_SECRET'] || process.env['SESSION_SECRET'] || process.env['JWT_SECRET'] || 'change-me-in-production';
 
-function buildSignature(sessionId: string, nonce: string, expiresAt: number): string {
-  return createHmac('sha256', REALTIME_TOKEN_SECRET).update(`${sessionId}.${nonce}.${expiresAt}`).digest('hex');
+function buildSignature(secret: string, sessionId: string, nonce: string, expiresAt: number): string {
+  return createHmac('sha256', secret).update(`${sessionId}.${nonce}.${expiresAt}`).digest('hex');
 }
 
 export default defineEventHandler(async (event) => {
   if (!process.env['DATABASE_URL']) {
     throw serverError('Realtime service unavailable: database not configured.', 'SERVICE_UNAVAILABLE');
   }
+
+  const tokenSecret = requireRealtimeTokenSecret();
+  requireRealtimeRedisUrl();
 
   const body = await readBody<RealtimeTokenBody>(event);
   if (!body?.clientSessionId) {
@@ -53,7 +56,7 @@ export default defineEventHandler(async (event) => {
 
   const nonce = randomUUID();
   const expiresAt = Date.now() + REALTIME_TOKEN_TTL_MS;
-  const signature = buildSignature(body.clientSessionId, nonce, expiresAt);
+  const signature = buildSignature(tokenSecret, body.clientSessionId, nonce, expiresAt);
   const token = `${nonce}.${expiresAt}.${signature}`;
   const tokenKey = `session:${session.id}:${nonce}`;
   const tokenStored = await rateLimiter.setIfAbsent(REALTIME_TOKEN_NAMESPACE, tokenKey, signature, REALTIME_TOKEN_TTL_MS);
