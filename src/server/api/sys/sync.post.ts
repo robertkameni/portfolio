@@ -10,7 +10,7 @@ const SYNC_BATCH_SIZE = 100;
 
 
 type SyncResult = {
-  result: 'ignored' | 'accepted';
+  result: 'ignored' | 'accepted' | 'partial';
   totalEvents: number;
   persistedEvents: number;
   failedEvents: number;
