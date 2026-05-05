@@ -2,17 +2,13 @@ import { defineEventHandler, getRequestIP } from 'h3';
 import { broadcastService } from '../realtime/broadcast.service';
 import { getSingleQueryString } from '../utils/query-params';
 import { prisma } from '../db/client';
-import { requireRealtimeRedisUrl, requireRealtimeTokenSecret } from '../realtime/realtime-prerequisites';
+import { resolveRealtimeSigningSecret } from '../realtime/realtime-signing';
 import { badRequest, serverError } from '../utils/api-errors';
 import { unauthorized } from '../utils/api-errors';
-import { getRealtimeTokenDistributedStore } from '../utils/rate-limiter';
 import { createHmac, timingSafeEqual } from 'crypto';
 
-const REALTIME_TOKEN_NAMESPACE = 'realtime-token';
-
 export default defineEventHandler(async (event) => {
-  const tokenSecret = requireRealtimeTokenSecret();
-  requireRealtimeRedisUrl();
+  const tokenSecret = resolveRealtimeSigningSecret();
 
   const sessionId = getSingleQueryString(event, 'sessionId');
   const token = getSingleQueryString(event, 'token');
@@ -24,9 +20,15 @@ export default defineEventHandler(async (event) => {
     throw badRequest('Bad Request: token is required.');
   }
 
-  const session = await prisma.visitorSession.findUnique({
-    where: { clientSessionId: sessionId },
-  });
+  let session: Awaited<ReturnType<typeof prisma.visitorSession.findUnique>>;
+  try {
+    session = await prisma.visitorSession.findUnique({
+      where: { clientSessionId: sessionId },
+    });
+  } catch (error) {
+    console.error('[realtime] session lookup failed:', error);
+    throw serverError('Realtime service temporarily unavailable.', 'DB_ERROR');
+  }
 
   if (!session) {
     throw unauthorized('Unauthorized: Invalid session.');
@@ -47,17 +49,12 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Realtime token expired.');
   }
 
-  const expectedSignature = createHmac('sha256', tokenSecret).update(`${session.clientSessionId}.${nonce}.${expiresAt}`).digest('hex');
+  const expectedSignature = createHmac('sha256', tokenSecret)
+    .update(`${session.clientSessionId}.${nonce}.${expiresAt}`)
+    .digest('hex');
 
   if (!constantTimeEquals(signature, expectedSignature)) {
     throw unauthorized('Unauthorized: Invalid token signature.');
-  }
-
-  const tokenKey = `session:${session.id}:${nonce}`;
-  const tokenStore = getRealtimeTokenDistributedStore();
-  const tokenValid = await tokenStore.consumeOnce(REALTIME_TOKEN_NAMESPACE, tokenKey, expectedSignature);
-  if (!tokenValid) {
-    throw unauthorized('Unauthorized: Invalid or expired token.');
   }
 
   await prisma.visitorSession.update({
@@ -65,7 +62,6 @@ export default defineEventHandler(async (event) => {
     data: { lastSeenAt: new Date() },
   });
 
-  // Set headers for Server-Sent Events
   event.node.res.setHeader('Content-Type', 'text/event-stream');
   event.node.res.setHeader('Cache-Control', 'no-cache');
   event.node.res.setHeader('Connection', 'keep-alive');
@@ -78,12 +74,10 @@ export default defineEventHandler(async (event) => {
   const channel = `realtime:${sessionId}`;
 
   try {
-    // Subscribe to realtime updates for this session
     await broadcastService.subscribe(channel, (data) => {
       sendEvent(data.eventName, data.payload);
     });
 
-    // Send a connection confirmation message
     sendEvent('connected', { message: 'Connection established' });
 
     let cleanedUp = false;
@@ -97,21 +91,15 @@ export default defineEventHandler(async (event) => {
       });
     };
 
-    // Clean up when the client disconnects
     event.node.req.on('close', cleanup);
-
-    // Keep the connection open
-    // H3 will automatically handle not closing the response.
   } catch (error) {
     console.error('[realtime] subscription error:', error);
     throw serverError('Realtime service unavailable');
   }
+
+  return new Promise(() => {});
 });
 
-/**
- * Push an update to a client session via broadcast service.
- * Can be called from any backend handler.
- */
 export async function pushUpdateToClient(targetSessionId: string, eventName: string, payload: any): Promise<void> {
   try {
     await broadcastService.publish({ targetSessionId, eventName, payload });
