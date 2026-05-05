@@ -159,6 +159,8 @@ type SiteCopy = {
     };
     placeholderName: string;
     placeholderEmail: string;
+    submitSuccess: string;
+    submitError: string;
   };
   hero: {
     defaultTitle: string;
@@ -372,6 +374,8 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       },
       placeholderName: 'Name',
       placeholderEmail: 'Email',
+      submitSuccess: 'Message sent successfully! I will get back to you soon.',
+      submitError: 'Failed to send message. Please try again or email me directly.',
     },
     hero: {
       defaultTitle: 'Technical Lead Frontend Specialist',
@@ -687,6 +691,10 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       },
       placeholderName: 'Name',
       placeholderEmail: 'E-Mail',
+      submitSuccess:
+        'Nachricht gesendet! Ich melde mich so bald ich kann.',
+      submitError:
+        'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
     },
     hero: {
       defaultTitle: 'Technischer Lead Frontend Spezialist',
