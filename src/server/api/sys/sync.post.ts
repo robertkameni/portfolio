@@ -134,6 +134,20 @@ export default defineEventHandler(async (event) => {
 
   event.node.res.statusCode = 202;
 
+  if (persistedEvents === 0 && failedEvents === 0 && skippedEvents === events.length && events.length > 0) {
+    return apiSuccess<SyncResult>(
+      {
+        result: 'ignored',
+        totalEvents: events.length,
+        persistedEvents: 0,
+        failedEvents: 0,
+        skippedEvents,
+      },
+      'Sync had no persistable events.',
+      'SYNC_ALL_SKIPPED',
+    );
+  }
+
   if (failedEvents > 0 && persistedEvents > 0) {
     return apiSuccess<SyncResult>(
       {
