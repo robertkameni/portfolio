@@ -1,19 +1,6 @@
 {
   "installCommand": "npm install",
   "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs",
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "header",
-          "key": "accept",
-          "value": "(?i).*text\\/markdown.*"
-        }
-      ],
-      "destination": "/api/agent-site-markdown"
-    }
-  ],
   "headers": [
     {
       "source": "/",

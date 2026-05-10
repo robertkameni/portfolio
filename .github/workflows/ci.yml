@@ -12,25 +12,39 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres?schema=public
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
 
-      # Mirrors vercel.json installCommand
-      - name: Install dependencies
-        run: npm install
+      # Mirrors vercel.json installCommand. `postinstall` runs `prisma generate` (see package.json).
+      - name: Install dependencies (npm ci + Prisma via postinstall)
+        run: npm ci
 
-      - name: Lint, typecheck, and tests
-        run: npm run verify
+      - name: ESLint
+        run: npm run lint
 
-      # Mirrors vercel.json buildCommand (BUILD_PRESET + ensure output)
-      - name: Build
+      - name: TypeScript (app + specs)
+        run: npm run typecheck
+
+      - name: Unit tests (Vitest)
+        run: npm run test:ci
+
+      # Mirrors vercel.json buildCommand
+      - name: Production build (Vite + Analog server)
         env:
           BUILD_PRESET: vercel
-        run: npm run build && node scripts/ensure-vercel-build-output.mjs
-  
+        run: npm run build
+
+      - name: Verify Vercel Build Output API bundle
+        run: node scripts/ensure-vercel-build-output.mjs
+
+      - name: Where deployment appears
+        run: |
+          echo "::notice title=Vercel deployment::This workflow only validates the build."
+          echo "Pushes to main still trigger deploys through the Vercel GitHub integration (Project → Settings → Git)."
+          echo "Open the Vercel dashboard or the separate Deployment checks on the commit for build/deploy logs."

@@ -6,7 +6,7 @@ export default [
     ignores: ['dist/**', '.output/**', '.nitro/**', 'node_modules/**'],
   },
   {
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.ts', 'middleware.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
