@@ -15,6 +15,14 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
+# Content signals — training, search indexing, and AI input (contentsignals.org)
+# ai-train=no: do not use site content to train foundation models.
+# search=yes: allow traditional search engine indexing.
+# ai-input=yes: allow AI assistants to use content when a person invokes them.
+# -----------------------------------------------------------------------------
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+# -----------------------------------------------------------------------------
 # Default policy — all crawlers unless overridden by a more-specific User-agent.
 # -----------------------------------------------------------------------------
 User-agent: *
@@ -32,6 +40,94 @@ Disallow: /admin
 Disallow: /api
 
 # In-app project markdown editor (session-gated; still exclude from naive crawls).
+Disallow: /projects/*/edit
+
+# -----------------------------------------------------------------------------
+# Explicit AI / LLM crawlers — same allow/disallow as User-agent: * above.
+# (Helps agent-readiness audits that look for named AI bots.)
+# -----------------------------------------------------------------------------
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Bytespider
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: FacebookBot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Omgilibot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: Diffbot
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /projects/*/edit
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin
+Disallow: /api
 Disallow: /projects/*/edit
 
 # =============================================================================

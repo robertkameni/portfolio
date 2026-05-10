@@ -3,6 +3,15 @@
   "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs",
   "headers": [
     {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</sitemap.xml>; rel=\"alternate\"; type=\"application/xml\", </robots.txt>; rel=\"alternate\"; type=\"text/plain\""
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Frame-Options", "value": "DENY" },
