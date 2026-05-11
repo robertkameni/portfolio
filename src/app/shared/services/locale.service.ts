@@ -1,6 +1,7 @@
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { resolveBrowserLocale, type AppLocale } from '../i18n/app-locale';
+import { getSiteCopy } from '../i18n/site-copy';
 
 @Injectable({ providedIn: 'root' })
 export class LocaleService {
@@ -9,4 +10,5 @@ export class LocaleService {
   private readonly localeState = signal<AppLocale>(this.clientReady ? resolveBrowserLocale() : 'en');
 
   readonly locale = this.localeState.asReadonly();
+  readonly copy = computed(() => getSiteCopy(this.locale()));
 }

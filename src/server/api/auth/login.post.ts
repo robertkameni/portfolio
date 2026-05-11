@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody } from 'h3';
 import { userRepository } from '../../db/repositories/user.repository';
 import { authService } from '../../auth/auth.service';
+import { ACCESS_TOKEN_MAX_AGE_SECONDS } from '../../auth/access-token-expiry';
 import { setAuthSessionCookies } from '../../utils/auth-cookies';
 import { badRequest, forbidden, serverError, unauthorized } from '../../utils/api-errors';
 import { apiSuccess } from '../../utils/api-response';
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
     const accessToken = authService.generateAccessToken({ userId: user.id, role: user.role });
     const refreshToken = authService.generateRefreshToken({ userId: user.id });
 
-    setAuthSessionCookies(event, accessToken, refreshToken, 60 * 15);
+    setAuthSessionCookies(event, accessToken, refreshToken, ACCESS_TOKEN_MAX_AGE_SECONDS);
 
     return apiSuccess(
       {

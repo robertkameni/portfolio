@@ -1,7 +1,6 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { FadeInDirective } from '../../directives/fade-in.directive';
-import { getSiteCopy } from '../../i18n/site-copy';
 import { LocaleService } from '../../services/locale.service';
 
 @Component({
@@ -11,11 +10,13 @@ import { LocaleService } from '../../services/locale.service';
   templateUrl: './dev-proxy-bar.component.html',
 })
 export class DevProxyBarComponent {
+  private readonly localeService = inject(LocaleService);
+
   backUrl = input<string | null>(null);
   homeUrl = input<string | null>(null);
-  private readonly localeService = inject(LocaleService);
+
   protected locale = this.localeService.locale;
-  protected copy = computed(() => getSiteCopy(this.locale()));
+  protected copy = this.localeService.copy;
 
   constructor(private router: Router) {}
 

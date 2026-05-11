@@ -3,6 +3,7 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 import { withComponentInputBinding, withInMemoryScrolling, withRouterConfig } from '@angular/router';
+import { adminSessionRefreshInterceptor } from './interceptors/admin-session-refresh.interceptor';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
 import { lastValueFrom, of } from 'rxjs';
@@ -20,7 +21,10 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
-    provideHttpClient(withFetch(), withInterceptors([requestContextInterceptor, authInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([requestContextInterceptor, adminSessionRefreshInterceptor, authInterceptor]),
+    ),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(() => {
       const authService = inject(AuthService);

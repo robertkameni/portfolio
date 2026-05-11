@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { ACCESS_TOKEN_EXPIRES_IN } from './access-token-expiry';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -18,7 +19,6 @@ function getJwtSecrets(): { accessTokenSecret: string; refreshTokenSecret: strin
   };
 }
 
-const ACCESS_TOKEN_EXPIRATION = '20m';
 const REFRESH_TOKEN_EXPIRATION = '7d';
 
 /**
@@ -52,7 +52,7 @@ export const authService = {
    */
   generateAccessToken(payload: { userId: string; role: string }): string {
     const { accessTokenSecret } = getJwtSecrets();
-    return jwt.sign(payload, accessTokenSecret, { expiresIn: ACCESS_TOKEN_EXPIRATION });
+    return jwt.sign(payload, accessTokenSecret, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
   },
 
   /**
