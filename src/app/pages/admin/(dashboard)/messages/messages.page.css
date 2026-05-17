@@ -1,24 +1,23 @@
 .header-container {
-    container-type: inline-size;
+  container-type: inline-size;
 }
 
 .header,
 .btns {
-    @container (width < 641px) {
-        gap: 12px;
-        flex-direction: column;
+  @container (width < 641px) {
+    gap: 12px;
+    flex-direction: column;
 
-        .btns,
-        button {
-            width: 100%;
-        }
+    .btns,
+    button {
+      width: 100%;
     }
-
+  }
 }
 
 .btns {
-    @container (500px < width < 672px) {
-        gap: 10px;
-        flex-direction: row;
-    }
+  @container (500px < width < 672px) {
+    gap: 10px;
+    flex-direction: row;
+  }
 }

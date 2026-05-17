@@ -706,10 +706,8 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       },
       placeholderName: 'Name',
       placeholderEmail: 'E-Mail',
-      submitSuccess:
-        'Nachricht gesendet! Ich melde mich so bald ich kann.',
-      submitError:
-        'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
+      submitSuccess: 'Nachricht gesendet! Ich melde mich so bald ich kann.',
+      submitError: 'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
     },
     hero: {
       defaultTitle: 'Technischer Lead Frontend Spezialist',

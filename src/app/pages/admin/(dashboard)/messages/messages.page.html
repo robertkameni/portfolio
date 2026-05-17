@@ -6,29 +6,45 @@
     </div>
 
     <div class="btns flex gap-2">
-      <button (click)="navigateHome()"
-        class="text-xs cursor-pointer inline-flex items-center justify-center gap12 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition w-full sm:w-auto">
+      <button
+        (click)="navigateHome()"
+        class="text-xs cursor-pointer inline-flex items-center justify-center gap12 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition w-full sm:w-auto"
+      >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path
-            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+          />
         </svg>
         {{ copy().devProxy.home }}
       </button>
-      <button (click)="filter = 'ALL'; loadMessages()" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition"
-        [class.bg-primary]="filter === 'ALL'" [class.text-black]="filter === 'ALL'"
-        [class.bg-[#0a2912]]="filter !== 'ALL'" [class.text-gray-400]="filter !== 'ALL'">
+      <button
+        (click)="filter = 'ALL'; loadMessages()"
+        class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition"
+        [class.bg-primary]="filter === 'ALL'"
+        [class.text-black]="filter === 'ALL'"
+        [class.bg-[#0a2912]]="filter !== 'ALL'"
+        [class.text-gray-400]="filter !== 'ALL'"
+      >
         All ({{ counts().all }})
       </button>
-      <button (click)="filter = 'UNREAD'; loadMessages()"
-        class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition" [class.bg-yellow-600]="filter === 'UNREAD'"
-        [class.text-black]="filter === 'UNREAD'" [class.bg-[#0a2912]]="filter !== 'UNREAD'"
-        [class.text-gray-400]="filter !== 'UNREAD'">
+      <button
+        (click)="filter = 'UNREAD'; loadMessages()"
+        class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition"
+        [class.bg-yellow-600]="filter === 'UNREAD'"
+        [class.text-black]="filter === 'UNREAD'"
+        [class.bg-[#0a2912]]="filter !== 'UNREAD'"
+        [class.text-gray-400]="filter !== 'UNREAD'"
+      >
         Unread ({{ counts().unread }})
       </button>
-      <button (click)="filter = 'ARCHIVED'; loadMessages()"
-        class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition" [class.bg-gray-600]="filter === 'ARCHIVED'"
-        [class.text-white]="filter === 'ARCHIVED'" [class.bg-[#0a2912]]="filter !== 'ARCHIVED'"
-        [class.text-gray-400]="filter !== 'ARCHIVED'">
+      <button
+        (click)="filter = 'ARCHIVED'; loadMessages()"
+        class="cursor-pointer px-3 py-1.5 rounded-lg text-sm transition"
+        [class.bg-gray-600]="filter === 'ARCHIVED'"
+        [class.text-white]="filter === 'ARCHIVED'"
+        [class.bg-[#0a2912]]="filter !== 'ARCHIVED'"
+        [class.text-gray-400]="filter !== 'ARCHIVED'"
+      >
         Archived
       </button>
     </div>
@@ -51,8 +67,7 @@
   } @else {
   <div class="space-y-4">
     @for (msg of messages(); track msg.id) {
-    <div class="bg-surface border rounded-xl p-6 shadow-lg transition" [class.border-primary]="msg.status === 'UNREAD'"
-      [class.border-[#143c1a]]="msg.status !== 'UNREAD'">
+    <div class="bg-surface border rounded-xl p-6 shadow-lg transition" [class.border-primary]="msg.status === 'UNREAD'" [class.border-[#143c1a]]="msg.status !== 'UNREAD'">
       <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
@@ -61,15 +76,19 @@
             <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 shrink-0" title="Unread"></span>
             }
           </div>
-          <a [href]="'mailto:' + msg.senderEmail" class="text-sm text-primary hover:underline break-all">{{
-            msg.senderEmail }}</a>
+          <a [href]="'mailto:' + msg.senderEmail" class="text-sm text-primary hover:underline break-all">{{ msg.senderEmail }}</a>
         </div>
         <div class="text-right shrink-0">
           <p class="text-sm text-gray-500">{{ msg.createdAt | date: 'MMM d, yyyy h:mm a' }}</p>
-          <span class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium"
-            [class.bg-yellow-900/50]="msg.status === 'UNREAD'" [class.text-yellow-400]="msg.status === 'UNREAD'"
-            [class.bg-green-900/50]="msg.status === 'READ'" [class.text-green-400]="msg.status === 'READ'"
-            [class.bg-gray-700/50]="msg.status === 'ARCHIVED'" [class.text-gray-400]="msg.status === 'ARCHIVED'">
+          <span
+            class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium"
+            [class.bg-yellow-900/50]="msg.status === 'UNREAD'"
+            [class.text-yellow-400]="msg.status === 'UNREAD'"
+            [class.bg-green-900/50]="msg.status === 'READ'"
+            [class.text-green-400]="msg.status === 'READ'"
+            [class.bg-gray-700/50]="msg.status === 'ARCHIVED'"
+            [class.text-gray-400]="msg.status === 'ARCHIVED'"
+          >
             {{ msg.status }}
           </span>
         </div>
@@ -115,17 +134,13 @@
 
       <div class="mt-4 pt-4 border-t border-[#143c1a] flex gap-3">
         @if (msg.status === 'UNREAD') {
-        <button (click)="updateStatus(msg.id, 'READ')"
-          class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Mark as read</button>
+        <button (click)="updateStatus(msg.id, 'READ')" class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Mark as read</button>
         } @if (msg.status === 'READ') {
-        <button (click)="updateStatus(msg.id, 'UNREAD')"
-          class="cursor-pointer text-sm text-yellow-400 hover:text-yellow-300 transition">Mark as unread</button>
+        <button (click)="updateStatus(msg.id, 'UNREAD')" class="cursor-pointer text-sm text-yellow-400 hover:text-yellow-300 transition">Mark as unread</button>
         } @if (msg.status !== 'ARCHIVED') {
-        <button (click)="updateStatus(msg.id, 'ARCHIVED')"
-          class="cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition">Archive</button>
+        <button (click)="updateStatus(msg.id, 'ARCHIVED')" class="cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition">Archive</button>
         } @if (msg.status === 'ARCHIVED') {
-        <button (click)="updateStatus(msg.id, 'READ')"
-          class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Restore</button>
+        <button (click)="updateStatus(msg.id, 'READ')" class="cursor-pointer text-sm text-green-400 hover:text-green-300 transition">Restore</button>
         }
       </div>
     </div>

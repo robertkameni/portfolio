@@ -21,10 +21,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([requestContextInterceptor, adminSessionRefreshInterceptor, authInterceptor]),
-    ),
+    provideHttpClient(withFetch(), withInterceptors([requestContextInterceptor, adminSessionRefreshInterceptor, authInterceptor])),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(() => {
       const authService = inject(AuthService);

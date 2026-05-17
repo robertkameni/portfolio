@@ -15,7 +15,7 @@ export default class AdminDashboardComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly localeService = inject(LocaleService);
   private readonly router = inject(Router);
-  
+
   protected readonly newMessagesCount = signal(0);
 
   protected locale = this.localeService.locale;

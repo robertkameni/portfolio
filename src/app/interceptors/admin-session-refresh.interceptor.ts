@@ -7,7 +7,7 @@ const ADMIN_SESSION_REFRESH_RETRIED = new HttpContextToken<boolean>(() => false)
 
 function isAdminApiUrl(url: string): boolean {
   try {
-    const path = url.startsWith('http') ? new URL(url).pathname : url.split('?')[0] ?? '';
+    const path = url.startsWith('http') ? new URL(url).pathname : (url.split('?')[0] ?? '');
     return path.startsWith('/api/admin');
   } catch {
     return false;
