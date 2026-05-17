@@ -26,13 +26,16 @@ model User {
 }
 
 model Project {
-  id              String   @id @default(uuid())
-  slug            String   @unique
-  title           String
-  description     String?
-  contentMarkdown String?
-  tags            String[]
+  id                String   @id @default(uuid())
+  slug              String   @unique
+  title             String
+  description       String?
+  descriptionEn     String?
+  contentMarkdown   String?
+  contentMarkdownEn String?
+  tags              String[]
   coverImageUrl   String?
+  projectUrl      String?
   isPublished     Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

@@ -57,6 +57,7 @@ export default class EditProjectPage {
       description: project.description ?? '',
       contentMarkdown: project.contentMarkdown ?? '',
       coverImageUrl: project.coverImageUrl ?? '',
+      projectUrl: project.projectUrl ?? '',
       tags: project.tags.join(', '),
       isPublished: project.isPublished,
     };

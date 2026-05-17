@@ -36,6 +36,7 @@ export class ProjectFormComponent {
           description: '',
           contentMarkdown: '',
           coverImageUrl: '',
+          projectUrl: '',
           tags: '',
           isPublished: false,
         }

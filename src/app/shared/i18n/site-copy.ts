@@ -49,6 +49,9 @@ type SiteCopy = {
     draft: string;
     overview: string;
     emptyDescription: string;
+    liveSiteHeading: string;
+    liveSiteLinkLabel: string;
+    liveSiteAriaLabel: string;
     notFoundTitle: string;
     loadErrorTitle: string;
     notFoundMessage: string;
@@ -113,6 +116,8 @@ type SiteCopy = {
     coverImageUrlLabel: string;
     tagsLabel: string;
     tagsPlaceholder: string;
+    projectUrlLabel: string;
+    projectUrlPlaceholder: string;
     cancel: string;
     publishImmediately: string;
     titleRequired: string;
@@ -255,6 +260,9 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       draft: 'Draft',
       overview: 'Overview',
       emptyDescription: 'This project does not have a long-form description yet. The summary above is the current overview.',
+      liveSiteHeading: 'Live site',
+      liveSiteLinkLabel: 'Visit live site',
+      liveSiteAriaLabel: 'Open live project site in a new tab',
       notFoundTitle: 'Project not found',
       loadErrorTitle: 'Could not load project',
       notFoundMessage: 'The project slug does not exist or the project is not published yet.',
@@ -319,6 +327,8 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       coverImageUrlLabel: 'Cover Image URL',
       tagsLabel: 'Tags (comma-separated)',
       tagsPlaceholder: 'Angular, TypeScript, SSR',
+      projectUrlLabel: 'Live site URL',
+      projectUrlPlaceholder: 'https://example.com',
       cancel: 'Cancel',
       publishImmediately: 'Publish immediately',
       titleRequired: 'Title is required',
@@ -572,6 +582,9 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       draft: 'Entwurf',
       overview: 'Überblick',
       emptyDescription: 'Dieses Projekt hat aktuell noch keine ausführliche Beschreibung. Die Zusammenfassung oben ist derzeit die Übersicht.',
+      liveSiteHeading: 'Live-Website',
+      liveSiteLinkLabel: 'Live-Website besuchen',
+      liveSiteAriaLabel: 'Live-Projektwebsite in neuem Tab öffnen',
       notFoundTitle: 'Projekt nicht gefunden',
       loadErrorTitle: 'Projekt konnte nicht geladen werden',
       notFoundMessage: 'Der Projekt-Slug existiert nicht oder das Projekt ist noch nicht veröffentlicht.',
@@ -636,6 +649,8 @@ export const SITE_COPY: Record<AppLocale, SiteCopy> = {
       coverImageUrlLabel: 'Cover-Bild-URL',
       tagsLabel: 'Tags (kommagetrennt)',
       tagsPlaceholder: 'Angular, TypeScript, SSR',
+      projectUrlLabel: 'Live-Website-URL',
+      projectUrlPlaceholder: 'https://example.com',
       cancel: 'Abbrechen',
       publishImmediately: 'Sofort veröffentlichen',
       titleRequired: 'Titel ist erforderlich',
