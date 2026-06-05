@@ -33,7 +33,7 @@
 
       @if (project.coverImageUrl) {
       <div class="overflow-hidden rounded-2xl border border-[#143c1a] bg-[#07120a]">
-        <img [src]="project.coverImageUrl" [alt]="project.title" class="h-80 w-full object-cover" />
+        <img [src]="project.coverImageUrl" [alt]="project.title" class="block w-full h-auto" />
       </div>
       } @if (project.tags.length > 0) {
       <section class="flex flex-wrap gap-2">
