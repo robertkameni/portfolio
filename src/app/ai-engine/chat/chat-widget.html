@@ -5,14 +5,14 @@
     (click)="toggleChat()"
     [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
     [attr.aria-expanded]="chatStore.isOpen()"
-    class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+    class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black size-10 shrink-0 p-0 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
   >
     @if (chatStore.isOpen()) {
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
     </svg>
     } @else {
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
