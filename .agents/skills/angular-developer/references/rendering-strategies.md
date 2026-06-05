@@ -30,9 +30,18 @@ Content is rendered on the server for the **initial request**. Subsequent naviga
 
 Hydration is the process of making server-rendered HTML interactive in the browser.
 
-- **Full Hydration**: The entire app becomes interactive at once.
-- **Incremental Hydration**: (Advanced) Parts become interactive as needed using `@defer` blocks.
+- **Incremental Hydration** (default in Angular 22): Enabled automatically by `provideClientHydration()`. `@defer` blocks hydrate as they become relevant.
 - **Event Replay**: Captures and replays user events that happened before hydration finished.
+
+Opt out of incremental hydration:
+
+```ts
+import { provideClientHydration, withNoIncrementalHydration } from '@angular/platform-browser';
+
+provideClientHydration(withNoIncrementalHydration(), withEventReplay());
+```
+
+`httpResource` data prefetched on the server is replayed via HTTP transfer state on the client.
 
 ## Decision Matrix
 

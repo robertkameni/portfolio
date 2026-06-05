@@ -1,5 +1,7 @@
 # Angular Signals Overview
 
+> **Angular 22:** Pair signals with the stable Resource API (`httpResource`) for async data and `debounced()` for delayed updates. See [angular-22.md](angular-22.md).
+
 Signals are the foundation of reactivity in modern Angular applications. A **signal** is a wrapper around a value that notifies interested consumers when that value changes.
 
 ## Writable Signals (`signal`)
@@ -92,3 +94,16 @@ effect(async () => {
   console.log(currentTheme);
 });
 ```
+
+## Debounced signals (v22)
+
+Signals have no built-in timing. Use `debounced()` when a value should settle before consumers react:
+
+```ts
+import { debounced, signal } from '@angular/core';
+
+const query = signal('');
+const debouncedQuery = debounced(query, 300);
+```
+
+For form fields, prefer `debounce()` inside Signal Forms schemas; use `debounced()` for general signal/resource chains.

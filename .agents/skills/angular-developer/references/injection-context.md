@@ -1,5 +1,7 @@
 # Injection Context
 
+> **Angular 22:** `injectAsync()` requires injection context for lazy service loading. See [angular-22.md](angular-22.md).
+
 The `inject()` function can only be used when code is executing within an **injection context**.
 
 ## Where is an Injection Context Available?

@@ -1,5 +1,7 @@
 # Show Routes with Outlets
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 The `RouterOutlet` directive is a placeholder where Angular renders the component for the current URL.
 
 ## Basic Usage

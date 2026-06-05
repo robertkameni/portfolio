@@ -2,7 +2,7 @@
 
 ## CONTEXT RULE
 
-This is a portfolio-grade Angular + AnalogJS application.
+This is a portfolio-grade Angular 22 + AnalogJS application.
 
 It is:
 - single-instance
@@ -11,6 +11,8 @@ It is:
 - not infrastructure-critical
 
 Only evaluate actual runtime behavior.
+
+For Angular API or pattern claims in the analysis, verify with the **Angular CLI MCP server** (`search_documentation`, `get_best_practices`) — do not rely on memory alone.
 
 ---
 

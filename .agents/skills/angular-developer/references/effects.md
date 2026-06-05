@@ -1,5 +1,7 @@
 # Side Effects with `effect` and `afterRenderEffect`
 
+> **Angular 22:** OnPush is the default change detection strategy. See [angular-22.md](angular-22.md).
+
 In Angular, an **effect** is an operation that runs whenever one or more signal values it tracks change.
 
 ## When to use `effect`

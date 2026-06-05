@@ -13,7 +13,7 @@
 
 ## Summary
 
-Technical Lead focused on scalable Angular applications (Signals, NgRx Signal Store, RxJS), integration with Java 17 / Spring Boot APIs, automated testing (Jest, Cypress), performance and architecture, and Scrum delivery in cross-functional teams.
+Technical Lead focused on scalable Angular 22 applications (Signals, stable Resource API, Signal Forms, NgRx Signal Store, RxJS), integration with Java 17 / Spring Boot APIs, automated testing (Jest, Cypress), performance and architecture, and Scrum delivery in cross-functional teams.
 
 ## URLs
 

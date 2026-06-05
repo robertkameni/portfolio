@@ -1,4 +1,4 @@
-import { inject, Injectable, OnDestroy, PLATFORM_ID, signal } from '@angular/core';
+import { inject, OnDestroy, PLATFORM_ID, Service, signal } from '@angular/core';
 import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
 import { AnalyticsService } from './analytics.service';
@@ -17,9 +17,7 @@ type RealtimeTokenResponse = {
   expiresInMs: number;
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
   private readonly chatStore = inject(ChatStore);

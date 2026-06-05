@@ -1,5 +1,7 @@
 # Hierarchical Injectors
 
+> **Angular 22:** Route-scoped providers can be auto-destroyed with `withExperimentalAutoCleanupInjectors()`. See [define-routes.md](define-routes.md).
+
 Angular's dependency injection system is hierarchical, meaning services can be scoped to different levels of the application.
 
 ## Types of Injector Hierarchies

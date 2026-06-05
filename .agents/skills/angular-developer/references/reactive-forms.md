@@ -1,5 +1,7 @@
 # Reactive Forms
 
+> **Angular 22:** Prefer **Signal Forms** for new code (stable in v22). Use reactive forms for existing code or gradual migration via `compatForm` / `SignalFormControl` from `@angular/forms/signals/compat`. See [signal-forms.md](signal-forms.md) and [angular-22.md](angular-22.md).
+
 Reactive forms provide a model-driven approach to handling form inputs. They are built around observable streams and provide synchronous access to the data model, making them more scalable and testable than template-driven forms.
 
 ## Core Classes

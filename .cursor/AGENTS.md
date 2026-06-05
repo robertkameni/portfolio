@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## CONTEXT BOUNDARY:
-This project is a personal portfolio built with Angular + AnalogJS on Vercel.
+This project is a personal portfolio built with Angular 22 + AnalogJS on Vercel.
 It is SINGLE-INSTANCE, not a distributed system.
 
 All backend features (SSE, analytics, AI, ingestion) are:
@@ -103,16 +103,38 @@ Rules:
 
 ---
 
+## ANGULAR MCP FACT-CHECK (MANDATORY)
+
+The official **Angular CLI MCP server** is enabled in this workspace (`.cursor/mcp.json`, Cursor id: `user-angular-cli`).
+
+Before answering Angular questions or writing/changing Angular code:
+
+1. `list_projects` — workspace path + `frameworkVersion`
+2. `get_best_practices` — with `workspacePath` from `angular.json`
+3. `search_documentation` — verify APIs/deprecations (`version` from step 1)
+4. `find_examples` — modern patterns when implementing
+
+Repo docs (`.agents/skills/angular-developer/references/`) orient you; **MCP output is the source of truth**. Do not state Angular API facts from memory without checking.
+
+Full workflow: `.agents/skills/angular-developer/references/mcp.md`
+
+---
+
 ## TECH POLICY (STRICT)
 
 Always use the latest stable versions and best practices.
 
-Angular:
+Angular 22:
 
 * Standalone components only
 * Signals over RxJS where appropriate
+* Stable Resource API (`httpResource`, `resource`) and Signal Forms for new code
+* `@Service()` for new services; `injectAsync` for lazy-loaded dependencies
+* OnPush is the default change detection strategy; use `Eager` only when legacy full-tree checks are required
+* HttpClient uses FetchBackend by default (`withFetch()` deprecated)
+* Incremental hydration is on by default with `provideClientHydration()`
 * No NgModules
-* Modern Angular APIs only
+* See `.agents/skills/angular-developer/references/angular-22.md` for the full v22 feature list
 
 AnalogJS:
 

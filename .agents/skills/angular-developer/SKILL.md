@@ -4,12 +4,25 @@ description: Generates Angular code and provides architectural guidance. Trigger
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
-  version: '1.0'
+  version: '1.1'
 ---
 
 # Angular Developer Guidelines
 
-1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
+**Target version:** Angular 22 (this repo). Read [angular-22.md](references/angular-22.md) for stable v22 APIs before choosing patterns.
+
+## Angular MCP fact-checking (MANDATORY)
+
+This repo has the **official Angular CLI MCP server** enabled in Cursor (`.cursor/mcp.json`). **Always use it to fact-check** Angular APIs, syntax, deprecations, and patterns before answering or writing code.
+
+1. Call **`list_projects`** to get `frameworkVersion` and workspace `path` (`angular.json`).
+2. Call **`get_best_practices`** with that `workspacePath` before creating or modifying Angular code.
+3. Call **`search_documentation`** (with `version`) to verify concepts and APIs. Prefer this over training data.
+4. Call **`find_examples`** (with `workspacePath`) for modern implementation patterns.
+
+Do not rely on memory alone for Angular specifics. See [mcp.md](references/mcp.md).
+
+1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. Use `list_projects` first. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
 
 2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.
 
@@ -20,7 +33,10 @@ metadata:
 If no guidelines are provided by the user, here are same default rules to follow when creating a new Angular project:
 
 1. Use the latest stable version of Angular unless the user specifies otherwise.
-2. Use Signals Forms for form management in new projects (available in Angular v21 and newer) [Find out more](references/signal-forms.md).
+2. Use Signal Forms for form management in new projects (stable in Angular v22) [Find out more](references/signal-forms.md).
+3. Prefer `@Service()` over `@Injectable({ providedIn: 'root' })` for new services (v22). Use `injectAsync` for lazy-loaded services.
+4. Prefer `httpResource` / `resource` for async data (stable in v22). See [resource.md](references/resource.md).
+5. New components default to `OnPush` change detection in v22; use `ChangeDetectionStrategy.Eager` only when legacy full-tree checks are required.
 
 **Execution Rules for `ng new`:**
 When asked to create a new Angular project, you must determine the correct execution command by following these strict steps:
@@ -65,7 +81,7 @@ When managing state and data reactivity, use Angular Signals and consult the fol
 
 In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:
 
-- if the application is using v21 or newer and this is a new form, **prefer signal forms**.
+- if the application is using v22 (or v21+) and this is a new form, **prefer Signal Forms** (stable in v22).
   -For older applications or when working with existing forms, use the appropriate form type that matches the applications current form strategy.
 
 - **Signal Forms**: Use signals for form state management. Read [signal-forms.md](references/signal-forms.md)
@@ -77,7 +93,7 @@ In most cases for new apps, **prefer signal forms**. When making a forms decisio
 When implementing dependency injection in Angular, follow these guidelines:
 
 - **Fundamentals**: Overview of Dependency Injection, services, and the `inject()` function. Read [di-fundamentals.md](references/di-fundamentals.md)
-- **Creating and Using Services**: Creating services, the `providedIn: 'root'` option, and injecting into components or other services. Read [creating-services.md](references/creating-services.md)
+- **Creating and Using Services**: `@Service()`, `injectAsync`, and injecting into components or other services. Read [creating-services.md](references/creating-services.md)
 - **Defining Dependency Providers**: Automatic vs manual provision, `InjectionToken`, `useClass`, `useValue`, `useFactory`, and scopes. Read [defining-providers.md](references/defining-providers.md)
 - **Injection Context**: Where `inject()` is allowed, `runInInjectionContext`, and `assertInInjectionContext`. Read [injection-context.md](references/injection-context.md)
 - **Hierarchical Injectors**: The `EnvironmentInjector` vs `ElementInjector`, resolution rules, modifiers (`optional`, `skipSelf`), and `providers` vs `viewProviders`. Read [hierarchical-injectors.md](references/hierarchical-injectors.md)
@@ -127,4 +143,5 @@ When working with Angular tooling, consult the following references:
 
 - **Angular CLI**: Creating applications, generating code (components, routes, services), serving, and building. Read [cli.md](references/cli.md)
 - **Code Modernization**: Automatically refactoring to modern standards using migrations. Read [migrations.md](references/migrations.md)
+- **Angular 22 Features**: OnPush default, stable Resource API, Signal Forms, HttpClient FetchBackend, `isActive`, `debounced`. Read [angular-22.md](references/angular-22.md)
 - **Angular MCP Server**: Available tools, configuration, and experimental features. Read [mcp.md](references/mcp.md)

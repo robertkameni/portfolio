@@ -1,5 +1,7 @@
 # Defining Dependency Providers
 
+> **Angular 22:** Prefer `@Service()` for root singletons. See [creating-services.md](creating-services.md) and [angular-22.md](angular-22.md).
+
 Angular offers automatic and manual ways to provide dependencies to its Dependency Injection (DI) system.
 
 ## Automatic Provision

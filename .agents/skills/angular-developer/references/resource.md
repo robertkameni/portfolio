@@ -1,5 +1,7 @@
 # Async Reactivity with `resource`
 
+> **Angular 22:** `resource`, `rxResource`, and `httpResource` are **stable** and recommended for production. See [angular-22.md](angular-22.md).
+
 A `Resource` incorporates asynchronous data fetching into Angular's signal-based reactivity. It executes an async loader function whenever its dependencies change, exposing the status and result as synchronous signals.
 
 ## Basic Usage
@@ -72,3 +74,41 @@ this.userResource.value.set({name: 'Optimistic Update'});
 ## Reactive Data Fetching with `httpResource`
 
 If you are using Angular's `HttpClient`, prefer using `httpResource`. It is a specialized wrapper that leverages the Angular HTTP stack (including interceptors) while providing the same signal-based resource API.
+
+```ts
+import { httpResource } from '@angular/common/http';
+import { Component, signal } from '@angular/core';
+
+@Component({...})
+export class FlightSearch {
+  filter = signal({ from: 'Hamburg', to: 'Graz' });
+
+  flightsResource = httpResource<Flight[]>(
+    () => ({
+      url: '/api/flight',
+      params: { from: this.filter().from, to: this.filter().to },
+    }),
+    { defaultValue: [] },
+  );
+
+  // Skip request until filter is complete — return undefined
+  // flightsResource = httpResource(() => !this.filter().from ? undefined : { url: '...' });
+}
+```
+
+Race conditions are handled automatically (equivalent to RxJS `switchMap`). On SSR, `httpResource` participates in HTTP transfer state to avoid duplicate client requests.
+
+## Composing resources with snapshots (21.2+)
+
+Use `input.snapshot`, `linkedSignal`, and `resourceFromSnapshots` to derive a new resource (filter results, keep previous value while reloading) without changing the original loader.
+
+## Debouncing resource values (v22)
+
+Use `debounced(signalOrResource, ms)` when a signal or resource value should update after a delay:
+
+```ts
+import { debounced, signal } from '@angular/core';
+
+const filter = signal('');
+const debouncedFilter = debounced(filter, 300);
+```

@@ -1,5 +1,7 @@
 # Router Lifecycle and Events
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Angular Router emits events through the `Router.events` observable, allowing you to track the navigation lifecycle from start to finish.
 
 ## Common Router Events (Chronological)

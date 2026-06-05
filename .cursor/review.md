@@ -1,4 +1,6 @@
-/review {{SCOPE}} with strict focus on runtime correctness in a portfolio-grade Angular + AnalogJS application.
+/review {{SCOPE}} with strict focus on runtime correctness in a portfolio-grade Angular 22 + AnalogJS application.
+
+For Angular API or best-practice feedback, verify claims with the **Angular CLI MCP server** (`search_documentation`, `get_best_practices`) before flagging issues.
 
 ## CONTEXT (MANDATORY INTERPRETATION RULE)
 

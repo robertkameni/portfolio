@@ -1,5 +1,7 @@
 # Component Styling
 
+> **Angular 22:** HTML comments in element opening tags are supported in templates. See [components.md](components.md).
+
 Angular components can define styles that apply specifically to their template, enabling encapsulation and modularity.
 
 ## Defining Styles

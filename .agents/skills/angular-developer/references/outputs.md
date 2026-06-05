@@ -1,5 +1,7 @@
 # Outputs (Custom Events)
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Outputs allow a child component to emit custom events that a parent component can listen to. Angular recommends using the new `output()` function for modern applications.
 
 ## Function-based outputs

@@ -1,5 +1,7 @@
 # Testing with the RouterTestingHarness
 
+> **Angular 22:** Test `isActive()` signals alongside `RouterLinkActive` where applicable. See [angular-22.md](angular-22.md).
+
 When testing components that involve routing, it is crucial **not to mock the Router or related services**. Instead, use the `RouterTestingHarness`, which provides a robust and reliable way to test routing logic in an environment that closely mirrors a real application.
 
 Using the harness ensures you are testing the actual router configuration, guards, and resolvers, leading to more meaningful tests.

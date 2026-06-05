@@ -1,5 +1,7 @@
 # Component Host Elements
 
+> **Angular 22:** Prefer `isActive()` over manual route matching for active link classes. See [navigate-to-routes.md](navigate-to-routes.md).
+
 The **host element** is the DOM element that matches a component's selector. The component's template renders inside this element.
 
 ## Binding to the Host Element

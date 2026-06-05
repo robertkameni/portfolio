@@ -1,5 +1,7 @@
 # Using Tailwind CSS with Angular
 
+> **Angular 22:** This project uses Tailwind v4 with Angular 22. See [angular-22.md](angular-22.md).
+
 Tailwind CSS is a utility-first CSS framework that integrates seamlessly with Angular.
 
 **CRITICAL AGENT GUIDANCE: ALWAYS focus on Tailwind CSS v4 practices. DO NOT revert to old Tailwind v3 patterns (like creating `tailwind.config.js` with `@tailwind` directives) as this will break the application build. Modern Angular projects use Tailwind v4.**

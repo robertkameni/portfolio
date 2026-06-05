@@ -1,6 +1,27 @@
 # Navigate to Routes
 
+> **Angular 22:** Use `isActive()` for reactive active-route signals. See [angular-22.md](angular-22.md).
+
 Angular provides both declarative and programmatic ways to navigate between routes.
+
+## Active route detection (`isActive`, v22)
+
+```ts
+import { Component, inject } from '@angular/core';
+import { isActive, Router } from '@angular/router';
+
+@Component({...})
+export class Nav {
+  private readonly router = inject(Router);
+
+  protected readonly dashboardActive = isActive('/dashboard', this.router);
+  protected readonly settingsActive = isActive('/settings', this.router, { paths: 'exact' });
+}
+```
+
+```html
+<a routerLink="/dashboard" [class.active]="dashboardActive()">Dashboard</a>
+```
 
 ## Declarative Navigation (`RouterLink`)
 

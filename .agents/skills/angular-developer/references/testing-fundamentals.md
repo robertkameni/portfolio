@@ -1,5 +1,7 @@
 # Testing Fundamentals
 
+> **Angular 22:** This project targets v22 (Vitest). See [angular-22.md](angular-22.md).
+
 This guide covers the fundamental principles and practices for writing unit tests in this repository, which uses Vitest as the test runner.
 
 ## Core Philosophy: Zoneless & Async-First

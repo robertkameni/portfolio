@@ -1,4 +1,4 @@
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { inject, PLATFORM_ID, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -24,9 +24,7 @@ type AnalyzeVisitorOutcome = { result: 'skipped'; reason: string } | { result: '
 
 type VisitorIntelPollData = { ready: false } | { ready: true; profileData: VisitorProfileAnalysis; updatedAt: string };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AnalyticsService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);

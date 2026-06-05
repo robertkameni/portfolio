@@ -1,5 +1,7 @@
 # End-to-End (E2E) Testing
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 This project uses [Cypress](https://www.cypress.io/) for end-to-end (E2E) testing, which simulates real user interactions in a browser. The E2E tests are located primarily within the `devtools/` package.
 
 ## Running E2E Tests

@@ -1,5 +1,7 @@
 # Angular Aria
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Angular Aria (`@angular/aria`) is a collection of headless, accessible directives that implement common WAI-ARIA patterns. These directives handle keyboard interactions, ARIA attributes, focus management, and screen reader support.
 
 **As an AI Agent, your role is to provide the HTML structure and CSS styling**, while the directives handle the complex accessibility logic.

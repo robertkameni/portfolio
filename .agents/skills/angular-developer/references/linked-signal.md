@@ -1,5 +1,7 @@
 # Dependent State with `linkedSignal`
 
+> **Angular 22:** See [angular-22.md](angular-22.md). Use with resource `snapshot` for resource composition.
+
 The `linkedSignal` function lets you create writable state that is intrinsically linked to some other state. It is perfect for state that needs a default value derived from an input or another signal, but can still be independently modified by the user.
 
 If the source state changes, the `linkedSignal` resets to a new computed value.
@@ -57,3 +59,7 @@ export class ShippingMethodPicker {
 - Use `computed`: When state is **strictly** derived from other state and should never be manually updated.
 - Use `linkedSignal`: When state is derived from other state, but the user **must** be able to override or manually update it.
 - **Never** use `effect` to sync one piece of state to another. That is an anti-pattern. Use `computed` or `linkedSignal` instead.
+
+### Resource snapshots (21.2+)
+
+Combine `linkedSignal` with a resource's `snapshot` signal and `resourceFromSnapshots()` to derive a new `Resource` (filter HTTP results, preserve the last value while reloading). See [resource.md](resource.md) and [angular-22.md](angular-22.md).

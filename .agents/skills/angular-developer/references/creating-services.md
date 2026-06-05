@@ -1,5 +1,7 @@
 # Creating and Using Services
 
+> **Angular 22:** Use `@Service()` and `injectAsync()` for new services. See [angular-22.md](angular-22.md).
+
 Services in Angular are reusable pieces of code that handle data fetching, business logic, or state management that multiple components or other services need to access.
 
 ## Creating a Service
@@ -87,6 +89,29 @@ export class BasicDataStore {
   }
 }
 ```
+
+## Lazy injection with `injectAsync` (v22)
+
+Load a service only when first needed — useful for code-split heavy dependencies:
+
+```ts
+import { Component, injectAsync, onIdle } from '@angular/core';
+
+@Component({...})
+export class CheckinPage {
+  private readonly upgradeService = injectAsync(
+    () => import('./upgrade-service').then((m) => m.UpgradeService),
+    { prefetch: onIdle }, // optional: warm the chunk when the browser is idle
+  );
+
+  protected async upgrade(): Promise<void> {
+    const svc = await this.upgradeService();
+    svc.upgrade(this.ticketId());
+  }
+}
+```
+
+The lazy-loaded service must be auto-provided (`@Service()` or `providedIn: 'root'`).
 
 ## Advanced Service Patterns
 

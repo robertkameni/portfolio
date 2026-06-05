@@ -1,13 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type { Project } from '../shared/types/project.types';
 import type { ApiAck, ApiSuccess } from '../shared/types/api.types';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AdminProjectsService {
   private readonly http = inject(HttpClient);
 

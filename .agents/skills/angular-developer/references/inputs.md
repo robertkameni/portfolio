@@ -1,5 +1,7 @@
 # Inputs
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Inputs allow data to flow from a parent component to a child component. Angular recommends using the signal-based `input` API for modern applications.
 
 ## Signal-based Inputs

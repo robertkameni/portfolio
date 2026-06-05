@@ -1,5 +1,7 @@
 # Angular Animations
 
+> **Angular 22:** Prefer native CSS `animate.enter` / `animate.leave` (v20.2+). See [angular-22.md](angular-22.md).
+
 When animating elements in Angular, **first analyze the project's Angular version** in `package.json`.
 For modern applications (**Angular v20.2 and above**), prefer using native CSS with `animate.enter` and `animate.leave`. For older applications, you may need to use the deprecated `@angular/animations` package.
 

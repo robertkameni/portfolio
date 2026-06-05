@@ -12,6 +12,8 @@ Backend exists only for:
 
 Do NOT treat this as a backend system.
 
+For steps that change Angular code or APIs, plan against **`get_best_practices`** and **`find_examples`** from the Angular CLI MCP server (`user-angular-cli`), not assumptions from memory.
+
 ---
 
 ## HARD RULES (MANDATORY)

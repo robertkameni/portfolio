@@ -1,5 +1,7 @@
 # Route Guards
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Route guards control whether a user can navigate to or leave a route.
 
 ## Types of Guards

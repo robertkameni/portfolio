@@ -1,5 +1,7 @@
 # Components
 
+> **Angular 22:** `OnPush` is the default change detection strategy. Use `changeDetection: ChangeDetectionStrategy.Eager` only to preserve legacy full-tree checks. See [angular-22.md](angular-22.md).
+
 Angular components are the fundamental building blocks of an application. Each component consists of a TypeScript class with behaviors, an HTML template, and a CSS selector.
 
 ## Component Definition
@@ -92,21 +94,34 @@ The `@for` block iterates over collections. The `track` expression is **required
 
 ### Switching Content (`@switch`)
 
-The `@switch` block renders content based on a value. It uses strict equality (`===`) and has **no fallthrough**.
+The `@switch` block renders content based on a value. It uses strict equality (`===`).
+
+**Fall-through** (21.1+): Multiple `@case` labels can share one block:
 
 ```html
-@switch (status()) { @case ('loading') { <app-spinner /> } @case ('error') { <app-error-msg /> }
-@case ('success') { <app-data-grid /> } @default {
-<p>Unknown status</p>
-} }
+@switch (state) {
+  @case ('a')
+  @case ('b') { <p>A or B</p> }
+  @case ('c') { <p>C</p> }
+  @default { <p>Other</p> }
+}
 ```
 
-**Exhaustive Type Checking**: Use `@default never;` to ensure all cases of a union type are handled.
+**Exhaustive type checking**: Use `@default never;` on the switched union, or `@default never(expr);` when switching on a property of a discriminated union:
 
 ```html
-@switch (state) { @case ('on') { ... } @case ('off') { ... } @default never; // Errors if a new
-state like 'standby' is added }
+@switch (state) { @case ('on') { ... } @case ('off') { ... } @default never; }
+@switch (state.mode) { @case ('show') { ... } @case ('hide') {} @default never(state); }
 ```
+
+### Template expressions (21.1–22)
+
+- Spread/rest: `{ ...classes, active: on() }`, `[...a, ...b]`, `fn(...args())`
+- Arrow functions with implicit return in event bindings
+- `instanceof` in `@if` / expressions
+- `?.` follows JavaScript semantics (`undefined` when chain breaks); `$null(...)` for legacy behavior
+- Truthiness in `@if` narrows types for the block body
+- `//` and `/* */` comments inside element opening tags
 
 ## Core Concepts
 

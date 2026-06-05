@@ -2,9 +2,9 @@
 
 **Live demo:** [https://robert-kameni-personal-portfolio.vercel.app/](https://robert-kameni-personal-portfolio.vercel.app/)
 
-An **Angular 21 + AnalogJS-based portfolio** demonstrating modern frontend architecture, lightweight server-side capabilities, and optional AI-driven UI personalization.
+An **Angular 22 + AnalogJS-based portfolio** demonstrating modern frontend architecture, lightweight server-side capabilities, and optional AI-driven UI personalization.
 
-The project showcases how **Angular (Signals, SSR, standalone components)** combined with **AnalogJS server routes (Nitro runtime)** can deliver a fast, reactive, and content-adaptive user experience without requiring a separate backend system.
+The project showcases how **Angular 22 (Signals, stable Resource API, Signal Forms, SSR, standalone components)** combined with **AnalogJS server routes (Nitro runtime)** can deliver a fast, reactive, and content-adaptive user experience without requiring a separate backend system.
 
 ---
 
@@ -14,7 +14,7 @@ This is a **frontend-first engineering showcase** with a minimal, embedded backe
 
 It demonstrates practical use of:
 
-* Angular 21 (Signals, SSR, standalone architecture)
+* Angular 22 (Signals, stable Resource API, Signal Forms, OnPush-by-default, SSR, standalone architecture)
 * AnalogJS (server-side rendering + file-based server routes)
 * Nitro runtime (lightweight API layer inside Angular app)
 * PostgreSQL (via Prisma ORM)
@@ -92,8 +92,10 @@ sequenceDiagram
 
 ### Frontend
 
-* Angular 21
-* Signals + SSR
+* Angular 22
+* Signals + stable Resource API (`httpResource`) + Signal Forms
+* SSR with incremental hydration (default in v22)
+* Angular CLI MCP server (`.cursor/mcp.json`) for agent fact-checking against [angular.dev](https://angular.dev)
 * Standalone components
 * RxJS (selective usage)
 * Tailwind CSS

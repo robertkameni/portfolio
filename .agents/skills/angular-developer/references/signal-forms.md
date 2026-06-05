@@ -1,6 +1,8 @@
 # Signal Forms
 
-Signal Forms are the recommended approach for handling forms in modern Angular applications (v21+). They provide a reactive, type-safe, and model-driven way to manage form state using Angular Signals.
+> **Angular 22:** Signal Forms are **stable** and the recommended approach for new forms. See [angular-22.md](angular-22.md).
+
+Signal Forms provide a reactive, type-safe, and model-driven way to manage form state using Angular Signals.
 
 **CRITICAL**: You MUST use Angular's new Signal Forms API for all form-related functionality. Do NOT use null as a value or type of any fields.
 
@@ -12,6 +14,7 @@ You can import the following from `@angular/forms/signals`:
 import {
   form,
   FormField,
+  FormRoot,
   submit,
   // Rules for field state
   disabled,
@@ -138,20 +141,28 @@ Similarly in a template:
 
 ## Disabled / Readonly / Hidden
 
-Control field status using rules in the schema.
+Control field status using rules in the schema. In Angular 22+, pass conditions via the `when` property:
 
 ```ts
 import {disabled, readonly, hidden} from '@angular/forms/signals';
 
 userForm = form(this.userModel, (schemaPath) => {
-  // Conditionally disabled
-  disabled(schemaPath.password, ({valueOf}) => !valueOf(schemaPath.createAccount));
+  disabled(schemaPath.password, {
+    when: ({valueOf}) => !valueOf(schemaPath.createAccount),
+  });
 
-  // Conditionally hidden (does NOT remove from model, just marks as hidden)
-  hidden(schemaPath.shippingAddress, ({valueOf}) => valueOf(schemaPath.sameAsBilling));
+  hidden(schemaPath.shippingAddress, {
+    when: ({valueOf}) => valueOf(schemaPath.sameAsBilling),
+  });
 
-  // Readonly
-  readonly(schemaPath.username);
+  readonly(schemaPath.username, {
+    when: () => true,
+  });
+
+  // Return a string from `when` to surface a reason when the rule blocks the field
+  disabled(schemaPath.delay, {
+    when: ({valueOf}) => (valueOf(schemaPath.delayed) ? false : 'not delayed'),
+  });
 });
 ```
 
@@ -192,10 +203,27 @@ Do NOT do this: `<input min="1" [formField]>` or `<input [value]="val" [formFiel
 <input [formField]="userForm.name" />
 ```
 
-## Reactive Forms
+## Reactive Forms interop
 
-**Do NOT import** `FormControl`, `FormGroup`, `FormArray`, or `FormBuilder` from `@angular/forms`. Signal Forms replace these concepts entirely.
-Signal forms does NOT have a builder.
+For gradual migration, use `compatForm` and `SignalFormControl` from `@angular/forms/signals/compat`. For greenfield forms in this repo, prefer pure Signal Forms.
+
+**Do NOT import** `FormControl`, `FormGroup`, `FormArray`, or `FormBuilder` for new Signal Form code. Signal Forms do not use a form builder.
+
+### CSS status classes (v22)
+
+```ts
+import { provideSignalFormsConfig } from '@angular/forms/signals';
+import { NG_STATUS_CLASSES } from '@angular/forms/signals/compat';
+
+// In app.config.ts — reuse legacy ng-* class names:
+provideSignalFormsConfig({ classes: NG_STATUS_CLASSES });
+```
+
+### Dynamic Zod / Valibot schemas
+
+```ts
+validateStandardSchema(path, () => (strict() ? StrictSchema : LooseSchema));
+```
 
 ## Accessing State
 
@@ -244,19 +272,44 @@ form.client.addresses.length  // No "()"
 
 ## Submitting
 
-Use the `submit()` function. It automatically marks all fields as touched before running the action.
+### Form-level submission (recommended in v22)
+
+Configure submission when creating the form and bind `FormRoot` on the `<form>` element:
+
+```ts
+import { FormRoot, form } from '@angular/forms/signals';
+
+@Component({ imports: [FormField, FormRoot] })
+export class FlightEdit {
+  flightForm = form(this.flight, flightSchema, {
+    submission: {
+      action: async (form) => this.save(form),
+      ignoreValidators: 'none', // 'none' | 'pending' | 'all'
+      onInvalid: (form) => this.reportValidationError(form),
+    },
+  });
+}
+```
+
+```html
+<form [formRoot]="flightForm">
+  <input [formField]="flightForm.from" />
+  <button>Save</button>
+</form>
+```
+
+### Imperative `submit()`
+
+Use `submit()` for secondary actions (e.g. "Request approval"). It marks fields touched before running the action.
 
 **CRITICAL**: The callback to `submit()` MUST be `async` and MUST return a Promise.
 
 ```ts
 import { submit } from '@angular/forms/signals';
 
-// CORRECT - async callback
 onSubmit() {
   submit(this.userForm, async () => {
-    // This only runs if the form is valid
     await this.apiService.save(this.userModel());
-    console.log('Saved!');
   });
 }
 

@@ -8,7 +8,7 @@ Respond ONLY to slash commands:
 Ignore any other input.
 
 CONTEXT BOUNDARY:
-This project is a personal portfolio built with Angular + AnalogJS on Vercel.
+This project is a personal portfolio built with Angular 22 + AnalogJS on Vercel.
 
 It is SINGLE-INSTANCE, not a distributed system.
 
@@ -65,6 +65,14 @@ Before output:
 - Assume latest stable versions and best practices.
 - Use modern, officially recommended patterns only.
 - If ambiguous, state assumption in one short line, then proceed.
+
+### Angular MCP (when scope touches Angular)
+
+Fact-check via the **Angular CLI MCP server** (`user-angular-cli`) before stating API behavior or recommending Angular patterns:
+
+`list_projects` → `get_best_practices` → `search_documentation` / `find_examples`
+
+Repo reference docs are secondary to MCP output. See `.agents/skills/angular-developer/references/mcp.md`.
 
 ---
 

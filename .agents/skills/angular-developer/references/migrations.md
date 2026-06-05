@@ -1,6 +1,26 @@
 # Automatic Migrations & Code Modernization
 
+> **Angular 22:** See [angular-22.md](angular-22.md) for what changed when upgrading (OnPush default, FetchBackend, incremental hydration, stable Resource API and Signal Forms).
+
 When tasked with refactoring or modernizing an existing codebase, always prefer using the official automated schematics available in `@angular/core` over manual text replacement.
+
+## Upgrading to Angular 22
+
+```bash
+ng update @angular/core@22 @angular/cli@22
+```
+
+`ng update` typically:
+
+- Sets `ChangeDetectionStrategy.Eager` on components that had no explicit strategy (preserves pre-v22 behavior)
+- Adds `withXhr()` to `provideHttpClient` when upload progress is used
+- Applies hydration / incremental hydration schematics where needed
+
+After upgrade:
+
+- Remove deprecated `withFetch()` from `provideHttpClient` (Fetch is the default backend)
+- Adopt stable `httpResource` / `resource` instead of experimental flags
+- Adopt Signal Forms for new forms; use compat layer for legacy reactive forms
 
 ## Discovering Migrations
 

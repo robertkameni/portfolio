@@ -1,5 +1,7 @@
 # Angular CLI Guide for Agents
 
+> **Angular 22:** This repo targets v22. Upgrade with `ng update @angular/core@22 @angular/cli@22`. See [angular-22.md](angular-22.md) and [migrations.md](migrations.md).
+
 The Angular CLI (`ng`) is the primary tool for managing an Angular workspace. Always prefer CLI commands over manual file creation or generic `npm` commands when modifying project structure or adding Angular-specific dependencies.
 
 ## 1. Managing Dependencies
@@ -15,7 +17,14 @@ ng add @angular/fire
 To update the application and its dependencies (which automatically runs code migrations):
 
 ```bash
-ng update @angular/core@<latest or specific version> @angular/cli<latest or specific version>
+ng update @angular/core@22 @angular/cli@22
+```
+
+For this project, TypeScript 6 and Node.js 20+ (Node 26 officially supported) are expected after the v22 upgrade.
+
+```bash
+# generic latest (other projects)
+ng update @angular/core@<latest> @angular/cli@<latest>
 ```
 
 ## 2. Generating Code (`ng generate` or `ng g`)

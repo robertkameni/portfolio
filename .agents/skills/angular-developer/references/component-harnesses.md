@@ -1,5 +1,7 @@
 # Testing with Component Harnesses
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Component harnesses are the standard, preferred way to interact with components in tests. They provide a robust, user-centric API that makes tests less brittle and easier to read by insulating them from changes to a component's internal DOM structure.
 
 ## Why Use Harnesses?

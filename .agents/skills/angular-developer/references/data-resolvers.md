@@ -1,5 +1,7 @@
 # Data Resolvers
 
+> **Angular 22:** For new async data loading, prefer stable `httpResource` where route resolvers are not required. See [resource.md](resource.md).
+
 Data resolvers fetch data before a route activates, ensuring components have the necessary data upon rendering.
 
 ## Creating a Resolver

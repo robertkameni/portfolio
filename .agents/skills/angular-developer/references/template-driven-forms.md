@@ -1,5 +1,7 @@
 # Template-Driven Forms
 
+> **Angular 22:** Prefer **Signal Forms** for new forms (stable in v22). Use template-driven forms only for simple legacy screens. See [signal-forms.md](signal-forms.md).
+
 Template-driven forms use two-way data binding (`[(ngModel)]`) to update the data model in the component as changes are made in the template and vice versa. They are ideal for simple forms and use directives in the HTML template to manage form state and validation.
 
 ## Core Directives

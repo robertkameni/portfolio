@@ -1,5 +1,7 @@
 # Route Transition Animations
 
+> **Angular 22:** This project targets v22. See [angular-22.md](angular-22.md).
+
 Angular Router supports the browser's **View Transitions API** for smooth visual transitions between routes.
 
 ## Enabling View Transitions

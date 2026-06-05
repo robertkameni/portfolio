@@ -55,7 +55,22 @@ Loader functions run within the **injection context** of the current route. This
 }
 ```
 
+## Deferred loading in templates (`@defer`)
+
+Use `@defer` to delay rendering (and, with incremental hydration in v22, interactivity) until a trigger fires:
+
+```html
+@defer (on idle(2000)) {
+  <heavy-widget />
+} @placeholder {
+  <div class="skeleton" />
+}
+```
+
+Angular 22 supports an optional timeout on `on idle(ms)` so blocks do not wait indefinitely.
+
 ## Recommendation
 
 - Use **Eager Loading** for the primary landing pages.
 - Use **Lazy Loading** for all other feature areas to keep the initial bundle small.
+- Use **`@defer`** for below-the-fold or interaction-gated UI (e.g. chat widgets).
