@@ -51,22 +51,32 @@ export default class ProjectOverviewPage {
   private setupRenderer(): Renderer {
     const renderer = new Renderer();
 
-    renderer.heading = ({ text, depth }) => {
+    renderer.heading = function ({ tokens, depth }) {
       const sizeMap = {
         1: 'font-size: clamp(1.25rem, 3vw, 1.5rem)',
         2: 'font-size: clamp(1rem, 2.5vw, 1.25rem)',
         3: 'font-size: clamp(0.875rem, 2vw, 1rem)',
       };
       const style = sizeMap[depth as 1 | 2 | 3] || 'font-size: clamp(0.875rem, 1.5vw, 1rem)';
+      const text = this.parser.parseInline(tokens);
       return `<h${depth} style="${style}" class="font-bold mt-6 mb-3 text-primary">${text}</h${depth}>`;
     };
 
-    renderer.paragraph = ({ text }) => `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
+    renderer.paragraph = function ({ tokens }) {
+      const text = this.parser.parseInline(tokens);
+      return `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
+    };
 
-    renderer.list = ({ items, ordered }) => {
+    renderer.list = function ({ items, ordered }) {
       const listClass = ordered ? 'list-decimal' : 'list-disc';
-      const html = items.map((item) => `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${item.text}</li>`).join('');
-      return `<${ordered ? 'ol' : 'ul'} class="${listClass} ml-4 mb-4">${html}</${ordered ? 'ol' : 'ul'}>`;
+      const tag = ordered ? 'ol' : 'ul';
+      const html = items
+        .map((item) => {
+          const text = this.parser.parseInline(item.tokens);
+          return `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${text}</li>`;
+        })
+        .join('');
+      return `<${tag} class="${listClass} ml-4 mb-4">${html}</${tag}>`;
     };
 
     renderer.image = ({ href, text, title }) => {
