@@ -83,7 +83,38 @@ export default class ProjectOverviewPage {
       return `<img src="${href}" alt="${text}" title="${title || ''}" style="max-width: clamp(100%, 90vw, 100%); height: auto;" class="rounded-lg my-6"/>`;
     };
 
-    renderer.strong = ({ text }) => `<strong class="font-semibold">${text}</strong>`;
+    renderer.strong = function ({ tokens }) {
+      const text = this.parser.parseInline(tokens);
+      return `<strong class="font-semibold">${text}</strong>`;
+    };
+
+    renderer.codespan = ({ text }) =>
+      `<code>${text}</code>`;
+
+    renderer.table = function (token) {
+      const headerCells = token.header
+        .map((cell) => {
+          const content = this.parser.parseInline(cell.tokens);
+          const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
+          return `<th${align}>${content}</th>`;
+        })
+        .join('');
+
+      const bodyRows = token.rows
+        .map((row) => {
+          const cells = row
+            .map((cell) => {
+              const content = this.parser.parseInline(cell.tokens);
+              const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
+              return `<td${align}>${content}</td>`;
+            })
+            .join('');
+          return `<tr>${cells}</tr>`;
+        })
+        .join('');
+
+      return `<div class="markdown-table-wrap"><table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+    };
 
     return renderer;
   }
@@ -96,7 +127,7 @@ export default class ProjectOverviewPage {
         .join('\n')
         .trim();
 
-      const html = marked.parse(cleaned, { renderer: this.renderer, async: false });
+      const html = marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true });
       return this.sanitizer.bypassSecurityTrustHtml(html as string);
     } catch (e) {
       console.error('Markdown parsing error:', e);

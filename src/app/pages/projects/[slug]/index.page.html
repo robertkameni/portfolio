@@ -46,7 +46,7 @@
       <section class="rounded-2xl border border-[#143c1a] bg-surface p-6 md:p-8 space-y-4">
         <h2 class="text-xl font-semibold text-white">{{ copy().projectDetail.overview }}</h2>
         @if (project.contentMarkdown) {
-        <div class="prose prose-invert max-w-none text-gray-300" [innerHTML]="renderedMarkdown(project.contentMarkdown)"></div>
+        <div class="project-markdown max-w-none text-gray-300" [innerHTML]="renderedMarkdown(project.contentMarkdown)"></div>
         } @else {
         <p class="text-gray-300 leading-7">{{ copy().projectDetail.emptyDescription }}</p>
         } @if (project.projectUrl) {
