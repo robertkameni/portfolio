@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { AdminMessagesService } from '../../../shared/services/admin-messages.service';
 import { LocaleService } from '../../../shared/services/locale.service';
@@ -15,6 +16,7 @@ export default class AdminDashboardComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly localeService = inject(LocaleService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly newMessagesCount = signal(0);
 
@@ -29,16 +31,19 @@ export default class AdminDashboardComponent implements OnInit {
   }
 
   private loadNewMessagesCount() {
-    this.adminMessagesService.getMessages().subscribe({
-      next: (response) => {
-        const messages = Array.isArray(response?.data) ? response.data : [];
-        const unreadCount = messages.filter((message) => message.status === 'UNREAD').length;
-        this.newMessagesCount.set(unreadCount);
-      },
-      error: (err) => {
-        console.error('Failed to load new messages count:', err);
-      },
-    });
+    this.adminMessagesService
+      .getMessages()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          const messages = Array.isArray(response?.data) ? response.data : [];
+          const unreadCount = messages.filter((message) => message.status === 'UNREAD').length;
+          this.newMessagesCount.set(unreadCount);
+        },
+        error: (err) => {
+          console.error('Failed to load new messages count:', err);
+        },
+      });
   }
 
   protected navigateHome() {

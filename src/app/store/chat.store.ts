@@ -40,7 +40,7 @@ export const ChatStore = signalStore(
       } else {
         messages.push({ role: 'assistant', content: token });
       }
-      patchState(store, { messages, isTyping: false });
+      patchState(store, { messages });
     },
     setTyping(isTyping: boolean) {
       patchState(store, { isTyping });

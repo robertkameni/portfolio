@@ -1,4 +1,4 @@
-import { inject, OnDestroy, PLATFORM_ID, Service, signal } from '@angular/core';
+import { computed, inject, OnDestroy, PLATFORM_ID, Service, signal } from '@angular/core';
 import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
 import { AnalyticsService } from './analytics.service';
@@ -17,6 +17,9 @@ type RealtimeTokenResponse = {
   expiresInMs: number;
 };
 
+const CHAT_STREAM_STALL_MS = 15_000;
+const MAX_SSE_RECONNECT_ATTEMPTS = 5;
+
 @Service()
 export class RealtimeService implements OnDestroy {
   private readonly visitorStore = inject(VisitorStore);
@@ -29,15 +32,22 @@ export class RealtimeService implements OnDestroy {
   private eventSource: EventSource | null = null;
   private currentChatStream: EventSource | null = null;
   private currentSessionId: string | null = null;
+  private reconnectAttempts = 0;
+  private reconnectTimeoutHandle: ReturnType<typeof setTimeout> | null = null;
 
   public readonly connectionStatus = signal<'connecting' | 'connected' | 'disconnected'>('disconnected');
+  public readonly isRealtimeActive = computed(() => this.connectionStatus() === 'connected');
 
   connect(clientSessionId: string): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    if (this.eventSource) return;
+    this.clearReconnectTimeout();
+
+    if (this.connectionStatus() === 'connecting' || this.connectionStatus() === 'connected') {
+      return;
+    }
 
     this.currentSessionId = clientSessionId;
     this.connectionStatus.set('connecting');
@@ -51,9 +61,34 @@ export class RealtimeService implements OnDestroy {
         this.connectEventStream(query);
       })
       .catch((error) => {
+        this.eventSource?.close();
+        this.eventSource = null;
         this.connectionStatus.set('disconnected');
         console.error('[RealtimeService] failed to connect:', error);
       });
+  }
+
+  private clearReconnectTimeout(): void {
+    if (!this.reconnectTimeoutHandle) return;
+
+    clearTimeout(this.reconnectTimeoutHandle);
+    this.reconnectTimeoutHandle = null;
+  }
+
+  private scheduleReconnect(): void {
+    if (this.reconnectAttempts >= MAX_SSE_RECONNECT_ATTEMPTS) {
+      return;
+    }
+
+    this.reconnectAttempts++;
+    const delayMs = Math.pow(2, this.reconnectAttempts) * 1000;
+    this.clearReconnectTimeout();
+
+    const sessionId = this.currentSessionId ?? this.analyticsService.getClientSessionId();
+    this.reconnectTimeoutHandle = setTimeout(() => {
+      this.reconnectTimeoutHandle = null;
+      this.connect(sessionId);
+    }, delayMs);
   }
 
   private async obtainRealtimeTokenWithRetry(clientSessionId: string, attempt = 0): Promise<RealtimeTokenResponse> {
@@ -130,12 +165,16 @@ export class RealtimeService implements OnDestroy {
     this.eventSource = new EventSource(`/api/realtime?${query}`);
 
     this.eventSource.onopen = () => {
+      this.reconnectAttempts = 0;
+      this.clearReconnectTimeout();
       this.connectionStatus.set('connected');
     };
 
     this.eventSource.onerror = () => {
       this.connectionStatus.set('disconnected');
       this.eventSource?.close();
+      this.eventSource = null;
+      this.scheduleReconnect();
     };
 
     this.eventSource.addEventListener('visitor_profile_updated', (event) => {
@@ -158,10 +197,9 @@ export class RealtimeService implements OnDestroy {
 
     const sessionIdForChat = this.currentSessionId ?? this.analyticsService.getClientSessionId();
 
-    // Format history for chat API (model role → assistant)
     const allMessages = this.chatStore.messages();
     const history = allMessages
-      .slice(0, allMessages.length - 1) // exclude the message currently being sent
+      .slice(0, allMessages.length - 1)
       .map((msg) => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }],
@@ -173,104 +211,131 @@ export class RealtimeService implements OnDestroy {
       sessionId: sessionIdForChat,
     };
 
-    this.chatStore.setTyping(true);
+    void this.streamChatMessage(requestBody);
+  }
 
-    fetch('/api/ai/chat/stream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-      cache: 'no-store',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        return response.body;
-      })
-      .then((body) => {
-        if (!body) {
-          this.chatStore.setTyping(false);
-          return;
-        }
+  private async streamChatMessage(requestBody: { message: string; history: unknown[]; sessionId: string }): Promise<void> {
+    const controller = new AbortController();
 
-        const reader = body.getReader();
-        const decoder = new TextDecoder();
-
-        const handleDataLine = (rawLine: string): boolean => {
-          const line = rawLine.replace(/\r$/, '').trim();
-          if (!line.startsWith('data: ')) {
-            return false;
-          }
-
-          const jsonStr = line.slice(6).trim();
-
-          try {
-            const data = JSON.parse(jsonStr);
-
-            if (data.done) {
-              return true;
-            }
-
-            if (data.error) {
-              this.chatStore.appendAssistantToken(`\n[Error: ${data.error}]`);
-              return true;
-            }
-
-            if (data.token) {
-              this.chatStore.appendAssistantToken(data.token);
-            }
-          } catch {
-            // ignore malformed chunk and continue reading stream
-          }
-
-          return false;
-        };
-
-        const processStream = async (): Promise<void> => {
-          let buffer = '';
-          let shouldStop = false;
-
-          try {
-            while (!shouldStop) {
-              const { done, value } = await reader.read();
-
-              if (done) {
-                buffer += decoder.decode();
-                break;
-              }
-
-              buffer += decoder.decode(value, { stream: true });
-              const lines = buffer.split('\n');
-              buffer = lines.pop() ?? '';
-
-              for (const rawLine of lines) {
-                if (handleDataLine(rawLine)) {
-                  shouldStop = true;
-                  break;
-                }
-              }
-            }
-
-            if (!shouldStop && buffer.replace(/\r$/, '').trim().length > 0) {
-              handleDataLine(buffer);
-            }
-          } finally {
-            this.chatStore.setTyping(false);
-            reader.releaseLock();
-          }
-        };
-
-        return processStream();
-      })
-      .catch((error) => {
-        console.error('[RealtimeService] chat stream error:', error);
-        this.chatStore.appendAssistantToken(`\n[Connection error: ${error.message}]`);
-        this.chatStore.setTyping(false);
+    try {
+      const response = await fetch('/api/ai/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        cache: 'no-store',
+        signal: controller.signal,
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const body = response.body;
+      if (!body) {
+        return;
+      }
+
+      const reader = body.getReader();
+      const decoder = new TextDecoder();
+      let stallTimer: ReturnType<typeof setTimeout> | null = null;
+
+      const clearStallTimer = (): void => {
+        if (!stallTimer) return;
+        clearTimeout(stallTimer);
+        stallTimer = null;
+      };
+
+      const armStallTimer = (): void => {
+        clearStallTimer();
+        stallTimer = setTimeout(() => controller.abort(), CHAT_STREAM_STALL_MS);
+      };
+
+      const handleDataLine = (rawLine: string): boolean => {
+        const line = rawLine.replace(/\r$/, '').trim();
+        if (!line.startsWith('data: ')) {
+          return false;
+        }
+
+        const jsonStr = line.slice(6).trim();
+
+        try {
+          const data = JSON.parse(jsonStr);
+
+          if (data.done) {
+            return true;
+          }
+
+          if (data.error) {
+            this.chatStore.appendAssistantToken(`\n[Error: ${data.error}]`);
+            return true;
+          }
+
+          if (data.token) {
+            this.chatStore.appendAssistantToken(data.token);
+          }
+        } catch {
+          // ignore malformed chunk and continue reading stream
+        }
+
+        return false;
+      };
+
+      try {
+        let buffer = '';
+        let shouldStop = false;
+
+        while (!shouldStop) {
+          armStallTimer();
+          const { done, value } = await reader.read();
+          clearStallTimer();
+
+          if (done) {
+            buffer += decoder.decode();
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const rawLine of lines) {
+            if (handleDataLine(rawLine)) {
+              shouldStop = true;
+              break;
+            }
+          }
+        }
+
+        if (!shouldStop && buffer.replace(/\r$/, '').trim().length > 0) {
+          handleDataLine(buffer);
+        }
+      } finally {
+        clearStallTimer();
+        reader.releaseLock();
+      }
+    } catch (error) {
+      if (this.isAbortError(error)) {
+        console.warn('[RealtimeService] chat stream aborted:', error);
+        this.chatStore.appendAssistantToken('\n[Stream timed out. Please try again.]');
+        return;
+      }
+
+      console.error('[RealtimeService] chat stream error:', error);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.chatStore.appendAssistantToken(`\n[Connection error: ${message}]`);
+    } finally {
+      this.chatStore.setTyping(false);
+    }
+  }
+
+  private isAbortError(error: unknown): boolean {
+    return error instanceof DOMException && error.name === 'AbortError';
   }
 
   disconnect(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+
+    this.clearReconnectTimeout();
 
     if (this.eventSource) {
       this.eventSource.close();

@@ -58,6 +58,8 @@ export class ChatWidgetComponent {
       event.preventDefault();
     }
 
+    if (this.chatStore.isTyping()) return;
+
     if (!this.newMessage().trim()) return;
 
     const message = this.newMessage();

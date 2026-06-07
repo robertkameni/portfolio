@@ -1,4 +1,4 @@
-import { inject, PLATFORM_ID } from '@angular/core';
+import { inject, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { patchState, signalStore, signalStoreFeature, type, withMethods, withState } from '@ngrx/signals';
@@ -19,19 +19,48 @@ const initialState: ProjectsState = {
   error: null,
 };
 
-function withProjectsLoad(url: string, browserOnly = false) {
+const PROJECTS_STATE_KEY = makeStateKey<ProjectListItem[]>('projects.list');
+
+function withProjectsLoad(url: string, browserOnly = false, useTransferState = false) {
   return signalStoreFeature(
     { state: type<ProjectsState>() },
-    withMethods((store, http = inject(HttpClient), platformId = inject(PLATFORM_ID)) => ({
+    withMethods((store, http = inject(HttpClient), platformId = inject(PLATFORM_ID), transferState = inject(TransferState)) => ({
       load: rxMethod<void>(
         pipe(
+          tap(() => {
+            if (browserOnly && !isPlatformBrowser(platformId)) {
+              return;
+            }
+
+            if (store.data() === null) {
+              patchState(store, { isLoading: true, error: null });
+            }
+          }),
           exhaustMap(() => {
-            if ((browserOnly && !isPlatformBrowser(platformId)) || store.data() !== null) {
+            if (browserOnly && !isPlatformBrowser(platformId)) {
               return EMPTY;
             }
-            patchState(store, { isLoading: true, error: null });
+
+            if (store.data() !== null) {
+              return EMPTY;
+            }
+
+            if (useTransferState && isPlatformBrowser(platformId)) {
+              const transferred = transferState.get(PROJECTS_STATE_KEY, null);
+              if (transferred) {
+                transferState.remove(PROJECTS_STATE_KEY);
+                patchState(store, { data: transferred, isLoading: false, error: null });
+                return EMPTY;
+              }
+            }
+
             return http.get<ApiSuccess<ProjectListItem[]>>(url).pipe(
-              tap((res) => patchState(store, { data: res.data, isLoading: false })),
+              tap((res) => {
+                if (useTransferState && !isPlatformBrowser(platformId)) {
+                  transferState.set(PROJECTS_STATE_KEY, res.data);
+                }
+                patchState(store, { data: res.data, isLoading: false, error: null });
+              }),
               catchError(() => {
                 patchState(store, { isLoading: false, error: 'Failed to load projects.' });
                 return EMPTY;
@@ -44,7 +73,7 @@ function withProjectsLoad(url: string, browserOnly = false) {
   );
 }
 
-export const ProjectsStore = signalStore({ providedIn: 'root' }, withState(initialState), withProjectsLoad('/api/projects'));
+export const ProjectsStore = signalStore({ providedIn: 'root' }, withState(initialState), withProjectsLoad('/api/projects', false, true));
 
 export const AdminProjectsStore = signalStore(
   { providedIn: 'root' },

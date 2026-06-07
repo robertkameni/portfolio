@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
-import { catchError, EMPTY, finalize, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY, finalize, Subject, switchMap, tap } from 'rxjs';
 import { type AdminMessage, type MessageStatus } from '../../../shared/types/admin-message';
 import { AdminMessagesService } from '../../../shared/services/admin-messages.service';
 import { Router } from '@angular/router';
@@ -18,6 +19,8 @@ export default class AdminMessagesComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
   private readonly localeService = inject(LocaleService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly loadTrigger = new Subject<void>();
 
   protected readonly messages = signal<AdminMessage[]>([]);
   protected readonly loading = signal(true);
@@ -34,47 +37,55 @@ export default class AdminMessagesComponent implements OnInit {
       this.loading.set(false);
       return;
     }
+
+    this.loadTrigger
+      .pipe(
+        tap(() => {
+          this.loading.set(true);
+          this.error.set(null);
+        }),
+        switchMap(() =>
+          this.adminMessagesService.getMessages().pipe(
+            tap((res) => {
+              const all = res.data;
+              if (!Array.isArray(all)) {
+                throw new Error('Invalid response');
+              }
+
+              this.counts.set({
+                all: all.length,
+                unread: all.filter((m) => m.status === 'UNREAD').length,
+              });
+
+              let list = all;
+
+              if (this.filter === 'UNREAD') {
+                list = all.filter((m) => m.status === 'UNREAD');
+              } else if (this.filter === 'ARCHIVED') {
+                list = all.filter((m) => m.status === 'ARCHIVED');
+              }
+
+              this.messages.set(list);
+            }),
+            catchError((err) => {
+              console.error('Failed to load messages:', err);
+              this.error.set(err instanceof Error && err.message === 'Invalid response' ? 'Invalid response from server.' : 'Failed to load messages.');
+              return EMPTY;
+            }),
+            finalize(() => {
+              this.loading.set(false);
+            }),
+          ),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+
     this.loadMessages();
   }
 
   loadMessages() {
-    this.loading.set(true);
-    this.error.set(null);
-
-    this.adminMessagesService
-      .getMessages()
-      .pipe(
-        tap((res) => {
-          const all = res.data;
-          if (!Array.isArray(all)) {
-            throw new Error('Invalid response');
-          }
-
-          this.counts.set({
-            all: all.length,
-            unread: all.filter((m) => m.status === 'UNREAD').length,
-          });
-
-          let list = all;
-
-          if (this.filter === 'UNREAD') {
-            list = all.filter((m) => m.status === 'UNREAD');
-          } else if (this.filter === 'ARCHIVED') {
-            list = all.filter((m) => m.status === 'ARCHIVED');
-          }
-
-          this.messages.set(list);
-        }),
-        catchError((err) => {
-          console.error('Failed to load messages:', err);
-          this.error.set(err instanceof Error && err.message === 'Invalid response' ? 'Invalid response from server.' : 'Failed to load messages.');
-          return EMPTY;
-        }),
-        finalize(() => {
-          this.loading.set(false);
-        }),
-      )
-      .subscribe();
+    this.loadTrigger.next();
   }
 
   updateStatus(id: string, status: MessageStatus) {

@@ -15,15 +15,13 @@ export class App implements OnInit {
   private readonly router = inject(Router);
   private readonly analyticsService = inject(AnalyticsService);
   private readonly realtimeService = inject(RealtimeService);
-  private realtimeConnected = false;
-
+  
   ngOnInit(): void {
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         tap(() => {
-          if (!this.realtimeConnected) {
-            this.realtimeConnected = true;
+          if (!this.realtimeService.isRealtimeActive() && this.realtimeService.connectionStatus() !== 'connecting') {
             const clientSessionId = this.analyticsService.getClientSessionId();
             this.realtimeService.connect(clientSessionId);
           }
