@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, Input, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { Directive, ElementRef, inject, input, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AnalyticsService } from '../../services/analytics.service';
 
@@ -9,10 +9,12 @@ let hasLoggedServerSkip = false;
   standalone: true,
 })
 export class TrackBehaviorDirective implements OnInit, OnDestroy {
-  @Input('trackBehavior') behaviorName!: string;
   private readonly el = inject(ElementRef);
   private readonly analytics = inject(AnalyticsService);
   private readonly platformId = inject(PLATFORM_ID);
+
+  trackBehavior = input<string>();
+
   private observer!: IntersectionObserver;
 
   ngOnInit() {
@@ -28,7 +30,7 @@ export class TrackBehaviorDirective implements OnInit, OnDestroy {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.analytics.trackBehavior(this.behaviorName);
+            this.analytics.trackBehavior(this.trackBehavior() ?? '');
             this.observer.disconnect();
           }
         });

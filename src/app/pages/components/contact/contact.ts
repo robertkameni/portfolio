@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnDestroy, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField, required } from '@angular/forms/signals';
 import { ContactData } from './interface/contact-data';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
@@ -24,20 +25,28 @@ function contactAudienceBucket(visitorType: VisitorProfileAnalysis['visitorType'
   imports: [FormFieldComponent, StatusAlertComponent, TrackBehaviorDirective, FormField],
   templateUrl: './page/contact.html',
 })
-export class ContactComponent {
+export class ContactComponent implements OnDestroy {
   private readonly contactService = inject(ContactService);
   private readonly visitorStore = inject(VisitorStore);
   private readonly analytics = inject(AnalyticsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   data = input.required<ContactData>();
   locale = input<AppLocale>('en');
-  protected readonly copy = computed(() => getSiteCopy(this.locale()));
+
+  isSubmitting = signal<boolean>(false);
+  statusMessage = signal<string | null>(null);
+  statusType = signal<'success' | 'error'>('success');
+
+  private dismissTimer: ReturnType<typeof setTimeout> | null = null;
 
   formModel = signal({
     name: '',
     email: '',
     message: '',
   });
+
+  protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   form = form(this.formModel, (schema) => {
     required(schema.email, {
@@ -47,10 +56,6 @@ export class ContactComponent {
       message: () => this.copy().contact.validation.messageRequired,
     });
   });
-
-  isSubmitting = signal(false);
-  statusMessage = signal<string | null>(null);
-  statusType = signal<'success' | 'error'>('success');
 
   /**
    * Three contact audiences (Founder, Recruiter, Entwickler). AI may emit finer types;
@@ -113,6 +118,7 @@ export class ContactComponent {
 
     this.isSubmitting.set(true);
     this.statusMessage.set(null);
+    this.clearDismissTimer();
 
     const value = this.formModel();
     const sessionId = this.analytics.getClientSessionId();
@@ -124,18 +130,19 @@ export class ContactComponent {
         message: value.message,
         sessionId,
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.statusType.set('success');
           this.statusMessage.set(this.copy().contact.submitSuccess);
 
-          // Reset the form data AND the touched/dirty state so validation errors disappear
           this.form().reset({ name: '', email: '', message: '' });
           this.isSubmitting.set(false);
 
           // Auto-dismiss success message after 6 seconds
-          setTimeout(() => {
+          this.dismissTimer = setTimeout(() => {
             this.statusMessage.set(null);
+            this.dismissTimer = null;
           }, 6000);
         },
         error: (err) => {
@@ -145,5 +152,17 @@ export class ContactComponent {
           this.isSubmitting.set(false);
         },
       });
+  }
+
+  ngOnDestroy(): void {
+    this.clearDismissTimer();
+  }
+
+  private clearDismissTimer(): void {
+    const timer = this.dismissTimer;
+    if (!timer) return;
+
+    clearTimeout(timer);
+    this.dismissTimer = null;
   }
 }

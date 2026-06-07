@@ -16,7 +16,9 @@ export class AboutComponent {
 
   data = input.required<AboutData>();
   locale = input<AppLocale>('en');
+
   isExpanded = signal(false);
+  
   protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   adaptiveTitle = computed(() => {
@@ -52,25 +54,25 @@ export class AboutComponent {
     }
   });
 
-  hasCollapsedPreview = computed(() => this.adaptiveParagraphs().length > 3);
+  hasCollapsedPreview = computed(() => this.adaptiveParagraphs().length > 2);
 
   visibleParagraphs = computed(() => {
     const paragraphs = this.adaptiveParagraphs();
-    if (this.isExpanded() || paragraphs.length <= 3) {
+    if (this.isExpanded() || paragraphs.length <= 2) {
       return paragraphs;
     }
 
-    const previewParagraphs = paragraphs.slice(0, 3);
+    const previewParagraphs = paragraphs.slice(0, 2);
     const token = this.copy().about.previewSplitToken;
-    const fourthParagraph = paragraphs.slice(3).find((p) => p.includes(token)) ?? paragraphs[3] ?? '';
-    const tokenIndex = fourthParagraph.indexOf(token);
+    const thirdParagraph = paragraphs.slice(2).find((p) => p.includes(token)) ?? paragraphs[2] ?? '';
+    const tokenIndex = thirdParagraph.indexOf(token);
 
     if (tokenIndex > -1) {
-      previewParagraphs.push(`${fourthParagraph.slice(0, tokenIndex).trim()}`);
+      previewParagraphs.push(`${thirdParagraph.slice(0, tokenIndex).trim()}`);
       return previewParagraphs;
     }
 
-    previewParagraphs.push(`${fourthParagraph.slice(0, 180).trim()}`);
+    previewParagraphs.push(`${thirdParagraph.slice(0, 180).trim()}`);
     return previewParagraphs;
   });
 
