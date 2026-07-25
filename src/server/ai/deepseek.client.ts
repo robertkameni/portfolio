@@ -4,10 +4,10 @@ import {
   extractCompletionResponseText,
   isDeepSeekThinkingEnabled,
   isRetryableAIRequestError,
-  normalizeChatHistoryItem,
-  readStatusCode,
-  streamDeepSeekCompletionChunks,
+  normalizeChatHistoryItem, streamDeepSeekCompletionChunks
 } from './deepseek.helpers';
+import { readPositiveIntFromEnv } from '../utils/env.util';
+import { sleep } from '../utils/async.util';
 
 export { isRetryableAIRequestError, readStatusCode } from './deepseek.helpers';
 
@@ -30,7 +30,7 @@ type UniversalModelOptions = {
   };
 };
 
-type StreamResponse = { stream: AsyncIterable<StreamChunk> };
+type StreamResponse = { stream: AsyncIterable<StreamChunk>; };
 
 type StreamingChat = {
   sendMessageStream: (message: string) => Promise<StreamResponse>;
@@ -43,7 +43,7 @@ type UniversalGenerativeModel = {
       maxOutputTokens?: number;
     };
   }) => StreamingChat;
-  generateContent: (prompt: string) => Promise<{ response: { text: () => string } }>;
+  generateContent: (prompt: string) => Promise<{ response: { text: () => string; }; }>;
 };
 
 export type AIModelClient = {
@@ -88,20 +88,6 @@ export const DEFAULT_DEEPSEEK_CHAT_MODEL = trimmedChatModelEnv || 'deepseek-chat
 /** Visitor classification JSON call (defaults to chat model). */
 export const DEFAULT_DEEPSEEK_VISITOR_MODEL = trimmedVisitorModelEnv || DEFAULT_DEEPSEEK_CHAT_MODEL;
 
-function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
-  const rawValue = process.env[name];
-  if (!rawValue) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(rawValue, 10);
-  if (!Number.isFinite(parsed) || parsed < minValue) {
-    return fallback;
-  }
-
-  return parsed;
-}
-
 function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
   const envDefaults: Required<RetryOptions> = {
     maxRetries: readPositiveIntFromEnv('AI_RETRY_MAX_RETRIES', DEFAULT_RETRY_OPTIONS.maxRetries, 0),
@@ -114,10 +100,6 @@ function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
     baseDelayMs: options.baseDelayMs ?? envDefaults.baseDelayMs,
     maxDelayMs: options.maxDelayMs ?? envDefaults.maxDelayMs,
   };
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function resolveApiKey(): string {
@@ -171,7 +153,7 @@ export async function requestDeepSeekCompletion(
     stream: boolean;
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
-    thinking?: { type: 'disabled' | 'enabled' };
+    thinking?: { type: 'disabled' | 'enabled'; };
   } = {
     model: options.model,
     messages: promptMessages,
@@ -201,7 +183,7 @@ export async function requestDeepSeekCompletion(
   if (!response.ok) {
     const text = await response.text();
     const error = new Error(`DeepSeek request failed: ${response.status} ${response.statusText} ${text}`);
-    (error as Error & { status?: number }).status = response.status;
+    (error as Error & { status?: number; }).status = response.status;
     throw error;
   }
 
@@ -235,7 +217,7 @@ export async function runDeepSeekCompletion(
     maxOutputTokens?: number;
     responseMimeType?: string;
   },
-): Promise<{ response: { text: () => string } }> {
+): Promise<{ response: { text: () => string; }; }> {
   const response = await requestDeepSeekCompletion(promptMessages, {
     stream: false,
     model: options.model,

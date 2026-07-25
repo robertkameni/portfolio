@@ -1,5 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import type { RedisClientType } from 'redis';
+import { readPositiveIntFromEnv } from './env.util';
+
+export { readPositiveIntFromEnv };
 
 function createLeaseToken(): string {
   return `${Date.now()}:${randomBytes(16).toString('hex')}`;
@@ -16,7 +19,7 @@ type Lease = {
 };
 
 export interface RateLimiter {
-  checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision>;
+  checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision>;
   acquireLease(namespace: string, key: string, ttlMs: number): Promise<Lease>;
   consumeOnce(namespace: string, key: string, value: string): Promise<boolean>;
   setIfAbsent(namespace: string, key: string, value: string, ttlMs: number): Promise<boolean>;
@@ -51,10 +54,10 @@ function registerRateLimiterCleanup(cleanup: () => Promise<void>): void {
 
 class InMemoryRateLimiter implements RateLimiter {
   private buckets = new Map<string, number[]>();
-  private leases = new Map<string, { token: string; expiresAt: number }>();
-  private singleUse = new Map<string, { value: string; expiresAt: number }>();
+  private leases = new Map<string, { token: string; expiresAt: number; }>();
+  private singleUse = new Map<string, { value: string; expiresAt: number; }>();
 
-  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision> {
+  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision> {
     const now = Date.now();
     const bucket = `${namespace}:${key}`;
     const cutoff = now - options.windowMs;
@@ -82,7 +85,7 @@ class InMemoryRateLimiter implements RateLimiter {
     if (existing && existing.expiresAt > now) {
       return {
         acquired: false,
-        release: async () => {},
+        release: async () => { },
       };
     }
 
@@ -192,7 +195,7 @@ class RedisRateLimiter implements RateLimiter {
     return this.client;
   }
 
-  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision> {
+  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision> {
     const client = await this.getClient();
     const now = Date.now();
     const bucketStart = Math.floor(now / options.windowMs);
@@ -219,7 +222,7 @@ class RedisRateLimiter implements RateLimiter {
     const result = await client.set(leaseKey, token, { PX: ttlMs, NX: true });
 
     if (!result) {
-      return { acquired: false, release: async () => {} };
+      return { acquired: false, release: async () => { } };
     }
 
     return {
@@ -318,7 +321,7 @@ async function executeRateLimitCheck(
   fallbackLimiter: InMemoryRateLimiter,
   namespace: string,
   key: string,
-  options: { maxRequests: number; windowMs: number },
+  options: { maxRequests: number; windowMs: number; },
 ): Promise<RateLimitDecision> {
   if (!redisHealthy) {
     return fallbackLimiter.checkRateLimit(namespace, key, options);
@@ -346,18 +349,4 @@ async function executeRateLimitedOperation<T>(
   } catch (error) {
     throw error;
   }
-}
-
-export function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
-  const raw = process.env[name];
-  if (!raw) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(raw, 10);
-  if (!Number.isFinite(parsed) || parsed < minValue) {
-    return fallback;
-  }
-
-  return parsed;
 }

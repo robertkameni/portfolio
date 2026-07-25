@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
+import { sleep } from '../utils/async.util';
 import type { AnalyticsEvent, VisitorSession } from '../../../../prisma/generated/client';
 
 export type AnalyticsEventDto = {
@@ -16,10 +17,6 @@ type LogEventBatchResult = {
 
 const MAX_SESSION_RETRIES = 2;
 const SESSION_RETRY_DELAY_MS = 120;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function isRetryableDbError(error: unknown): boolean {
   if (!error || typeof error !== 'object') {

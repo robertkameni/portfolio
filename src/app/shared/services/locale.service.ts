@@ -1,9 +1,9 @@
-import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Service, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { resolveBrowserLocale, type AppLocale } from '../i18n/app-locale';
 import { getSiteCopy } from '../i18n/site-copy';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LocaleService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly clientReady = isPlatformBrowser(this.platformId);

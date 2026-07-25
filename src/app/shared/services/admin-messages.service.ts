@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { type AdminMessage, type MessageStatus } from '../types/admin-message';
 
-type AdminMessagesResponse = { data: AdminMessage[] };
-type AdminMessageResponse = { data: AdminMessage };
+type AdminMessagesResponse = { data: AdminMessage[]; };
+type AdminMessageResponse = { data: AdminMessage; };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AdminMessagesService {
   private readonly http = inject(HttpClient);
 
