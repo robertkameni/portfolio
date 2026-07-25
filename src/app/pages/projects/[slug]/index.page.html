@@ -1,10 +1,7 @@
 <main class="min-h-screen bg-background text-white px-4 py-8 md:py-12 md:px-8" fadeIn>
   <div class="max-w-5xl mx-auto">
-    <a
-      [routerLink]="goBackLink()"
-      [fragment]="previewMode() ? '' : 'projects-section'"
-      class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current"
-    >
+    <a [routerLink]="goBackLink()" [fragment]="previewMode() ? '' : 'projects-section'"
+      class="inline-flex items-center gap-2 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current">
       <span aria-hidden="true" class="text-current">←</span>
       {{ copy().projectDetail.backToProjects }}
     </a>
@@ -20,8 +17,10 @@
     <article class="mt-3 space-y-8">
       <header class="space-y-4">
         <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-          <span class="rounded-full border border-[#143c1a] px-2 py-1 text-primary">{{ project.isPublished ? copy().projectDetail.published : copy().projectDetail.draft }}</span>
-          <time [attr.datetime]="project.createdAt">{{ project.createdAt | date: 'mediumDate' : undefined : angularLocale() }}</time>
+          <span class="rounded-full border border-[#143c1a] px-2 py-1 text-primary">{{ project.isPublished ?
+            copy().projectDetail.published : copy().projectDetail.draft }}</span>
+          <time [attr.datetime]="project.createdAt">{{ project.createdAt | date: 'mediumDate' : undefined :
+            angularLocale() }}</time>
         </div>
 
         <h1 class="text-4xl md:text-5xl font-bold leading-tight text-primary">{{ project.title }}</h1>
@@ -38,7 +37,9 @@
       } @if (project.tags.length > 0) {
       <section class="flex flex-wrap gap-2">
         @for (tag of project.tags; track tag) {
-        <span class="rounded-full bg-[#07200f] px-3 py-1 text-xs text-primary border border-[#143c1a] hover:text-white">{{ tag }}</span>
+        <span
+          class="rounded-full bg-[#07200f] px-3 py-1 text-xs text-primary border border-[#143c1a] hover:text-white">{{
+          tag }}</span>
         }
       </section>
       }
@@ -46,19 +47,15 @@
       <section class="rounded-2xl border border-[#143c1a] bg-surface p-6 md:p-8 space-y-4">
         <h2 class="text-xl font-semibold text-white">{{ copy().projectDetail.overview }}</h2>
         @if (project.contentMarkdown) {
-        <div class="project-markdown max-w-none text-gray-300" [safeHtml]="renderedMarkdown(project.contentMarkdown)"></div>
+        <div class="project-markdown max-w-none text-gray-300" [safeHtml]="renderedMarkdown()"></div>
         } @else {
         <p class="text-gray-300 leading-7">{{ copy().projectDetail.emptyDescription }}</p>
         } @if (project.projectUrl) {
         <div class="pt-4 border-t border-[#143c1a]">
           <h3 class="text-sm font-medium text-gray-400 mb-2">{{ copy().projectDetail.liveSiteHeading }}</h3>
-          <a
-            [href]="project.projectUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+          <a [href]="project.projectUrl" target="_blank" rel="noopener noreferrer"
             class="inline-flex items-center gap-2 text-primary font-semibold link-color-primary-hover underline-offset-4 hover:underline"
-            [attr.aria-label]="copy().projectDetail.liveSiteAriaLabel"
-          >
+            [attr.aria-label]="copy().projectDetail.liveSiteAriaLabel">
             {{ copy().projectDetail.liveSiteLinkLabel }}
             <span aria-hidden="true">→</span>
           </a>

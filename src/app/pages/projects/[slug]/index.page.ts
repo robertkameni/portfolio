@@ -44,6 +44,22 @@ export default class ProjectOverviewPage {
     }),
   );
 
+  protected readonly renderedMarkdown = computed(() => {
+    const md = this.projectResource.value()?.data?.contentMarkdown;
+    if (!md) return '';
+    try {
+      const cleaned = md
+        .split('\n')
+        .map((line) => line.trimStart())
+        .join('\n')
+        .trim();
+      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
+    } catch (e) {
+      console.error('Markdown parsing error:', e);
+      return `<p>${md}</p>`;
+    }
+  });
+
   private setupRenderer(): Renderer {
     const renderer = new Renderer();
 
@@ -115,29 +131,14 @@ export default class ProjectOverviewPage {
     return renderer;
   }
 
-  renderedMarkdown(markdown: string): string {
-    try {
-      const cleaned = markdown
-        .split('\n')
-        .map((line) => line.trimStart())
-        .join('\n')
-        .trim();
-
-      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
-    } catch (e) {
-      console.error('Markdown parsing error:', e);
-      return `<p>${markdown}</p>`;
-    }
-  }
-
   getErrorTitle(error: unknown): string {
-    const status = (error as { status?: number })?.status;
+    const status = (error as { status?: number; })?.status;
     if (status === 404) return this.copy().projectDetail.notFoundTitle;
     return this.copy().projectDetail.loadErrorTitle;
   }
 
   getErrorMessage(error: unknown): string {
-    const e = error as { status?: number };
+    const e = error as { status?: number; };
     if (e?.status === 404) return this.copy().projectDetail.notFoundMessage;
     return extractApiErrorMessage(error, this.copy().projectDetail.loadErrorMessage);
   }
