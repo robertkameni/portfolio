@@ -3,7 +3,7 @@ import { analyticsRepository, type AnalyticsEventDto } from '../../db/repositori
 import { badRequest, serverError } from '../../utils/api-errors';
 import { apiSuccess } from '../../utils/api-response';
 import { enforceIngestRateLimit } from '../../utils/ingestion-guards';
-import { readPositiveIntFromEnv } from '../../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../../utils/env.util';
 
 const INGEST_SYNC_NAMESPACE = 'ingest:sync';
 const SYNC_BATCH_SIZE = 100;

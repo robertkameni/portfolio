@@ -4,7 +4,8 @@ import {
   extractCompletionResponseText,
   isDeepSeekThinkingEnabled,
   isRetryableAIRequestError,
-  normalizeChatHistoryItem, streamDeepSeekCompletionChunks
+  normalizeChatHistoryItem,
+  streamDeepSeekCompletionChunks,
 } from './deepseek.helpers';
 import { readPositiveIntFromEnv } from '../utils/env.util';
 import { sleep } from '../utils/async.util';
@@ -30,7 +31,7 @@ type UniversalModelOptions = {
   };
 };
 
-type StreamResponse = { stream: AsyncIterable<StreamChunk>; };
+type StreamResponse = { stream: AsyncIterable<StreamChunk> };
 
 type StreamingChat = {
   sendMessageStream: (message: string) => Promise<StreamResponse>;
@@ -43,7 +44,7 @@ type UniversalGenerativeModel = {
       maxOutputTokens?: number;
     };
   }) => StreamingChat;
-  generateContent: (prompt: string) => Promise<{ response: { text: () => string; }; }>;
+  generateContent: (prompt: string) => Promise<{ response: { text: () => string } }>;
 };
 
 export type AIModelClient = {
@@ -153,7 +154,7 @@ export async function requestDeepSeekCompletion(
     stream: boolean;
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
-    thinking?: { type: 'disabled' | 'enabled'; };
+    thinking?: { type: 'disabled' | 'enabled' };
   } = {
     model: options.model,
     messages: promptMessages,
@@ -183,7 +184,7 @@ export async function requestDeepSeekCompletion(
   if (!response.ok) {
     const text = await response.text();
     const error = new Error(`DeepSeek request failed: ${response.status} ${response.statusText} ${text}`);
-    (error as Error & { status?: number; }).status = response.status;
+    (error as Error & { status?: number }).status = response.status;
     throw error;
   }
 
@@ -217,7 +218,7 @@ export async function runDeepSeekCompletion(
     maxOutputTokens?: number;
     responseMimeType?: string;
   },
-): Promise<{ response: { text: () => string; }; }> {
+): Promise<{ response: { text: () => string } }> {
   const response = await requestDeepSeekCompletion(promptMessages, {
     stream: false,
     model: options.model,

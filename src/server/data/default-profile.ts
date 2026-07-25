@@ -58,7 +58,7 @@ export const defaultProfile: ProfileData = {
     },
   ],
   skills: [
-    { name: 'Angular v21', iconPath: 'M12 2.5l-9.5 3.5 1.5 11.5L12 22l8-4.5 1.5-11.5L12 2.5z' },
+    { name: 'Angular v22', iconPath: 'M12 2.5l-9.5 3.5 1.5 11.5L12 22l8-4.5 1.5-11.5L12 2.5z' },
     { name: 'TypeScript', iconPath: 'M10 20l4-16m4 16l-4-16M1 9h22M2 15h20' },
     { name: 'RxJS', iconPath: 'M13 10V3L4 14h7v7l9-11h-7z' },
     {
@@ -94,7 +94,7 @@ export const defaultProfile: ProfileData = {
     highlights: [
       {
         title: 'Angular Expertise Across Versions',
-        description: 'Delivered and maintained production systems from Angular 8 to Angular 21, consistently adopting modern framework capabilities and best practices.',
+        description: 'Delivered and maintained production systems from Angular 8 to Angular 22, consistently adopting modern framework capabilities and best practices.',
         iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       },
       {

@@ -4,7 +4,7 @@ import { prisma } from '../../db/client';
 import { apiSuccess } from '../../utils/api-response';
 import { badRequest, unauthorized, serverError } from '../../utils/api-errors';
 import { resolveRealtimeSigningSecret } from '../../realtime/realtime-signing';
-import { readPositiveIntFromEnv } from '../../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../../utils/env.util';
 
 type RealtimeTokenBody = {
   clientSessionId: string;

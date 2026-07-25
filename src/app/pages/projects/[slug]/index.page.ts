@@ -107,8 +107,7 @@ export default class ProjectOverviewPage {
       return `<strong class="font-semibold">${text}</strong>`;
     };
 
-    renderer.codespan = ({ text }) =>
-      `<code>${text}</code>`;
+    renderer.codespan = ({ text }) => `<code>${text}</code>`;
 
     renderer.table = function (token) {
       const headerCells = token.header
@@ -139,13 +138,13 @@ export default class ProjectOverviewPage {
   }
 
   getErrorTitle(error: unknown): string {
-    const status = (error as { status?: number; })?.status;
+    const status = (error as { status?: number })?.status;
     if (status === 404) return this.copy().projectDetail.notFoundTitle;
     return this.copy().projectDetail.loadErrorTitle;
   }
 
   getErrorMessage(error: unknown): string {
-    const e = error as { status?: number; };
+    const e = error as { status?: number };
     if (e?.status === 404) return this.copy().projectDetail.notFoundMessage;
     return extractApiErrorMessage(error, this.copy().projectDetail.loadErrorMessage);
   }

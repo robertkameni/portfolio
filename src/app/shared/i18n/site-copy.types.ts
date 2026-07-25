@@ -175,37 +175,37 @@ export type SiteCopy = {
     frontend: {
       default: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       founder: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       recruiter: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       developer: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
     };
     backend: {
       default: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       founder: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       recruiter: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
       developer: {
         description: string;
-        items: [{ title: string; description: string; }, { title: string; description: string; }, { title: string; description: string; }];
+        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
       };
     };
   };

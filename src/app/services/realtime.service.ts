@@ -198,12 +198,10 @@ export class RealtimeService implements OnDestroy {
     const sessionIdForChat = this.currentSessionId ?? this.analyticsService.getClientSessionId();
 
     const allMessages = this.chatStore.messages();
-    const history = allMessages
-      .slice(0, allMessages.length - 1)
-      .map((msg) => ({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: msg.content }],
-      }));
+    const history = allMessages.slice(0, allMessages.length - 1).map((msg) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    }));
 
     const requestBody = {
       message,

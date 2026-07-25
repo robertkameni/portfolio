@@ -47,34 +47,34 @@ export function detectResponseMode(userMessage: string): ResponseMode {
 type BaseProfileContext = {
   name?: string;
   title?: string;
-  intro?: { description?: string; };
-  about?: { paragraphs?: string[]; };
-  skills?: Array<{ name?: string; }>;
+  intro?: { description?: string };
+  about?: { paragraphs?: string[] };
+  skills?: Array<{ name?: string }>;
 };
 
 export function buildSystemInstruction(baseProfile: BaseProfileContext, projectSummary: string, visitorContextString: string, mode: ResponseMode, intentHint: string): string {
   const about = baseProfile?.about?.paragraphs?.join(' ') ?? '';
   const skills = Array.isArray(baseProfile?.skills)
     ? baseProfile.skills
-      .map((skill: { name?: string; }) => skill?.name)
-      .filter(Boolean)
-      .join(', ')
+        .map((skill: { name?: string }) => skill?.name)
+        .filter(Boolean)
+        .join(', ')
     : '';
 
   const modeSpecificRules =
     mode === 'storytelling_recruiter'
       ? [
-        'ACTIVE MODE: storytelling_recruiter.',
-        'Response shape: short direct opener, then 1 compact STAR-style example, then recruiter-relevant takeaway.',
-        'The example must include concrete context, action, and measurable result when available.',
-        'Target length: 140-260 words unless the user requests short answers.',
-      ]
+          'ACTIVE MODE: storytelling_recruiter.',
+          'Response shape: short direct opener, then 1 compact STAR-style example, then recruiter-relevant takeaway.',
+          'The example must include concrete context, action, and measurable result when available.',
+          'Target length: 140-260 words unless the user requests short answers.',
+        ]
       : [
-        'ACTIVE MODE: concise_recruiter.',
-        'Response shape: direct answer in 1-2 sentences, then 2-4 concrete bullet points, then one optional next-step sentence.',
-        'Prioritize facts for screening: scope, stack, impact, ownership, collaboration, availability.',
-        'Target length: 70-160 words unless the user asks for details.',
-      ];
+          'ACTIVE MODE: concise_recruiter.',
+          'Response shape: direct answer in 1-2 sentences, then 2-4 concrete bullet points, then one optional next-step sentence.',
+          'Prioritize facts for screening: scope, stack, impact, ownership, collaboration, availability.',
+          'Target length: 70-160 words unless the user asks for details.',
+        ];
 
   return [
     'You are Robert Kameni speaking in first person.',
@@ -98,7 +98,7 @@ export function buildSystemInstruction(baseProfile: BaseProfileContext, projectS
     .join('\n');
 }
 
-export function normalizeProjectSummary(projects: Array<{ title: string; description: string | null; tags: string[]; }>): string {
+export function normalizeProjectSummary(projects: Array<{ title: string; description: string | null; tags: string[] }>): string {
   if (projects.length === 0) {
     return 'No published project metadata found in database.';
   }

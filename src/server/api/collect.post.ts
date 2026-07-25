@@ -5,7 +5,7 @@ import { badRequest, withApiErrorHandling } from '../utils/api-errors';
 import { apiAck } from '../utils/api-response';
 import { hasRequiredFields, hasRequiredStringFields } from '../utils/request-validation';
 import { assertJsonPayloadMaxBytes, assertMaxUtf8ByteLength, enforceIngestRateLimit } from '../utils/ingestion-guards';
-import { readPositiveIntFromEnv } from '../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../utils/env.util';
 
 type EventRequestBody = {
   clientSessionId: string;

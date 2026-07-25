@@ -27,9 +27,7 @@ function fallback(): VisitorProfileAnalysis {
 function validateProfile(data: unknown): data is VisitorProfileAnalysis {
   if (!data || typeof data !== 'object') return false;
   const record = data as Record<string, unknown>;
-  return typeof record['visitorType'] === 'string' &&
-    typeof record['confidenceScore'] === 'number' &&
-    Array.isArray(record['interests']);
+  return typeof record['visitorType'] === 'string' && typeof record['confidenceScore'] === 'number' && Array.isArray(record['interests']);
 }
 
 async function persistFallbackDecision(sessionId: string, analysis: VisitorProfileAnalysis, reasoning: string): Promise<void> {

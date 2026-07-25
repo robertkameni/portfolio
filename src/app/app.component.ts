@@ -15,7 +15,7 @@ export class App implements OnInit {
   private readonly router = inject(Router);
   private readonly analyticsService = inject(AnalyticsService);
   private readonly realtimeService = inject(RealtimeService);
-  
+
   ngOnInit(): void {
     this.router.events
       .pipe(

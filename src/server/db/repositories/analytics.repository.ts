@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
-import { sleep } from '../utils/async.util';
+import { sleep } from '../../utils/async.util';
 import type { AnalyticsEvent, VisitorSession } from '../../../../prisma/generated/client';
 
 export type AnalyticsEventDto = {
@@ -24,7 +24,7 @@ function isRetryableDbError(error: unknown): boolean {
   }
 
   const message = error instanceof Error ? error.message.toLowerCase() : '';
-  const code = 'code' in error ? (error as { code?: string; }).code : undefined;
+  const code = 'code' in error ? (error as { code?: string }).code : undefined;
 
   if (code === 'P2028' || code === 'P1001' || code === 'P1008' || code === 'P2024' || code === 'P2034') {
     return true;
@@ -39,12 +39,12 @@ function isUniqueViolation(error: unknown): boolean {
   }
 
   const message = error instanceof Error ? error.message.toLowerCase() : '';
-  const code = 'code' in error ? (error as { code?: string; }).code : undefined;
+  const code = 'code' in error ? (error as { code?: string }).code : undefined;
 
   return code === 'P2002' || (message.includes('unique') && message.includes('clientsessionid'));
 }
 
-function buildSessionUpdate(context: { userAgent?: string; ipAddress?: string; initialReferrer?: string; }) {
+function buildSessionUpdate(context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }) {
   const now = new Date();
   const data: {
     lastSeenAt: Date;
@@ -78,7 +78,7 @@ export const analyticsRepository = {
    * @param context Additional request data like user agent and IP.
    * @returns The existing or newly created visitor session.
    */
-  async findOrCreateSession(clientSessionId: string, context: { userAgent?: string; ipAddress?: string; initialReferrer?: string; }): Promise<VisitorSession> {
+  async findOrCreateSession(clientSessionId: string, context: { userAgent?: string; ipAddress?: string; initialReferrer?: string }): Promise<VisitorSession> {
     const updates = buildSessionUpdate(context);
     const now = updates.lastSeenAt;
 

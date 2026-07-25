@@ -4,7 +4,7 @@ import { badRequest, withApiErrorHandling } from '../utils/api-errors';
 import { apiAck } from '../utils/api-response';
 import { hasRequiredStringFields } from '../utils/request-validation';
 import { assertMaxUtf8ByteLength, enforceIngestRateLimit } from '../utils/ingestion-guards';
-import { readPositiveIntFromEnv } from '../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../utils/env.util';
 
 const INGEST_CONTACT_NAMESPACE = 'ingest:contact';
 
