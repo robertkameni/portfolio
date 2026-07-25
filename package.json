@@ -82,10 +82,10 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "overrides": {
-    "marked": "$marked",
+    "marked": "^18.0.7",
     "@ngrx/signals": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
+      "@angular/common": "^22.0.8",
+      "@angular/core": "^22.0.8"
     }
   }
 }
