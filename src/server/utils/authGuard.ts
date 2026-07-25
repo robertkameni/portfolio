@@ -2,13 +2,19 @@ import { getCookie, getHeader, H3Event } from 'h3';
 import jwt from 'jsonwebtoken';
 import { forbidden, serverError, unauthorized } from './api-errors';
 
-const ACCESS_TOKEN_SECRET = process.env['ACCESS_TOKEN_SECRET'];
-
 interface JwtPayload {
   userId: string;
   role: string;
   iat: number;
   exp: number;
+}
+
+function getAccessTokenSecret(): string {
+  const secret = process.env['ACCESS_TOKEN_SECRET'];
+  if (!secret) {
+    throw serverError('Server configuration error: Missing ACCESS_TOKEN_SECRET');
+  }
+  return secret;
 }
 
 export const authGuard = (event: H3Event): JwtPayload => {
@@ -21,13 +27,11 @@ export const authGuard = (event: H3Event): JwtPayload => {
     throw unauthorized('Unauthorized: Missing token');
   }
 
-  if (!ACCESS_TOKEN_SECRET) {
-    throw serverError('Server configuration error: Missing ACCESS_TOKEN_SECRET');
-  }
+  const accessTokenSecret = getAccessTokenSecret();
 
   try {
-    return jwt.verify(token, ACCESS_TOKEN_SECRET) as unknown as JwtPayload;
-  } catch (error) {
+    return jwt.verify(token, accessTokenSecret, { algorithms: ['HS256'] }) as unknown as JwtPayload;
+  } catch {
     throw unauthorized('Unauthorized: Invalid token');
   }
 };

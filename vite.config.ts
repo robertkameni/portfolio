@@ -17,6 +17,8 @@ export default defineConfig(({ mode }) => ({
         : { discover: false, routes: ['/'] },
       nitro: {
         preset: 'vercel',
+        // Spec/test files under src/server must not be scanned as API routes.
+        ignore: ['**/*.{spec,test}.ts'],
         output: {
           dir: '.vercel/output',
           publicDir: '.vercel/output/static',

@@ -2,9 +2,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-const OUTPUT_DIR = path.join(process.cwd(), '.vercel', 'output');
-const configPath = path.join(OUTPUT_DIR, 'config.json');
-const staticDir = path.join(OUTPUT_DIR, 'static');
+const ROOT_DIR = path.resolve(process.cwd());
+const OUTPUT_DIR = path.resolve(ROOT_DIR, '.vercel', 'output');
+const configPath = path.resolve(OUTPUT_DIR, 'config.json');
+const staticDir = path.resolve(OUTPUT_DIR, 'static');
+
+function assertWithinOutput(targetPath) {
+  const resolved = path.resolve(targetPath);
+  const outputPrefix = OUTPUT_DIR.endsWith(path.sep) ? OUTPUT_DIR : `${OUTPUT_DIR}${path.sep}`;
+  if (resolved !== OUTPUT_DIR && !resolved.startsWith(outputPrefix)) {
+    throw new Error(`Refusing to touch path outside .vercel/output: ${resolved}`);
+  }
+  return resolved;
+}
+
+assertWithinOutput(configPath);
+assertWithinOutput(staticDir);
 
 // ── 1. Validate config.json exists and has a supported version ────────────────
 
@@ -37,14 +50,45 @@ function sha256Base64(content) {
   return crypto.createHash('sha256').update(content).digest('base64');
 }
 
+function isUnsafeEntryName(name) {
+  return name === '..' || name.includes('\0');
+}
+
+function pushHtmlFile(files, entry, fullPath) {
+  if (!entry.isFile()) {
+    return;
+  }
+  if (!entry.name.endsWith('.html')) {
+    return;
+  }
+  files.push(fullPath);
+}
+
+function appendHtmlEntry(files, entry, parentDir) {
+  if (isUnsafeEntryName(entry.name)) {
+    return;
+  }
+
+  const fullPath = assertWithinOutput(path.resolve(parentDir, entry.name));
+  if (entry.isDirectory()) {
+    files.push(...collectHtmlFiles(fullPath));
+    return;
+  }
+
+  pushHtmlFile(files, entry, fullPath);
+}
+
 function collectHtmlFiles(dir) {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return collectHtmlFiles(fullPath);
-    if (entry.isFile() && entry.name.endsWith('.html')) return [fullPath];
+  const safeDir = assertWithinOutput(dir);
+  if (!fs.existsSync(safeDir)) {
     return [];
-  });
+  }
+
+  const files = [];
+  for (const entry of fs.readdirSync(safeDir, { withFileTypes: true })) {
+    appendHtmlEntry(files, entry, safeDir);
+  }
+  return files;
 }
 
 const htmlFiles = collectHtmlFiles(staticDir);
@@ -52,7 +96,7 @@ const inlineHashes = new Set();
 const inlineScriptPattern = /<script(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi;
 
 for (const file of htmlFiles) {
-  const content = fs.readFileSync(file, 'utf8');
+  const content = fs.readFileSync(assertWithinOutput(file), 'utf8');
   let match;
   while ((match = inlineScriptPattern.exec(content)) !== null) {
     const body = match[1];

@@ -1,4 +1,9 @@
+import { randomBytes } from 'node:crypto';
 import type { RedisClientType } from 'redis';
+
+function createLeaseToken(): string {
+  return `${Date.now()}:${randomBytes(16).toString('hex')}`;
+}
 
 type RateLimitDecision = {
   allowed: boolean;
@@ -81,7 +86,7 @@ class InMemoryRateLimiter implements RateLimiter {
       };
     }
 
-    const token = `${now}:${Math.random().toString(36).slice(2)}`;
+    const token = createLeaseToken();
     this.leases.set(lockKey, {
       token,
       expiresAt: now + ttlMs,
@@ -210,7 +215,7 @@ class RedisRateLimiter implements RateLimiter {
   async acquireLease(namespace: string, key: string, ttlMs: number): Promise<Lease> {
     const client = await this.getClient();
     const leaseKey = this.formatKey(namespace, key);
-    const token = `${Date.now()}:${Math.random().toString(36).slice(2)}`;
+    const token = createLeaseToken();
     const result = await client.set(leaseKey, token, { PX: ttlMs, NX: true });
 
     if (!result) {

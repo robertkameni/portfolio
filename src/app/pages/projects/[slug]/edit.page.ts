@@ -13,6 +13,7 @@ import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../..
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
 import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
+import { resolveProjectApiUrl } from './project-api-url';
 
 export const routeMeta: RouteMeta = {
   canActivate: [authGuard],
@@ -36,17 +37,13 @@ export default class EditProjectPage {
 
   private readonly clientReady = isPlatformBrowser(this.platformId);
 
-  projectResource = httpResource<ApiSuccess<Project>>(() => {
-    const slug = this.slug();
-    if (!slug) return undefined;
-
-    if (this.previewMode()) {
-      if (!this.clientReady) return undefined;
-      return `/api/admin/projects?slug=${slug}`;
-    }
-
-    return `/api/projects/${slug}`;
-  });
+  projectResource = httpResource<ApiSuccess<Project>>(() =>
+    resolveProjectApiUrl({
+      slug: this.slug(),
+      previewMode: this.previewMode(),
+      clientReady: this.clientReady,
+    }),
+  );
 
   initialData = computed<ProjectFormModel | null>(() => {
     const project = this.projectResource.value()?.data;

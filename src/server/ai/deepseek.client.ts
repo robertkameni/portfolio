@@ -1,3 +1,16 @@
+import {
+  type ChatMessage,
+  type StreamChunk,
+  extractCompletionResponseText,
+  isDeepSeekThinkingEnabled,
+  isRetryableAIRequestError,
+  normalizeChatHistoryItem,
+  readStatusCode,
+  streamDeepSeekCompletionChunks,
+} from './deepseek.helpers';
+
+export { isRetryableAIRequestError, readStatusCode } from './deepseek.helpers';
+
 type RetryOptions = {
   maxRetries?: number;
   baseDelayMs?: number;
@@ -17,18 +30,6 @@ type UniversalModelOptions = {
   };
 };
 
-type ChatHistoryPart = { text?: unknown };
-type ChatHistoryItem = {
-  role?: unknown;
-  parts?: unknown;
-};
-
-type ChatMessage = {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-};
-
-type StreamChunk = { text: () => string };
 type StreamResponse = { stream: AsyncIterable<StreamChunk> };
 
 type StreamingChat = {
@@ -57,8 +58,26 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
   maxDelayMs: 8_000,
 };
 
-const DEFAULT_DEEPSEEK_API_BASE = 'https://api.deepseek.com';
-const DEFAULT_DEEPSEEK_CHAT_PATH = '/chat/completions';
+const DEEPSEEK_CHAT_ENDPOINT = 'https://api.deepseek.com/chat/completions';
+
+/** Ensures optional env override cannot point fetch at an unexpected host. */
+function assertDeepSeekEndpointAllowed(): void {
+  const configured = process.env['DEEPSEEK_API_BASE_URL']?.trim();
+  if (!configured) {
+    return;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(configured);
+  } catch {
+    throw new Error('DEEPSEEK_API_BASE_URL is not a valid URL.');
+  }
+
+  if (parsed.toString() !== DEEPSEEK_CHAT_ENDPOINT) {
+    throw new Error(`DEEPSEEK_API_BASE_URL must be exactly ${DEEPSEEK_CHAT_ENDPOINT}.`);
+  }
+}
 
 const trimmedChatModelEnv = process.env['DEEPSEEK_CHAT_MODEL']?.trim();
 const trimmedVisitorModelEnv = process.env['DEEPSEEK_VISITOR_MODEL']?.trim();
@@ -101,42 +120,6 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function readStatusCode(error: unknown): number | null {
-  if (!error || typeof error !== 'object') {
-    return null;
-  }
-
-  const statusFromError = (error as { status?: unknown }).status;
-  if (typeof statusFromError === 'number') {
-    return statusFromError;
-  }
-
-  const maybeResponse = (error as { response?: { status?: unknown } }).response;
-  if (maybeResponse && typeof maybeResponse.status === 'number') {
-    return maybeResponse.status;
-  }
-
-  return null;
-}
-
-function isRetryableAIRequestError(error: unknown): boolean {
-  const status = readStatusCode(error);
-  if (status === 429) {
-    return false;
-  }
-
-  if (status === 500 || status === 502 || status === 503 || status === 504) {
-    return true;
-  }
-
-  const message = error instanceof Error ? error.message.toLowerCase() : '';
-  if (message.includes('429') || message.includes('quota') || message.includes('rate limit') || message.includes('too many requests')) {
-    return false;
-  }
-
-  return message.includes('timeout') || message.includes('temporarily unavailable') || message.includes('econnreset');
-}
-
 function resolveApiKey(): string {
   const apiKey = process.env['DEEPSEEK_API_KEY'] ?? process.env['GEMINI_API_KEY'];
   if (!apiKey) {
@@ -150,33 +133,13 @@ function resolveModelName(requestedModel: string): string {
   return model || DEFAULT_DEEPSEEK_CHAT_MODEL;
 }
 
-function normalizeChatHistoryItem(item: ChatHistoryItem): ChatMessage | null {
-  const role = item?.role === 'model' ? 'assistant' : item?.role === 'user' ? 'user' : null;
-  if (role === null) {
-    return null;
-  }
-
-  const parts = Array.isArray(item.parts) ? item.parts : [];
-  const content = parts
-    .map((part) => (typeof part === 'object' && part && 'text' in (part as ChatHistoryPart) ? String((part as ChatHistoryPart).text ?? '') : ''))
-    .filter((text) => text.length > 0)
-    .join('\n');
-
-  return content.length > 0 ? { role, content } : null;
-}
-
 function toMessages(history: unknown[] = []): ChatMessage[] {
-  const messages = history.map((item) => normalizeChatHistoryItem(item as ChatHistoryItem)).filter((item): item is ChatMessage => item !== null);
+  const messages = history.map((item) => normalizeChatHistoryItem(item)).filter((item): item is ChatMessage => item !== null);
 
   return messages.map((entry) => ({
     role: entry.role,
     content: entry.content,
   }));
-}
-
-function isDeepSeekThinkingEnabled(): boolean {
-  const raw = process.env['DEEPSEEK_THINKING_ENABLED']?.trim().toLowerCase();
-  return raw === 'true' || raw === '1';
 }
 
 function resolveDeepSeekFetchTimeoutMs(): number {
@@ -191,7 +154,7 @@ function resolveDeepSeekFetchTimeoutMs(): number {
   return parsed;
 }
 
-async function requestDeepSeekCompletion(
+export async function requestDeepSeekCompletion(
   promptMessages: ChatMessage[],
   options: {
     stream: boolean;
@@ -201,7 +164,7 @@ async function requestDeepSeekCompletion(
   },
 ): Promise<Response> {
   const apiKey = resolveApiKey();
-  const endpoint = process.env['DEEPSEEK_API_BASE_URL'] ?? `${DEFAULT_DEEPSEEK_API_BASE}${DEFAULT_DEEPSEEK_CHAT_PATH}`;
+  assertDeepSeekEndpointAllowed();
   const payload: {
     model: string;
     messages: ChatMessage[];
@@ -225,7 +188,7 @@ async function requestDeepSeekCompletion(
   }
 
   const timeoutMs = resolveDeepSeekFetchTimeoutMs();
-  const response = await fetch(endpoint, {
+  const response = await fetch(DEEPSEEK_CHAT_ENDPOINT, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -243,91 +206,6 @@ async function requestDeepSeekCompletion(
   }
 
   return response;
-}
-
-function textFromCompletionDelta(delta: unknown): string {
-  if (!delta || typeof delta !== 'object') {
-    return '';
-  }
-
-  const record = delta as Record<string, unknown>;
-  const content = record['content'];
-  if (typeof content === 'string' && content.length > 0) {
-    return content;
-  }
-
-  if (isDeepSeekThinkingEnabled()) {
-    const reasoning = record['reasoning_content'];
-    if (typeof reasoning === 'string' && reasoning.length > 0) {
-      return reasoning;
-    }
-  }
-
-  return '';
-}
-
-async function* streamDeepSeekCompletionChunks(response: Response): AsyncGenerator<StreamChunk> {
-  if (!response.body) {
-    throw new Error('DeepSeek response did not include a stream body.');
-  }
-
-  const decoder = new TextDecoder();
-  const reader = response.body.getReader();
-
-  let buffer = '';
-
-  try {
-    while (true) {
-      const chunk = await reader.read();
-      if (chunk.done) {
-        break;
-      }
-
-      buffer += decoder.decode(chunk.value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith('data: ')) {
-          continue;
-        }
-
-        const data = trimmed.slice(6).trim();
-        if (!data || data === '[DONE]') {
-          continue;
-        }
-
-        try {
-          const parsed = JSON.parse(data);
-          const delta = parsed?.choices?.[0]?.delta;
-          const text = textFromCompletionDelta(delta);
-          if (text.length > 0) {
-            yield { text: () => text };
-          }
-        } catch (error) {
-          console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
-        }
-      }
-    }
-    if (buffer.startsWith('data: ')) {
-      const data = buffer.slice(6).trim();
-      if (data && data !== '[DONE]') {
-        try {
-          const parsed = JSON.parse(data);
-          const delta = parsed?.choices?.[0]?.delta;
-          const text = textFromCompletionDelta(delta);
-          if (text.length > 0) {
-            yield { text: () => text };
-          }
-        } catch (error) {
-          console.error('[DeepSeek Stream] Failed to parse SSE payload.', { data, error });
-        }
-      }
-    }
-  } finally {
-    reader.releaseLock();
-  }
 }
 
 type StreamCompletionOptions = {
@@ -350,7 +228,7 @@ function createLazyStreamResponse(messages: ChatMessage[], streamOptions: Stream
   return { stream: stream() };
 }
 
-async function runDeepSeekCompletion(
+export async function runDeepSeekCompletion(
   promptMessages: ChatMessage[],
   options: {
     model: string;
@@ -365,11 +243,7 @@ async function runDeepSeekCompletion(
     responseMimeType: options.responseMimeType,
   });
   const payload = await response.json();
-  const message = payload?.choices?.[0]?.message as Record<string, unknown> | undefined;
-  const responseText =
-    (typeof message?.['content'] === 'string' ? message['content'] : '') ||
-    (isDeepSeekThinkingEnabled() && typeof message?.['reasoning_content'] === 'string' ? message['reasoning_content'] : '') ||
-    '';
+  const responseText = extractCompletionResponseText(payload);
   return {
     response: {
       text: () => String(responseText),
@@ -381,6 +255,10 @@ function computeBackoffDelay(attempt: number, baseDelayMs: number, maxDelayMs: n
   const expDelay = Math.min(maxDelayMs, baseDelayMs * 2 ** attempt);
   const jitter = Math.floor(Math.random() * 250);
   return expDelay + jitter;
+}
+
+export function resetAIClientCacheForTests(): void {
+  cachedClient = undefined;
 }
 
 export function getAIClient(): AIModelClient {

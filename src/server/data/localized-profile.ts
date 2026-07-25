@@ -36,16 +36,16 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
           ],
         },
       ],
-      skills: [
-        baseProfile.skills[0],
-        baseProfile.skills[1],
-        baseProfile.skills[2],
-        { ...baseProfile.skills[3], name: 'State Management' },
-        { ...baseProfile.skills[4], name: 'Testing & Qualität' },
-        baseProfile.skills[5],
-        { ...baseProfile.skills[6], name: 'Spring Boot 3' },
-        baseProfile.skills[7],
-      ],
+      skills: baseProfile.skills.map((skill) => {
+        switch (skill.name) {
+          case 'Testing & Quality':
+            return { ...skill, name: 'Testing & Qualität' };
+          case 'Springboot 3':
+            return { ...skill, name: 'Spring Boot 3' };
+          default:
+            return skill;
+        }
+      }),
       about: {
         title: 'Über mich',
         paragraphs: [

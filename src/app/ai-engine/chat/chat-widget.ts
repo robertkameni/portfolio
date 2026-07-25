@@ -1,20 +1,19 @@
-import { afterRenderEffect, Component, computed, ElementRef, inject, SecurityContext, signal, viewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { afterRenderEffect, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { RealtimeService } from '../../services/realtime.service';
+import { SafeHtmlDirective } from '../../shared/directives/safe-html.directive';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
 
 @Component({
   selector: 'chat-widget',
   standalone: true,
-  imports: [],
+  imports: [SafeHtmlDirective],
   templateUrl: './chat-widget.html',
 })
 export class ChatWidgetComponent {
   public chatStore = inject(ChatStore);
   public realtimeService = inject(RealtimeService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly localeService = inject(LocaleService);
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
@@ -74,12 +73,10 @@ export class ChatWidgetComponent {
   renderAssistantMessage(content: string): string {
     this.markdownReady();
     const html = this.markdownParser ? this.markdownParser(content) : this.renderPlainText(content);
-    const normalized = html
+    return html
       .replace(/<ul>/g, '<ul class="list-disc pl-5 my-2 space-y-1">')
       .replace(/<ol>/g, '<ol class="list-decimal pl-5 my-2 space-y-1">')
       .replace(/<p>/g, '<p class="leading-relaxed mb-2">');
-
-    return this.sanitizer.sanitize(SecurityContext.HTML, normalized) ?? '';
   }
 
   private async loadMarkdownParser(): Promise<void> {

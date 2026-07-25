@@ -1,6 +1,7 @@
 import { contextEngine } from '../context.engine';
 import { prisma } from '../../db/client';
 import { DEFAULT_DEEPSEEK_VISITOR_MODEL, getAIClient, withAIRetry } from '../deepseek.client';
+import { isQuotaError } from '../deepseek.helpers';
 
 const VISITOR_AI_QUOTA_BACKOFF_MS = Number.parseInt(process.env['VISITOR_AI_QUOTA_BACKOFF_MS'] ?? '900000', 10);
 let quotaBlockedUntil = 0;
@@ -27,34 +28,6 @@ function validateProfile(data: any): data is VisitorProfileAnalysis {
   return !!data && typeof data.visitorType === 'string' && typeof data.confidenceScore === 'number' && Array.isArray(data.interests);
 }
 
-function readStatusCode(error: unknown): number | null {
-  if (!error || typeof error !== 'object') {
-    return null;
-  }
-
-  const statusFromError = (error as { status?: unknown }).status;
-  if (typeof statusFromError === 'number') {
-    return statusFromError;
-  }
-
-  const responseStatus = (error as { response?: { status?: unknown } }).response?.status;
-  if (typeof responseStatus === 'number') {
-    return responseStatus;
-  }
-
-  return null;
-}
-
-function isQuotaError(error: unknown): boolean {
-  const status = readStatusCode(error);
-  if (status === 429) {
-    return true;
-  }
-
-  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
-  return message.includes('quota') || message.includes('too many requests') || message.includes('rate limit');
-}
-
 async function persistFallbackDecision(sessionId: string, analysis: VisitorProfileAnalysis, reasoning: string): Promise<void> {
   await prisma.aiDecision.create({
     data: {
@@ -68,23 +41,22 @@ async function persistFallbackDecision(sessionId: string, analysis: VisitorProfi
   });
 }
 
-export const visitorAgent = {
-  async analyze(sessionId: string): Promise<VisitorProfileAnalysis> {
-    try {
-      if (Date.now() < quotaBlockedUntil) {
-        const fb = fallback();
-        await persistFallbackDecision(sessionId, fb, 'Fallback due to active DeepSeek quota backoff window.');
-        return fb;
-      }
+export async function analyzeVisitorSession(sessionId: string): Promise<VisitorProfileAnalysis> {
+  try {
+    if (Date.now() < quotaBlockedUntil) {
+      const fb = fallback();
+      await persistFallbackDecision(sessionId, fb, 'Fallback due to active DeepSeek quota backoff window.');
+      return fb;
+    }
 
-      const ai = getAIClient();
-      const sessionHistory = await contextEngine.getSessionHistoryAsText(sessionId);
+    const ai = getAIClient();
+    const sessionHistory = await contextEngine.getSessionHistoryAsText(sessionId);
 
-      if (!sessionHistory || sessionHistory.includes('No activity')) {
-        return fallback();
-      }
+    if (!sessionHistory || sessionHistory.includes('No activity')) {
+      return fallback();
+    }
 
-      const prompt = `
+    const prompt = `
         SYSTEM: You are a highly accurate visitor intelligence system analyzing behavior on a Software Engineer's portfolio website.
 
         RULES:
@@ -113,79 +85,82 @@ export const visitorAgent = {
         }
       `;
 
-      const model = ai.getGenerativeModel({
-        model: DEFAULT_DEEPSEEK_VISITOR_MODEL,
-        generationConfig: {
-          responseMimeType: 'application/json',
-        },
-      });
+    const model = ai.getGenerativeModel({
+      model: DEFAULT_DEEPSEEK_VISITOR_MODEL,
+      generationConfig: {
+        responseMimeType: 'application/json',
+      },
+    });
 
-      const aiResponse = await withAIRetry(() => model.generateContent(prompt));
-      const responseText = aiResponse.response.text();
-      const result = JSON.parse(responseText);
+    const aiResponse = await withAIRetry(() => model.generateContent(prompt));
+    const responseText = aiResponse.response.text();
+    const result = JSON.parse(responseText);
 
-      if (validateProfile(result)) {
-        await prisma.aiLog.create({
-          data: {
-            agentName: 'VisitorAgent',
-            prompt,
-            response: JSON.stringify(result),
-            status: 'success',
-            sessionId: sessionId,
-          },
-        });
-
-        await prisma.aiDecision.create({
-          data: {
-            sessionId,
-            agentName: 'VisitorAgent',
-            decisionType: 'visitor_classification',
-            decisionData: result,
-            confidenceScore: result.confidenceScore,
-            reasoning: result.reasoning,
-          },
-        });
-
-        return result;
-      }
-
+    if (validateProfile(result)) {
       await prisma.aiLog.create({
         data: {
           agentName: 'VisitorAgent',
           prompt,
           response: JSON.stringify(result),
-          status: 'error_validation_failed',
+          status: 'success',
           sessionId: sessionId,
         },
       });
 
-      const fb = fallback();
-      await persistFallbackDecision(sessionId, fb, 'Fallback due to invalid AI response payload.');
-      return fb;
-    } catch (error) {
-      if (isQuotaError(error)) {
-        quotaBlockedUntil = Date.now() + VISITOR_AI_QUOTA_BACKOFF_MS;
-      }
-
-      const compactError = {
-        status: typeof (error as { status?: unknown })?.status === 'number' ? (error as { status: number }).status : null,
-        message: error instanceof Error ? error.message : String(error),
-      };
-
-      console.warn('[VisitorAgent] AI analysis fallback triggered.', compactError);
-      await prisma.aiLog.create({
+      await prisma.aiDecision.create({
         data: {
+          sessionId,
           agentName: 'VisitorAgent',
-          prompt: 'ERROR_DURING_EXECUTION',
-          response: error instanceof Error ? error.message : JSON.stringify(error),
-          status: 'error_exception',
-          sessionId: sessionId,
+          decisionType: 'visitor_classification',
+          decisionData: result,
+          confidenceScore: result.confidenceScore,
+          reasoning: result.reasoning,
         },
       });
 
-      const fb = fallback();
-      await persistFallbackDecision(sessionId, fb, 'Fallback due to AI exception (quota or transient error).');
-      return fb;
+      return result;
     }
-  },
+
+    await prisma.aiLog.create({
+      data: {
+        agentName: 'VisitorAgent',
+        prompt,
+        response: JSON.stringify(result),
+        status: 'error_validation_failed',
+        sessionId: sessionId,
+      },
+    });
+
+    const fb = fallback();
+    await persistFallbackDecision(sessionId, fb, 'Fallback due to invalid AI response payload.');
+    return fb;
+  } catch (error) {
+    if (isQuotaError(error)) {
+      quotaBlockedUntil = Date.now() + VISITOR_AI_QUOTA_BACKOFF_MS;
+    }
+
+    const compactError = {
+      status: typeof (error as { status?: unknown })?.status === 'number' ? (error as { status: number }).status : null,
+      message: error instanceof Error ? error.message : String(error),
+    };
+
+    console.warn('[VisitorAgent] AI analysis fallback triggered.', compactError);
+    await prisma.aiLog.create({
+      data: {
+        agentName: 'VisitorAgent',
+        prompt: 'ERROR_DURING_EXECUTION',
+        response: error instanceof Error ? error.message : JSON.stringify(error),
+        status: 'error_exception',
+        sessionId: sessionId,
+      },
+    });
+
+    const fb = fallback();
+    await persistFallbackDecision(sessionId, fb, 'Fallback due to AI exception (quota or transient error).');
+    return fb;
+  }
+}
+
+export const visitorAgent = {
+  analyze: analyzeVisitorSession,
 };

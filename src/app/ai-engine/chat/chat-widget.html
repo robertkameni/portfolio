@@ -74,7 +74,7 @@
               "
         >
           @if (msg.role === 'assistant') {
-          <div class="chat-markdown" [innerHTML]="renderAssistantMessage(msg.content)"></div>
+          <div class="chat-markdown" [safeHtml]="renderAssistantMessage(msg.content)"></div>
           } @else { {{ msg.content }} }
         </div>
       </div>

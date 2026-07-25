@@ -1,4 +1,4 @@
-import type { ProfileData } from '../../app/store/portfolio.store';
+import type { ProfileData } from '../../app/shared/types/profile-data';
 
 export const defaultProfile: ProfileData = {
   name: 'Robert Kameni',
@@ -58,10 +58,20 @@ export const defaultProfile: ProfileData = {
     },
   ],
   skills: [
-    { name: 'Angular (v8-v21)', iconPath: 'M12 2.5l-9.5 3.5 1.5 11.5L12 22l8-4.5 1.5-11.5L12 2.5z' },
+    { name: 'Angular v21', iconPath: 'M12 2.5l-9.5 3.5 1.5 11.5L12 22l8-4.5 1.5-11.5L12 2.5z' },
     { name: 'TypeScript', iconPath: 'M10 20l4-16m4 16l-4-16M1 9h22M2 15h20' },
     { name: 'RxJS', iconPath: 'M13 10V3L4 14h7v7l9-11h-7z' },
-    { name: 'State Management', iconPath: 'M15 15l-6 6m0-6l6 6M9 9V3m0 6h6m-6 0H3' },
+    {
+      name: 'State Management(NgRx, Signal Store)',
+      iconPath:
+        'M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125',
+    },
+    {
+      name: 'NextJS v16',
+      iconPath:
+        'M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z',
+      iconFilled: true,
+    },
     { name: 'Testing & Quality', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
     { name: 'Java 17', iconPath: 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2' },
     {

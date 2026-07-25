@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+
+  // Analog file-based routes are runtime entry points (router loads them; no template render tag).
+  "entry": [
+    "src/app/pages/**/*.page.ts",
+    "src/app/pages/**/layout.ts",
+    "src/app/pages/**/index.page.ts"
+  ],
+
+  // Build-only tooling is out of app graph / security surface.
+  "ignorePatterns": ["scripts/**"],
+
+  "health": {
+    "suggestInlineSuppression": false,
+    "ignore": ["scripts/**", "**/*.html"],
+    "thresholdOverrides": [
+      {
+        "files": ["src/app/pages/projects/**/edit.page.ts"],
+        "functions": ["initialData"],
+        "maxCrap": 60,
+        "reason": "Straightforward project DTO mapping in a computed()"
+      }
+    ]
+  },
+
+  "overrides": [
+    {
+      "files": [
+        "src/app/pages/**/*.page.ts",
+        "src/app/pages/**/layout.ts",
+        "src/app/pages/**/index.page.ts"
+      ],
+      "rules": {
+        "unrendered-components": "off"
+      }
+    }
+  ]
+}

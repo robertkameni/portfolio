@@ -3,25 +3,25 @@ import { isPlatformBrowser } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { httpResource } from '@angular/common/http';
-import { DomSanitizer } from '@angular/platform-browser';
 import { marked, Renderer } from 'marked';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { SafeHtmlDirective } from '../../../shared/directives/safe-html.directive';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { resolveProjectApiUrl } from './project-api-url';
 
 @Component({
   selector: 'project-overview-page',
   standalone: true,
-  imports: [DatePipe, RouterLink, FadeInDirective],
+  imports: [DatePipe, RouterLink, FadeInDirective, SafeHtmlDirective],
   templateUrl: './index.page.html',
 })
 export default class ProjectOverviewPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
   private readonly localeService = inject(LocaleService);
@@ -36,17 +36,13 @@ export default class ProjectOverviewPage {
 
   goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
 
-  projectResource = httpResource<ApiSuccess<Project>>(() => {
-    const slug = this.slug();
-    if (!slug) return undefined;
-
-    if (this.previewMode()) {
-      if (!this.clientReady) return undefined;
-      return `/api/admin/projects?slug=${slug}`;
-    }
-
-    return `/api/projects/${slug}`;
-  });
+  projectResource = httpResource<ApiSuccess<Project>>(() =>
+    resolveProjectApiUrl({
+      slug: this.slug(),
+      previewMode: this.previewMode(),
+      clientReady: this.clientReady,
+    }),
+  );
 
   private setupRenderer(): Renderer {
     const renderer = new Renderer();
@@ -119,7 +115,7 @@ export default class ProjectOverviewPage {
     return renderer;
   }
 
-  renderedMarkdown(markdown: string) {
+  renderedMarkdown(markdown: string): string {
     try {
       const cleaned = markdown
         .split('\n')
@@ -127,11 +123,10 @@ export default class ProjectOverviewPage {
         .join('\n')
         .trim();
 
-      const html = marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true });
-      return this.sanitizer.bypassSecurityTrustHtml(html as string);
+      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
     } catch (e) {
       console.error('Markdown parsing error:', e);
-      return this.sanitizer.bypassSecurityTrustHtml(`<p>${markdown}</p>`);
+      return `<p>${markdown}</p>`;
     }
   }
 

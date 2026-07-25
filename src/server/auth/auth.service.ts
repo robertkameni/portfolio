@@ -52,7 +52,7 @@ export const authService = {
    */
   generateAccessToken(payload: { userId: string; role: string }): string {
     const { accessTokenSecret } = getJwtSecrets();
-    return jwt.sign(payload, accessTokenSecret, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+    return jwt.sign(payload, accessTokenSecret, { algorithm: 'HS256', expiresIn: ACCESS_TOKEN_EXPIRES_IN });
   },
 
   /**
@@ -62,7 +62,7 @@ export const authService = {
    */
   generateRefreshToken(payload: { userId: string }): string {
     const { refreshTokenSecret } = getJwtSecrets();
-    return jwt.sign(payload, refreshTokenSecret, { expiresIn: REFRESH_TOKEN_EXPIRATION });
+    return jwt.sign(payload, refreshTokenSecret, { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_EXPIRATION });
   },
 
   /**
@@ -73,7 +73,7 @@ export const authService = {
   verifyAccessToken<T>(token: string): T | null {
     try {
       const { accessTokenSecret } = getJwtSecrets();
-      return jwt.verify(token, accessTokenSecret) as T;
+      return jwt.verify(token, accessTokenSecret, { algorithms: ['HS256'] }) as T;
     } catch (error) {
       return null;
     }
@@ -87,7 +87,7 @@ export const authService = {
   verifyRefreshToken<T>(token: string): T | null {
     try {
       const { refreshTokenSecret } = getJwtSecrets();
-      return jwt.verify(token, refreshTokenSecret) as T;
+      return jwt.verify(token, refreshTokenSecret, { algorithms: ['HS256'] }) as T;
     } catch (error) {
       return null;
     }

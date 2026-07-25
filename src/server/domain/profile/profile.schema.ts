@@ -29,6 +29,7 @@ const SkillCardSchema = z.object({
 const SkillBentoDataSchema = z.object({
   name: z.string(),
   iconPath: z.string(),
+  iconFilled: z.boolean().optional(),
 });
 
 const AboutHighlightSchema = z.object({

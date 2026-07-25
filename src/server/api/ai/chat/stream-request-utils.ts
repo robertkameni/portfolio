@@ -1,6 +1,5 @@
 import { readBody, type H3Event } from 'h3';
 import { validateChatInput } from '../../../ai/chat-security';
-import { getSingleQueryString } from '../../../utils/query-params';
 import { writeSseError } from './stream-utils';
 
 type ChatRequestBody = {
@@ -16,38 +15,6 @@ type ChatRequest = {
 };
 
 type ChatLogFn = (requestId: string, sessionId: string | undefined, message: string, status: 'started' | 'completed' | 'error', error?: Error) => void;
-
-export function parseAndValidateGetChatRequest(event: H3Event): ChatRequest | null {
-  const sessionId = getSingleQueryString(event, 'sessionId');
-  const message = getSingleQueryString(event, 'message');
-  const history = getSingleQueryString(event, 'history');
-
-  if (typeof message !== 'string') {
-    writeSseError(event, 'No message provided.');
-    return null;
-  }
-
-  let parsedHistory: any[] = [];
-  if (typeof history === 'string') {
-    try {
-      parsedHistory = JSON.parse(history);
-    } catch (error) {
-      console.error('[SSE] Failed to parse chat history:', error);
-    }
-  }
-
-  const validation = validateChatInput(message, parsedHistory);
-  if (!validation.valid) {
-    writeSseError(event, validation.error ?? 'Invalid chat request.');
-    return null;
-  }
-
-  return {
-    message,
-    history: parsedHistory,
-    sessionId,
-  };
-}
 
 export async function parseAndValidatePostChatRequest(event: H3Event, requestId: string, logChatInteraction: ChatLogFn): Promise<ChatRequest | null> {
   if (event.node.req.method !== 'POST') {
