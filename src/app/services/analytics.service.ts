@@ -52,6 +52,12 @@ export class AnalyticsService {
     if (isPlatformBrowser(this.platformId)) {
       this.clientSessionId = sessionStorage.getItem('clientSessionId') || crypto.randomUUID();
       sessionStorage.setItem('clientSessionId', this.clientSessionId);
+
+      window.addEventListener('pagehide', () => {
+        if (this.eventQueue.length === 0) return;
+        const blob = new Blob([JSON.stringify(this.eventQueue)], { type: 'application/json' });
+        navigator.sendBeacon(this.SYNC_ENDPOINT, blob);
+      });
     }
   }
 

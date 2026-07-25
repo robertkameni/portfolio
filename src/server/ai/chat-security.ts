@@ -4,10 +4,9 @@
 
 import { randomUUID } from 'crypto';
 
-type ChatHistoryPart = { text?: unknown };
 type ChatHistoryItem = {
   role?: unknown;
-  parts?: unknown;
+  parts?: { text?: unknown }[];
 };
 
 const MAX_MESSAGE_LENGTH = 2000;
