@@ -10,7 +10,7 @@ type ChatRequestBody = {
 
 type ChatRequest = {
   message: string;
-  history: any[];
+  history: unknown[];
   sessionId?: string;
 };
 

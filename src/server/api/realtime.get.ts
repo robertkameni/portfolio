@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
   event.node.res.setHeader('Cache-Control', 'no-cache');
   event.node.res.setHeader('Connection', 'keep-alive');
 
-  const sendEvent = (eventName: string, data: any) => {
+  const sendEvent = (eventName: string, data: unknown) => {
     event.node.res.write(`event: ${eventName}\n`);
     event.node.res.write(`data: ${JSON.stringify(data)}\n\n`);
   };
@@ -98,7 +98,7 @@ export default defineEventHandler(async (event) => {
   return new Promise(() => {});
 });
 
-export async function pushUpdateToClient(targetSessionId: string, eventName: string, payload: any): Promise<void> {
+export async function pushUpdateToClient(targetSessionId: string, eventName: string, payload: unknown): Promise<void> {
   try {
     await broadcastService.publish({ targetSessionId, eventName, payload });
   } catch (error) {

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../db/repositories/analytics.repository';
 import { badRequest, withApiErrorHandling } from '../utils/api-errors';
@@ -9,7 +10,7 @@ import { readPositiveIntFromEnv } from '../utils/rate-limiter';
 type EventRequestBody = {
   clientSessionId: string;
   eventType: string;
-  payload: Record<string, any>;
+  payload: Record<string, Prisma.InputJsonValue>;
 };
 const INGEST_COLLECT_NAMESPACE = 'ingest:collect';
 
@@ -31,7 +32,7 @@ export default defineEventHandler(async (event) => {
   assertMaxUtf8ByteLength('eventType', body.eventType, eventTypeMaxBytes);
 
   const payloadMaxBytes = readPositiveIntFromEnv('INGEST_COLLECT_PAYLOAD_MAX_BYTES', 24_576, 256);
-  assertJsonPayloadMaxBytes(body.payload as Record<string, unknown>, payloadMaxBytes, 'payload');
+  assertJsonPayloadMaxBytes(body.payload, payloadMaxBytes, 'payload');
 
   await withApiErrorHandling(
     async () => {

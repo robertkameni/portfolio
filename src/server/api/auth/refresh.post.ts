@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw unauthorized('Unauthorized: Missing refresh token.');
   }
 
-  const payload = authService.verifyRefreshToken<{ userId: string }>(refreshToken);
+  const payload = authService.verifyRefreshToken<{ userId: string; }>(refreshToken);
   if (!payload) {
     clearAuthSessionCookies(event);
     throw unauthorized('Unauthorized: Invalid refresh token.');

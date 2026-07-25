@@ -8,7 +8,7 @@ import type { ApiSuccess } from '../shared/types/api.types';
 
 type VisitorProfileEvent = {
   profileData: VisitorProfileAnalysis;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type RealtimeTokenResponse = {

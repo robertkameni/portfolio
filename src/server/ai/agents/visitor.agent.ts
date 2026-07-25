@@ -24,8 +24,12 @@ function fallback(): VisitorProfileAnalysis {
   };
 }
 
-function validateProfile(data: any): data is VisitorProfileAnalysis {
-  return !!data && typeof data.visitorType === 'string' && typeof data.confidenceScore === 'number' && Array.isArray(data.interests);
+function validateProfile(data: unknown): data is VisitorProfileAnalysis {
+  if (!data || typeof data !== 'object') return false;
+  const record = data as Record<string, unknown>;
+  return typeof record['visitorType'] === 'string' &&
+    typeof record['confidenceScore'] === 'number' &&
+    Array.isArray(record['interests']);
 }
 
 async function persistFallbackDecision(sessionId: string, analysis: VisitorProfileAnalysis, reasoning: string): Promise<void> {

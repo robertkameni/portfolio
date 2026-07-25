@@ -1,4 +1,4 @@
-import { inject, PLATFORM_ID, Service } from '@angular/core';
+import { inject, isDevMode, PLATFORM_ID, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -162,7 +162,9 @@ export class AnalyticsService {
           }
 
           if (data?.result === 'skipped') {
-            console.debug('[Analytics] Analysis skipped:', res.code, data.reason);
+            if (isDevMode()) {
+              console.debug('[Analytics] Analysis skipped:', res.code, data.reason);
+            }
           }
         },
         error: (err) => {

@@ -36,8 +36,8 @@ export function applySseHeaders(event: H3Event): void {
 function writeSseData(event: H3Event, payload: unknown, flush = false): void {
   event.node.res.write(`data: ${JSON.stringify(payload)}\n\n`);
 
-  if (flush && typeof (event.node.res as any).flush === 'function') {
-    (event.node.res as any).flush();
+  if (flush && typeof (event.node.res as unknown as { flush?: () => void }).flush === 'function') {
+    (event.node.res as unknown as { flush: () => void }).flush();
   }
 }
 
