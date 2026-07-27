@@ -4,7 +4,6 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 import { withComponentInputBinding, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { adminSessionRefreshInterceptor } from './interceptors/admin-session-refresh.interceptor';
-import { authInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
 import { lastValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -21,7 +20,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
-    provideHttpClient(withFetch(), withInterceptors([requestContextInterceptor, adminSessionRefreshInterceptor, authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([requestContextInterceptor, adminSessionRefreshInterceptor])),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(() => {
       const authService = inject(AuthService);

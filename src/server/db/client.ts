@@ -1,6 +1,7 @@
 import { PrismaClient } from '../../../prisma/generated/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { readPositiveIntFromEnv } from '../utils/env.util';
 
 type GlobalWithPrisma = typeof globalThis & {
   prisma?: PrismaClient;
@@ -10,6 +11,13 @@ const globalWithPrisma = globalThis as GlobalWithPrisma;
 
 let pool: Pool | undefined;
 let poolShutdownRegistered = false;
+
+function resolvePoolMaxConnections(): number {
+  // Serverless (Vercel): keep the pool tiny (1–3) to avoid exhausting Postgres limits.
+  // For Prisma Accelerate or PgBouncer, set DATABASE_POOL_MAX=1 and point DATABASE_URL at the pooler URL.
+  const fallback = process.env['NODE_ENV'] === 'production' ? 2 : 10;
+  return readPositiveIntFromEnv('DATABASE_POOL_MAX', fallback, 1);
+}
 
 function ensurePool(): Pool {
   if (pool) {
@@ -26,7 +34,7 @@ function ensurePool(): Pool {
     allowExitOnIdle: true,
     connectionTimeoutMillis: 5000,
     idleTimeoutMillis: 30000,
-    max: 10,
+    max: resolvePoolMaxConnections(),
   });
 
   newPool.on('error', (error) => {

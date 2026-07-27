@@ -1,12 +1,11 @@
 import { prisma } from '../client';
 import type { Project } from '../../../../prisma/generated/client';
 import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
+import { validateProjectMarkdownContent } from '../../utils/project-content-sanitize';
 
 export type CreateProjectDto = Pick<Project, 'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl' | 'projectUrl' | 'isPublished'>;
 export type UpdateProjectDto = Partial<CreateProjectDto & { isPublished: boolean }>;
 export type ProjectDetail = Project;
-export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
-
 const LIST_SELECT = {
   id: true,
   slug: true,
@@ -19,6 +18,19 @@ const LIST_SELECT = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+export type ProjectListItem = Pick<Project, keyof typeof LIST_SELECT>;
+
+function sanitizeProjectWriteData<T extends { contentMarkdown?: string | null }>(data: T): T {
+  if (!('contentMarkdown' in data)) {
+    return data;
+  }
+
+  return {
+    ...data,
+    contentMarkdown: validateProjectMarkdownContent(data.contentMarkdown),
+  };
+}
 
 export const projectRepository = {
   async findAllPublished(): Promise<ProjectListItem[]> {
@@ -55,12 +67,14 @@ export const projectRepository = {
    * @returns The newly created project.
    */
   async create(data: CreateProjectDto): Promise<Project> {
-    // Only use defaults when no URL was provided
-    const coverImageUrl = data.coverImageUrl?.trim() ? data.coverImageUrl : DEFAULT_PROJECT_COVER_IMAGES[Math.floor(Math.random() * DEFAULT_PROJECT_COVER_IMAGES.length)];
+    const sanitizedData = sanitizeProjectWriteData(data);
+    const coverImageUrl = sanitizedData.coverImageUrl?.trim()
+      ? sanitizedData.coverImageUrl
+      : DEFAULT_PROJECT_COVER_IMAGES[Math.floor(Math.random() * DEFAULT_PROJECT_COVER_IMAGES.length)];
 
     return prisma.project.create({
       data: {
-        ...data,
+        ...sanitizedData,
         coverImageUrl,
       },
     });
@@ -75,7 +89,7 @@ export const projectRepository = {
   async update(id: string, data: UpdateProjectDto): Promise<Project> {
     return prisma.project.update({
       where: { id },
-      data,
+      data: sanitizeProjectWriteData(data),
     });
   },
 
