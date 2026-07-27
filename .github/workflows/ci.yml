@@ -18,13 +18,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          # Angular 22 requires ^22.22.3 || ^24.15.0 || >=26.0.0
           node-version: 24.15.0
           cache: npm
 
-      # Mirrors vercel.json installCommand (`npm install`). Avoid `npm ci` here: a lockfile
-      # generated on Windows can omit Linux optional deps (@parcel/watcher, @emnapi/*) and
-      # fail npm ci on ubuntu-latest with "Missing ... from lock file".
       - name: Install dependencies (npm install + Prisma via postinstall)
         run: npm install
 
