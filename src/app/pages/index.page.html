@@ -1,4 +1,4 @@
-<dev-proxy-bar>
+<site-toolbar>
   @if (devMode) {
   <button
     (click)="setMockProfile('founder')"
@@ -68,7 +68,7 @@
     </button>
     }
   </div>
-</dev-proxy-bar>
+</site-toolbar>
 
 <main class="bg-background min-h-screen font-sans selection:bg-blue-500 pt-4 xs:pt-0 selection:text-white" fadeIn>
   @if (store.isLoading()) {

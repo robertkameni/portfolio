@@ -12,7 +12,7 @@ import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { ProjectForm, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form/project-form';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
-import { DevProxyBar } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar';
+import { SiteToolbarComponent } from '../../../shared/components/site-toolbar/site-toolbar';
 import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { resolveProjectApiUrl } from './project-api-url';
 
@@ -23,7 +23,7 @@ export const routeMeta: RouteMeta = withRenderMode('client', {
 @Component({
   selector: 'edit-project-page',
   standalone: true,
-  imports: [ProjectForm, FadeInDirective, JsonPipe, DevProxyBar, StatusAlert],
+  imports: [ProjectForm, FadeInDirective, JsonPipe, SiteToolbarComponent, StatusAlert],
   templateUrl: './edit.page.html',
 })
 export default class EditProjectPage {

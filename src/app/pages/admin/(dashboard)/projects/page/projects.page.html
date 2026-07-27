@@ -1,4 +1,4 @@
-<dev-proxy-bar homeUrl="/">
+<site-toolbar homeUrl="/">
   <div class="hidden sm:block flex-1"></div>
   <button
     (click)="navigateToAdmin()"
@@ -18,7 +18,7 @@
       {{ showForm() ? copy().adminProjects.cancel : copy().adminProjects.newProject }}
     </button>
   </div>
-</dev-proxy-bar>
+</site-toolbar>
 
 <div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
   <div class="mb-8 flex items-center justify-between">

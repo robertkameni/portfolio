@@ -4,12 +4,12 @@ import { FadeInDirective } from '../../directives/fade-in.directive';
 import { LocaleService } from '../../services/locale.service';
 
 @Component({
-  selector: 'dev-proxy-bar',
+  selector: 'site-toolbar',
   standalone: true,
   imports: [FadeInDirective],
-  templateUrl: './dev-proxy-bar.html',
+  templateUrl: './site-toolbar.html',
 })
-export class DevProxyBar {
+export class SiteToolbarComponent {
   private readonly localeService = inject(LocaleService);
 
   backUrl = input<string | null>(null);

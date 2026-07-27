@@ -5,10 +5,12 @@ import zlib from 'node:zlib';
 const ASSETS_DIR = path.resolve('dist/client/assets');
 const STATS_PATH = path.resolve('dist/bundle-budget-report.json');
 
-/** Fail CI if the largest entry chunk exceeds this gzip size. */
-const MAIN_CHUNK_GZIP_MAX_BYTES = 200 * 1024;
+/** Fail CI if any non-route (initial/shared) chunk exceeds this gzip size. */
+const MAIN_CHUNK_GZIP_MAX_BYTES = 80 * 1024;
 /** Fail CI if any lazy/route chunk exceeds this gzip size. */
-const ROUTE_CHUNK_GZIP_MAX_BYTES = 100 * 1024;
+const ROUTE_CHUNK_GZIP_MAX_BYTES = 70 * 1024;
+/** Fail CI if the combined gzip size of all non-route chunks exceeds this limit. */
+const TOTAL_INITIAL_PAYLOAD_GZIP_MAX_BYTES = 200 * 1024;
 
 function gzipSizeBytes(content) {
   return zlib.gzipSync(content).length;
@@ -44,28 +46,39 @@ function isRouteChunk(name) {
     name.includes('messages.page-') ||
     name.includes('chat-widget-') ||
     name.includes('marked.esm-')
+    // Note: _debug_node-chunk-* is Angular @angular/core runtime (see docs/bundle-analysis.md),
+    // not a lazy route chunk — it counts toward the total initial payload budget.
   );
-}
-
-function isMainEntryChunk(name) {
-  return /^index-[A-Za-z0-9_-]+\.js$/.test(name) || name.startsWith('_debug_node-chunk-') || name.startsWith('_module-chunk-');
 }
 
 const files = collectJsFiles(ASSETS_DIR);
 const violations = [];
+let totalInitialPayloadGzipBytes = 0;
 
 for (const file of files) {
-  if (isMainEntryChunk(file.name) && file.gzipBytes > MAIN_CHUNK_GZIP_MAX_BYTES) {
-    violations.push(
-      `${file.name}: ${formatKb(file.gzipBytes)} gzip exceeds main budget ${formatKb(MAIN_CHUNK_GZIP_MAX_BYTES)}`,
-    );
-  }
+  const isRoute = isRouteChunk(file.name);
 
-  if (isRouteChunk(file.name) && file.gzipBytes > ROUTE_CHUNK_GZIP_MAX_BYTES) {
-    violations.push(
-      `${file.name}: ${formatKb(file.gzipBytes)} gzip exceeds route budget ${formatKb(ROUTE_CHUNK_GZIP_MAX_BYTES)}`,
-    );
+  if (isRoute) {
+    if (file.gzipBytes > ROUTE_CHUNK_GZIP_MAX_BYTES) {
+      violations.push(
+        `${file.name}: ${formatKb(file.gzipBytes)} gzip exceeds route budget ${formatKb(ROUTE_CHUNK_GZIP_MAX_BYTES)}`,
+      );
+    }
+  } else {
+    totalInitialPayloadGzipBytes += file.gzipBytes;
+
+    if (file.gzipBytes > MAIN_CHUNK_GZIP_MAX_BYTES) {
+      violations.push(
+        `${file.name}: ${formatKb(file.gzipBytes)} gzip exceeds main budget ${formatKb(MAIN_CHUNK_GZIP_MAX_BYTES)}`,
+      );
+    }
   }
+}
+
+if (totalInitialPayloadGzipBytes > TOTAL_INITIAL_PAYLOAD_GZIP_MAX_BYTES) {
+  violations.push(
+    `total initial payload: ${formatKb(totalInitialPayloadGzipBytes)} gzip exceeds budget ${formatKb(TOTAL_INITIAL_PAYLOAD_GZIP_MAX_BYTES)}`,
+  );
 }
 
 const report = {
@@ -73,7 +86,9 @@ const report = {
   budgets: {
     mainChunkGzipMaxBytes: MAIN_CHUNK_GZIP_MAX_BYTES,
     routeChunkGzipMaxBytes: ROUTE_CHUNK_GZIP_MAX_BYTES,
+    totalInitialPayloadGzipMaxBytes: TOTAL_INITIAL_PAYLOAD_GZIP_MAX_BYTES,
   },
+  totalInitialPayloadGzipBytes,
   topByGzip: files.slice(0, 15).map(({ name, rawBytes, gzipBytes }) => ({ name, rawBytes, gzipBytes })),
   violations,
 };
@@ -86,6 +101,9 @@ for (const entry of report.topByGzip.slice(0, 8)) {
   console.log(`  ${entry.name}: ${formatKb(entry.gzipBytes)} gzip (${formatKb(entry.rawBytes)} raw)`);
 }
 
+console.log(
+  `[bundles] Total initial payload: ${formatKb(totalInitialPayloadGzipBytes)} gzip (budget ${formatKb(TOTAL_INITIAL_PAYLOAD_GZIP_MAX_BYTES)})`,
+);
 console.log(`[bundles] Report written to ${path.relative(process.cwd(), STATS_PATH)}`);
 
 if (violations.length > 0) {

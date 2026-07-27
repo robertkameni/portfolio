@@ -11,7 +11,7 @@ import { Contact } from './components/contact/contact';
 import { ProjectsSection } from './components/projects/projects-section';
 import { PageLoader } from '../shared/components/page-loader/page-loader';
 import { FadeInDirective } from '../shared/directives/fade-in.directive';
-import { DevProxyBar } from '../shared/components/dev-proxy-bar/dev-proxy-bar';
+import { SiteToolbarComponent } from '../shared/components/site-toolbar/site-toolbar';
 import { VisitorStore } from '../store/visitor.store';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -24,7 +24,7 @@ export const routeMeta = withRenderMode('server');
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [SkillsBento, Hero, About, Footer, Intro, ChatWidget, Contact, ProjectsSection, PageLoader, FadeInDirective, DevProxyBar],
+  imports: [SkillsBento, Hero, About, Footer, Intro, ChatWidget, Contact, ProjectsSection, PageLoader, FadeInDirective, SiteToolbarComponent],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {

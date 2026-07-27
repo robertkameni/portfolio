@@ -191,5 +191,5 @@ See [docs/security.md](docs/security.md) for JWT secret rotation and CSP Report-
 
 ```bash
 npm run build:analyze   # writes dist/stats.html (rollup-plugin-visualizer)
-npm run check:bundles   # enforce gzip budgets after build
+npm run check:bundles   # enforce gzip budgets after build (see docs/bundle-analysis.md for _debug_node-chunk)
 ```
