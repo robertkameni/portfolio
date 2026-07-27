@@ -1,12 +1,12 @@
 import {
-    type ChatHistoryItem,
-    type ChatMessage,
-    type StreamChunk,
-    extractCompletionResponseText,
-    isDeepSeekThinkingEnabled,
-    isRetryableAIRequestError,
-    normalizeChatHistoryItem,
-    streamDeepSeekCompletionChunks,
+  type ChatHistoryItem,
+  type ChatMessage,
+  type StreamChunk,
+  extractCompletionResponseText,
+  isDeepSeekThinkingEnabled,
+  isRetryableAIRequestError,
+  normalizeChatHistoryItem,
+  streamDeepSeekCompletionChunks,
 } from './deepseek.helpers';
 import { readPositiveIntFromEnv } from '../utils/env.util';
 import { sleep } from '../utils/async.util';
