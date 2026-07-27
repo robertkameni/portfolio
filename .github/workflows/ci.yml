@@ -22,9 +22,11 @@ jobs:
           node-version: 24.15.0
           cache: npm
 
-      # Mirrors vercel.json installCommand. `postinstall` runs `prisma generate` (see package.json).
-      - name: Install dependencies (npm ci + Prisma via postinstall)
-        run: npm ci
+      # Mirrors vercel.json installCommand (`npm install`). Avoid `npm ci` here: a lockfile
+      # generated on Windows can omit Linux optional deps (@parcel/watcher, @emnapi/*) and
+      # fail npm ci on ubuntu-latest with "Missing ... from lock file".
+      - name: Install dependencies (npm install + Prisma via postinstall)
+        run: npm install
 
       - name: ESLint
         run: npm run lint
