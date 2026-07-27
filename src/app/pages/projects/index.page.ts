@@ -1,9 +1,12 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
+import { withRenderMode } from '../../shared/routing/render-mode.types';
 import { ProjectsList } from '../components/projects/projects-list';
 import { RouterLink } from '@angular/router';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
 import { ProjectsStore } from '../../store/projects.store';
+
+export const routeMeta = withRenderMode('prerender');
 
 @Component({
   selector: 'projects-page',

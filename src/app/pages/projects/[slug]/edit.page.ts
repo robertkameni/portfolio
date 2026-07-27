@@ -5,6 +5,7 @@ import { httpResource } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouteMeta } from '@analogjs/router';
 import { authGuard } from '../../../guards/auth.guard';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
@@ -15,9 +16,9 @@ import { DevProxyBar } from '../../../shared/components/dev-proxy-bar/dev-proxy-
 import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { resolveProjectApiUrl } from './project-api-url';
 
-export const routeMeta: RouteMeta = {
+export const routeMeta: RouteMeta = withRenderMode('client', {
   canActivate: [authGuard],
-};
+});
 
 @Component({
   selector: 'edit-project-page',

@@ -164,3 +164,32 @@ It is a **modern Angular architecture showcase** with:
 * lightweight server integration via AnalogJS
 * reactive UI powered by Signals
 * pragmatic, production-aware tradeoffs for deployment simplicity
+
+---
+
+## Platform Notes
+
+### Windows prerender limitation
+
+Local production builds on **Windows** skip static prerendering (`vite.config.ts` sets `prerender.routes` to `[]` when `process.platform === 'win32'`). CI and Vercel run on Linux and prerender public routes (`/`, `/projects`, `/projects/:slug`).
+
+**Recommendations:**
+
+- Use **WSL** for local prerender parity with production.
+- Rely on **CI** to validate prerender output on every PR.
+- A dev/build warning is printed when prerender is skipped on Windows.
+
+### Hybrid rendering
+
+Public project routes use **prerender**; admin routes use **client-only** rendering (`nitro.routeRules`). See `src/app/shared/routing/hybrid-render.config.ts` and per-page `routeMeta.renderMode`.
+
+### Security operations
+
+See [docs/security.md](docs/security.md) for JWT secret rotation and CSP Report-Only workflow.
+
+### Bundle analysis
+
+```bash
+npm run build:analyze   # writes dist/stats.html (rollup-plugin-visualizer)
+npm run check:bundles   # enforce gzip budgets after build
+```

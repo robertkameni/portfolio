@@ -19,6 +19,9 @@
     "backfill:project-images": "tsx scripts/backfill-project-cover-images.ts",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
+    "format:fix": "npm run format",
+    "build:analyze": "node scripts/build-analyze.mjs",
+    "check:bundles": "node scripts/check-bundle-budgets.mjs",
     "preview": "vite preview --outDir dist/client --host localhost --port 4173 --strictPort",
     "postinstall": "prisma generate"
   },
@@ -68,6 +71,7 @@
     "jsdom": "^29.1.1",
     "prettier": "^3.9.6",
     "prisma": "^7.9.1",
+    "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.23.1",
     "typescript": "~6.0.3",
     "vite": "^8.1.5",

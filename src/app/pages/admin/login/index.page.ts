@@ -6,6 +6,9 @@ import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
+
+export const routeMeta = withRenderMode('client');
 
 function resolveReturnUrl(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -50,7 +53,7 @@ export default class LoginPage implements OnInit {
       next: () => this.router.navigateByUrl(this.returnUrl),
       error: (err) => {
         this.isLoading.set(false);
-        if ((err as { status?: number }).status === 403) {
+        if ((err as { status?: number; }).status === 403) {
           this.errorMessage.set(this.copy().adminLogin.accessDenied);
           this.showToast(this.copy().adminLogin.accessDeniedToast);
         } else {

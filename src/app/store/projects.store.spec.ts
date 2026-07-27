@@ -10,13 +10,7 @@ describe('ProjectsStore', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection(),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        ProjectsStore,
-        { provide: PLATFORM_ID, useValue: 'browser' },
-      ],
+      providers: [provideZonelessChangeDetection(), provideHttpClient(), provideHttpClientTesting(), ProjectsStore, { provide: PLATFORM_ID, useValue: 'browser' }],
     });
 
     httpMock = TestBed.inject(HttpTestingController);

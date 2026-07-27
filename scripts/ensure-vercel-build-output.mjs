@@ -119,12 +119,23 @@ if (inlineHashes.size > 0) {
   for (const route of routes) {
     const headers = route.headers ?? {};
     const cspKey = Object.keys(headers).find((k) => k.toLowerCase() === 'content-security-policy');
-    if (!cspKey) continue;
+    const reportOnlyKey = Object.keys(headers).find((k) => k.toLowerCase() === 'content-security-policy-report-only');
 
-    headers[cspKey] = headers[cspKey]
-      .replace(/'sha256-[A-Za-z0-9+/=]+'\s*/g, '')
-      .replace(/script-src([^;]*)/, (_, rest) => `script-src${rest.trimEnd()} ${hashFragment}`);
-    patched = true;
+    if (cspKey) {
+      headers[cspKey] = headers[cspKey]
+        .replace(/'sha256-[A-Za-z0-9+/=]+'\s*/g, '')
+        .replace(/script-src([^;]*)/, (_, rest) => `script-src${rest.trimEnd()} ${hashFragment}`);
+    }
+
+    if (reportOnlyKey) {
+      headers[reportOnlyKey] = headers[reportOnlyKey]
+        .replace(/'sha256-[A-Za-z0-9+/=]+'\s*/g, '')
+        .replace(/script-src([^;]*)/, (_, rest) => `script-src${rest.trimEnd()} ${hashFragment}`);
+    }
+
+    if (cspKey || reportOnlyKey) {
+      patched = true;
+    }
   }
 
   if (patched) {

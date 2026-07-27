@@ -1,4 +1,5 @@
 import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
+import { withRenderMode } from '../shared/routing/render-mode.types';
 import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
 import { About } from './components/about/about';
@@ -18,22 +19,12 @@ import { getSiteCopy } from '../shared/i18n/site-copy';
 import { Footer } from './components/footer/footer';
 import { ChatStore } from '../store/chat.store';
 
+export const routeMeta = withRenderMode('server');
+
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [
-    SkillsBento,
-    Hero,
-    About,
-    Footer,
-    Intro,
-    ChatWidget,
-    Contact,
-    ProjectsSection,
-    PageLoader,
-    FadeInDirective,
-    DevProxyBar,
-  ],
+  imports: [SkillsBento, Hero, About, Footer, Intro, ChatWidget, Contact, ProjectsSection, PageLoader, FadeInDirective, DevProxyBar],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {

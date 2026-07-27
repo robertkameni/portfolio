@@ -30,6 +30,9 @@ jobs:
       - name: ESLint
         run: npm run lint
 
+      - name: Prettier format check
+        run: npm run format:check
+
       - name: TypeScript (app + specs)
         run: npm run typecheck
 
@@ -41,6 +44,9 @@ jobs:
         env:
           BUILD_PRESET: vercel
         run: npm run build
+
+      - name: Bundle size budgets
+        run: npm run check:bundles
 
       - name: Verify Vercel Build Output API bundle
         run: node scripts/ensure-vercel-build-output.mjs

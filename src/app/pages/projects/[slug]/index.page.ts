@@ -13,7 +13,10 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
 import { LocaleService } from '../../../shared/services/locale.service';
 import { createProjectMarkdownRenderer, normalizeProjectMarkdown } from '../../../shared/markdown/project-markdown-renderer';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import { resolveProjectApiUrl } from './project-api-url';
+
+export const routeMeta = withRenderMode('prerender');
 
 @Component({
   selector: 'project-overview-page',
@@ -96,13 +99,13 @@ export default class ProjectOverviewPage {
   }
 
   getErrorTitle(error: unknown): string {
-    const status = (error as { status?: number })?.status;
+    const status = (error as { status?: number; })?.status;
     if (status === 404) return this.copy().projectDetail.notFoundTitle;
     return this.copy().projectDetail.loadErrorTitle;
   }
 
   getErrorMessage(error: unknown): string {
-    const e = error as { status?: number };
+    const e = error as { status?: number; };
     if (e?.status === 404) return this.copy().projectDetail.notFoundMessage;
     return extractApiErrorMessage(error, this.copy().projectDetail.loadErrorMessage);
   }

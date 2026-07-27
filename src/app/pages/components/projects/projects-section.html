@@ -13,13 +13,13 @@
     </div>
 
     @if (store.isLoading()) {
-      <div class="py-12 text-gray-400 font-mono text-center">{{ copy().projects.loading }}</div>
+    <div class="py-12 text-gray-400 font-mono text-center">{{ copy().projects.loading }}</div>
     } @else if (store.error()) {
-      <div class="py-12 text-red-400 text-center text-sm">{{ copy().projects.error }}</div>
+    <div class="py-12 text-red-400 text-center text-sm">{{ copy().projects.error }}</div>
     } @else if ((store.data() ?? []).length === 0) {
-      <div class="py-12 text-gray-500 text-center text-sm">{{ copy().projects.empty }}</div>
+    <div class="py-12 text-gray-500 text-center text-sm">{{ copy().projects.empty }}</div>
     } @else {
-      <projects-list [projects]="(store.data() ?? []).slice(0, 3)" [locale]="locale()" />
+    <projects-list [projects]="(store.data() ?? []).slice(0, 3)" [locale]="locale()" />
     }
   </div>
 </section>

@@ -2,6 +2,8 @@
 
 # Compiled output
 /dist
+/dist/stats.html
+/dist/bundle-budget-report.json
 /tmp
 /out-tsc
 /bazel-out
