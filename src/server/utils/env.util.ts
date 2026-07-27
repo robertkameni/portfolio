@@ -34,6 +34,19 @@ export type ServerEnv = z.infer<typeof baseEnvSchema>;
 
 let cachedEnv: ServerEnv | null = null;
 
+/** True when Nitro is generating static HTML — auth/redis are not used. */
+function isPrerenderPhase(): boolean {
+  return import.meta.prerender === true;
+}
+
+function isProductionRuntime(): boolean {
+  if (isPrerenderPhase()) {
+    return false;
+  }
+
+  return process.env['NODE_ENV'] === 'production';
+}
+
 function formatEnvValidationError(error: z.ZodError): string {
   const details = error.issues.map((issue) => `- ${issue.path.join('.') || 'env'}: ${issue.message}`).join('\n');
   return `[env] Invalid server environment configuration:\n${details}`;
@@ -50,9 +63,8 @@ export function validateServerEnv(force = false): ServerEnv {
   }
 
   const env = parsed.data;
-  const isProduction = env.NODE_ENV === 'production';
 
-  if (isProduction) {
+  if (isProductionRuntime()) {
     const productionIssues: string[] = [];
 
     if (!env.ACCESS_TOKEN_SECRET) {
