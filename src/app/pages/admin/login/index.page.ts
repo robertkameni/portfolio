@@ -53,7 +53,7 @@ export default class LoginPage implements OnInit {
       next: () => this.router.navigateByUrl(this.returnUrl),
       error: (err) => {
         this.isLoading.set(false);
-        if ((err as { status?: number; }).status === 403) {
+        if ((err as { status?: number }).status === 403) {
           this.errorMessage.set(this.copy().adminLogin.accessDenied);
           this.showToast(this.copy().adminLogin.accessDeniedToast);
         } else {

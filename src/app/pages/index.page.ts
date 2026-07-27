@@ -6,7 +6,7 @@ import { About } from './components/about/about';
 import { SkillsBento } from './components/skills-bento/skills-bento';
 import { Hero } from './components/hero/hero';
 import { Intro } from './components/intro/intro';
-import { ChatWidget } from '../ai-engine/chat/chat-widget';
+import { ChatWidget } from '../ai-engine';
 import { Contact } from './components/contact/contact';
 import { ProjectsSection } from './components/projects/projects-section';
 import { PageLoader } from '../shared/components/page-loader/page-loader';

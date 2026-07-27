@@ -81,7 +81,7 @@ export function validateChatInput(message: string, history: ChatHistoryItem[]): 
     }
     for (let j = 0; j < item.parts.length; j++) {
       const part = item.parts[j];
-      if (typeof part.text !== 'string' || part.text.length > MAX_HISTORY_ITEM_LENGTH) {
+      if (!part || typeof part.text !== 'string' || part.text.length > MAX_HISTORY_ITEM_LENGTH) {
         return { valid: false, error: `History item ${i}, part ${j} exceeds length limit` };
       }
     }

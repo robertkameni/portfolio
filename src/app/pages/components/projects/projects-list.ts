@@ -1,6 +1,6 @@
 import { Component, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import type { ProjectListItem } from '../../../shared/types/project.types';
 import type { AppLocale } from '../../../shared/i18n/app-locale';

@@ -6,7 +6,7 @@ import { FormField as FormFieldShell } from '../../../shared/components/form-fie
 import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { VisitorStore } from '../../../store/visitor.store';
 import { AnalyticsService } from '../../../services/analytics.service';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { ContactService } from '../../../shared/services/contact.service';

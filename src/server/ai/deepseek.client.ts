@@ -1,11 +1,12 @@
 import {
-  type ChatMessage,
-  type StreamChunk,
-  extractCompletionResponseText,
-  isDeepSeekThinkingEnabled,
-  isRetryableAIRequestError,
-  normalizeChatHistoryItem,
-  streamDeepSeekCompletionChunks,
+    type ChatHistoryItem,
+    type ChatMessage,
+    type StreamChunk,
+    extractCompletionResponseText,
+    isDeepSeekThinkingEnabled,
+    isRetryableAIRequestError,
+    normalizeChatHistoryItem,
+    streamDeepSeekCompletionChunks,
 } from './deepseek.helpers';
 import { readPositiveIntFromEnv } from '../utils/env.util';
 import { sleep } from '../utils/async.util';
@@ -117,7 +118,7 @@ function resolveModelName(requestedModel: string): string {
 }
 
 function toMessages(history: unknown[] = []): ChatMessage[] {
-  const messages = history.map((item) => normalizeChatHistoryItem(item)).filter((item): item is ChatMessage => item !== null);
+  const messages = history.map((item) => normalizeChatHistoryItem(item as ChatHistoryItem)).filter((item): item is ChatMessage => item !== null);
 
   return messages.map((entry) => ({
     role: entry.role,

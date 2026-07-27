@@ -157,6 +157,9 @@ export const analyticsRepository = {
 
       for (let index = 0; index < eventDataList.length; index++) {
         const eventData = eventDataList[index];
+        if (!eventData) {
+          continue;
+        }
         try {
           await prisma.analyticsEvent.create({
             data: {

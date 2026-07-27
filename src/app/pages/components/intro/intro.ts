@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { IntroData } from './interface/intro-data';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 

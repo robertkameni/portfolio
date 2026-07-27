@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { AboutData } from './interface/about-data';
 import { VisitorStore } from '../../../store/visitor.store';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 

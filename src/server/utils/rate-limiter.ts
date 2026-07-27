@@ -82,7 +82,8 @@ class InMemoryRateLimiter implements RateLimiter {
 
     if (validWindow.length >= options.maxRequests) {
       this.buckets.set(bucket, validWindow);
-      return { allowed: false, retryAfterMs: Math.max(0, validWindow[0] + options.windowMs - now) };
+      const oldestTimestamp = validWindow[0] ?? now;
+      return { allowed: false, retryAfterMs: Math.max(0, oldestTimestamp + options.windowMs - now) };
     }
 
     validWindow.push(now);

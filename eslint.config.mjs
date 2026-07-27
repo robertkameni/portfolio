@@ -31,6 +31,22 @@ export default [
     },
   },
   {
+    files: ['src/app/pages/**/*.ts', 'src/app/pages/components/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/ai-engine/**', '!**/ai-engine', '!**/ai-engine/index'],
+              message: 'Import AI features from the public barrel (e.g. "../ai-engine" or "../../../ai-engine") only.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/app/store/**/*.ts'],
     rules: {
       'no-restricted-imports': [
