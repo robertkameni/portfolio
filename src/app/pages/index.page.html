@@ -80,20 +80,30 @@
 
   <hero [name]="profile.title" [cards]="profile.heroCards" [locale]="profile.locale" fadeIn></hero>
 
+  @defer (on idle) {
   <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn></skills-bento>
-
+  } @placeholder (minimum 200ms) {
+  <div class="h-32"></div>
+  } @defer (on idle) {
   <about [data]="profile.about" [locale]="profile.locale" fadeIn></about>
-
+  } @placeholder (minimum 200ms) {
+  <div class="h-64"></div>
+  } @defer (on idle) {
   <projects-section [locale]="profile.locale" fadeIn></projects-section>
-
+  } @placeholder (minimum 200ms) {
+  <div class="h-48"></div>
+  } @defer (on idle) {
   <contact [data]="profile.contact" [locale]="profile.locale" fadeIn></contact>
-
+  } @placeholder (minimum 200ms) {
+  <div class="h-64"></div>
+  } @defer (on idle) {
   <dev-footer></dev-footer>
-  }
+  } @placeholder (minimum 200ms) {
+  <div class="h-16"></div>
+  } }
 </main>
 
-@if (store.data()) {
-@defer (on interaction(chatLauncher)) {
+@if (store.data()) { @defer (on interaction(chatLauncher)) {
 <chat-widget></chat-widget>
 } @placeholder {
 <div class="fixed bottom-6 right-6 z-50">
@@ -114,5 +124,4 @@
     </svg>
   </button>
 </div>
-}
-}
+} }

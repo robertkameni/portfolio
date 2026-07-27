@@ -2,15 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { H3Event } from 'h3';
 
-const {
-  parseMock,
-  enforceMock,
-  loadContextMock,
-  resolveVisitorMock,
-  createModelMock,
-  streamSafeMock,
-  getAIClientMock,
-} = vi.hoisted(() => ({
+const { parseMock, enforceMock, loadContextMock, resolveVisitorMock, createModelMock, streamSafeMock, getAIClientMock } = vi.hoisted(() => ({
   parseMock: vi.fn(),
   enforceMock: vi.fn(),
   loadContextMock: vi.fn(),

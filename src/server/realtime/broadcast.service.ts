@@ -3,7 +3,7 @@ import type { RedisClientType } from 'redis';
 type BroadcastPayload = {
   targetSessionId: string;
   eventName: string;
-  payload: any;
+  payload: unknown;
 };
 
 type BroadcastSubscriber = (data: BroadcastPayload) => void;

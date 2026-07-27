@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3';
 import { getRequestIP } from 'h3';
-import { rateLimiter, readPositiveIntFromEnv } from './rate-limiter';
+import { rateLimiter } from './rate-limiter';
+import { readPositiveIntFromEnv } from './env.util';
 import { badRequest, tooManyRequests } from './api-errors';
 
 export function ingestionClientIpKey(event: H3Event): string {

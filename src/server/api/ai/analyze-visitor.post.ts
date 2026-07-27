@@ -4,7 +4,8 @@ import { prisma } from '../../db/client';
 import { pushUpdateToClient } from '../realtime.get';
 import { badRequest, notFound } from '../../utils/api-errors';
 import { apiSuccess } from '../../utils/api-response';
-import { readPositiveIntFromEnv, rateLimiter } from '../../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../../utils/env.util';
+import { rateLimiter } from '../../utils/rate-limiter';
 
 type AnalyzeVisitorBody = {
   clientSessionId: string;

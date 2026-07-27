@@ -1,12 +1,6 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  getAIClient,
-  requestDeepSeekCompletion,
-  resetAIClientCacheForTests,
-  runDeepSeekCompletion,
-  withAIRetry,
-} from './deepseek.client';
+import { getAIClient, requestDeepSeekCompletion, resetAIClientCacheForTests, runDeepSeekCompletion, withAIRetry } from './deepseek.client';
 
 describe('deepseek.client', () => {
   const originalFetch = globalThis.fetch;
@@ -95,9 +89,12 @@ describe('deepseek.client', () => {
 
   it('withAIRetry does not retry quota errors', async () => {
     await expect(
-      withAIRetry(async () => {
-        throw Object.assign(new Error('quota'), { status: 429 });
-      }, { maxRetries: 2, baseDelayMs: 1, maxDelayMs: 1 }),
+      withAIRetry(
+        async () => {
+          throw Object.assign(new Error('quota'), { status: 429 });
+        },
+        { maxRetries: 2, baseDelayMs: 1, maxDelayMs: 1 },
+      ),
     ).rejects.toThrow('quota');
   });
 });

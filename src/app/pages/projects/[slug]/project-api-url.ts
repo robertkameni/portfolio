@@ -1,8 +1,4 @@
-export function resolveProjectApiUrl(options: {
-  slug: string;
-  previewMode: boolean;
-  clientReady: boolean;
-}): string | undefined {
+export function resolveProjectApiUrl(options: { slug: string; previewMode: boolean; clientReady: boolean }): string | undefined {
   const { slug, previewMode, clientReady } = options;
   if (!slug) {
     return undefined;

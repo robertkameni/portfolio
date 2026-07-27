@@ -109,9 +109,7 @@ describe('deepseek.helpers', () => {
 
     it('streams chunks from a Response body', async () => {
       const encoder = new TextEncoder();
-      const payload =
-        `data: ${JSON.stringify({ choices: [{ delta: { content: 'hi' } }] })}\n` +
-        `data: ${JSON.stringify({ choices: [{ delta: { content: '!' } }] })}\n`;
+      const payload = `data: ${JSON.stringify({ choices: [{ delta: { content: 'hi' } }] })}\n` + `data: ${JSON.stringify({ choices: [{ delta: { content: '!' } }] })}\n`;
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
           controller.enqueue(encoder.encode(payload.slice(0, 20)));

@@ -64,8 +64,6 @@ export class ChatWidgetComponent {
     const message = this.newMessage();
     this.newMessage.set('');
 
-    console.log('Sending message:', message);
-
     this.chatStore.addUserMessage(message);
     this.realtimeService.sendChatMessage(message);
   }

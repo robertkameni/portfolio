@@ -18,12 +18,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 24.15.0
           cache: npm
 
-      # Mirrors vercel.json installCommand. `postinstall` runs `prisma generate` (see package.json).
-      - name: Install dependencies (npm ci + Prisma via postinstall)
-        run: npm ci
+      - name: Install dependencies (npm install + Prisma via postinstall)
+        run: npm install
 
       - name: ESLint
         run: npm run lint

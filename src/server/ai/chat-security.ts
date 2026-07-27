@@ -4,6 +4,11 @@
 
 import { randomUUID } from 'crypto';
 
+type ChatHistoryItem = {
+  role?: unknown;
+  parts?: { text?: unknown }[];
+};
+
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_LENGTH = 20; // max message pairs
 const MAX_HISTORY_ITEM_LENGTH = 1500;
@@ -42,7 +47,7 @@ export function redactSensitiveData(text: string): string {
 /**
  * Validate and sanitize chat input.
  */
-export function validateChatInput(message: string, history: any[]): { valid: boolean; error?: string } {
+export function validateChatInput(message: string, history: ChatHistoryItem[]): { valid: boolean; error?: string } {
   if (!message) {
     return { valid: false, error: 'Message is required' };
   }

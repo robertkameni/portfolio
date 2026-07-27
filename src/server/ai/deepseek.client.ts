@@ -5,9 +5,10 @@ import {
   isDeepSeekThinkingEnabled,
   isRetryableAIRequestError,
   normalizeChatHistoryItem,
-  readStatusCode,
   streamDeepSeekCompletionChunks,
 } from './deepseek.helpers';
+import { readPositiveIntFromEnv } from '../utils/env.util';
+import { sleep } from '../utils/async.util';
 
 export { isRetryableAIRequestError, readStatusCode } from './deepseek.helpers';
 
@@ -88,20 +89,6 @@ export const DEFAULT_DEEPSEEK_CHAT_MODEL = trimmedChatModelEnv || 'deepseek-chat
 /** Visitor classification JSON call (defaults to chat model). */
 export const DEFAULT_DEEPSEEK_VISITOR_MODEL = trimmedVisitorModelEnv || DEFAULT_DEEPSEEK_CHAT_MODEL;
 
-function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
-  const rawValue = process.env[name];
-  if (!rawValue) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(rawValue, 10);
-  if (!Number.isFinite(parsed) || parsed < minValue) {
-    return fallback;
-  }
-
-  return parsed;
-}
-
 function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
   const envDefaults: Required<RetryOptions> = {
     maxRetries: readPositiveIntFromEnv('AI_RETRY_MAX_RETRIES', DEFAULT_RETRY_OPTIONS.maxRetries, 0),
@@ -114,10 +101,6 @@ function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
     baseDelayMs: options.baseDelayMs ?? envDefaults.baseDelayMs,
     maxDelayMs: options.maxDelayMs ?? envDefaults.maxDelayMs,
   };
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function resolveApiKey(): string {

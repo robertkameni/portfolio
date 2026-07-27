@@ -1,4 +1,4 @@
-import { inject, PLATFORM_ID, Service } from '@angular/core';
+import { inject, isDevMode, PLATFORM_ID, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -52,6 +52,12 @@ export class AnalyticsService {
     if (isPlatformBrowser(this.platformId)) {
       this.clientSessionId = sessionStorage.getItem('clientSessionId') || crypto.randomUUID();
       sessionStorage.setItem('clientSessionId', this.clientSessionId);
+
+      window.addEventListener('pagehide', () => {
+        if (this.eventQueue.length === 0) return;
+        const blob = new Blob([JSON.stringify(this.eventQueue)], { type: 'application/json' });
+        navigator.sendBeacon(this.SYNC_ENDPOINT, blob);
+      });
     }
   }
 
@@ -162,7 +168,9 @@ export class AnalyticsService {
           }
 
           if (data?.result === 'skipped') {
-            console.debug('[Analytics] Analysis skipped:', res.code, data.reason);
+            if (isDevMode()) {
+              console.debug('[Analytics] Analysis skipped:', res.code, data.reason);
+            }
           }
         },
         error: (err) => {

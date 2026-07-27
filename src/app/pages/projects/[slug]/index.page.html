@@ -33,7 +33,9 @@
 
       @if (project.coverImageUrl) {
       <div class="overflow-hidden rounded-2xl border border-[#143c1a] bg-[#07120a]">
-        <img [src]="project.coverImageUrl" [alt]="project.title" class="block w-full h-auto" />
+        @if (coverImageAttrs(); as img) {
+        <img [src]="img.src" [srcset]="img.srcset" [sizes]="img.sizes" [alt]="project.title" class="block w-full h-auto" loading="lazy" />
+        }
       </div>
       } @if (project.tags.length > 0) {
       <section class="flex flex-wrap gap-2">
@@ -46,7 +48,7 @@
       <section class="rounded-2xl border border-[#143c1a] bg-surface p-6 md:p-8 space-y-4">
         <h2 class="text-xl font-semibold text-white">{{ copy().projectDetail.overview }}</h2>
         @if (project.contentMarkdown) {
-        <div class="project-markdown max-w-none text-gray-300" [safeHtml]="renderedMarkdown(project.contentMarkdown)"></div>
+        <div class="project-markdown max-w-none text-gray-300" [safeHtml]="renderedMarkdown()"></div>
         } @else {
         <p class="text-gray-300 leading-7">{{ copy().projectDetail.emptyDescription }}</p>
         } @if (project.projectUrl) {

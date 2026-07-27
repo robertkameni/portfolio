@@ -20,6 +20,11 @@ const initialState: ProfileState = {
   error: null,
 };
 
+const CLIENT_CACHE_TTL_MS = 300_000; // 5 minutes
+
+let lastFetchedAt = 0;
+let lastFetchedLocale: AppLocale | null = null;
+
 function profileStateKey(locale: AppLocale) {
   return makeStateKey<LocalizedProfileData>(`portfolio.profile.${locale}`);
 }
@@ -48,6 +53,12 @@ export const PortfolioStore = signalStore(
               return EMPTY;
             }
 
+            // Client-side TTL: skip fetch if we recently fetched the same locale
+            if (isPlatformBrowser(platformId) && lastFetchedLocale === desiredLocale && Date.now() - lastFetchedAt < CLIENT_CACHE_TTL_MS) {
+              patchState(store, { isLoading: false, error: null });
+              return EMPTY;
+            }
+
             const stateKey = profileStateKey(desiredLocale);
 
             if (isPlatformBrowser(platformId)) {
@@ -66,6 +77,8 @@ export const PortfolioStore = signalStore(
                 if (!isPlatformBrowser(platformId)) {
                   transferState.set(stateKey, data);
                 }
+                lastFetchedAt = Date.now();
+                lastFetchedLocale = desiredLocale;
                 patchState(store, { data, isLoading: false, error: null });
               }),
               catchError(() => {

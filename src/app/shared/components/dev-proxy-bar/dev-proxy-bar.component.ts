@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, isDevMode, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { FadeInDirective } from '../../directives/fade-in.directive';
 import { LocaleService } from '../../services/locale.service';
@@ -17,6 +17,7 @@ export class DevProxyBarComponent {
 
   protected locale = this.localeService.locale;
   protected copy = this.localeService.copy;
+  protected readonly devLabel = isDevMode() ? 'DEV-VORSCHAU' : this.copy().devProxy.label;
 
   constructor(private router: Router) {}
 

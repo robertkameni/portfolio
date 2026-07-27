@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 type ContactPayload = {
@@ -8,7 +8,7 @@ type ContactPayload = {
   sessionId: string;
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ContactService {
   private readonly http = inject(HttpClient);
 

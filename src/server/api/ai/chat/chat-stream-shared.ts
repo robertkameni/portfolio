@@ -2,7 +2,8 @@ import type { H3Event } from 'h3';
 import { prisma } from '../../../db/client';
 import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
-import { readPositiveIntFromEnv, rateLimiter } from '../../../utils/rate-limiter';
+import { readPositiveIntFromEnv } from '../../../utils/env.util';
+import { rateLimiter } from '../../../utils/rate-limiter';
 import { buildIntentHint, detectResponseMode, normalizeProjectSummary } from './prompt-helpers';
 import { writeSseError } from './stream-utils';
 

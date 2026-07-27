@@ -7,6 +7,7 @@ import { marked, Renderer } from 'marked';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
+import { getResponsiveImageAttrs } from '../../../shared/utils/image-url';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { SafeHtmlDirective } from '../../../shared/directives/safe-html.directive';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
@@ -43,6 +44,28 @@ export default class ProjectOverviewPage {
       clientReady: this.clientReady,
     }),
   );
+
+  protected readonly coverImageAttrs = computed(() => {
+    const url = this.projectResource.value()?.data?.coverImageUrl;
+    if (!url) return null;
+    return getResponsiveImageAttrs(url);
+  });
+
+  protected readonly renderedMarkdown = computed(() => {
+    const md = this.projectResource.value()?.data?.contentMarkdown;
+    if (!md) return '';
+    try {
+      const cleaned = md
+        .split('\n')
+        .map((line) => line.trimStart())
+        .join('\n')
+        .trim();
+      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
+    } catch (e) {
+      console.error('Markdown parsing error:', e);
+      return `<p>${md}</p>`;
+    }
+  });
 
   private setupRenderer(): Renderer {
     const renderer = new Renderer();
@@ -84,8 +107,7 @@ export default class ProjectOverviewPage {
       return `<strong class="font-semibold">${text}</strong>`;
     };
 
-    renderer.codespan = ({ text }) =>
-      `<code>${text}</code>`;
+    renderer.codespan = ({ text }) => `<code>${text}</code>`;
 
     renderer.table = function (token) {
       const headerCells = token.header
@@ -113,21 +135,6 @@ export default class ProjectOverviewPage {
     };
 
     return renderer;
-  }
-
-  renderedMarkdown(markdown: string): string {
-    try {
-      const cleaned = markdown
-        .split('\n')
-        .map((line) => line.trimStart())
-        .join('\n')
-        .trim();
-
-      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
-    } catch (e) {
-      console.error('Markdown parsing error:', e);
-      return `<p>${markdown}</p>`;
-    }
   }
 
   getErrorTitle(error: unknown): string {

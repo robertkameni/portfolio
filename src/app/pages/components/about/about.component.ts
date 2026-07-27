@@ -18,7 +18,7 @@ export class AboutComponent {
   locale = input<AppLocale>('en');
 
   isExpanded = signal(false);
-  
+
   protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   adaptiveTitle = computed(() => {

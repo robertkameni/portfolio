@@ -1,4 +1,5 @@
 import { prisma } from '../../../db/client';
+import type { VisitorProfileAnalysis } from '../../../ai/agents/visitor.agent';
 
 export async function resolveVisitorContextString(sessionId: string | undefined, logPrefix: string): Promise<string> {
   if (typeof sessionId !== 'string') {
@@ -15,7 +16,7 @@ export async function resolveVisitorContextString(sessionId: string | undefined,
       return '';
     }
 
-    const profile = session.visitor.profile.profileData as any;
+    const profile = session.visitor.profile.profileData as VisitorProfileAnalysis;
     const interests = Array.isArray(profile.interests) && profile.interests.length ? profile.interests.join(', ') : 'none detected';
 
     return `VISITOR CONTEXT: visitorType=${profile.visitorType ?? 'unknown'}; interests=${interests}. Adapt examples and priorities to this audience.`;

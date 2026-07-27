@@ -1,11 +1,12 @@
-import { defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, getRequestIP, readBody } from 'h3';
 import { userRepository } from '../../db/repositories/user.repository';
 import { authService } from '../../auth/auth.service';
 import { ACCESS_TOKEN_MAX_AGE_SECONDS } from '../../auth/access-token-expiry';
 import { setAuthSessionCookies } from '../../utils/auth-cookies';
-import { badRequest, forbidden, serverError, unauthorized } from '../../utils/api-errors';
+import { badRequest, forbidden, serverError, tooManyRequests, unauthorized } from '../../utils/api-errors';
 import { apiSuccess } from '../../utils/api-response';
 import { hasRequiredStringFields } from '../../utils/request-validation';
+import { rateLimiter } from '../../utils/rate-limiter';
 
 type LoginBody = {
   email?: string;
@@ -13,6 +14,16 @@ type LoginBody = {
 };
 
 export default defineEventHandler(async (event) => {
+  const clientIp = getRequestIP(event) ?? 'unknown';
+
+  const rateLimit = await rateLimiter.checkRateLimit('auth', `login:${clientIp}`, {
+    maxRequests: 5,
+    windowMs: 60_000,
+  });
+  if (!rateLimit.allowed) {
+    throw tooManyRequests('Too many login attempts. Please try again later.', 'AUTH_RATE_LIMITED');
+  }
+
   const body = await readBody<LoginBody>(event);
 
   if (!hasRequiredStringFields(body, ['email', 'password'])) {

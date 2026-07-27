@@ -60,7 +60,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
           {
             ...baseProfile.about.highlights[0],
             title: 'Angular-Kompetenz über viele Versionen',
-            description: 'Produktive Systeme von Angular 8 bis Angular 21 ausgeliefert und moderne Framework-Fähigkeiten konsequent eingeführt.',
+            description: 'Produktive Systeme von Angular 8 bis Angular 22 ausgeliefert und moderne Framework-Fähigkeiten konsequent eingeführt.',
           },
           {
             ...baseProfile.about.highlights[1],
