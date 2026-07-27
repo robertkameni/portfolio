@@ -11,9 +11,9 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   selector: 'projects-list',
   standalone: true,
   imports: [TrackBehaviorDirective, DatePipe, RouterLink, NgOptimizedImage],
-  templateUrl: './page/projects-list.component.html',
+  templateUrl: './projects-list.html',
 })
-export class ProjectsListComponent {
+export class ProjectsList {
   private static readonly descriptionCollapsedMaxChars = 160;
 
   private readonly descriptionExpandedIds = signal(new Set<string>());
@@ -38,7 +38,7 @@ export class ProjectsListComponent {
   }
 
   protected descriptionNeedsToggle(text: string): boolean {
-    return text.length > ProjectsListComponent.descriptionCollapsedMaxChars;
+    return text.length > ProjectsList.descriptionCollapsedMaxChars;
   }
 
   protected visibleDescription(project: ProjectListItem): string {
@@ -46,7 +46,7 @@ export class ProjectsListComponent {
     if (!this.descriptionNeedsToggle(text) || this.descriptionExpandedIds().has(project.id)) {
       return text;
     }
-    return truncateDescriptionPreview(text, ProjectsListComponent.descriptionCollapsedMaxChars);
+    return truncateDescriptionPreview(text, ProjectsList.descriptionCollapsedMaxChars);
   }
 
   protected descriptionExpanded(projectId: string): boolean {

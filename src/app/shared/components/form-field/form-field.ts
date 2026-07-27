@@ -4,8 +4,8 @@ import { FieldState } from '@angular/forms/signals';
 @Component({
   selector: 'form-field',
   standalone: true,
-  templateUrl: './form-field.component.html',
+  templateUrl: './form-field.html',
 })
-export class FormFieldComponent {
+export class FormField {
   control = input.required<FieldState<string, string>>();
 }

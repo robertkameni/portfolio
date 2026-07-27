@@ -86,4 +86,20 @@ export default [
       ],
     },
   },
+  {
+    files: ['src/**/*.ts', 'middleware.ts', 'prisma/**/*.ts', 'scripts/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@prisma/client',
+              message: 'Import Prisma types from prisma/generated/client instead of @prisma/client.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];

@@ -11,7 +11,7 @@ import { LocaleService } from '../../shared/services/locale.service';
   imports: [SafeHtmlDirective],
   templateUrl: './chat-widget.html',
 })
-export class ChatWidgetComponent {
+export class ChatWidget {
   public chatStore = inject(ChatStore);
   public realtimeService = inject(RealtimeService);
   private readonly localeService = inject(LocaleService);

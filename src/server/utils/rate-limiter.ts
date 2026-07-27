@@ -17,7 +17,7 @@ type Lease = {
 };
 
 export interface RateLimiter {
-  checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision>;
+  checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision>;
   acquireLease(namespace: string, key: string, ttlMs: number): Promise<Lease>;
   consumeOnce(namespace: string, key: string, value: string): Promise<boolean>;
   setIfAbsent(namespace: string, key: string, value: string, ttlMs: number): Promise<boolean>;
@@ -31,6 +31,22 @@ function getRedisUrl(): string | undefined {
   const rawUrl = process.env['UPSTASH_REDIS_URL'] || process.env['REDIS_URL'];
   const normalizedUrl = rawUrl?.trim();
   return normalizedUrl || undefined;
+}
+
+function assertProductionRedisConfigured(): void {
+  if (process.env['NODE_ENV'] !== 'production') {
+    return;
+  }
+
+  if (getRedisUrl()) {
+    return;
+  }
+
+  throw new Error(
+    '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is required in production. ' +
+    'In-memory rate limiting is not safe on serverless (limits are per-instance). ' +
+    'Set UPSTASH_REDIS_URL in your environment.',
+  );
 }
 
 function registerRateLimiterCleanup(cleanup: () => Promise<void>): void {
@@ -52,10 +68,10 @@ function registerRateLimiterCleanup(cleanup: () => Promise<void>): void {
 
 class InMemoryRateLimiter implements RateLimiter {
   private buckets = new Map<string, number[]>();
-  private leases = new Map<string, { token: string; expiresAt: number }>();
-  private singleUse = new Map<string, { value: string; expiresAt: number }>();
+  private leases = new Map<string, { token: string; expiresAt: number; }>();
+  private singleUse = new Map<string, { value: string; expiresAt: number; }>();
 
-  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision> {
+  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision> {
     const now = Date.now();
     const bucket = `${namespace}:${key}`;
     const cutoff = now - options.windowMs;
@@ -83,7 +99,7 @@ class InMemoryRateLimiter implements RateLimiter {
     if (existing && existing.expiresAt > now) {
       return {
         acquired: false,
-        release: async () => {},
+        release: async () => { },
       };
     }
 
@@ -193,7 +209,7 @@ class RedisRateLimiter implements RateLimiter {
     return this.client;
   }
 
-  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number }): Promise<RateLimitDecision> {
+  async checkRateLimit(namespace: string, key: string, options: { maxRequests: number; windowMs: number; }): Promise<RateLimitDecision> {
     const client = await this.getClient();
     const now = Date.now();
     const bucketStart = Math.floor(now / options.windowMs);
@@ -220,7 +236,7 @@ class RedisRateLimiter implements RateLimiter {
     const result = await client.set(leaseKey, token, { PX: ttlMs, NX: true });
 
     if (!result) {
-      return { acquired: false, release: async () => {} };
+      return { acquired: false, release: async () => { } };
     }
 
     return {
@@ -260,6 +276,8 @@ class RedisRateLimiter implements RateLimiter {
 }
 
 function createRateLimiter(): RateLimiter {
+  assertProductionRedisConfigured();
+
   const useRedis = Boolean(getRedisUrl());
   if (!useRedis) {
     return new InMemoryRateLimiter();
@@ -319,7 +337,7 @@ async function executeRateLimitCheck(
   fallbackLimiter: InMemoryRateLimiter,
   namespace: string,
   key: string,
-  options: { maxRequests: number; windowMs: number },
+  options: { maxRequests: number; windowMs: number; },
 ): Promise<RateLimitDecision> {
   if (!redisHealthy) {
     return fallbackLimiter.checkRateLimit(namespace, key, options);

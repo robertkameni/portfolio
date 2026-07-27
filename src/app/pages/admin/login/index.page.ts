@@ -21,7 +21,7 @@ function resolveReturnUrl(value: string | null): string {
   imports: [FormsModule, FadeInDirective],
   templateUrl: './index.page.html',
 })
-export default class LoginPageComponent implements OnInit {
+export default class LoginPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

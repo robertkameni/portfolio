@@ -7,10 +7,10 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
 @Component({
   selector: 'skills-bento',
   standalone: true,
-  templateUrl: './page/skills-bento.html',
+  templateUrl: './skills-bento.html',
   imports: [TrackBehaviorDirective],
 })
-export class SkillsBentoComponent {
+export class SkillsBento {
   skills = input.required<SkillBentoData[]>();
   locale = input<AppLocale>('en');
   protected readonly copy = computed(() => getSiteCopy(this.locale()));

@@ -10,9 +10,9 @@ export type { ProjectFormModel, ProjectPayload } from '../../types/project.types
   selector: 'project-form',
   standalone: true,
   imports: [FormField],
-  templateUrl: './project-form.component.html',
+  templateUrl: './project-form.html',
 })
-export class ProjectFormComponent {
+export class ProjectForm {
   locale = input<AppLocale>('en');
   formTitle = input<string>('Project');
   submitLabel = input<string>('Save');

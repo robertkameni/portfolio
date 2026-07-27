@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
-import { ProjectsListComponent } from '../components/projects/projects-list.component';
+import { ProjectsList } from '../components/projects/projects-list';
 import { RouterLink } from '@angular/router';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
@@ -8,7 +8,7 @@ import { ProjectsStore } from '../../store/projects.store';
 @Component({
   selector: 'projects-page',
   standalone: true,
-  imports: [ProjectsListComponent, RouterLink],
+  imports: [ProjectsList, RouterLink],
   templateUrl: './index.page.html',
 })
 export default class ProjectsPage implements OnInit {

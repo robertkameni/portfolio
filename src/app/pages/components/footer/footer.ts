@@ -4,8 +4,8 @@ import { Component } from '@angular/core';
   selector: 'dev-footer',
   standalone: true,
   imports: [],
-  templateUrl: './page/footer.html',
+  templateUrl: './footer.html',
 })
-export class FooterComponent {
+export class Footer {
   year = new Date().getFullYear();
 }

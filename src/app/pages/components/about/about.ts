@@ -9,9 +9,9 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   selector: 'about',
   standalone: true,
   imports: [TrackBehaviorDirective],
-  templateUrl: './page/about.component.html',
+  templateUrl: './about.html',
 })
-export class AboutComponent {
+export class About {
   private readonly visitorStore = inject(VisitorStore);
 
   data = input.required<AboutData>();

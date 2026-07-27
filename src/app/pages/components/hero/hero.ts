@@ -9,9 +9,9 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   selector: 'hero',
   standalone: true,
   imports: [TrackBehaviorDirective],
-  templateUrl: './page/hero.html',
+  templateUrl: './hero.html',
 })
-export class HeroComponent {
+export class Hero {
   private readonly visitorStore = inject(VisitorStore);
 
   name = input.required<string>();

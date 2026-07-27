@@ -19,9 +19,9 @@ type IntroViewModel = {
   selector: 'intro',
   standalone: true,
   imports: [TrackBehaviorDirective],
-  templateUrl: './page/intro.html',
+  templateUrl: './intro.html',
 })
-export class IntroComponent {
+export class Intro {
   data = input.required<IntroData>();
   locale = input<AppLocale>('en');
 

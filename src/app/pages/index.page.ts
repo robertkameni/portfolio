@@ -1,42 +1,42 @@
 import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
 import { PortfolioStore } from '../store/portfolio.store';
 import { AnalyticsService } from '../services/analytics.service';
-import { AboutComponent } from './components/about/about.component';
-import { SkillsBentoComponent } from './components/skills-bento/skills-bento';
-import { HeroComponent } from './components/hero/hero';
-import { IntroComponent } from './components/intro/intro';
-import { ChatWidgetComponent } from '../ai-engine/chat/chat-widget';
-import { ContactComponent } from './components/contact/contact';
-import { ProjectsSectionComponent } from './components/projects/projects-section.component';
-import { PageLoaderComponent } from '../shared/components/page-loader/page-loader.component';
+import { About } from './components/about/about';
+import { SkillsBento } from './components/skills-bento/skills-bento';
+import { Hero } from './components/hero/hero';
+import { Intro } from './components/intro/intro';
+import { ChatWidget } from '../ai-engine/chat/chat-widget';
+import { Contact } from './components/contact/contact';
+import { ProjectsSection } from './components/projects/projects-section';
+import { PageLoader } from '../shared/components/page-loader/page-loader';
 import { FadeInDirective } from '../shared/directives/fade-in.directive';
-import { DevProxyBarComponent } from '../shared/components/dev-proxy-bar/dev-proxy-bar.component';
+import { DevProxyBar } from '../shared/components/dev-proxy-bar/dev-proxy-bar';
 import { VisitorStore } from '../store/visitor.store';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { getSiteCopy } from '../shared/i18n/site-copy';
-import { FooterComponent } from './components/footer/footer';
+import { Footer } from './components/footer/footer';
 import { ChatStore } from '../store/chat.store';
 
 @Component({
   selector: 'home',
   standalone: true,
   imports: [
-    SkillsBentoComponent,
-    HeroComponent,
-    AboutComponent,
-    FooterComponent,
-    IntroComponent,
-    ChatWidgetComponent,
-    ContactComponent,
-    ProjectsSectionComponent,
-    PageLoaderComponent,
+    SkillsBento,
+    Hero,
+    About,
+    Footer,
+    Intro,
+    ChatWidget,
+    Contact,
+    ProjectsSection,
+    PageLoader,
     FadeInDirective,
-    DevProxyBarComponent,
+    DevProxyBar,
   ],
   templateUrl: './index.page.html',
 })
-export default class HomeComponent implements OnInit {
+export default class Home implements OnInit {
   store = inject(PortfolioStore);
   private visitorStore = inject(VisitorStore);
   auth = inject(AuthService);

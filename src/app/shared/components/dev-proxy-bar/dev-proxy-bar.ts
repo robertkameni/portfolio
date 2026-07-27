@@ -7,9 +7,9 @@ import { LocaleService } from '../../services/locale.service';
   selector: 'dev-proxy-bar',
   standalone: true,
   imports: [FadeInDirective],
-  templateUrl: './dev-proxy-bar.component.html',
+  templateUrl: './dev-proxy-bar.html',
 })
-export class DevProxyBarComponent {
+export class DevProxyBar {
   private readonly localeService = inject(LocaleService);
 
   backUrl = input<string | null>(null);

@@ -3,8 +3,8 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'page-loader',
   standalone: true,
-  templateUrl: './page-loader.component.html',
+  templateUrl: './page-loader.html',
 })
-export class PageLoaderComponent {
+export class PageLoader {
   message = input('Loading...');
 }

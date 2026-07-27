@@ -14,7 +14,7 @@ import { LocaleService } from '../../../shared/services/locale.service';
   styleUrl: './messages/messages.page.css',
   templateUrl: './messages/messages.page.html',
 })
-export default class AdminMessagesComponent implements OnInit {
+export default class AdminMessages implements OnInit {
   private readonly adminMessagesService = inject(AdminMessagesService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
