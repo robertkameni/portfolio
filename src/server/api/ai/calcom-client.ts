@@ -1,4 +1,7 @@
-export const CALCOM_API_VERSION = '2026-02-25';
+export const CALCOM_SLOTS_API_VERSION = '2024-09-04';
+export const CALCOM_BOOKINGS_API_VERSION = '2026-02-25';
+/** @deprecated Use CALCOM_SLOTS_API_VERSION or CALCOM_BOOKINGS_API_VERSION */
+export const CALCOM_API_VERSION = CALCOM_BOOKINGS_API_VERSION;
 export const CALCOM_BASE_URL = 'https://api.cal.com';
 export const DEFAULT_MEETING_LENGTH_MINUTES = 30;
 export const DEFAULT_TIMEZONE = 'Europe/Berlin';
@@ -8,13 +11,13 @@ export type CalcomSlot = {
   end?: string;
 };
 
-export type CalcomAvailabilityResult = { success: true; date: string; timeZone: string; slots: CalcomSlot[] } | { success: false; error: string };
+export type CalcomAvailabilityResult = { success: true; date: string; timeZone: string; slots: CalcomSlot[]; } | { success: false; error: string; };
 
-export type CalcomBookingResult = { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string } | { success: false; error: string };
+export type CalcomBookingResult = { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string; } | { success: false; error: string; };
 
 export type CalcomClient = {
   getAvailability(dateInput: string): Promise<CalcomAvailabilityResult>;
-  bookMeeting(input: { email: string; name?: string; startTime: string }): Promise<CalcomBookingResult>;
+  bookMeeting(input: { email: string; name?: string; startTime: string; }): Promise<CalcomBookingResult>;
 };
 
 type CalcomConfig = {
@@ -23,7 +26,7 @@ type CalcomConfig = {
   username?: string;
 };
 
-function resolveDateRange(dateInput: string): { start: string; end: string; label: string } {
+function resolveDateRange(dateInput: string): { start: string; end: string; label: string; } {
   const normalized = dateInput.trim().toLowerCase();
   const now = new Date();
 
@@ -97,15 +100,15 @@ function humanizeCalcomError(status: number, body: string): string {
 }
 
 export function createCalcomClient(config: CalcomConfig): CalcomClient {
-  const headers = {
+  const authHeaders = {
     Authorization: `Bearer ${config.apiKey}`,
-    'Content-Type': 'application/json',
-    'cal-api-version': CALCOM_API_VERSION,
+    Accept: 'application/json',
+    'User-Agent': 'robert-kameni-portfolio/1.0',
   };
 
   return {
     async getAvailability(dateInput: string): Promise<CalcomAvailabilityResult> {
-      let range: { start: string; end: string; label: string };
+      let range: { start: string; end: string; label: string; };
       try {
         range = resolveDateRange(dateInput);
       } catch (error) {
@@ -123,7 +126,10 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
       try {
         const response = await fetch(`${CALCOM_BASE_URL}/v2/slots?${params.toString()}`, {
           method: 'GET',
-          headers,
+          headers: {
+            ...authHeaders,
+            'cal-api-version': CALCOM_SLOTS_API_VERSION,
+          },
           signal: AbortSignal.timeout(15_000),
         });
 
@@ -132,7 +138,7 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
           return { success: false, error: humanizeCalcomError(response.status, text) };
         }
 
-        const payload = (await response.json()) as { data?: unknown };
+        const payload = (await response.json()) as { data?: unknown; };
         const slots = flattenSlots(payload.data);
         return {
           success: true,
@@ -148,7 +154,7 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
       }
     },
 
-    async bookMeeting(input: { email: string; name?: string; startTime: string }): Promise<CalcomBookingResult> {
+    async bookMeeting(input: { email: string; name?: string; startTime: string; }): Promise<CalcomBookingResult> {
       const body: Record<string, unknown> = {
         start: input.startTime,
         eventTypeId: config.eventTypeId,
@@ -159,14 +165,14 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
         },
       };
 
-      if (config.username) {
-        body['metadata'] = { username: config.username };
-      }
-
       try {
         const response = await fetch(`${CALCOM_BASE_URL}/v2/bookings`, {
           method: 'POST',
-          headers,
+          headers: {
+            ...authHeaders,
+            'Content-Type': 'application/json',
+            'cal-api-version': CALCOM_BOOKINGS_API_VERSION,
+          },
           body: JSON.stringify(body),
           signal: AbortSignal.timeout(20_000),
         });

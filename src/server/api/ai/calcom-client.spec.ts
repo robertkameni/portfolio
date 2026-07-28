@@ -14,6 +14,32 @@ describe('calcom-client', () => {
     vi.restoreAllMocks();
   });
 
+  it('uses the slots API version when fetching availability', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: {} }),
+    }) as unknown as typeof fetch;
+
+    const client = createCalcomClient({ apiKey: 'cal_test', eventTypeId: 123 });
+    await client.getAvailability('tomorrow');
+
+    const [, init] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect((init.headers as Record<string, string>)['cal-api-version']).toBe('2024-09-04');
+  });
+
+  it('uses the bookings API version when creating a booking', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: { uid: 'booking-1', start: '2026-07-29T13:00:00Z' } }),
+    }) as unknown as typeof fetch;
+
+    const client = createCalcomClient({ apiKey: 'cal_test', eventTypeId: 123 });
+    await client.bookMeeting({ email: 'guest@example.com', startTime: '2026-07-29T13:00:00Z' });
+
+    const [, init] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect((init.headers as Record<string, string>)['cal-api-version']).toBe('2026-02-25');
+  });
+
   it('returns availability slots on success', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
