@@ -36,11 +36,7 @@ function toolLimitReached(sessionId: string | undefined): ToolExecutionResult | 
   return null;
 }
 
-export async function executeSchedulingTool(
-  toolName: SchedulingToolName,
-  rawArguments: string,
-  options: ExecuteToolOptions = {},
-): Promise<ToolExecutionResult> {
+export async function executeSchedulingTool(toolName: SchedulingToolName, rawArguments: string, options: ExecuteToolOptions = {}): Promise<ToolExecutionResult> {
   const sessionId = options.sessionId;
   const calcom = options.calcomClient ?? getCalcomClient();
   const args = parseToolArguments(rawArguments);

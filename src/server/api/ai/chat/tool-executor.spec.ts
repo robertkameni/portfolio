@@ -37,11 +37,10 @@ describe('tool-executor', () => {
   it('rejects booking when email does not match chat confirmation', async () => {
     setEmailConfirmation('s1', 'real@example.com');
 
-    const result = await executeSchedulingTool(
-      'book_meeting',
-      JSON.stringify({ email: 'other@example.com', start_time: '2026-07-29T13:00:00Z' }),
-      { sessionId: 's1', calcomClient: mockCalcom },
-    );
+    const result = await executeSchedulingTool('book_meeting', JSON.stringify({ email: 'other@example.com', start_time: '2026-07-29T13:00:00Z' }), {
+      sessionId: 's1',
+      calcomClient: mockCalcom,
+    });
 
     const parsed = JSON.parse(result.result) as { success: boolean; error?: string };
     expect(parsed.success).toBe(false);
@@ -51,11 +50,10 @@ describe('tool-executor', () => {
   it('books when email matches chat confirmation', async () => {
     setEmailConfirmation('s1', 'guest@example.com');
 
-    const result = await executeSchedulingTool(
-      'book_meeting',
-      JSON.stringify({ email: 'guest@example.com', start_time: '2026-07-29T13:00:00Z' }),
-      { sessionId: 's1', calcomClient: mockCalcom },
-    );
+    const result = await executeSchedulingTool('book_meeting', JSON.stringify({ email: 'guest@example.com', start_time: '2026-07-29T13:00:00Z' }), {
+      sessionId: 's1',
+      calcomClient: mockCalcom,
+    });
 
     const parsed = JSON.parse(result.result) as { success: boolean; bookingUid?: string };
     expect(parsed.success).toBe(true);

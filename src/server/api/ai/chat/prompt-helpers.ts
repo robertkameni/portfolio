@@ -72,12 +72,12 @@ function buildSchedulingRules(schedulingMode: boolean, calcomEnabled: boolean): 
 
   return [
     'SCHEDULING MODE: The user wants to book a call or meeting.',
-    'Use the get_availability tool to fetch Robert\'s actual free slots before proposing times.',
+    "Use the get_availability tool to fetch Robert's actual free slots before proposing times.",
     'Once the user confirms a time and provides their email, use the book_meeting tool to create a real booking.',
     'Cal.com sends the calendar invite with the meeting link automatically — you do not send email yourself.',
     'Do NOT claim to have sent an email or created an invite unless book_meeting returned success: true.',
     'If a tool returns success: false, explain the error honestly and either propose alternative times via get_availability or redirect to /contact.',
-    'Do NOT ask for the user\'s email unless you are about to call book_meeting after they confirmed a slot.',
+    "Do NOT ask for the user's email unless you are about to call book_meeting after they confirmed a slot.",
   ];
 }
 
@@ -115,7 +115,7 @@ export function buildSystemInstruction(
 
   const capabilityRules = calcomEnabled
     ? [
-        'You represent Robert in this chat and have tools to book real meetings on Robert\'s calendar via Cal.com.',
+        "You represent Robert in this chat and have tools to book real meetings on Robert's calendar via Cal.com.",
         'Never claim you sent email or created calendar events unless a tool confirmed it.',
       ]
     : [
@@ -129,7 +129,7 @@ export function buildSystemInstruction(
     'Goal of each reply: help the user evaluate role fit, impact, stack depth, and collaboration style.',
     'Tone: human, warm, direct, specific, and concise.',
     'Do not invent facts. If data is missing, say it clearly and propose a concrete follow-up.',
-    'Stay in character as Robert\'s portfolio representative. Do not mention being an AI model unless directly asked about your capabilities.',
+    "Stay in character as Robert's portfolio representative. Do not mention being an AI model unless directly asked about your capabilities.",
     ...capabilityRules,
     'Avoid markdown emphasis with asterisks. Do not use * or **.',
     'Keep answers focused on outcomes: responsibilities, architecture decisions, measurable impact, and delivery timelines.',

@@ -8,13 +8,9 @@ export type CalcomSlot = {
   end?: string;
 };
 
-export type CalcomAvailabilityResult =
-  | { success: true; date: string; timeZone: string; slots: CalcomSlot[] }
-  | { success: false; error: string };
+export type CalcomAvailabilityResult = { success: true; date: string; timeZone: string; slots: CalcomSlot[] } | { success: false; error: string };
 
-export type CalcomBookingResult =
-  | { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string }
-  | { success: false; error: string };
+export type CalcomBookingResult = { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string } | { success: false; error: string };
 
 export type CalcomClient = {
   getAvailability(dateInput: string): Promise<CalcomAvailabilityResult>;

@@ -34,8 +34,7 @@ export async function runSchedulingToolLoop(messages: ChatMessage[], options: Ru
 
     if (!canInvokeTool(options.sessionId)) {
       return {
-        content:
-          'I cannot run more calendar actions in this chat session. Please use the contact form at /contact or email robertkameni83@gmail.com to arrange a meeting.',
+        content: 'I cannot run more calendar actions in this chat session. Please use the contact form at /contact or email robertkameni83@gmail.com to arrange a meeting.',
         tool_calls: [],
       };
     }
