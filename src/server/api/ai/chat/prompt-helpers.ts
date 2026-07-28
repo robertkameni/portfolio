@@ -72,12 +72,13 @@ function buildSchedulingRules(schedulingMode: boolean, calcomEnabled: boolean): 
 
   return [
     'SCHEDULING MODE: The user wants to book a call or meeting.',
-    "Use the get_availability tool to fetch Robert's actual free slots before proposing times.",
-    'Once the user confirms a time and provides their email, use the book_meeting tool to create a real booking.',
+    'A get_availability tool result for tomorrow is already in the conversation — use ONLY those exact start times.',
+    'Never invent broad ranges like "09:00–17:00" or generic 30-minute blocks.',
+    'List at most 6 concrete slots from the tool result, then ask the user to pick one.',
+    'Once the user confirms one exact slot and their email is known, call book_meeting with that ISO start time.',
     'Cal.com sends the calendar invite with the meeting link automatically — you do not send email yourself.',
-    'Do NOT claim to have sent an email or created an invite unless book_meeting returned success: true.',
+    'Do NOT claim a booking was created unless book_meeting returned success: true.',
     'If a tool returns success: false, explain the error honestly and either propose alternative times via get_availability or redirect to /contact.',
-    "Do NOT ask for the user's email unless you are about to call book_meeting after they confirmed a slot.",
   ];
 }
 

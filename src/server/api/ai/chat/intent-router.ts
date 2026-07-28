@@ -1,5 +1,6 @@
 const SCHEDULING_KEYWORDS = [
   'termin',
+  'termi',
   'call',
   'meeting',
   'gespräch',
@@ -7,6 +8,9 @@ const SCHEDULING_KEYWORDS = [
   'einladung',
   'anruf',
   'vereinbaren',
+  'buchen',
+  'erstelle',
+  'erstellen',
   'schedule',
   'book',
   'calendar',

@@ -2,6 +2,7 @@ import type { H3Event } from 'h3';
 import type { ChatMessage } from '../../../ai/deepseek.helpers';
 import { normalizeChatHistoryItem } from '../../../ai/deepseek.helpers';
 import { runSchedulingToolLoop } from './chat-tool-loop';
+import { buildSchedulingDateContext } from './scheduling-availability';
 
 type StreamOptions = {
   streamErrorMessage?: string;
@@ -64,7 +65,11 @@ export async function streamSchedulingChatResponse(
   try {
     writeSseData(event, { ready: true }, true);
 
-    const messages = toChatMessages(input.history, input.systemInstruction, input.message);
+    const messages = toChatMessages(
+      input.history,
+      [input.systemInstruction, buildSchedulingDateContext()].filter(Boolean).join('\n'),
+      input.message,
+    );
     const completion = await runSchedulingToolLoop(messages, {
       model: input.model,
       maxOutputTokens: input.maxOutputTokens,

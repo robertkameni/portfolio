@@ -10,6 +10,7 @@ import { enforceChatRateLimits, loadChatPromptContext } from './chat-stream-shar
 import { detectSchedulingIntent, extractEmailFromMessage } from './intent-router';
 import { isSchedulingMode, setSchedulingMode, setEmailConfirmation } from './conversation-state';
 import { streamSchedulingChatResponse } from './scheduling-stream';
+import { streamSchedulingFallbackResponse } from './scheduling-fallback';
 
 export async function handleChatStreamPost(event: H3Event): Promise<void> {
   const requestId = generateRequestId();
@@ -66,6 +67,13 @@ export async function handleChatStreamPost(event: H3Event): Promise<void> {
           onError: (error) => logChatInteraction(requestId, sessionId, message, 'error', error as Error),
         },
       );
+      return;
+    }
+
+    if (schedulingMode && !calcomEnabled) {
+      await streamSchedulingFallbackResponse(event, {
+        onCompleted: () => logChatInteraction(requestId, sessionId, message, 'completed'),
+      });
       return;
     }
 

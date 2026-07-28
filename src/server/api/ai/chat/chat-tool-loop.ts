@@ -2,6 +2,7 @@ import type { ChatMessage, CompletionMessage } from '../../../ai/deepseek.helper
 import { runDeepSeekCompletion } from '../../../ai/deepseek.client';
 import { executeSchedulingTool } from './tool-executor';
 import { canInvokeTool } from './conversation-state';
+import { seedAvailabilityToolExchange } from './scheduling-availability';
 import { SCHEDULING_TOOLS, type SchedulingToolName } from './tools';
 
 const MAX_TOOL_LOOP_ITERATIONS = 5;
@@ -17,7 +18,9 @@ function isSchedulingToolName(name: string): name is SchedulingToolName {
 }
 
 export async function runSchedulingToolLoop(messages: ChatMessage[], options: RunSchedulingToolLoopOptions): Promise<CompletionMessage> {
-  const workingMessages = [...messages];
+  const workingMessages = canInvokeTool(options.sessionId)
+    ? await seedAvailabilityToolExchange(messages, { sessionId: options.sessionId })
+    : [...messages];
 
   for (let iteration = 0; iteration < MAX_TOOL_LOOP_ITERATIONS; iteration += 1) {
     const completion = await runDeepSeekCompletion(workingMessages, {
