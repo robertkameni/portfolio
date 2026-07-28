@@ -11,6 +11,9 @@
   // Build-only tooling is out of app graph / security surface.
   "ignorePatterns": ["scripts/**"],
 
+  // Prisma client is generated locally (prisma/generated is gitignored); import is valid after `prisma generate`.
+  "ignoreUnresolvedImports": ["../../prisma/generated/client"],
+
   "health": {
     "suggestInlineSuppression": false,
     "ignore": ["scripts/**", "**/*.html"],

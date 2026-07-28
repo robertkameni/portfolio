@@ -1,9 +1,9 @@
 import { prisma } from '../client';
-import type { Project } from '../../../../prisma/generated/client';
+import type { Project } from '../prisma-types';
 import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
 
 export type CreateProjectDto = Pick<Project, 'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl' | 'projectUrl' | 'isPublished'>;
-export type UpdateProjectDto = Partial<CreateProjectDto & { isPublished: boolean }>;
+export type UpdateProjectDto = Partial<CreateProjectDto & { isPublished: boolean; }>;
 export type ProjectDetail = Project;
 export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
 
