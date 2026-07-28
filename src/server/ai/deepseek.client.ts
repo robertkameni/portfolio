@@ -1,7 +1,8 @@
 import {
   type ChatMessage,
+  type CompletionMessage,
   type StreamChunk,
-  extractCompletionResponseText,
+  extractCompletionMessage,
   isDeepSeekThinkingEnabled,
   isRetryableAIRequestError,
   normalizeChatHistoryItem,
@@ -122,6 +123,8 @@ function toMessages(history: unknown[] = []): ChatMessage[] {
   return messages.map((entry) => ({
     role: entry.role,
     content: entry.content,
+    ...(entry.tool_calls ? { tool_calls: entry.tool_calls } : {}),
+    ...(entry.tool_call_id ? { tool_call_id: entry.tool_call_id } : {}),
   }));
 }
 
@@ -144,6 +147,7 @@ export async function requestDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
+    tools?: unknown[];
   },
 ): Promise<Response> {
   const apiKey = resolveApiKey();
@@ -155,6 +159,7 @@ export async function requestDeepSeekCompletion(
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
     thinking?: { type: 'disabled' | 'enabled' };
+    tools?: unknown[];
   } = {
     model: options.model,
     messages: promptMessages,
@@ -168,6 +173,10 @@ export async function requestDeepSeekCompletion(
 
   if (options.responseMimeType === 'application/json') {
     payload.response_format = { type: 'json_object' };
+  }
+
+  if (options.tools && options.tools.length > 0) {
+    payload.tools = options.tools;
   }
 
   const timeoutMs = resolveDeepSeekFetchTimeoutMs();
@@ -217,19 +226,22 @@ export async function runDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
+    tools?: unknown[];
   },
-): Promise<{ response: { text: () => string } }> {
+): Promise<{ response: { text: () => string; message: () => CompletionMessage } }> {
   const response = await requestDeepSeekCompletion(promptMessages, {
     stream: false,
     model: options.model,
     maxOutputTokens: options.maxOutputTokens,
     responseMimeType: options.responseMimeType,
+    tools: options.tools,
   });
   const payload = await response.json();
-  const responseText = extractCompletionResponseText(payload);
+  const completionMessage = extractCompletionMessage(payload);
   return {
     response: {
-      text: () => String(responseText),
+      text: () => String(completionMessage.content),
+      message: () => completionMessage,
     },
   };
 }

@@ -1,13 +1,18 @@
 export type ResponseMode = 'concise_recruiter' | 'storytelling_recruiter';
 
+export type BuildSystemInstructionOptions = {
+  schedulingMode?: boolean;
+  calcomEnabled?: boolean;
+};
+
 export function buildIntentHint(userMessage: string): string {
   const text = userMessage.toLowerCase();
 
-  if (text.includes('availability') || text.includes('start date') || text.includes('available')) {
+  if (text.includes('availability') || text.includes('start date') || text.includes('verfügbar') || text.includes('verfuegbar')) {
     return [
       'INTENT: availability_setup.',
-      'Do not say you are only a digital twin or that you cannot have availability.',
       'Answer in first person with practical hiring context: preferred setup, collaboration style, and willingness to align on start date.',
+      'If the user wants to book a call, use scheduling tools instead of discussing availability abstractly.',
       'If exact date is not known in context, state that clearly and ask for project timeline.',
     ].join(' ');
   }
@@ -52,7 +57,39 @@ type BaseProfileContext = {
   skills?: Array<{ name?: string }>;
 };
 
-export function buildSystemInstruction(baseProfile: BaseProfileContext, projectSummary: string, visitorContextString: string, mode: ResponseMode, intentHint: string): string {
+function buildSchedulingRules(schedulingMode: boolean, calcomEnabled: boolean): string[] {
+  if (!schedulingMode) {
+    return [];
+  }
+
+  if (!calcomEnabled) {
+    return [
+      'SCHEDULING MODE: The user wants to book a call, but calendar tools are not configured right now.',
+      'Do NOT claim to have sent an email or created a calendar invite.',
+      'Direct the user to the contact form at /contact or email robertkameni83@gmail.com to arrange a meeting.',
+    ];
+  }
+
+  return [
+    'SCHEDULING MODE: The user wants to book a call or meeting.',
+    'Use the get_availability tool to fetch Robert\'s actual free slots before proposing times.',
+    'Once the user confirms a time and provides their email, use the book_meeting tool to create a real booking.',
+    'Cal.com sends the calendar invite with the meeting link automatically — you do not send email yourself.',
+    'Do NOT claim to have sent an email or created an invite unless book_meeting returned success: true.',
+    'If a tool returns success: false, explain the error honestly and either propose alternative times via get_availability or redirect to /contact.',
+    'Do NOT ask for the user\'s email unless you are about to call book_meeting after they confirmed a slot.',
+  ];
+}
+
+export function buildSystemInstruction(
+  baseProfile: BaseProfileContext,
+  projectSummary: string,
+  visitorContextString: string,
+  mode: ResponseMode,
+  intentHint: string,
+  options: BuildSystemInstructionOptions = {},
+): string {
+  const { schedulingMode = false, calcomEnabled = false } = options;
   const about = baseProfile?.about?.paragraphs?.join(' ') ?? '';
   const skills = Array.isArray(baseProfile?.skills)
     ? baseProfile.skills
@@ -76,18 +113,30 @@ export function buildSystemInstruction(baseProfile: BaseProfileContext, projectS
           'Target length: 70-160 words unless the user asks for details.',
         ];
 
+  const capabilityRules = calcomEnabled
+    ? [
+        'You represent Robert in this chat and have tools to book real meetings on Robert\'s calendar via Cal.com.',
+        'Never claim you sent email or created calendar events unless a tool confirmed it.',
+      ]
+    : [
+        'You represent Robert in this chat only. You cannot send email or create calendar events without the scheduling tools.',
+        'Never claim you sent email or created calendar invites.',
+      ];
+
   return [
-    'You are Robert Kameni speaking in first person.',
+    'You speak as Robert Kameni about his career, skills, and experience.',
     'Primary audience is recruiters and hiring managers unless user intent says otherwise.',
     'Goal of each reply: help the user evaluate role fit, impact, stack depth, and collaboration style.',
     'Tone: human, warm, direct, specific, and concise.',
     'Do not invent facts. If data is missing, say it clearly and propose a concrete follow-up.',
-    'Never break character. Do not mention being an AI model or digital twin.',
+    'Stay in character as Robert\'s portfolio representative. Do not mention being an AI model unless directly asked about your capabilities.',
+    ...capabilityRules,
     'Avoid markdown emphasis with asterisks. Do not use * or **.',
     'Keep answers focused on outcomes: responsibilities, architecture decisions, measurable impact, and delivery timelines.',
     'Avoid generic claims. Every answer must include at least one concrete fact from profile or project context.',
     'Use plain markdown bullets with - when listing points.',
     ...modeSpecificRules,
+    ...buildSchedulingRules(schedulingMode, calcomEnabled),
     intentHint,
     '',
     `PROFILE CONTEXT: name=${baseProfile?.name ?? 'Robert Kameni'}; title=${baseProfile?.title ?? 'Senior Angular Developer'}; intro=${baseProfile?.intro?.description ?? ''}; about=${about}; coreSkills=${skills}`,
