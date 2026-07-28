@@ -5,9 +5,9 @@
  * through to the SPA shell). Use direct URLs instead.
  */
 
-const RESPONSIVE_WIDTHS = [480, 768, 1200, 1600] as const;
+const RESPONSIVE_WIDTHS = [480, 640, 768, 1024] as const;
 const DEFAULT_QUALITY = 75;
-const DEFAULT_SIZES = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px';
+const DEFAULT_SIZES = '(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 640px';
 
 export type ResponsiveImageAttributes = {
   src: string;
@@ -30,26 +30,36 @@ function normalizeImageUrl(url: string): string {
 }
 
 /** Unsplash supports width via query param — build a real srcset without /_vercel/image. */
-function buildUnsplashSrcset(url: string): string | null {
+function buildUnsplashSrcset(url: string): { srcset: string; src: string } | null {
   try {
     const parsed = new URL(url);
     if (!parsed.hostname.endsWith('images.unsplash.com')) {
       return null;
     }
 
-    return RESPONSIVE_WIDTHS.map((width) => {
+    const srcset = RESPONSIVE_WIDTHS.map((width) => {
       parsed.searchParams.set('w', String(width));
       parsed.searchParams.set('q', String(DEFAULT_QUALITY));
       return `${parsed.toString()} ${width}w`;
     }).join(', ');
+
+    const srcWidth = RESPONSIVE_WIDTHS[2] ?? 768;
+    parsed.searchParams.set('w', String(srcWidth));
+    parsed.searchParams.set('q', String(DEFAULT_QUALITY));
+
+    return { srcset, src: parsed.toString() };
   } catch {
     return null;
   }
 }
 
 export function getResponsiveImageAttrs(url: string, sizes = DEFAULT_SIZES): ResponsiveImageAttributes {
-  const src = normalizeImageUrl(url);
-  const srcset = buildUnsplashSrcset(src) ?? src;
+  const normalized = normalizeImageUrl(url);
+  const unsplash = buildUnsplashSrcset(normalized);
 
-  return { src, srcset, sizes };
+  if (unsplash) {
+    return { src: unsplash.src, srcset: unsplash.srcset, sizes };
+  }
+
+  return { src: normalized, srcset: normalized, sizes };
 }
