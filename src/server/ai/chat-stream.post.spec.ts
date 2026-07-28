@@ -61,11 +61,15 @@ vi.mock('../api/ai/chat/intent-router', () => ({
   extractEmailFromMessage: vi.fn(() => null),
 }));
 
-vi.mock('../api/ai/chat/conversation-state', () => ({
-  isSchedulingMode: vi.fn(() => false),
-  setSchedulingMode: vi.fn(),
-  setEmailConfirmation: vi.fn(),
-}));
+vi.mock('../api/ai/chat/conversation-state', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api/ai/chat/conversation-state')>();
+  return {
+    ...actual,
+    isSchedulingMode: vi.fn(() => false),
+    setSchedulingMode: vi.fn(),
+    setEmailConfirmation: vi.fn(),
+  };
+});
 
 vi.mock('../utils/env.util', () => ({
   isCalcomConfigured: vi.fn(() => false),
