@@ -2,7 +2,7 @@ import { defineEventHandler } from 'h3';
 import { projectRepository } from '../../db/repositories/project.repository';
 import { adminGuard } from '../../utils/authGuard';
 import { requireRouterParam } from '../../utils/route-params';
-import type { Project } from '../../../../prisma/generated/client';
+import type { Project } from '../../db/prisma-types';
 import { notFound, withApiErrorHandling } from '../../utils/api-errors';
 import { queryEquals } from '../../utils/query-params';
 import { apiSuccess } from '../../utils/api-response';
