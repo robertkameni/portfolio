@@ -49,6 +49,7 @@
     "postcss": "^8.5.23",
     "prismjs": "^1.30.0",
     "redis": "^6.1.0",
+    "resend": "^6.18.1",
     "rxjs": "~7.8.2",
     "tailwindcss": "^4.3.3",
     "tslib": "^2.8.1",

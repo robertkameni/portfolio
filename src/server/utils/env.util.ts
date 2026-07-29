@@ -51,3 +51,25 @@ export function assertCalcomConfigured(): CalcomConfig {
   }
   return config;
 }
+
+// ─── Resend (email notifications) ────────────────────────────────────────────
+
+export type ResendConfig = {
+  apiKey: string;
+  notificationEmail: string;
+  fromEmail: string;
+};
+
+export function getResendConfig(): ResendConfig | null {
+  const apiKey = readOptionalEnv('RESEND_API_KEY');
+  if (!apiKey) {
+    return null;
+  }
+  const notificationEmail = readOptionalEnv('NOTIFICATION_EMAIL') ?? 'robertkameni83@gmail.com';
+  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL') ?? 'onboarding@resend.dev';
+  return { apiKey, notificationEmail, fromEmail };
+}
+
+export function isResendConfigured(): boolean {
+  return getResendConfig() !== null;
+}
