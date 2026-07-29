@@ -1,19 +1,13 @@
 /**
- * Generates responsive image attributes for Vercel's Image Optimization API.
- * Fallback: returns the raw URL without optimization if Vercel is unavailable.
+ * Responsive image attributes for project cover images.
+ *
+ * Note: `/_vercel/image` is not available on the Analog Nitro preset (requests fall
+ * through to the SPA shell). Use direct URLs instead.
  */
 
-const RESPONSIVE_WIDTHS = [480, 768, 1200, 1600] as const;
+const RESPONSIVE_WIDTHS = [480, 640, 768, 1024] as const;
 const DEFAULT_QUALITY = 75;
-
-function isExternalUrl(url: string): boolean {
-  return url.startsWith('http://') || url.startsWith('https://');
-}
-
-function vercelOptimizedSrc(originalUrl: string, width: number, quality = DEFAULT_QUALITY): string {
-  const encoded = encodeURIComponent(originalUrl);
-  return `/_vercel/image?url=${encoded}&w=${width}&q=${quality}`;
-}
+const DEFAULT_SIZES = '(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 640px';
 
 export type ResponsiveImageAttributes = {
   src: string;
@@ -21,27 +15,51 @@ export type ResponsiveImageAttributes = {
   sizes: string;
 };
 
-/**
- * Returns responsive image attributes with srcset for Vercel-optimized variants.
- * For non-external URLs (local assets), returns the raw URL without optimization.
- */
-export function getResponsiveImageAttrs(url: string, sizes?: string): ResponsiveImageAttributes {
-  // Local assets (e.g. /images/hero.jpg) don't need Vercel optimization proxy
-  // and won't work through the /_vercel/image endpoint without the full origin.
-  if (!isExternalUrl(url)) {
-    return {
-      src: url,
-      srcset: url,
-      sizes: sizes ?? '100vw',
-    };
+/** Same-site absolute URLs (e.g. production /assets/*) → relative path. */
+function normalizeImageUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.pathname.startsWith('/assets/')) {
+      return `${parsed.pathname}${parsed.search}`;
+    }
+  } catch {
+    // Relative or invalid URL — use as-is.
   }
 
-  const srcsetEntries = RESPONSIVE_WIDTHS.map((w) => `${vercelOptimizedSrc(url, w)} ${w}w`);
-  const midWidth = RESPONSIVE_WIDTHS[2] ?? 1200;
+  return url;
+}
 
-  return {
-    src: vercelOptimizedSrc(url, midWidth),
-    srcset: srcsetEntries.join(', '),
-    sizes: sizes ?? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px',
-  };
+/** Unsplash supports width via query param — build a real srcset without /_vercel/image. */
+function buildUnsplashSrcset(url: string): { srcset: string; src: string } | null {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.endsWith('images.unsplash.com')) {
+      return null;
+    }
+
+    const srcset = RESPONSIVE_WIDTHS.map((width) => {
+      parsed.searchParams.set('w', String(width));
+      parsed.searchParams.set('q', String(DEFAULT_QUALITY));
+      return `${parsed.toString()} ${width}w`;
+    }).join(', ');
+
+    const srcWidth = RESPONSIVE_WIDTHS[2] ?? 768;
+    parsed.searchParams.set('w', String(srcWidth));
+    parsed.searchParams.set('q', String(DEFAULT_QUALITY));
+
+    return { srcset, src: parsed.toString() };
+  } catch {
+    return null;
+  }
+}
+
+export function getResponsiveImageAttrs(url: string, sizes = DEFAULT_SIZES): ResponsiveImageAttributes {
+  const normalized = normalizeImageUrl(url);
+  const unsplash = buildUnsplashSrcset(normalized);
+
+  if (unsplash) {
+    return { src: unsplash.src, srcset: unsplash.srcset, sizes };
+  }
+
+  return { src: normalized, srcset: normalized, sizes };
 }

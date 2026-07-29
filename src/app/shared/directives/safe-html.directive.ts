@@ -1,20 +1,26 @@
-import { Directive, ElementRef, Input, SecurityContext, inject } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Directive, HostBinding, Input, SecurityContext, inject } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 /**
  * Binds HTML after DomSanitizer.sanitize(SecurityContext.HTML).
- * Prefer this over template [innerHTML] so sanitization is centralized.
+ * HostBinding routes through Angular's innerHTML + Trusted Types pipeline (CSP-safe in production).
  */
 @Directive({
   selector: '[safeHtml]',
   standalone: true,
 })
 export class SafeHtmlDirective {
-  private readonly el = inject(ElementRef<HTMLElement>);
   private readonly sanitizer = inject(DomSanitizer);
+  private htmlValue = '';
 
   @Input()
   set safeHtml(value: string | null | undefined) {
-    this.el.nativeElement.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, value ?? '') ?? '';
+    this.htmlValue = value ?? '';
+  }
+
+  @HostBinding('innerHTML')
+  get boundHtml(): SafeHtml {
+    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, this.htmlValue) ?? '';
+    return this.sanitizer.bypassSecurityTrustHtml(sanitized);
   }
 }

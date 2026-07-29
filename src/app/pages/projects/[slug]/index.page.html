@@ -32,9 +32,9 @@
       </header>
 
       @if (project.coverImageUrl) {
-      <div class="overflow-hidden rounded-2xl border border-[#143c1a] bg-[#07120a]">
+      <div class="overflow-hidden rounded-2xl border border-[#143c1a] bg-[#07120a] h-44 sm:h-52 md:h-60 lg:h-72">
         @if (coverImageAttrs(); as img) {
-        <img [src]="img.src" [srcset]="img.srcset" [sizes]="img.sizes" [alt]="project.title" class="block w-full h-auto" loading="lazy" />
+        <img [src]="img.src" [srcset]="img.srcset" [sizes]="img.sizes" [alt]="project.title" class="block w-full h-full object-cover object-center" loading="lazy" />
         }
       </div>
       } @if (project.tags.length > 0) {
