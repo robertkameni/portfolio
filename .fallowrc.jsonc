@@ -14,6 +14,11 @@
   // Prisma client is generated locally (prisma/generated is gitignored); import is valid after `prisma generate`.
   "ignoreUnresolvedImports": ["../../prisma/generated/client"],
 
+  // Turn off unrendered-component for the whole project — these are Angular pages loaded by the router
+  "rules": {
+    "unrendered-component": "off"
+  },
+
   "health": {
     "suggestInlineSuppression": false,
     "ignore": ["scripts/**", "**/*.html"],
@@ -35,7 +40,7 @@
         "src/app/pages/**/index.page.ts"
       ],
       "rules": {
-        "unrendered-components": "off"
+        "unrendered-component": "off"
       }
     }
   ]
