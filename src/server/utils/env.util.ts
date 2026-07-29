@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 export function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
   const raw = process.env[name];
   if (!raw) {
@@ -14,78 +12,64 @@ export function readPositiveIntFromEnv(name: string, fallback: number, minValue 
   return parsed;
 }
 
-const optionalNonEmptyString = z.string().trim().min(1).optional();
-
-const baseEnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
-  DATABASE_URL: z.string().trim().min(1, 'DATABASE_URL is required.'),
-  ACCESS_TOKEN_SECRET: optionalNonEmptyString,
-  REFRESH_TOKEN_SECRET: optionalNonEmptyString,
-  UPSTASH_REDIS_URL: optionalNonEmptyString,
-  REDIS_URL: optionalNonEmptyString,
-  DEEPSEEK_API_KEY: optionalNonEmptyString,
-  GEMINI_API_KEY: optionalNonEmptyString,
-  REALTIME_SESSION_TOKEN_SECRET: optionalNonEmptyString,
-  SESSION_SECRET: optionalNonEmptyString,
-  JWT_SECRET: optionalNonEmptyString,
-});
-
-export type ServerEnv = z.infer<typeof baseEnvSchema>;
-
-let cachedEnv: ServerEnv | null = null;
-
-/** True when Nitro is generating static HTML — auth/redis are not used. */
-function isPrerenderPhase(): boolean {
-  return import.meta.prerender === true;
+export function readOptionalEnv(name: string): string | undefined {
+  const raw = process.env[name]?.trim();
+  return raw && raw.length > 0 ? raw : undefined;
 }
 
-function isProductionRuntime(): boolean {
-  if (isPrerenderPhase()) {
-    return false;
+export type CalcomConfig = {
+  apiKey: string;
+  eventTypeId: number;
+  username?: string;
+};
+
+export function getCalcomConfig(): CalcomConfig | null {
+  const apiKey = readOptionalEnv('CALCOM_API_KEY');
+  const eventTypeIdRaw = readOptionalEnv('CALCOM_EVENT_TYPE_ID');
+  const username = readOptionalEnv('CALCOM_USERNAME');
+
+  if (!apiKey || !eventTypeIdRaw) {
+    return null;
   }
 
-  return process.env['NODE_ENV'] === 'production';
+  const eventTypeId = Number.parseInt(eventTypeIdRaw, 10);
+  if (!Number.isFinite(eventTypeId) || eventTypeId <= 0) {
+    return null;
+  }
+
+  return { apiKey, eventTypeId, username };
 }
 
-function formatEnvValidationError(error: z.ZodError): string {
-  const details = error.issues.map((issue) => `- ${issue.path.join('.') || 'env'}: ${issue.message}`).join('\n');
-  return `[env] Invalid server environment configuration:\n${details}`;
+export function isCalcomConfigured(): boolean {
+  return getCalcomConfig() !== null;
 }
 
-export function validateServerEnv(force = false): ServerEnv {
-  if (cachedEnv && !force) {
-    return cachedEnv;
+export function assertCalcomConfigured(): CalcomConfig {
+  const config = getCalcomConfig();
+  if (!config) {
+    throw new Error('Cal.com is not configured. Set CALCOM_API_KEY and CALCOM_EVENT_TYPE_ID.');
   }
-
-  const parsed = baseEnvSchema.safeParse(process.env);
-  if (!parsed.success) {
-    throw new Error(formatEnvValidationError(parsed.error));
-  }
-
-  const env = parsed.data;
-
-  if (isProductionRuntime()) {
-    const productionIssues: string[] = [];
-
-    if (!env.ACCESS_TOKEN_SECRET) {
-      productionIssues.push('- ACCESS_TOKEN_SECRET is required in production.');
-    }
-    if (!env.REFRESH_TOKEN_SECRET) {
-      productionIssues.push('- REFRESH_TOKEN_SECRET is required in production.');
-    }
-    if (!env.UPSTASH_REDIS_URL && !env.REDIS_URL) {
-      productionIssues.push('- UPSTASH_REDIS_URL or REDIS_URL is required in production.');
-    }
-
-    if (productionIssues.length > 0) {
-      throw new Error(`[env] Invalid server environment configuration:\n${productionIssues.join('\n')}`);
-    }
-  }
-
-  cachedEnv = env;
-  return env;
+  return config;
 }
 
-export function getServerEnv(): ServerEnv {
-  return validateServerEnv();
+// ─── Resend (email notifications) ────────────────────────────────────────────
+
+export type ResendConfig = {
+  apiKey: string;
+  notificationEmail: string;
+  fromEmail: string;
+};
+
+export function getResendConfig(): ResendConfig | null {
+  const apiKey = readOptionalEnv('RESEND_API_KEY');
+  if (!apiKey) {
+    return null;
+  }
+  const notificationEmail = readOptionalEnv('NOTIFICATION_EMAIL') ?? 'robertkameni83@gmail.com';
+  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL') ?? 'onboarding@resend.dev';
+  return { apiKey, notificationEmail, fromEmail };
+}
+
+export function isResendConfigured(): boolean {
+  return getResendConfig() !== null;
 }

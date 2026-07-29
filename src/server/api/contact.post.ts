@@ -5,6 +5,7 @@ import { apiAck } from '../utils/api-response';
 import { hasRequiredStringFields } from '../utils/request-validation';
 import { assertMaxUtf8ByteLength, enforceIngestRateLimit } from '../utils/ingestion-guards';
 import { readPositiveIntFromEnv } from '../utils/env.util';
+import { sendContactNotification } from '../utils/email.service';
 
 const INGEST_CONTACT_NAMESPACE = 'ingest:contact';
 
@@ -79,6 +80,13 @@ export default defineEventHandler(async (event) => {
     'Internal Server Error: Could not save your message.',
     { logMessage: 'Contact form submission error:' },
   );
+
+  // Fire-and-forget email notification — never blocks the form response
+  void sendContactNotification({
+    senderName: body.name || null,
+    senderEmail: body.email,
+    body: body.message,
+  });
 
   event.node.res.statusCode = 201;
   return apiAck('Message received. I will get back to you soon!', 'CONTACT_MESSAGE_CREATED');

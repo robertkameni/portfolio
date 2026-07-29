@@ -1,11 +1,16 @@
 import { defineEventHandler, getRequestIP, setHeader, type H3Event } from 'h3';
 import { DEFAULT_DEEPSEEK_CHAT_MODEL, getAIClient } from '../../../ai/deepseek.client';
 import { generateRequestId, logChatInteraction } from '../../../ai/chat-security';
+import { isCalcomConfigured } from '../../../utils/env.util';
 import { buildSystemInstruction } from './prompt-helpers';
 import { parseAndValidatePostChatRequest } from './stream-request-utils';
 import { applySseHeaders, createChatModelSafe, streamChatResponseSafe, writeSseError } from './stream-utils';
 import { resolveVisitorContextString } from './visitor-context';
 import { enforceChatRateLimits, loadChatPromptContext } from './chat-stream-shared';
+import { detectSchedulingIntent, extractEmailFromMessage } from './intent-router';
+import { isSchedulingMode, setSchedulingMode, setEmailConfirmation } from './conversation-state';
+import { streamSchedulingChatResponse } from './scheduling-stream';
+import { streamSchedulingFallbackResponse } from './scheduling-fallback';
 
 export async function handleChatStreamPost(event: H3Event): Promise<void> {
   const requestId = generateRequestId();
@@ -25,17 +30,59 @@ export async function handleChatStreamPost(event: H3Event): Promise<void> {
       return;
     }
 
+    if (detectSchedulingIntent(message)) {
+      setSchedulingMode(limiterKey, true);
+    }
+
+    const emailInMessage = extractEmailFromMessage(message);
+    if (emailInMessage && (isSchedulingMode(limiterKey) || detectSchedulingIntent(message))) {
+      setEmailConfirmation(limiterKey, emailInMessage);
+    }
+
     logChatInteraction(requestId, sessionId, message, 'started');
 
     const { baseProfile, projectSummary, responseMode, intentHint } = await loadChatPromptContext(message);
     const visitorContextString = await resolveVisitorContextString(sessionId, '[chat-stream] visitor context fetch failed');
+    const schedulingMode = isSchedulingMode(limiterKey);
+    const calcomEnabled = isCalcomConfigured();
+
+    const systemInstruction = buildSystemInstruction(baseProfile, projectSummary, visitorContextString, responseMode, intentHint, {
+      schedulingMode,
+      calcomEnabled,
+    });
+
+    if (schedulingMode && calcomEnabled) {
+      await streamSchedulingChatResponse(
+        event,
+        {
+          systemInstruction,
+          history,
+          message,
+          model: DEFAULT_DEEPSEEK_CHAT_MODEL,
+          sessionId: limiterKey,
+          maxOutputTokens: 800,
+        },
+        {
+          onCompleted: () => logChatInteraction(requestId, sessionId, message, 'completed'),
+          onError: (error) => logChatInteraction(requestId, sessionId, message, 'error', error as Error),
+        },
+      );
+      return;
+    }
+
+    if (schedulingMode && !calcomEnabled) {
+      await streamSchedulingFallbackResponse(event, {
+        onCompleted: () => logChatInteraction(requestId, sessionId, message, 'completed'),
+      });
+      return;
+    }
 
     const model = createChatModelSafe(
       event,
       () =>
         getAIClient().getGenerativeModel({
           model: DEFAULT_DEEPSEEK_CHAT_MODEL,
-          systemInstruction: buildSystemInstruction(baseProfile, projectSummary, visitorContextString, responseMode, intentHint),
+          systemInstruction,
         }),
       {
         onError: (error) => logChatInteraction(requestId, sessionId, message, 'error', error as Error),

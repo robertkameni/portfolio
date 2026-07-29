@@ -1,6 +1,6 @@
 import { prisma } from '../client';
 import { sleep } from '../../utils/async.util';
-import { Prisma, type AnalyticsEvent, type VisitorSession } from '../../../../prisma/generated/client';
+import type { AnalyticsEvent, Prisma, VisitorSession } from '../prisma-types';
 
 export type AnalyticsEventDto = {
   sessionId: string;

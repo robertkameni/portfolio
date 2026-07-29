@@ -1,4 +1,4 @@
-import { Prisma } from '../../../prisma/generated/client';
+import type { Prisma } from '../db/prisma-types';
 import { defineEventHandler, readBody, getRequestIP, getHeader } from 'h3';
 import { analyticsRepository, type AnalyticsEventDto } from '../db/repositories/analytics.repository';
 import { badRequest, withApiErrorHandling } from '../utils/api-errors';

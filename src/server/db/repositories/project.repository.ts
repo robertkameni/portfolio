@@ -1,5 +1,5 @@
 import { prisma } from '../client';
-import type { Project } from '../../../../prisma/generated/client';
+import type { Project } from '../prisma-types';
 import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
 import { validateProjectMarkdownContent } from '../../utils/project-content-sanitize';
 

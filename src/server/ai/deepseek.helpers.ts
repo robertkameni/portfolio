@@ -5,8 +5,19 @@ export type ChatHistoryItem = {
 };
 
 export type ChatMessage = {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+  role: 'system' | 'user' | 'assistant' | 'tool';
+  content: string | null;
+  tool_calls?: ToolCall[];
+  tool_call_id?: string;
+};
+
+export type ToolCall = {
+  id: string;
+  type: 'function';
+  function: {
+    name: string;
+    arguments: string;
+  };
 };
 
 export type StreamChunk = { text: () => string };
@@ -75,6 +86,57 @@ export function normalizeChatHistoryItem(item: ChatHistoryItem): ChatMessage | n
     .join('\n');
 
   return content.length > 0 ? { role, content } : null;
+}
+
+export type CompletionMessage = {
+  content: string;
+  tool_calls: ToolCall[];
+};
+
+export function extractCompletionMessage(payload: unknown): CompletionMessage {
+  const message = (payload as { choices?: Array<{ message?: Record<string, unknown> }> })?.choices?.[0]?.message;
+  if (!message) {
+    return { content: '', tool_calls: [] };
+  }
+
+  const content = typeof message['content'] === 'string' ? message['content'] : '';
+  const toolCallsRaw = message['tool_calls'];
+  const tool_calls: ToolCall[] = Array.isArray(toolCallsRaw)
+    ? toolCallsRaw
+        .map((call) => {
+          if (!call || typeof call !== 'object') {
+            return null;
+          }
+          const record = call as Record<string, unknown>;
+          const fn = record['function'];
+          if (!record['id'] || typeof record['id'] !== 'string' || !fn || typeof fn !== 'object') {
+            return null;
+          }
+          const fnRecord = fn as Record<string, unknown>;
+          if (typeof fnRecord['name'] !== 'string') {
+            return null;
+          }
+          return {
+            id: record['id'],
+            type: 'function' as const,
+            function: {
+              name: fnRecord['name'],
+              arguments: typeof fnRecord['arguments'] === 'string' ? fnRecord['arguments'] : '{}',
+            },
+          };
+        })
+        .filter((call): call is ToolCall => call !== null)
+    : [];
+
+  if (content.length > 0) {
+    return { content, tool_calls };
+  }
+
+  if (isDeepSeekThinkingEnabled() && typeof message['reasoning_content'] === 'string') {
+    return { content: message['reasoning_content'], tool_calls };
+  }
+
+  return { content: '', tool_calls };
 }
 
 export function textFromCompletionDelta(delta: unknown): string {
@@ -160,19 +222,5 @@ export async function* streamDeepSeekCompletionChunks(response: Response): Async
 }
 
 export function extractCompletionResponseText(payload: unknown): string {
-  const message = (payload as { choices?: Array<{ message?: Record<string, unknown> }> })?.choices?.[0]?.message;
-  if (!message) {
-    return '';
-  }
-
-  const content = typeof message['content'] === 'string' ? message['content'] : '';
-  if (content.length > 0) {
-    return content;
-  }
-
-  if (isDeepSeekThinkingEnabled() && typeof message['reasoning_content'] === 'string') {
-    return message['reasoning_content'];
-  }
-
-  return '';
+  return extractCompletionMessage(payload).content;
 }
