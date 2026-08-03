@@ -44,7 +44,7 @@ function isRouteChunk(name) {
     name.includes('index.page-') ||
     name.includes('projects.page-') ||
     name.includes('messages.page-') ||
-    name.includes('chat-widget-') ||
+    name.includes('ai-engine-') ||
     name.includes('marked.esm-')
     // Note: _debug_node-chunk-* is Angular @angular/core runtime (see docs/bundle-analysis.md),
     // not a lazy route chunk — it counts toward the total initial payload budget.

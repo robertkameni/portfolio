@@ -6,12 +6,22 @@ Rotating JWT signing secrets invalidates all existing sessions. Plan for a brief
 
 ### Access and refresh token lifecycle
 
-| Token | Env var | Default lifetime | Cookie / usage |
-| --- | --- | --- | --- |
-| Access token | `ACCESS_TOKEN_SECRET` | **20 minutes** | `auth_token` httpOnly cookie |
-| Refresh token | `REFRESH_TOKEN_SECRET` | **7 days** | `refresh_token` httpOnly cookie |
+## Cookie Names
 
-Constants live in `src/server/auth/access-token-expiry.ts` and `src/server/auth/auth.service.ts`. Keep cookie `maxAge` and JWT `expiresIn` in sync when changing timeouts.
+| Cookie | Purpose | httpOnly | Defined in |
+| --- | --- | --- | --- |
+| `auth_token` | Short-lived access token (20 min) | yes | `src/server/utils/auth-cookies.ts` |
+| `refreshToken` | Long-lived refresh token (7 days) | yes | `src/server/utils/auth-cookies.ts` |
+| `auth_hint` | Non-sensitive hint for client bootstrap skip | no | `src/server/utils/auth-cookies.ts` |
+
+### JWT Secrets
+
+| Token | Env var | Default lifetime |
+| --- | --- | --- |
+| Access token | `ACCESS_TOKEN_SECRET` | **20 minutes** |
+| Refresh token | `REFRESH_TOKEN_SECRET` | **7 days** |
+
+Keep cookie `maxAge` and JWT `expiresIn` in sync when changing timeouts. Constants live in `src/server/auth/access-token-expiry.ts` and `src/server/auth/auth.service.ts`.
 
 ### Manual rotation (recommended)
 
@@ -36,9 +46,33 @@ A transition window accepting both old and new secrets requires code changes in 
 
 ---
 
-## Content Security Policy (Report-Only)
+## Content Security Policy
 
-The enforced CSP is set in `vercel.json`. A parallel **Report-Only** header logs violations to `/api/csp-report` without blocking users.
+### Enforced (production)
+
+The enforced CSP is set in `vercel.json`. After review, the permissive `https:` wildcards in `connect-src`, `img-src`, and `font-src` were replaced with explicit origin allowlists.
+
+### Final allowlist
+
+| Directive | Origins |
+| --- | --- |
+| `default-src` | `'self'` |
+| `connect-src` | `'self'` `wss:` |
+| `img-src` | `'self'` `https://images.unsplash.com` `data:` `blob:` |
+| `font-src` | `'self'` |
+| `style-src` | `'self'` `'unsafe-inline'` (required by Angular runtime) |
+| `script-src` | `'self'` plus per-build inline script hashes |
+| `trusted-types` | `angular` `angular#bundler` `angular#unsafe-bypass` |
+| `object-src` | `'none'` |
+| `frame-ancestors` | `'none'` |
+| `form-action` | `'self'` |
+| `base-uri` | `'self'` |
+
+*No external API origins (DeepSeek, Cal.com, Resend) need client-side connect-src access — all calls are proxied through Analog Nitro server routes.*
+
+### Report-Only
+
+A parallel **Report-Only** header logs violations to `/api/csp-report` without blocking users. The directive list mirrors the enforced policy plus `report-uri /api/csp-report`.
 
 ### Workflow
 

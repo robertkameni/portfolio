@@ -85,8 +85,11 @@ export function getResendConfig(): ResendConfig | null {
   if (!apiKey) {
     return null;
   }
-  const notificationEmail = readOptionalEnv('NOTIFICATION_EMAIL') ?? 'robertkameni83@gmail.com';
-  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL') ?? 'hallo@lucastar.de';
+  const notificationEmail = readOptionalEnv('NOTIFICATION_EMAIL');
+  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL');
+  if (!notificationEmail || !fromEmail) {
+    return null;
+  }
   return { apiKey, notificationEmail, fromEmail };
 }
 
