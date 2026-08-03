@@ -1,9 +1,22 @@
 {
   "installCommand": "npm install",
   "buildCommand": "BUILD_PRESET=vercel npm run build && node scripts/ensure-vercel-build-output.mjs",
+  "rewrites": [
+    { "source": "/portfolio", "destination": "/" },
+    { "source": "/portfolio/(.*)", "destination": "/$1" }
+  ],
   "headers": [
     {
       "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</sitemap.xml>; rel=\"alternate\"; type=\"application/xml\", </robots.txt>; rel=\"alternate\"; type=\"text/plain\", </api/agent-site-markdown>; rel=\"alternate\"; type=\"text/markdown\", </agent/site-for-agents.md>; rel=\"alternate\"; type=\"text/markdown\""
+        }
+      ]
+    },
+    {
+      "source": "/portfolio",
       "headers": [
         {
           "key": "Link",
