@@ -1,5 +1,4 @@
-<section class="max-w-6xl mx-auto">
-  <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr))">
+<div class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]">
     @for (project of projects(); track project.id) {
     <article
       trackBehavior="project_viewed_{{ project.slug }}"
@@ -45,5 +44,4 @@
       </div>
     </article>
     }
-  </div>
-</section>
+</div>
