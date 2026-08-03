@@ -33,12 +33,24 @@ function getRedisUrl(): string | undefined {
   return normalizedUrl || undefined;
 }
 
+function isVercelPreviewDeployment(): boolean {
+  return process.env['VERCEL_ENV'] === 'preview';
+}
+
 function assertProductionRedisConfigured(): void {
   if (process.env['NODE_ENV'] !== 'production') {
     return;
   }
 
   if (getRedisUrl()) {
+    return;
+  }
+
+  if (isVercelPreviewDeployment()) {
+    console.warn(
+      '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is not set on Vercel preview. ' +
+        'Using in-memory rate limiting (per-instance limits). Set UPSTASH_REDIS_URL for production-like behavior.',
+    );
     return;
   }
 

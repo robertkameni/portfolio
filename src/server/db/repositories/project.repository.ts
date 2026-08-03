@@ -1,7 +1,6 @@
 import { prisma } from '../client';
 import type { Project } from '../prisma-types';
 import { DEFAULT_PROJECT_COVER_IMAGES } from '../../data/project-cover-images';
-import { validateProjectMarkdownContent } from '../../utils/project-content-sanitize';
 
 export type CreateProjectDto = Pick<Project, 'slug' | 'title' | 'description' | 'contentMarkdown' | 'tags' | 'coverImageUrl' | 'projectUrl' | 'isPublished'>;
 export type UpdateProjectDto = Partial<CreateProjectDto & { isPublished: boolean }>;
@@ -21,10 +20,12 @@ const LIST_SELECT = {
 
 export type ProjectListItem = Pick<Project, keyof typeof LIST_SELECT>;
 
-function sanitizeProjectWriteData<T extends { contentMarkdown?: string | null }>(data: T): T {
+async function sanitizeProjectWriteData<T extends { contentMarkdown?: string | null }>(data: T): Promise<T> {
   if (!('contentMarkdown' in data)) {
     return data;
   }
+
+  const { validateProjectMarkdownContent } = await import('../../utils/project-content-sanitize');
 
   return {
     ...data,
@@ -67,7 +68,7 @@ export const projectRepository = {
    * @returns The newly created project.
    */
   async create(data: CreateProjectDto): Promise<Project> {
-    const sanitizedData = sanitizeProjectWriteData(data);
+    const sanitizedData = await sanitizeProjectWriteData(data);
     const coverImageUrl = sanitizedData.coverImageUrl?.trim()
       ? sanitizedData.coverImageUrl
       : DEFAULT_PROJECT_COVER_IMAGES[Math.floor(Math.random() * DEFAULT_PROJECT_COVER_IMAGES.length)];
@@ -89,7 +90,7 @@ export const projectRepository = {
   async update(id: string, data: UpdateProjectDto): Promise<Project> {
     return prisma.project.update({
       where: { id },
-      data: sanitizeProjectWriteData(data),
+      data: await sanitizeProjectWriteData(data),
     });
   },
 
