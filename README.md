@@ -88,108 +88,86 @@ sequenceDiagram
 
 ---
 
-## 🧱 Technology Stack
+## Contributor Setup
 
-### Frontend
+### Prerequisites
 
-* Angular 22
-* Signals + stable Resource API (`httpResource`) + Signal Forms
-* SSR with incremental hydration (default in v22)
-* Angular CLI MCP server (`.cursor/mcp.json`) for agent fact-checking against [angular.dev](https://angular.dev)
-* Standalone components
-* RxJS (selective usage)
-* Tailwind CSS
+- Node.js >= 20.19.1 (CI uses 24.15.0)
+- PostgreSQL database (local or hosted, e.g. Neon)
+- A DeepSeek API key for AI features (optional — the app degrades gracefully)
 
-### Backend (embedded)
+### Environment variables
 
-* AnalogJS (server routes)
-* Nitro runtime (H3-based API layer)
-* Prisma ORM
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| **Database** | | | |
+| `DATABASE_URL` | yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/portfolio?schema=public` |
+| **Auth** | | | |
+| `ACCESS_TOKEN_SECRET` | yes | JWT signing key for access tokens (20m) | `openssl rand -hex 64` |
+| `REFRESH_TOKEN_SECRET` | yes | JWT signing key for refresh tokens (7d) | `openssl rand -hex 64` |
+| `SESSION_SECRET` | yes | Fallback for realtime token signing | `openssl rand -hex 64` |
+| **Realtime** | | | |
+| `REALTIME_SESSION_TOKEN_SECRET` | yes | Primary key for SSE realtime tokens | `openssl rand -hex 64` |
+| `UPSTASH_REDIS_URL` | no | Redis for rate limits in production | `redis://...` |
+| **AI / DeepSeek** | | | |
+| `DEEPSEEK_API_KEY` | yes | API key for chat + visitor intelligence | `sk-...` |
+| `DEEPSEEK_CHAT_MODEL` | no | Model name (default: `deepseek-chat`) | `deepseek-chat` |
+| `DEEPSEEK_VISITOR_MODEL` | no | Separate model for visitor analysis | `deepseek-chat` |
+| `DEEPSEEK_THINKING_ENABLED` | no | Enable reasoning output | `true` |
+| `DEEPSEEK_FETCH_TIMEOUT_MS` | no | HTTP timeout in ms (default: 120000) | `120000` |
+| **Cal.com** | | | |
+| `CALCOM_API_KEY` | no | Cal.com API key for scheduling | `cal_live_...` |
+| `CALCOM_EVENT_TYPE_ID` | no | Event type ID for bookings | `123456` |
+| `CALCOM_USERNAME` | no | Cal.com username | `your-username` |
+| **Resend (email)** | | | |
+| `RESEND_API_KEY` | no | Resend API key for contact form emails | `re_...` |
+| `NOTIFICATION_EMAIL` | no | Where notifications are sent | `notifications@your-domain.com` |
+| `RESEND_FROM_EMAIL` | no | Sender address for emails | `notifications@your-domain.com` |
 
-### Data
+All required variables must be set before the server boots — a Zod schema validates them at startup. Copy `.env.example` to `.env` and fill in the values.
 
-* PostgreSQL (Neon / hosted SQL)
-
-### AI
-
-* DeepSeek API (visitor enrichment + content adaptation)
-
-### Realtime
-
-* Server-Sent Events (SSE)
-* Optional Redis (multi-instance enhancement only)
-
-### Deployment
-
-* Vercel (serverless single-instance model)
-
----
-
-## 🧠 What This Project Demonstrates
-
-This portfolio is intentionally built to show:
-
-* modern Angular architecture beyond CRUD apps
-* practical use of SSR + Signals in real applications
-* lightweight backend integration without microservices
-* async AI pipelines without UI blocking
-* event-driven UI updates in a frontend-first system
-
----
-
-## 🚀 Why AnalogJS Matters Here
-
-AnalogJS acts as the **bridge between Angular and server capabilities**, enabling:
-
-* server-side rendering (SSR)
-* file-based API routes
-* Nitro runtime execution on Vercel
-* backend logic without a separate service layer
-
-It allows this project to stay:
-
-* **single-repo**
-* **deployable without infrastructure overhead**
-* **architecturally simple but expressive**
-
----
-
-## 📌 Summary
-
-This project is not a backend system.
-
-It is a **modern Angular architecture showcase** with:
-
-* optional AI enhancement
-* lightweight server integration via AnalogJS
-* reactive UI powered by Signals
-* pragmatic, production-aware tradeoffs for deployment simplicity
-
----
-
-## Platform Notes
-
-### Windows prerender limitation
-
-Local production builds on **Windows** skip static prerendering (`vite.config.ts` sets `prerender.routes` to `[]` when `process.platform === 'win32'`). CI and Vercel run on Linux and prerender public routes (`/`, `/projects`, `/projects/:slug`).
-
-**Recommendations:**
-
-- Use **WSL** for local prerender parity with production.
-- Rely on **CI** to validate prerender output on every PR.
-- A dev/build warning is printed when prerender is skipped on Windows.
-
-### Hybrid rendering
-
-Public project routes use **prerender**; admin routes use **client-only** rendering (`nitro.routeRules`). See `src/app/shared/routing/hybrid-render.config.ts` and per-page `routeMeta.renderMode`.
-
-### Security operations
-
-See [docs/security.md](docs/security.md) for JWT secret rotation and CSP Report-Only workflow.
-
-### Bundle analysis
+### First-time setup
 
 ```bash
-npm run build:analyze   # writes dist/stats.html (rollup-plugin-visualizer)
-npm run check:bundles   # enforce gzip budgets after build (see docs/bundle-analysis.md for _debug_node-chunk)
+# 1. Install dependencies (postinstall runs prisma generate automatically)
+npm install
+
+# 2. Set up your .env file
+cp .env.example .env
+# Fill in DATABASE_URL, auth secrets, and at minimum DEEPSEEK_API_KEY
+
+# 3. Run database migrations
+npx prisma migrate dev
+
+# 4. (Optional) Seed the database with sample data
+npx prisma db seed
+
+# 5. Start the dev server
+npm run dev
 ```
+
+### Common scripts
+
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start Vite dev server with HMR |
+| `npm run build` | Production build (client + SSR + Nitro) |
+| `npm run verify` | Run lint + typecheck + tests (CI gate) |
+| `npm run test` | Run Vitest in watch mode |
+| `npm run lint` | ESLint check |
+| `npm run typecheck` | TypeScript check (app + specs + server) |
+| `npm run format:fix` | Prettier auto-format |
+| `npm run build:analyze` | Build + generate Rollup treemap |
+| `npm run check:bundles` | Validate gzip bundle budgets |
+
+### Platform-specific notes
+
+**Windows:** Local production builds skip static prerendering (`vite.config.ts` sets `prerender.routes` to `[]` on win32). Use **WSL** or rely on **CI** (Linux) to validate prerendered output. A warning is printed when prerender is skipped.
+
+**Hybrid rendering:** Public routes use **prerender**; admin routes use **client-only** rendering. See `src/app/shared/routing/hybrid-render.config.ts` and per-page `routeMeta.renderMode`. An anti-drift Vitest (`hybrid-render.config.spec.ts`) ensures pages stay in sync.
+
+### Further reading
+
+- [docs/security.md](docs/security.md) — JWT rotation, CSP configuration, cookie reference
+- [docs/bundle-analysis.md](docs/bundle-analysis.md) — chunk breakdown, code-splitting verification, budget details
+- [docs/typescript-strictness.md](docs/typescript-strictness.md) — strictness levels and server-only flags
