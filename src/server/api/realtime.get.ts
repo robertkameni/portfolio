@@ -71,29 +71,36 @@ export default defineEventHandler(async (event) => {
 
   const channel = `realtime:${sessionId}`;
 
+  let broadcastActive = false;
+
   try {
     await broadcastService.subscribe(channel, (data) => {
       sendEvent(data.eventName, data.payload);
     });
+    broadcastActive = true;
+  } catch (error) {
+    console.error(`[realtime] broadcast subscription failed for channel ${channel}:`, error);
+  }
 
-    sendEvent('connected', { message: 'Connection established' });
+  sendEvent('connected', {
+    message: broadcastActive ? 'Connection established' : 'Connection established (broadcast unavailable)',
+    broadcast: broadcastActive,
+  });
 
-    let cleanedUp = false;
-    const cleanup = () => {
-      if (cleanedUp) {
-        return;
-      }
-      cleanedUp = true;
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) {
+      return;
+    }
+    cleanedUp = true;
+    if (broadcastActive) {
       void broadcastService.unsubscribe(channel).catch((error) => {
         console.error(`[realtime] unsubscribe failed for channel ${channel}:`, error);
       });
-    };
+    }
+  };
 
-    event.node.req.on('close', cleanup);
-  } catch (error) {
-    console.error('[realtime] subscription error:', error);
-    throw serverError('Realtime service unavailable');
-  }
+  event.node.req.on('close', cleanup);
 
   return new Promise(() => {});
 });
