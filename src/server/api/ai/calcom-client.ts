@@ -45,7 +45,7 @@ function resolveDateRange(dateInput: string): { start: string; end: string; labe
   }
 
   const isoDateMatch = normalized.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (isoDateMatch) {
+  if (isoDateMatch?.[1]) {
     const start = isoDateMatch[1];
     return { start, end: start, label: start };
   }

@@ -148,7 +148,7 @@ export async function requestDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
-    tools?: unknown[];
+    tools?: readonly unknown[];
   },
 ): Promise<Response> {
   const apiKey = resolveApiKey();
@@ -160,7 +160,7 @@ export async function requestDeepSeekCompletion(
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
     thinking?: { type: 'disabled' | 'enabled' };
-    tools?: unknown[];
+    tools?: readonly unknown[];
   } = {
     model: options.model,
     messages: promptMessages,
@@ -227,7 +227,7 @@ export async function runDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
-    tools?: unknown[];
+    tools?: readonly unknown[];
   },
 ): Promise<{ response: { text: () => string; message: () => CompletionMessage } }> {
   const response = await requestDeepSeekCompletion(promptMessages, {
