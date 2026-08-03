@@ -1,12 +1,22 @@
 import { defineConfig } from 'vite';
 import analog from '@analogjs/platform';
-import { visualizer } from 'rollup-plugin-visualizer';
 import { discoverPrerenderRoutes } from './scripts/discover-prerender-routes';
 import { CLIENT_ONLY_ROUTE_RULES } from './src/app/shared/routing/hybrid-render.config';
 
 const isWindows = process.platform === 'win32';
 const analyzeBundles = process.env['ANALYZE'] === 'true' || process.env['ANALYZE'] === '1';
 const prerenderRoutes = isWindows ? [] : await discoverPrerenderRoutes();
+
+const analyzePlugins = analyzeBundles
+  ? [
+      (await import('rollup-plugin-visualizer')).visualizer({
+        filename: 'dist/stats.html',
+        gzipSize: true,
+        brotliSize: true,
+        open: false,
+      }),
+    ]
+  : [];
 
 if (isWindows) {
   console.warn(
@@ -22,16 +32,7 @@ export default defineConfig(({ mode }) => ({
     mainFields: ['module'],
   },
   plugins: [
-    ...(analyzeBundles
-      ? [
-        visualizer({
-          filename: 'dist/stats.html',
-          gzipSize: true,
-          brotliSize: true,
-          open: false,
-        }),
-      ]
-      : []),
+    ...analyzePlugins,
     analog({
       prerender: isWindows
         ? { discover: false, routes: [] }
@@ -40,6 +41,19 @@ export default defineConfig(({ mode }) => ({
         preset: 'vercel',
         ignore: ['**/*.{spec,test}.ts'],
         routeRules: CLIENT_ONLY_ROUTE_RULES,
+        externals: {
+          inline: [
+            'sanitize-html',
+            'htmlparser2',
+            'domhandler',
+            'domutils',
+            'dom-serializer',
+            'domelementtype',
+            'entities',
+            'escape-string-regexp',
+            'is-plain-object',
+          ],
+        },
         output: {
           dir: '.vercel/output',
           publicDir: '.vercel/output/static',
