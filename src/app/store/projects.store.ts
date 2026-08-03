@@ -61,7 +61,9 @@ function withProjectsLoad(url: string, browserOnly = false, useTransferState = f
                 }
                 patchState(store, { data: res.data, isLoading: false, error: null });
               }),
-              catchError(() => {
+              catchError((error) => {
+                const msg = error instanceof Error ? error.message : (error as { message?: string })?.message ?? String(error);
+                console.error('[ProjectsStore] fetch failed:', msg);
                 patchState(store, { isLoading: false, error: 'Failed to load projects.' });
                 return EMPTY;
               }),

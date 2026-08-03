@@ -98,4 +98,20 @@ describe('PortfolioStore', () => {
     expect(storeB.lastFetchedAt()).toBeGreaterThan(0);
     httpMockB.verify();
   });
+
+  it('sets error state and logs on fetch failure', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const store = TestBed.inject(PortfolioStore);
+    store.loadProfile();
+
+    const request = httpMock.expectOne('/api/v1/profile?locale=en');
+    request.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+
+    expect(store.error()).toBe('Failed to load profile.');
+    expect(store.isLoading()).toBe(false);
+    expect(store.data()).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith('[PortfolioStore] fetch failed:', expect.any(String));
+
+    consoleSpy.mockRestore();
+  });
 });
