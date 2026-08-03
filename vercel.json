@@ -36,7 +36,7 @@
         },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; trusted-types angular angular#bundler angular#unsafe-bypass dompurify; require-trusted-types-for 'script'; script-src 'self' 'sha256-VM2mZqyEQZoLzoTrp5EigFvzQ0+f1wSeBuoOn95WHCg=' 'sha256-8sGKvDKC8crv9OBcqEMvqrNDWlm1/80h7NJpJzqOnLI='; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.unsplash.com https://robert-kameni-personal-portfolio.vercel.app data: blob:; font-src 'self'; connect-src 'self' wss:; report-uri /api/csp-report"
+          "value": "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'none'; trusted-types angular angular#bundler angular#unsafe-bypass dompurify; require-trusted-types-for 'script'; script-src 'self' 'sha256-VM2mZqyEQZoLzoTrp5EigFvzQ0+f1wSeBuoOn95WHCg=' 'sha256-8sGKvDKC8crv9OBcqEMvqrNDWlm1/80h7NJpJzqOnLI='; style-src 'self' 'unsafe-inline'; img-src 'self' https://images.unsplash.com https://robert-kameni-personal-portfolio.vercel.app data: blob:; font-src 'self'; connect-src 'self' wss:; report-uri /api/csp-report"
         }
       ]
     }
