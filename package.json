@@ -47,6 +47,7 @@
     "postcss": "^8.5.23",
     "redis": "^6.1.0",
     "resend": "^6.18.1",
+    "rollup-plugin-visualizer": "^7.0.1",
     "rxjs": "~7.8.2",
     "sanitize-html": "^2.17.1",
     "tailwindcss": "^4.3.3",

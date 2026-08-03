@@ -1,3 +1,22 @@
+import { z } from 'zod';
+
+const serverEnvSchema = z.object({
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  DEEPSEEK_API_KEY: z.string().min(1, 'DEEPSEEK_API_KEY is required'),
+  ACCESS_TOKEN_SECRET: z.string().min(1, 'ACCESS_TOKEN_SECRET is required'),
+  SESSION_SECRET: z.string().min(1, 'SESSION_SECRET is required'),
+  REALTIME_SESSION_TOKEN_SECRET: z.string().min(1, 'REALTIME_SESSION_TOKEN_SECRET is required'),
+  UPSTASH_REDIS_URL: z.string().optional(),
+});
+
+export function validateServerEnv(): void {
+  const result = serverEnvSchema.safeParse(process.env);
+  if (!result.success) {
+    const missing = result.error.issues.map((i) => i.path.join('.')).join(', ');
+    throw new Error(`Server environment validation failed. Missing or invalid variables: ${missing}`);
+  }
+}
+
 export function readPositiveIntFromEnv(name: string, fallback: number, minValue = 1): number {
   const raw = process.env[name];
   if (!raw) {
@@ -66,7 +85,7 @@ export function getResendConfig(): ResendConfig | null {
     return null;
   }
   const notificationEmail = readOptionalEnv('NOTIFICATION_EMAIL') ?? 'robertkameni83@gmail.com';
-  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL') ?? 'onboarding@resend.dev';
+  const fromEmail = readOptionalEnv('RESEND_FROM_EMAIL') ?? 'hallo@lucastar.de';
   return { apiKey, notificationEmail, fromEmail };
 }
 
