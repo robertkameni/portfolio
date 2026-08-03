@@ -4,6 +4,7 @@ const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   DEEPSEEK_API_KEY: z.string().min(1, 'DEEPSEEK_API_KEY is required'),
   ACCESS_TOKEN_SECRET: z.string().min(1, 'ACCESS_TOKEN_SECRET is required'),
+  REFRESH_TOKEN_SECRET: z.string().min(1, 'REFRESH_TOKEN_SECRET is required'),
   SESSION_SECRET: z.string().min(1, 'SESSION_SECRET is required'),
   REALTIME_SESSION_TOKEN_SECRET: z.string().min(1, 'REALTIME_SESSION_TOKEN_SECRET is required'),
   UPSTASH_REDIS_URL: z.string().optional(),
