@@ -25,18 +25,13 @@ export function resolveRealtimeSigningSecret(): string {
     return sessionFallback;
   }
 
-  const isProduction =
-    process.env['NODE_ENV'] === 'production' || process.env['VERCEL_ENV'] === 'production';
+  const isProduction = process.env['NODE_ENV'] === 'production' || process.env['VERCEL_ENV'] === 'production';
 
   if (isProduction) {
-    throw new Error(
-      'Realtime signing secret is missing in production. Set REALTIME_SESSION_TOKEN_SECRET or SESSION_SECRET.',
-    );
+    throw new Error('Realtime signing secret is missing in production. Set REALTIME_SESSION_TOKEN_SECRET or SESSION_SECRET.');
   }
 
   const ephemeral = randomBytes(32).toString('hex');
-  console.warn(
-    '[realtime] No REALTIME_SESSION_TOKEN_SECRET or SESSION_SECRET set — using an ephemeral dev-only key. Tokens are NOT valid across restarts.',
-  );
+  console.warn('[realtime] No REALTIME_SESSION_TOKEN_SECRET or SESSION_SECRET set — using an ephemeral dev-only key. Tokens are NOT valid across restarts.');
   return ephemeral;
 }
