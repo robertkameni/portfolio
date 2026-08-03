@@ -6,6 +6,9 @@ import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
+
+export const routeMeta = withRenderMode('client');
 
 function resolveReturnUrl(value: string | null): string {
   if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -21,7 +24,7 @@ function resolveReturnUrl(value: string | null): string {
   imports: [FormsModule, FadeInDirective],
   templateUrl: './index.page.html',
 })
-export default class LoginPageComponent implements OnInit {
+export default class LoginPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

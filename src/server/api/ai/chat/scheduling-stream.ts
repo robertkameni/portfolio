@@ -65,11 +65,7 @@ export async function streamSchedulingChatResponse(
   try {
     writeSseData(event, { ready: true }, true);
 
-    const messages = toChatMessages(
-      input.history,
-      [input.systemInstruction, buildSchedulingDateContext()].filter(Boolean).join('\n'),
-      input.message,
-    );
+    const messages = toChatMessages(input.history, [input.systemInstruction, buildSchedulingDateContext()].filter(Boolean).join('\n'), input.message);
     const completion = await runSchedulingToolLoop(messages, {
       model: input.model,
       maxOutputTokens: input.maxOutputTokens,

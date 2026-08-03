@@ -5,24 +5,25 @@ import { httpResource } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouteMeta } from '@analogjs/router';
 import { authGuard } from '../../../guards/auth.guard';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
-import { ProjectFormComponent, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form/project-form.component';
+import { ProjectForm, ProjectFormModel, ProjectPayload } from '../../../shared/components/project-form/project-form';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
-import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
-import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
+import { SiteToolbarComponent } from '../../../shared/components/site-toolbar/site-toolbar';
+import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { resolveProjectApiUrl } from './project-api-url';
 
-export const routeMeta: RouteMeta = {
+export const routeMeta: RouteMeta = withRenderMode('client', {
   canActivate: [authGuard],
-};
+});
 
 @Component({
   selector: 'edit-project-page',
   standalone: true,
-  imports: [ProjectFormComponent, FadeInDirective, JsonPipe, DevProxyBarComponent, StatusAlertComponent],
+  imports: [ProjectForm, FadeInDirective, JsonPipe, SiteToolbarComponent, StatusAlert],
   templateUrl: './edit.page.html',
 })
 export default class EditProjectPage {

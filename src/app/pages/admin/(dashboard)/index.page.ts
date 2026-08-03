@@ -11,7 +11,7 @@ import { LocaleService } from '../../../shared/services/locale.service';
   imports: [RouterLink],
   templateUrl: './index.page.html',
 })
-export default class AdminDashboardComponent implements OnInit {
+export default class AdminDashboard implements OnInit {
   private readonly adminMessagesService = inject(AdminMessagesService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly localeService = inject(LocaleService);

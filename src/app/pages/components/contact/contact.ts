@@ -2,11 +2,11 @@ import { Component, computed, DestroyRef, inject, input, OnDestroy, signal } fro
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField, required } from '@angular/forms/signals';
 import { ContactData } from './interface/contact-data';
-import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
-import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
+import { FormField as FormFieldShell } from '../../../shared/components/form-field/form-field';
+import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { VisitorStore } from '../../../store/visitor.store';
 import { AnalyticsService } from '../../../services/analytics.service';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { ContactService } from '../../../shared/services/contact.service';
@@ -22,10 +22,10 @@ function contactAudienceBucket(visitorType: VisitorProfileAnalysis['visitorType'
 @Component({
   selector: 'contact',
   standalone: true,
-  imports: [FormFieldComponent, StatusAlertComponent, TrackBehaviorDirective, FormField],
-  templateUrl: './page/contact.html',
+  imports: [FormFieldShell, StatusAlert, TrackBehaviorDirective, FormField],
+  templateUrl: './contact.html',
 })
-export class ContactComponent implements OnDestroy {
+export class Contact implements OnDestroy {
   private readonly contactService = inject(ContactService);
   private readonly visitorStore = inject(VisitorStore);
   private readonly analytics = inject(AnalyticsService);

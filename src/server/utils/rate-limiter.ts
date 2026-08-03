@@ -33,6 +33,34 @@ function getRedisUrl(): string | undefined {
   return normalizedUrl || undefined;
 }
 
+function isVercelPreviewDeployment(): boolean {
+  return process.env['VERCEL_ENV'] === 'preview';
+}
+
+function assertProductionRedisConfigured(): void {
+  if (process.env['NODE_ENV'] !== 'production') {
+    return;
+  }
+
+  if (getRedisUrl()) {
+    return;
+  }
+
+  if (isVercelPreviewDeployment()) {
+    console.warn(
+      '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is not set on Vercel preview. ' +
+        'Using in-memory rate limiting (per-instance limits). Set UPSTASH_REDIS_URL for production-like behavior.',
+    );
+    return;
+  }
+
+  throw new Error(
+    '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is required in production. ' +
+      'In-memory rate limiting is not safe on serverless (limits are per-instance). ' +
+      'Set UPSTASH_REDIS_URL in your environment.',
+  );
+}
+
 function registerRateLimiterCleanup(cleanup: () => Promise<void>): void {
   const globalState = globalThis as typeof globalThis & Record<string, boolean | undefined>;
   if (globalState[GLOBAL_RATE_LIMITER_KEY]) {
@@ -66,7 +94,8 @@ class InMemoryRateLimiter implements RateLimiter {
 
     if (validWindow.length >= options.maxRequests) {
       this.buckets.set(bucket, validWindow);
-      return { allowed: false, retryAfterMs: Math.max(0, validWindow[0] + options.windowMs - now) };
+      const oldestTimestamp = validWindow[0] ?? now;
+      return { allowed: false, retryAfterMs: Math.max(0, oldestTimestamp + options.windowMs - now) };
     }
 
     validWindow.push(now);
@@ -260,6 +289,8 @@ class RedisRateLimiter implements RateLimiter {
 }
 
 function createRateLimiter(): RateLimiter {
+  assertProductionRedisConfigured();
+
   const useRedis = Boolean(getRedisUrl());
   if (!useRedis) {
     return new InMemoryRateLimiter();

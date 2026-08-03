@@ -18,9 +18,7 @@ function isSchedulingToolName(name: string): name is SchedulingToolName {
 }
 
 export async function runSchedulingToolLoop(messages: ChatMessage[], options: RunSchedulingToolLoopOptions): Promise<CompletionMessage> {
-  const workingMessages = canInvokeTool(options.sessionId)
-    ? await seedAvailabilityToolExchange(messages, { sessionId: options.sessionId })
-    : [...messages];
+  const workingMessages = canInvokeTool(options.sessionId) ? await seedAvailabilityToolExchange(messages, { sessionId: options.sessionId }) : [...messages];
 
   for (let iteration = 0; iteration < MAX_TOOL_LOOP_ITERATIONS; iteration += 1) {
     const completion = await runDeepSeekCompletion(workingMessages, {

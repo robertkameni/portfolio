@@ -1,9 +1,8 @@
-import { Component, computed, PLATFORM_ID, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { httpResource } from '@angular/common/http';
-import { marked, Renderer } from 'marked';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
@@ -13,7 +12,11 @@ import { SafeHtmlDirective } from '../../../shared/directives/safe-html.directiv
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { createProjectMarkdownRenderer, normalizeProjectMarkdown } from '../../../shared/markdown/project-markdown-renderer';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import { resolveProjectApiUrl } from './project-api-url';
+
+export const routeMeta = withRenderMode('prerender');
 
 @Component({
   selector: 'project-overview-page',
@@ -33,7 +36,20 @@ export default class ProjectOverviewPage {
   protected angularLocale = computed(() => toAngularLocale(this.locale()));
   protected copy = computed(() => getSiteCopy(this.locale()));
 
-  private readonly renderer = this.setupRenderer();
+  private markdownParser: ((markdown: string) => string) | null = null;
+  private markdownParserLoading = false;
+  private readonly markdownReady = signal(false);
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      afterNextRender(() => {
+        void this.loadMarkdownParser();
+      });
+      return;
+    }
+
+    void this.loadMarkdownParser();
+  }
 
   goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
 
@@ -52,89 +68,34 @@ export default class ProjectOverviewPage {
   });
 
   protected readonly renderedMarkdown = computed(() => {
+    this.markdownReady();
     const md = this.projectResource.value()?.data?.contentMarkdown;
-    if (!md) return '';
+    if (!md || !this.markdownParser) {
+      return '';
+    }
+
     try {
-      const cleaned = md
-        .split('\n')
-        .map((line) => line.trimStart())
-        .join('\n')
-        .trim();
-      return marked.parse(cleaned, { renderer: this.renderer, async: false, gfm: true }) as string;
+      return this.markdownParser(normalizeProjectMarkdown(md));
     } catch (e) {
       console.error('Markdown parsing error:', e);
       return `<p>${md}</p>`;
     }
   });
 
-  private setupRenderer(): Renderer {
-    const renderer = new Renderer();
+  private async loadMarkdownParser(): Promise<void> {
+    if (this.markdownParser || this.markdownParserLoading) {
+      return;
+    }
 
-    renderer.heading = function ({ tokens, depth }) {
-      const sizeMap = {
-        1: 'font-size: clamp(1.25rem, 3vw, 1.5rem)',
-        2: 'font-size: clamp(1rem, 2.5vw, 1.25rem)',
-        3: 'font-size: clamp(0.875rem, 2vw, 1rem)',
-      };
-      const style = sizeMap[depth as 1 | 2 | 3] || 'font-size: clamp(0.875rem, 1.5vw, 1rem)';
-      const text = this.parser.parseInline(tokens);
-      return `<h${depth} style="${style}" class="font-bold mt-6 mb-3 text-primary">${text}</h${depth}>`;
-    };
-
-    renderer.paragraph = function ({ tokens }) {
-      const text = this.parser.parseInline(tokens);
-      return `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
-    };
-
-    renderer.list = function ({ items, ordered }) {
-      const listClass = ordered ? 'list-decimal' : 'list-disc';
-      const tag = ordered ? 'ol' : 'ul';
-      const html = items
-        .map((item) => {
-          const text = this.parser.parseInline(item.tokens);
-          return `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${text}</li>`;
-        })
-        .join('');
-      return `<${tag} class="${listClass} ml-4 mb-4">${html}</${tag}>`;
-    };
-
-    renderer.image = ({ href, text, title }) => {
-      return `<img src="${href}" alt="${text}" title="${title || ''}" style="max-width: clamp(100%, 90vw, 100%); height: auto;" class="rounded-lg my-6"/>`;
-    };
-
-    renderer.strong = function ({ tokens }) {
-      const text = this.parser.parseInline(tokens);
-      return `<strong class="font-semibold">${text}</strong>`;
-    };
-
-    renderer.codespan = ({ text }) => `<code>${text}</code>`;
-
-    renderer.table = function (token) {
-      const headerCells = token.header
-        .map((cell) => {
-          const content = this.parser.parseInline(cell.tokens);
-          const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-          return `<th${align}>${content}</th>`;
-        })
-        .join('');
-
-      const bodyRows = token.rows
-        .map((row) => {
-          const cells = row
-            .map((cell) => {
-              const content = this.parser.parseInline(cell.tokens);
-              const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-              return `<td${align}>${content}</td>`;
-            })
-            .join('');
-          return `<tr>${cells}</tr>`;
-        })
-        .join('');
-
-      return `<div class="markdown-table-wrap"><table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
-    };
-
-    return renderer;
+    this.markdownParserLoading = true;
+    try {
+      const { marked, Renderer } = await import('marked');
+      const renderer = createProjectMarkdownRenderer(Renderer);
+      this.markdownParser = (markdown: string) => marked.parse(markdown, { renderer, async: false, gfm: true }) as string;
+      this.markdownReady.set(true);
+    } finally {
+      this.markdownParserLoading = false;
+    }
   }
 
   getErrorTitle(error: unknown): string {

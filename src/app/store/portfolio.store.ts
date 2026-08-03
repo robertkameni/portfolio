@@ -12,18 +12,19 @@ type ProfileState = {
   data: LocalizedProfileData | null;
   isLoading: boolean;
   error: string | null;
+  lastFetchedAt: number;
+  lastFetchedLocale: AppLocale | null;
 };
 
 const initialState: ProfileState = {
   data: null,
   isLoading: false,
   error: null,
+  lastFetchedAt: 0,
+  lastFetchedLocale: null,
 };
 
-const CLIENT_CACHE_TTL_MS = 300_000; // 5 minutes
-
-let lastFetchedAt = 0;
-let lastFetchedLocale: AppLocale | null = null;
+export const CLIENT_CACHE_TTL_MS = 300_000; // 5 minutes
 
 function profileStateKey(locale: AppLocale) {
   return makeStateKey<LocalizedProfileData>(`portfolio.profile.${locale}`);
@@ -48,13 +49,11 @@ export const PortfolioStore = signalStore(
           switchMap(() => {
             const currentData = store.data();
             const desiredLocale = localeService.locale();
+            const lastFetchedAt = store.lastFetchedAt();
+            const lastFetchedLocale = store.lastFetchedLocale();
+            const cacheStillFresh = isPlatformBrowser(platformId) && lastFetchedLocale === desiredLocale && lastFetchedAt > 0 && Date.now() - lastFetchedAt < CLIENT_CACHE_TTL_MS;
 
-            if (currentData && currentData.locale === desiredLocale) {
-              return EMPTY;
-            }
-
-            // Client-side TTL: skip fetch if we recently fetched the same locale
-            if (isPlatformBrowser(platformId) && lastFetchedLocale === desiredLocale && Date.now() - lastFetchedAt < CLIENT_CACHE_TTL_MS) {
+            if (currentData && currentData.locale === desiredLocale && cacheStillFresh) {
               patchState(store, { isLoading: false, error: null });
               return EMPTY;
             }
@@ -77,9 +76,13 @@ export const PortfolioStore = signalStore(
                 if (!isPlatformBrowser(platformId)) {
                   transferState.set(stateKey, data);
                 }
-                lastFetchedAt = Date.now();
-                lastFetchedLocale = desiredLocale;
-                patchState(store, { data, isLoading: false, error: null });
+                patchState(store, {
+                  data,
+                  isLoading: false,
+                  error: null,
+                  lastFetchedAt: Date.now(),
+                  lastFetchedLocale: desiredLocale,
+                });
               }),
               catchError(() => {
                 patchState(store, { isLoading: false, error: 'Failed to load profile.' });

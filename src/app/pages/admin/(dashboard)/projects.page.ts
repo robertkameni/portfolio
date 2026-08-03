@@ -3,10 +3,10 @@ import { Router, RouterLink } from '@angular/router';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProjectFormComponent, ProjectPayload } from '../../../shared/components/project-form/project-form.component';
+import { ProjectForm, ProjectPayload } from '../../../shared/components/project-form/project-form';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
-import { DevProxyBarComponent } from '../../../shared/components/dev-proxy-bar/dev-proxy-bar.component';
-import { StatusAlertComponent } from '../../../shared/components/status-alert/status-alert.component';
+import { SiteToolbarComponent } from '../../../shared/components/site-toolbar/site-toolbar';
+import { StatusAlert } from '../../../shared/components/status-alert/status-alert';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { LocaleService } from '../../../shared/services/locale.service';
 import { AdminProjectsStore } from '../../../store/projects.store';
@@ -14,7 +14,7 @@ import { AdminProjectsStore } from '../../../store/projects.store';
 @Component({
   selector: 'admin-projects',
   standalone: true,
-  imports: [RouterLink, ProjectFormComponent, FadeInDirective, DevProxyBarComponent, StatusAlertComponent],
+  imports: [RouterLink, ProjectForm, FadeInDirective, SiteToolbarComponent, StatusAlert],
   templateUrl: './projects/page/projects.page.html',
 })
 export default class AdminProjectsPage implements OnInit {

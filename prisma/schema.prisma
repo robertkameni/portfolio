@@ -11,7 +11,7 @@ generator client {
 }
 
 // =======================================================================
-// CORE TABLES (Users & Content)
+// CORE TABLES (Users & Content) — ACTIVE
 // =======================================================================
 
 model User {
@@ -61,7 +61,7 @@ model Profile {
 }
 
 // =======================================================================
-// VISITOR & ANALYTICS TABLES
+// VISITOR & ANALYTICS TABLES — ACTIVE
 // =======================================================================
 
 model Visitor {
@@ -110,7 +110,7 @@ model AnalyticsEvent {
 }
 
 // =======================================================================
-// AI & INTELLIGENCE TABLES
+// AI & INTELLIGENCE TABLES — ACTIVE (except DEFERRED models below)
 // =======================================================================
 
 model VisitorProfile {
@@ -126,6 +126,7 @@ model VisitorProfile {
   @@map("visitor_profiles")
 }
 
+// DEFERRED: not yet in use — reserved for agent memory persistence
 model AiMemory {
   id        String         @id @default(uuid())
   session   VisitorSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
@@ -139,6 +140,7 @@ model AiMemory {
   @@map("ai_memory")
 }
 
+// DEFERRED: not yet in use — reserved for admin insight dashboard
 model AiInsight {
   id             String   @id @default(uuid())
   title          String
@@ -183,7 +185,7 @@ model AiDecision {
 }
 
 // =======================================================================
-// COMMUNICATION TABLES
+// COMMUNICATION TABLES — ACTIVE (MessageIntelligence DEFERRED)
 // =======================================================================
 
 model Message {
@@ -200,6 +202,7 @@ model Message {
   @@map("messages")
 }
 
+// DEFERRED: not yet in use — schema ready; no write path in repositories yet
 model MessageIntelligence {
   id             String   @id @default(uuid())
   message        Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
@@ -215,9 +218,10 @@ model MessageIntelligence {
 }
 
 // =======================================================================
-// CONVERSION & EXPERIMENTATION TABLES
+// CONVERSION & EXPERIMENTATION TABLES — DEFERRED (future scale plans)
 // =======================================================================
 
+// DEFERRED: not yet in use
 model ConversionGoal {
   id          String  @id @default(uuid())
   name        String
@@ -230,6 +234,7 @@ model ConversionGoal {
   @@map("conversion_goals")
 }
 
+// DEFERRED: not yet in use
 model ExperienceVariant {
   id         String @id @default(uuid())
   name       String
@@ -239,6 +244,7 @@ model ExperienceVariant {
   @@map("experience_variants")
 }
 
+// DEFERRED: not yet in use
 model PerformanceTrace {
   id        String          @id @default(uuid())
   session   VisitorSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)

@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { VisitorStore } from '../../../store/visitor.store';
-import { TrackBehaviorDirective } from '../../../ai-engine/directives/track-behavior.directive';
+import { TrackBehaviorDirective } from '../../../ai-engine';
 import { SkillCard } from './interface/skill-card';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
@@ -9,9 +9,9 @@ import { getSiteCopy } from '../../../shared/i18n/site-copy';
   selector: 'hero',
   standalone: true,
   imports: [TrackBehaviorDirective],
-  templateUrl: './page/hero.html',
+  templateUrl: './hero.html',
 })
-export class HeroComponent {
+export class Hero {
   private readonly visitorStore = inject(VisitorStore);
 
   name = input.required<string>();

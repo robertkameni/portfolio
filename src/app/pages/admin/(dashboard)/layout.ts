@@ -3,6 +3,11 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/rou
 import { authGuard } from '../../../guards/auth.guard';
 import { AuthService } from '../../../services/auth.service';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
+import { withRenderMode } from '../../../shared/routing/render-mode.types';
+
+export const routeMeta = withRenderMode('client', {
+  canActivate: [authGuard],
+});
 
 @Component({
   selector: 'admin-layout',
@@ -10,7 +15,7 @@ import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
   standalone: true,
   templateUrl: './layout/layout.html',
 })
-export default class AdminLayoutComponent {
+export default class AdminLayout {
   private auth = inject(AuthService);
   private router = inject(Router);
 
@@ -26,7 +31,3 @@ export default class AdminLayoutComponent {
     });
   }
 }
-
-export const routeMeta = {
-  canActivate: [authGuard],
-};

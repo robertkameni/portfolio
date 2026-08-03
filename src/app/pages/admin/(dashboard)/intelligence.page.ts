@@ -8,7 +8,7 @@ import { AdminMessagesService } from '../../../shared/services/admin-messages.se
   standalone: true,
   templateUrl: './intelligence/intelligence.page.html',
 })
-export default class AdminIntelligenceComponent implements OnInit {
+export default class AdminIntelligence implements OnInit {
   private readonly adminMessagesService = inject(AdminMessagesService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);

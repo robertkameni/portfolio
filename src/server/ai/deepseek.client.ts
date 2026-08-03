@@ -1,4 +1,5 @@
 import {
+  type ChatHistoryItem,
   type ChatMessage,
   type CompletionMessage,
   type StreamChunk,
@@ -118,7 +119,7 @@ function resolveModelName(requestedModel: string): string {
 }
 
 function toMessages(history: unknown[] = []): ChatMessage[] {
-  const messages = history.map((item) => normalizeChatHistoryItem(item)).filter((item): item is ChatMessage => item !== null);
+  const messages = history.map((item) => normalizeChatHistoryItem(item as ChatHistoryItem)).filter((item): item is ChatMessage => item !== null);
 
   return messages.map((entry) => ({
     role: entry.role,
@@ -147,7 +148,7 @@ export async function requestDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
-    tools?: unknown[];
+    tools?: readonly unknown[];
   },
 ): Promise<Response> {
   const apiKey = resolveApiKey();
@@ -159,7 +160,7 @@ export async function requestDeepSeekCompletion(
     response_format?: DeepSeekResponseFormat;
     max_tokens?: number;
     thinking?: { type: 'disabled' | 'enabled' };
-    tools?: unknown[];
+    tools?: readonly unknown[];
   } = {
     model: options.model,
     messages: promptMessages,
@@ -226,7 +227,7 @@ export async function runDeepSeekCompletion(
     model: string;
     maxOutputTokens?: number;
     responseMimeType?: string;
-    tools?: unknown[];
+    tools?: readonly unknown[];
   },
 ): Promise<{ response: { text: () => string; message: () => CompletionMessage } }> {
   const response = await requestDeepSeekCompletion(promptMessages, {

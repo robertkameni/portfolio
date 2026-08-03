@@ -11,13 +11,13 @@ export type CalcomSlot = {
   end?: string;
 };
 
-export type CalcomAvailabilityResult = { success: true; date: string; timeZone: string; slots: CalcomSlot[]; } | { success: false; error: string; };
+export type CalcomAvailabilityResult = { success: true; date: string; timeZone: string; slots: CalcomSlot[] } | { success: false; error: string };
 
-export type CalcomBookingResult = { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string; } | { success: false; error: string; };
+export type CalcomBookingResult = { success: true; bookingUid: string; start: string; meetingUrl?: string; message: string } | { success: false; error: string };
 
 export type CalcomClient = {
   getAvailability(dateInput: string): Promise<CalcomAvailabilityResult>;
-  bookMeeting(input: { email: string; name?: string; startTime: string; }): Promise<CalcomBookingResult>;
+  bookMeeting(input: { email: string; name?: string; startTime: string }): Promise<CalcomBookingResult>;
 };
 
 type CalcomConfig = {
@@ -26,7 +26,7 @@ type CalcomConfig = {
   username?: string;
 };
 
-function resolveDateRange(dateInput: string): { start: string; end: string; label: string; } {
+function resolveDateRange(dateInput: string): { start: string; end: string; label: string } {
   const normalized = dateInput.trim().toLowerCase();
   const now = new Date();
 
@@ -45,7 +45,7 @@ function resolveDateRange(dateInput: string): { start: string; end: string; labe
   }
 
   const isoDateMatch = normalized.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (isoDateMatch) {
+  if (isoDateMatch?.[1]) {
     const start = isoDateMatch[1];
     return { start, end: start, label: start };
   }
@@ -108,7 +108,7 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
 
   return {
     async getAvailability(dateInput: string): Promise<CalcomAvailabilityResult> {
-      let range: { start: string; end: string; label: string; };
+      let range: { start: string; end: string; label: string };
       try {
         range = resolveDateRange(dateInput);
       } catch (error) {
@@ -138,7 +138,7 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
           return { success: false, error: humanizeCalcomError(response.status, text) };
         }
 
-        const payload = (await response.json()) as { data?: unknown; };
+        const payload = (await response.json()) as { data?: unknown };
         const slots = flattenSlots(payload.data);
         return {
           success: true,
@@ -154,7 +154,7 @@ export function createCalcomClient(config: CalcomConfig): CalcomClient {
       }
     },
 
-    async bookMeeting(input: { email: string; name?: string; startTime: string; }): Promise<CalcomBookingResult> {
+    async bookMeeting(input: { email: string; name?: string; startTime: string }): Promise<CalcomBookingResult> {
       const body: Record<string, unknown> = {
         start: input.startTime,
         eventTypeId: config.eventTypeId,
