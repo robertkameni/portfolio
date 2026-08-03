@@ -32,3 +32,32 @@ Mock-profile controls on the home page are gated with `isDevMode()` and are tree
 npm run build:analyze   # writes dist/stats.html (Rollup treemap)
 npm run check:bundles   # CI gzip budgets after build
 ```
+
+## Code-splitting verification (Aug 2026)
+
+### Deferred (lazy) chunks
+
+| Chunk | Size (raw) | Size (gzip) | Trigger |
+| --- | --- | --- | --- |
+| `ai-engine-CCgSfgWF.js` | 9.60 kB | 3.65 kB | `@defer (on interaction)` — chat launcher button |
+| `marked.esm-DjCow6Jh.js` | 41.45 kB | 12.44 kB | `@defer` — project detail markdown parser, via `afterNextRender` |
+
+Both are emitted as separate chunks (not bundled into any page route chunk). The `ai-engine-*` pattern is recognized by `scripts/check-bundle-budgets.mjs` as a lazy route chunk, so it does not count toward the initial payload budget.
+
+### Home page route chunks (static imports)
+
+Components imported in `Home.imports[]` (SkillsBento, Hero, About, ProjectsSection, Contact, Footer) are Vite-split into their own chunks:
+- `skills-bento-*.js` (2.05 kB raw)
+- `about-*.js` (4.62 kB raw)
+- `contact-*.js` (7.58 kB raw)
+- `projects-section-*.js` (3.29 kB raw)
+- `projects-list-*.js` (4.72 kB raw)
+
+These are not defer-triggered — they load with the home page route, but Vite code-splits them from the core bundle.
+
+### Chunks intentionally in the total initial payload budget
+
+- `_debug_node-chunk-*.js` (~172 kB / ~57 kB gzip) — Angular 22 framework core (see above)
+- `_router-chunk-*.js` (~80 kB / ~21 kB gzip) — Angular router framework
+- `_module-chunk-*.js` (~54 kB / ~17 kB gzip) — Angular common module runtime
+- `forms-*.js` (~52 kB / ~12 kB gzip) — Angular forms (used by contact form)
