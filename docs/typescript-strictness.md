@@ -2,18 +2,18 @@
 
 ## `noUncheckedIndexedAccess`
 
-Enabled for **`src/server/**`** via `tsconfig.server.json` (extends base `tsconfig.json`).
+Enabled **globally** via `tsconfig.json` (app, specs, and server). The base config applies it to all compilation contexts.
 
-The frontend app (`tsconfig.app.json`) and specs (`tsconfig.spec.json`) remain on the base config without this flag for now — adopt there in a follow-up once server coverage is stable.
+Adoption history:
 
-Run server-only checks:
+- **Server** (`tsconfig.server.json`): enabled first pass (P3-3 from first review). Zero additional errors.
+- **App + specs** (P3-1 from second review): enabled by adding the flag to the base `tsconfig.json`. Only 2 errors surfaced — both in `chat.store.ts` (`messages[messages.length - 1]` → replaced with `messages.at(-1)` guard). Fixed in the same pass.
+
+Run full project typecheck:
 
 ```bash
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
 npx tsc -p tsconfig.server.json --noEmit
-```
-
-Full project typecheck (app + spec + server):
-
-```bash
 npm run typecheck
 ```

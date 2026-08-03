@@ -171,3 +171,4 @@ npm run dev
 - [docs/security.md](docs/security.md) — JWT rotation, CSP configuration, cookie reference
 - [docs/bundle-analysis.md](docs/bundle-analysis.md) — chunk breakdown, code-splitting verification, budget details
 - [docs/typescript-strictness.md](docs/typescript-strictness.md) — strictness levels and server-only flags
+- [docs/angular-patterns.md](docs/angular-patterns.md) — `httpResource` vs `rxMethod` guidance for new features

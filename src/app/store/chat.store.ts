@@ -35,8 +35,9 @@ export const ChatStore = signalStore(
     },
     appendAssistantToken(token: string) {
       const messages = [...store.messages()];
-      if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
-        messages[messages.length - 1].content += token;
+      const last = messages.at(-1);
+      if (last && last.role === 'assistant') {
+        last.content += token;
       } else {
         messages.push({ role: 'assistant', content: token });
       }

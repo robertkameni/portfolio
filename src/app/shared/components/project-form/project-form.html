@@ -11,7 +11,7 @@
         [class]="projectForm.title().touched() && !projectForm.title().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'"
       />
       @if (projectForm.title().touched() && projectForm.title().errors().length > 0) {
-      <p class="text-red-400 text-xs mt-1">{{ projectForm.title().errors()[0].message }}</p>
+      <p class="text-red-400 text-xs mt-1">{{ projectForm.title().errors()[0]?.message }}</p>
       }
     </div>
     <div>
@@ -23,7 +23,7 @@
         [class]="projectForm.slug().touched() && !projectForm.slug().valid() ? 'border-red-500 focus:border-red-400' : 'border-[#143c1a] focus:border-primary'"
       />
       @if (projectForm.slug().touched() && projectForm.slug().errors().length > 0) {
-      <p class="text-red-400 text-xs mt-1">{{ projectForm.slug().errors()[0].message }}</p>
+      <p class="text-red-400 text-xs mt-1">{{ projectForm.slug().errors()[0]?.message }}</p>
       }
     </div>
   </div>
