@@ -67,11 +67,7 @@ function buildNotificationHtml(input: ContactNotificationInput): string {
 }
 
 function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 /** Resend test senders (onboarding@resend.dev) only accept your own email as recipient. */
@@ -79,13 +75,13 @@ function isTestMode(fromEmail: string): boolean {
   return fromEmail.endsWith('@resend.dev');
 }
 
-/**  
+/**
  * Send email notifications when someone submits the contact form.  
- *  
+ *
  * Emails are sent individually so a failure of one never blocks the other.  
  * In Resend test mode (onboarding@resend.dev) the confirmation to the  
  * submitter will fail — only the notification to the site owner works.  
- *  
+ *
  * Fails silently (logs to console) so a failed email never blocks the form response.  
  */
 export async function sendContactNotification(input: ContactNotificationInput): Promise<void> {
@@ -101,7 +97,7 @@ export async function sendContactNotification(input: ContactNotificationInput): 
 
   const displayName = input.senderName?.trim() || input.senderEmail;
 
-  // 1) Notification to the site owner (always works — goes to your own mailbox)  
+  // 1) Notification to the site owner (always works — goes to your own mailbox)
   try {
     const { error } = await client.emails.send({
       from: `"Portfolio Contact" <${config.fromEmail}>`,
@@ -109,7 +105,10 @@ export async function sendContactNotification(input: ContactNotificationInput): 
       subject: `New contact form message from ${displayName}`,
       html: buildNotificationHtml(input),
       replyTo: input.senderEmail,
-      tags: [{ name: 'source', value: 'contact_form' }, { name: 'type', value: 'notification' }],
+      tags: [
+        { name: 'source', value: 'contact_form' },
+        { name: 'type', value: 'notification' },
+      ],
     });
     if (error) {
       console.error('[Email] Notification failed:', error.message);
@@ -118,14 +117,17 @@ export async function sendContactNotification(input: ContactNotificationInput): 
     console.error('[Email] Notification error:', error instanceof Error ? error.message : String(error));
   }
 
-  // 2) Confirmation to the submitter (may fail in test mode — non-critical)  
+  // 2) Confirmation to the submitter (may fail in test mode — non-critical)
   try {
     const { error } = await client.emails.send({
       from: `"Portfolio Contact" <${config.fromEmail}>`,
       to: input.senderEmail,
       subject: 'Thank you for your message — Robert Kameni',
       html: buildConfirmationHtml(input),
-      tags: [{ name: 'source', value: 'contact_form' }, { name: 'type', value: 'confirmation' }],
+      tags: [
+        { name: 'source', value: 'contact_form' },
+        { name: 'type', value: 'confirmation' },
+      ],
     });
     if (error) {
       if (isTestMode(config.fromEmail) && error.name === 'validation_error') {
@@ -135,6 +137,6 @@ export async function sendContactNotification(input: ContactNotificationInput): 
       }
     }
   } catch (error) {
-    // Non-critical — silently ignore  
+    // Non-critical — silently ignore
   }
 }
