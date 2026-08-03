@@ -108,7 +108,7 @@ sequenceDiagram
 | `SESSION_SECRET` | yes | Fallback for realtime token signing | `openssl rand -hex 64` |
 | **Realtime** | | | |
 | `REALTIME_SESSION_TOKEN_SECRET` | yes | Primary key for SSE realtime tokens | `openssl rand -hex 64` |
-| `UPSTASH_REDIS_URL` | no | Redis for rate limits in production | `redis://...` |
+| `UPSTASH_REDIS_REST_URL` | no | Redis for rate limits in production | `redis://...` |
 | **AI / DeepSeek** | | | |
 | `DEEPSEEK_API_KEY` | yes | API key for chat + visitor intelligence | `sk-...` |
 | `DEEPSEEK_CHAT_MODEL` | no | Model name (default: `deepseek-chat`) | `deepseek-chat` |

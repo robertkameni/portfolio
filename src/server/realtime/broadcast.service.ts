@@ -16,7 +16,7 @@ interface IBroadcastService {
 }
 
 function getConfiguredRedisBroadcastUrl(): string | undefined {
-  const primary = process.env['UPSTASH_REDIS_URL']?.trim();
+  const primary = process.env['UPSTASH_REDIS_REST_URL']?.trim();
   const fallback = process.env['REDIS_URL']?.trim();
   return primary || fallback;
 }
@@ -24,7 +24,7 @@ function getConfiguredRedisBroadcastUrl(): string | undefined {
 /**
  * In-process pub/sub only. On serverless / multiple instances (e.g. Vercel + Redis unset),
  * the analyze job and the SSE connection run on different workers, so publishes never reach the browser.
- * Set UPSTASH_REDIS_URL or REDIS_URL for cross-invocation realtime.
+ * Set UPSTASH_REDIS_REST_URL or REDIS_URL for cross-invocation realtime.
  */
 class LocalBroadcastService implements IBroadcastService {
   private subscriptions = new Map<string, BroadcastSubscriber[]>();
@@ -59,7 +59,7 @@ class RedisBroadcastService implements IBroadcastService {
   private getRedisUrl(): string {
     const url = getConfiguredRedisBroadcastUrl();
     if (!url) {
-      throw new Error('UPSTASH_REDIS_URL or REDIS_URL not configured');
+      throw new Error('UPSTASH_REDIS_REST_URL or REDIS_URL not configured');
     }
     return url;
   }

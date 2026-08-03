@@ -28,7 +28,7 @@ type RedisWindowKey = `${string}:${string}`;
 const GLOBAL_RATE_LIMITER_KEY = '__rateLimiterCleanupRegistered__';
 
 function getRedisUrl(): string | undefined {
-  const rawUrl = process.env['UPSTASH_REDIS_URL'] || process.env['REDIS_URL'];
+  const rawUrl = process.env['UPSTASH_REDIS_REST_URL'] || process.env['REDIS_URL'];
   const normalizedUrl = rawUrl?.trim();
   return normalizedUrl || undefined;
 }
@@ -48,16 +48,16 @@ function assertProductionRedisConfigured(): void {
 
   if (isVercelPreviewDeployment()) {
     console.warn(
-      '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is not set on Vercel preview. ' +
-        'Using in-memory rate limiting (per-instance limits). Set UPSTASH_REDIS_URL for production-like behavior.',
+      '[RateLimiter] UPSTASH_REDIS_REST_URL or REDIS_URL is not set on Vercel preview. ' +
+        'Using in-memory rate limiting (per-instance limits). Set UPSTASH_REDIS_REST_URL for production-like behavior.',
     );
     return;
   }
 
   throw new Error(
-    '[RateLimiter] UPSTASH_REDIS_URL or REDIS_URL is required in production. ' +
+    '[RateLimiter] UPSTASH_REDIS_REST_URL or REDIS_URL is required in production. ' +
       'In-memory rate limiting is not safe on serverless (limits are per-instance). ' +
-      'Set UPSTASH_REDIS_URL in your environment.',
+      'Set UPSTASH_REDIS_REST_URL in your environment.',
   );
 }
 
@@ -196,7 +196,7 @@ class RedisRateLimiter implements RateLimiter {
       const { createClient } = await import('redis');
       const redisUrl = getRedisUrl();
       if (!redisUrl) {
-        throw new Error('UPSTASH_REDIS_URL or REDIS_URL is required for redis rate limiter.');
+        throw new Error('UPSTASH_REDIS_REST_URL or REDIS_URL is required for redis rate limiter.');
       }
 
       const connectTimeout = readPositiveIntFromEnv('AI_REDIS_CONNECT_TIMEOUT_MS', 5000, 500);

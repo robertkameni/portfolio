@@ -7,7 +7,7 @@ const serverEnvSchema = z.object({
   REFRESH_TOKEN_SECRET: z.string().min(1, 'REFRESH_TOKEN_SECRET is required'),
   SESSION_SECRET: z.string().min(1, 'SESSION_SECRET is required'),
   REALTIME_SESSION_TOKEN_SECRET: z.string().min(1, 'REALTIME_SESSION_TOKEN_SECRET is required'),
-  UPSTASH_REDIS_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().optional(),
 });
 
 export function validateServerEnv(): void {
