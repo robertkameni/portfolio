@@ -85,7 +85,7 @@ export const PortfolioStore = signalStore(
                 });
               }),
               catchError((error) => {
-                const msg = error instanceof Error ? error.message : (error as { message?: string })?.message ?? String(error);
+                const msg = error instanceof Error ? error.message : ((error as { message?: string })?.message ?? String(error));
                 console.error('[PortfolioStore] fetch failed:', msg);
                 patchState(store, { isLoading: false, error: 'Failed to load profile.' });
                 return EMPTY;
