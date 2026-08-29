@@ -21,7 +21,14 @@ vi.mock('sanitize-html', () => {
 
   function normalize(html: string): string {
     return html
-      .replace(/style="([^"]*)"/g, (match, value) => `style="${value.replace(/\s*:\s*/g, ':').replace(/\s*;\s*/g, ';').replace(/;\s*$/g, '')}"`)
+      .replace(
+        /style="([^"]*)"/g,
+        (match, value) =>
+          `style="${value
+            .replace(/\s*:\s*/g, ':')
+            .replace(/\s*;\s*/g, ';')
+            .replace(/;\s*$/g, '')}"`,
+      )
       .replace(/\stitle=""/g, '')
       .replace(/(<img[^>]*)\/>/g, '$1 />');
   }
@@ -80,9 +87,7 @@ describe('project-content-sanitize', () => {
   });
 
   it('accepts markdown with styled images and headings', () => {
-    expect(() =>
-      validateProjectMarkdownContent('# Overview\n\n![AI simulator](https://lucastar.de/portfolio/assets/ai-simulation-team.png)'),
-    ).not.toThrow();
+    expect(() => validateProjectMarkdownContent('# Overview\n\n![AI simulator](https://lucastar.de/portfolio/assets/ai-simulation-team.png)')).not.toThrow();
   });
 
   it('rejects markdown that renders to unsafe HTML', () => {
@@ -90,9 +95,7 @@ describe('project-content-sanitize', () => {
   });
 
   it('rejects markdown with event handlers', () => {
-    expect(() => validateProjectMarkdownContent('<img src="https://example.com/a.png" onerror="alert(1)">')).toThrow(
-      /disallowed HTML/,
-    );
+    expect(() => validateProjectMarkdownContent('<img src="https://example.com/a.png" onerror="alert(1)">')).toThrow(/disallowed HTML/);
   });
 
   it('rejects markdown with javascript: URLs', () => {
