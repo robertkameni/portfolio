@@ -41,6 +41,19 @@ function containsBlockedMarkup(html: string): boolean {
   );
 }
 
+// Normalization pass used only to compare against the sanitized output.
+// It allows every tag/attribute so it rewrites nothing (same parser/serializer
+// as the security pass, including style minification and empty-attribute
+// dropping), which makes the comparison detect only actual removals by the
+// security pass. The output of this pass is never persisted or rendered, so
+// allowing vulnerable tags here is safe.
+const PROJECT_HTML_PASSTHROUGH_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: false,
+  allowedAttributes: false,
+  allowVulnerableTags: true,
+  allowedSchemesAppliedToAttributes: [],
+};
+
 export function validateProjectMarkdownContent(markdown: string | null | undefined): string | undefined {
   if (markdown == null) {
     return undefined;
@@ -53,8 +66,9 @@ export function validateProjectMarkdownContent(markdown: string | null | undefin
 
   const rendered = renderProjectMarkdownHtml(normalized);
   const sanitized = sanitizeProjectHtml(rendered);
+  const passthrough = sanitizeHtml(rendered, PROJECT_HTML_PASSTHROUGH_OPTIONS);
 
-  if (containsBlockedMarkup(rendered) || rendered !== sanitized) {
+  if (containsBlockedMarkup(rendered) || sanitized !== passthrough) {
     throw new Error('Project content contains disallowed HTML, scripts, or event handlers.');
   }
 
