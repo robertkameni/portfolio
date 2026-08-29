@@ -33,6 +33,9 @@ jobs:
       - name: Prettier format fix
         run: npm run format:fix
 
+      - name: Prettier format check
+        run: npm run format:check
+
       - name: TypeScript (app + specs)
         run: npm run typecheck
 
