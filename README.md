@@ -162,9 +162,7 @@ npm run dev
 
 ### Platform-specific notes
 
-**Windows:** Local production builds skip static prerendering (`vite.config.ts` sets `prerender.routes` to `[]` on win32). Use **WSL** or rely on **CI** (Linux) to validate prerendered output. A warning is printed when prerender is skipped.
-
-**Hybrid rendering:** Public routes use **prerender**; admin routes use **client-only** rendering. See `src/app/shared/routing/hybrid-render.config.ts` and per-page `routeMeta.renderMode`. An anti-drift Vitest (`hybrid-render.config.spec.ts`) ensures pages stay in sync.
+**Hybrid rendering:** Public routes (home, projects list, project detail) are **server-rendered (SSR)** — they read the database at request time, so no static prerendering runs during the build on any platform. Admin routes use **client-only** rendering. See `src/app/shared/routing/hybrid-render.config.ts` and per-page `routeMeta.renderMode`. An anti-drift Vitest (`hybrid-render.config.spec.ts`) ensures pages stay in sync.
 
 ### Further reading
 

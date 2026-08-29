@@ -12,8 +12,8 @@ import type { AppRenderMode } from './render-mode.types';
  */
 const PAGE_EXPECTATIONS: Array<{ path: string; mode: AppRenderMode }> = [
   { path: '../../pages/index.page', mode: 'server' },
-  { path: '../../pages/projects/index.page', mode: 'prerender' },
-  { path: '../../pages/projects/[slug]/index.page', mode: 'prerender' },
+  { path: '../../pages/projects/index.page', mode: 'server' },
+  { path: '../../pages/projects/[slug]/index.page', mode: 'server' },
   { path: '../../pages/projects/[slug]/edit.page', mode: 'client' },
   { path: '../../pages/admin/login/index.page', mode: 'client' },
   { path: '../../pages/admin/(dashboard)/layout', mode: 'client' },

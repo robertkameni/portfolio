@@ -6,7 +6,7 @@ import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
 import { ProjectsStore } from '../../store/projects.store';
 
-export const routeMeta = withRenderMode('prerender');
+export const routeMeta = withRenderMode('server');
 
 @Component({
   selector: 'projects-page',

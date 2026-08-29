@@ -16,7 +16,7 @@ import { createProjectMarkdownRenderer, normalizeProjectMarkdown } from '../../.
 import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import { resolveProjectApiUrl } from './project-api-url';
 
-export const routeMeta = withRenderMode('prerender');
+export const routeMeta = withRenderMode('server');
 
 @Component({
   selector: 'project-overview-page',
