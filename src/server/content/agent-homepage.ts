@@ -9,7 +9,7 @@ export const agentHomepageMarkdown = `# Robert Kameni — portfolio (agent-orien
 
 **Role:** Technical Lead Frontend Specialist — Angular, TypeScript, enterprise web, full stack collaboration.
 
-**Canonical site:** https://robert-kameni-personal-portfolio.vercel.app/
+**Canonical site:** https://lucastar.de/portfolio/
 
 **Contact**
 
@@ -32,6 +32,6 @@ Technical Lead focused on scalable Angular applications (Signals, NgRx Signal St
 
 ## Discovery
 
-- Sitemap: https://robert-kameni-personal-portfolio.vercel.app/sitemap.xml  
-- Robots: https://robert-kameni-personal-portfolio.vercel.app/robots.txt  
+- Sitemap: https://lucastar.de/portfolio/sitemap.xml  
+- Robots: https://lucastar.de/portfolio/robots.txt  
 `;

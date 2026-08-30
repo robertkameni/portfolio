@@ -2,7 +2,7 @@
 
 **Role:** Technical Lead Frontend Specialist — Angular, TypeScript, enterprise web, full stack collaboration.
 
-**Canonical site:** https://robert-kameni-personal-portfolio.vercel.app/
+**Canonical site:** https://lucastar.de/portfolio/
 
 **Contact**
 
@@ -25,5 +25,5 @@ Technical Lead focused on scalable Angular 22 applications (Signals, stable Reso
 
 ## Discovery
 
-- Sitemap: https://robert-kameni-personal-portfolio.vercel.app/sitemap.xml  
-- Robots: https://robert-kameni-personal-portfolio.vercel.app/robots.txt  
+- Sitemap: https://lucastar.de/portfolio/sitemap.xml  
+- Robots: https://lucastar.de/portfolio/robots.txt  

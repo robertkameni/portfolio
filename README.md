@@ -1,6 +1,6 @@
 # Personal Portfolio & AI Showcase
 
-**Live demo:** [https://robert-kameni-personal-portfolio.vercel.app/](https://robert-kameni-personal-portfolio.vercel.app/)
+**Live demo:** [https://lucastar.de/portfolio/](https://lucastar.de/portfolio/)
 
 An **Angular 22 + AnalogJS-based portfolio** demonstrating modern frontend architecture, lightweight server-side capabilities, and optional AI-driven UI personalization.
 

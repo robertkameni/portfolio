@@ -3,7 +3,7 @@
 # Analog.js + Nitro (Vercel). Plain-text robots.txt — no HTML.
 #
 # Canonical host (production, matches README live demo):
-#   https://robert-kameni-personal-portfolio.vercel.app
+#   https://lucastar.de/portfolio
 #
 # Custom domain checklist:
 #   - Update the "Sitemap:" URL at the bottom of this file (same host + HTTPS).
@@ -133,4 +133,4 @@ Disallow: /projects/*/edit
 # =============================================================================
 # Sitemap — keep host + paths identical to public/sitemap.xml
 # =============================================================================
-Sitemap: https://robert-kameni-personal-portfolio.vercel.app/sitemap.xml
+Sitemap: https://lucastar.de/portfolio/sitemap.xml
