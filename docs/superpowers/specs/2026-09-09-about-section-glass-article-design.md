@@ -38,7 +38,7 @@ Redesign (preserve brand) of a developer-portfolio About for recruiters, founder
 1. **Section shell**  
    Full-width section on existing `bg-background`. Slightly increased vertical padding vs today so the glass can breathe.
 
-2. **Glass panel** (single frosted container, tighter max-width `max-w-3xl` so short copy does not float in a wide empty panel)  
+2. **Glass panel** (single frosted container at site `max-w-6xl`, matching Hero/Skills/Contact width)  
    - Translucent fill with a subtle green tint (brand-locked to primary).  
    - `backdrop-filter: blur(...)` + saturate.  
    - 1px border (`white` / primary at low opacity).  
@@ -46,28 +46,18 @@ Redesign (preserve brand) of a developer-portfolio About for recruiters, founder
    - Soft corner radius consistent with existing soft cards on the site (no new radius system).  
    - **Fallback:** under `prefers-reduced-transparency: reduce`, use an opaque near-black fill (no blur).
 
-3. **Header inside the glass**  
-   - Desktop: small portrait (circle or soft square, ~80–112px) left of title.  
-   - Mobile: title first, portrait under or beside at smaller size; never a competing full column.  
-   - Adaptive green `h2` title + existing thin white accent rule under the title block.  
-   - Portrait keeps current asset (`/assets/lucas-*.jpg`), responsive `srcset`, grayscale optional on idle with color on hover (existing behavior may remain if it still fits the smaller crop).
+3. **Header + bio (left column on desktop)**  
+   - Small portrait (circle, ~80–96px) beside the adaptive green title.  
+   - Single-column body paragraphs + show more / less.  
+   - Never a full-height portrait competing with a text wall.
 
-4. **Body inside the glass**  
-   - Paragraphs from `visibleParagraphs()` in a **single column**, capped around `65ch` for comfortable line length.  
-   - Body color remains muted gray for hierarchy.  
-   - Existing show more / less control stays under the paragraph block.
-
-5. **Highlights below the glass**  
-   - Same `data().highlights` content.  
-   - Compact layout: 3 columns on `sm+` (one highlight each), 1 column on mobile.  
+4. **Highlights (right column on desktop)**  
+   - Same `data().highlights` content, stacked like Contact features.  
    - Icon + title + short description; no heavy card chrome.  
-   - Not inside the glass, so the bio panel stays one job: story.
+   - Lives inside the glass panel so the wide desktop panel stays balanced.
 
-### Mobile (`< md`)
-
-- Single column throughout.  
-- Glass padding reduced but still comfortable.  
-- Portrait demoted (small), never side-by-side with a tall text column.
+5. **Mobile**  
+   - Single column: header, bio, then highlights.
 
 ### Motion
 
