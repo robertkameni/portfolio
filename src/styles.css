@@ -40,7 +40,16 @@
 
 @layer components {
   .link-color-primary-hover {
-    @apply text-white visited:text-white hover:text-primary! focus-visible:text-primary!;
+    color: #ffffff;
+  }
+
+  .link-color-primary-hover:visited {
+    color: #ffffff;
+  }
+
+  .link-color-primary-hover:hover,
+  .link-color-primary-hover:focus-visible {
+    color: var(--color-primary) !important;
   }
 
   .about-glass {
