@@ -15,7 +15,7 @@ The current About layout is a classic portrait-left / bio-right split. It fails 
 ## Goals
 
 - Keep dark background + green primary brand language.
-- Make the bio scannable via a **two-column** text layout on desktop.
+- Keep the bio as a **single readable column** (short copy; two columns are unnecessary).
 - Use a **glassmorphism** panel as the primary surface for the bio.
 - Demote the portrait to a supporting identity cue (not a layout column).
 - Preserve adaptive titles/paragraphs, show more / less, highlights data, and `about_viewed` tracking.
@@ -38,7 +38,7 @@ Redesign (preserve brand) of a developer-portfolio About for recruiters, founder
 1. **Section shell**  
    Full-width section on existing `bg-background`. Slightly increased vertical padding vs today so the glass can breathe.
 
-2. **Glass panel** (single frosted container, max-width aligned with site `max-w-6xl`)  
+2. **Glass panel** (single frosted container, tighter max-width `max-w-3xl` so short copy does not float in a wide empty panel)  
    - Translucent fill with a subtle green tint (brand-locked to primary).  
    - `backdrop-filter: blur(...)` + saturate.  
    - 1px border (`white` / primary at low opacity).  
@@ -53,13 +53,13 @@ Redesign (preserve brand) of a developer-portfolio About for recruiters, founder
    - Portrait keeps current asset (`/assets/lucas-*.jpg`), responsive `srcset`, grayscale optional on idle with color on hover (existing behavior may remain if it still fits the smaller crop).
 
 4. **Body inside the glass**  
-   - Paragraphs from `visibleParagraphs()` in a **2-column CSS grid** from `md` up; **1 column** below `md`.  
-   - Comfortable gap between columns; body color remains muted gray for hierarchy.  
-   - Existing show more / less control stays under the paragraph block (spans both columns on desktop so it doesn’t sit oddly in one column only).
+   - Paragraphs from `visibleParagraphs()` in a **single column**, capped around `65ch` for comfortable line length.  
+   - Body color remains muted gray for hierarchy.  
+   - Existing show more / less control stays under the paragraph block.
 
 5. **Highlights below the glass**  
    - Same `data().highlights` content.  
-   - Compact layout: 2 columns on `md+`, 1 column on mobile.  
+   - Compact layout: 3 columns on `sm+` (one highlight each), 1 column on mobile.  
    - Icon + title + short description; no heavy card chrome.  
    - Not inside the glass, so the bio panel stays one job: story.
 
@@ -92,7 +92,7 @@ Redesign (preserve brand) of a developer-portfolio About for recruiters, founder
 ## Success Criteria
 
 - No full-height image + text side-by-side layout.  
-- Desktop bio reads as two columns inside one glass panel.  
+- Desktop bio reads as one comfortable column inside one glass panel.  
 - Portrait is clearly secondary.  
 - Expand / collapse and visitor-adaptive titles still work.  
 - Glass has a solid fallback when transparency is reduced.  

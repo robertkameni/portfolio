@@ -1,38 +1,38 @@
-<section trackBehavior="about_viewed" class="py-10 md:py-16 flex justify-center text-white">
-  <div class="max-w-6xl w-full mx-auto px-4">
-    <div class="about-glass p-5 sm:p-8 md:p-10">
-      <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center">
+<section trackBehavior="about_viewed" class="py-8 md:py-10 flex justify-center text-white">
+  <div class="max-w-3xl w-full mx-auto px-4">
+    <div class="about-glass p-5 sm:p-8 md:p-9">
+      <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
         <div
-          class="relative size-20 md:size-28 shrink-0 overflow-hidden rounded-full border border-[#143c1a] shadow-[0_0_24px_rgba(34,197,94,0.12)]"
+          class="relative size-20 md:size-24 shrink-0 overflow-hidden rounded-full border border-[#143c1a] shadow-[0_0_24px_rgba(34,197,94,0.12)]"
         >
           <img
             src="/assets/lucas-600.jpg"
             srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
-            width="112"
-            height="112"
+            width="96"
+            height="96"
             alt="Robert Kameni"
             decoding="async"
             loading="lazy"
             fetchpriority="low"
-            sizes="112px"
+            sizes="96px"
             class="object-cover object-top w-full h-full grayscale hover:grayscale-0 transition-[filter] duration-500"
           />
         </div>
 
         <div class="min-w-0 flex flex-col items-baseline">
-          <h2 class="text-3xl md:text-5xl font-bold text-primary mb-2 text-balance">{{ adaptiveTitle() }}</h2>
+          <h2 class="text-3xl md:text-4xl font-bold text-primary mb-2 text-balance">{{ adaptiveTitle() }}</h2>
           <div class="h-1 w-16 bg-white"></div>
         </div>
       </div>
 
-      <div class="mb-2 text-gray-300 leading-relaxed text-sm md:text-base text-left md:columns-2 md:gap-10">
+      <div class="space-y-4 text-gray-300 leading-relaxed text-sm md:text-base text-left max-w-[65ch]">
         @for (paragraph of visibleParagraphs(); track $index) {
-        <p class="mb-4 break-inside-avoid">{{ paragraph }}</p>
+        <p>{{ paragraph }}</p>
         }
       </div>
 
       @if (hasCollapsedPreview()) {
-      <div class="mt-2">
+      <div class="mt-4">
         <button
           type="button"
           class="text-primary font-bold hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
@@ -44,10 +44,10 @@
       }
     </div>
 
-    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 text-left">
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
       @for (item of data().highlights; track item.title) {
-      <div class="flex items-start">
-        <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
+      <div class="flex items-start sm:flex-col sm:items-start gap-0">
+        <div class="bg-[#0a2912] p-2 rounded-full mr-4 sm:mr-0 sm:mb-3 shrink-0 mt-1 sm:mt-0">
           <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.iconPath"></path>
           </svg>
