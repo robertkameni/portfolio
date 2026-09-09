@@ -219,7 +219,7 @@ export const EN_COPY: SiteCopy = {
         items: [
           {
             title: 'Technical Leadership:',
-            description: 'Mentoring teams on modern Angular paradigms and enforcing clean architectural standards.',
+            description: 'Technical leadership for teams on modern Angular paradigms and enforcing clean architectural standards.',
           },
           {
             title: 'Testing Culture:',

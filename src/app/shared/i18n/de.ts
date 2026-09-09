@@ -219,7 +219,7 @@ export const DE_COPY: SiteCopy = {
         items: [
           {
             title: 'Technische Führung:',
-            description: 'Mentoring für Teams in modernen Angular-Paradigmen und Durchsetzung sauberer Architekturstandards.',
+            description: 'Technische Führung von Teams in modernen Angular-Paradigmen und Durchsetzung sauberer Architekturstandards.',
           },
           {
             title: 'Testing-Kultur:',
