@@ -86,7 +86,7 @@ export const defaultProfile: ProfileData = {
       'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years building scalable enterprise Angular apps. I own frontend delivery end-to-end: architecture, implementation, quality, and rollout.',
       'At DATEV I drive frontend architecture across initiatives, set clear engineering standards, and improved team efficiency by 50% through modern patterns and tighter delivery workflows.',
       'I translate product goals into technical strategy, ship with TypeScript, RxJS, Signals, and NgRx Signal Store, and keep quality high with Jest and Cypress.',
-      'As a multiplier I mentor engineers and run reviews. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
+      'As a Technical Lead I guide teams from the technical side and run reviews. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
     ],
 
     highlights: [
@@ -102,7 +102,7 @@ export const defaultProfile: ProfileData = {
       },
       {
         title: 'Technical Leadership and Team Scaling',
-        description: 'Led code reviews, mentored developers, and established engineering standards to scale delivery quality and team effectiveness.',
+        description: 'Led code reviews, guided developers technically, and established engineering standards to scale delivery quality and team effectiveness.',
         iconPath:
           'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
       },

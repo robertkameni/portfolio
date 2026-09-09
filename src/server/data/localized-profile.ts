@@ -75,7 +75,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
           'Ich bin Robert Kameni, Technical Lead Frontend mit mehr als 4 Jahren Erfahrung in skalierbaren Enterprise-Angular-Apps. Ich verantworte Frontend end-to-end: Architektur, Umsetzung, Qualität und Go-live.',
           'Bei DATEV gestalte ich Frontend-Architekturen über Initiativen hinweg, setze klare Engineering-Standards und habe die Team-Effizienz um 50 % gesteigert.',
           'Ich übersetze Produktziele in technische Strategie, arbeite mit TypeScript, RxJS, Signals und NgRx Signal Store und sichere Qualität mit Jest und Cypress.',
-          'Als Multiplikator coache ich Engineers und leite Reviews. Mich treiben performante, AI-fähige Frontends und Teams, die ohne Qualitätsverlust skalieren.',
+          'Als Technical Lead führe ich Teams aus technischer Sicht und leite Reviews. Mich treiben performante, AI-fähige Frontends und Teams, die ohne Qualitätsverlust skalieren.',
         ],
         highlights: [
           {
@@ -91,7 +91,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
           {
             ...aboutHighlight2,
             title: 'Technische Führung und Team-Skalierung',
-            description: 'Code-Reviews geleitet, Entwickler gecoacht und Engineering-Standards etabliert, um Lieferqualität und Team-Wirksamkeit zu skalieren.',
+            description: 'Code-Reviews geleitet, Teams technisch geführt und Engineering-Standards etabliert, um Lieferqualität und Team-Wirksamkeit zu skalieren.',
           },
         ],
       },

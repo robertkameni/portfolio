@@ -133,7 +133,7 @@ export const EN_COPY: SiteCopy = {
     ],
     recruiterParagraphs: [
       'As a Technical Lead I raise team efficiency, set quality standards, and deliver complex enterprise Angular applications reliably.',
-      'In large Scrum setups I focus on mentoring, CI/CD, and AI-assisted tooling so delivery stays predictable.',
+      'In large Scrum setups I focus on technical leadership, CI/CD, and AI-assisted tooling so delivery stays predictable.',
     ],
     developerParagraphs: [
       'I live in the modern Angular ecosystem. I modernize legacy apps toward zoneless architecture with Signals and build state with the NgRx Signal Store.',
