@@ -128,18 +128,17 @@ export const DE_COPY: SiteCopy = {
       hiringManager: 'Bereit zu führen und zu liefern',
     },
     founderParagraphs: [
-      'Ich spezialisiere mich darauf, ambitionierte SaaS-Produkte von 0 auf 1 zu bringen. Mein Fokus liegt darauf, früh eine saubere und skalierbare Architektur zu etablieren, damit deine Anwendung schnell wachsen kann, ohne technische Schulden aufzubauen.',
-      'Founders brauchen Geschwindigkeit, ohne Stabilität zu verlieren. Ich konzipiere End-to-End-Lösungen mit modernem Angular und Nitro-Backends, damit sich dein Produkt schnell an neue Anforderungen anpassen kann. Zusätzlich nutze ich Large Language Models und individuelle AI-Agents, um intelligente, skalierbare Features zu entwickeln, die deiner Plattform vom ersten Tag an einen echten Vorsprung geben.',
+      'Ich bringe SaaS-Produkte von 0 auf 1: früh saubere Architektur, damit Wachstum ohne unnötige technische Schulden möglich ist.',
+      'Mit modernem Angular, Nitro-Backends und gezieltem Einsatz von LLMs baue ich stabile Systeme, die schnell liefern und sich anpassen lassen.',
     ],
     recruiterParagraphs: [
-      'Als Technical Lead bringe ich nachweislich Teams zu höherer Entwicklungseffizienz, etabliere klare Qualitätsstandards und liefere komplexe Enterprise-Anwendungen mit Angular zuverlässig aus.',
-      'Ich arbeite souverän in großen, teamübergreifenden Scrum-Umgebungen. Neben sauberem Code fokussiere ich mich auf Mentoring, effizientere CI/CD-Abläufe und den gezielten Einsatz AI-gestützter Tools, um den gesamten Entwicklungsprozess zu beschleunigen.',
+      'Als Technical Lead steigere ich Team-Effizienz, setze Qualitätsstandards und liefere komplexe Angular-Enterprise-Anwendungen zuverlässig aus.',
+      'In großen Scrum-Setups fokussiere ich Mentoring, CI/CD und AI-gestützte Tooling, damit Delivery vorhersehbar bleibt.',
     ],
     developerParagraphs: [
-      'Ich bin stark im modernen Angular-Ökosystem verankert und reizt es aus. Besonders gern modernisiere ich Legacy-Anwendungen in Richtung zoneless Architektur mit Angular Signals und baue robuste, vorhersehbare State-Management-Lösungen mit dem NgRx Signal Store.',
-      'Ich löse gern komplexe Architekturfragen, strukturiere skalierbare Nx-Monorepos und experimentiere damit, wie AI-Logik und LLMs selbstanpassende Architekturen ermöglichen können. Wenn du über reaktive Patterns oder AI-Integration sprechen willst, lass uns austauschen.',
+      'Im modernen Angular-Ökosystem fühle ich mich zu Hause. Legacy-Apps modernisiere ich hin zu zoneless Architektur mit Signals und baue State mit dem NgRx Signal Store.',
+      'Komplexe Architektur, Nx-Monorepos und AI/LLM-Integration gehören zu meinem Alltag. Wenn du über reaktive Patterns sprechen willst, lass uns austauschen.',
     ],
-    previewSplitToken: 'Signals und NgRx Signal Store.',
   },
   contact: {
     validation: {

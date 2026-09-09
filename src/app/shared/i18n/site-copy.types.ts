@@ -131,7 +131,6 @@ export type SiteCopy = {
     founderParagraphs: [string, string];
     recruiterParagraphs: [string, string];
     developerParagraphs: [string, string];
-    previewSplitToken: string;
   };
   contact: {
     validation: {

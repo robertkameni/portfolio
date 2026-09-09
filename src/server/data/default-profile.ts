@@ -83,12 +83,10 @@ export const defaultProfile: ProfileData = {
   about: {
     title: 'About Me',
     paragraphs: [
-      'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years of experience delivering scalable enterprise web applications and leading Angular initiatives in complex, cross-functional Scrum environments. I take ownership of frontend delivery end-to-end, from architecture and technical planning to implementation, quality assurance, and production rollout.',
-      'At DATEV, I drive frontend architecture across multiple initiatives, delivering complex Angular solutions while establishing clear engineering standards that improve consistency and long-term maintainability. By introducing modern frontend patterns, optimizing workflows, and standardizing development practices, I increased overall team efficiency by 50% and significantly reduced delivery friction.',
-      'I operate at the intersection of business and technology, translating product requirements into clear technical strategies and executable roadmaps. I break down complex initiatives into structured deliverables, align engineering decisions with product goals, and ensure teams can deliver predictable, high-quality outcomes under enterprise constraints.',
-      'My technical expertise includes TypeScript, RxJS, and modern Angular patterns such as Signals and NgRx Signal Store. I design scalable frontend architectures, optimize application performance, and implement robust testing strategies using Jest and Cypress to ensure reliability, reduce regressions, and support long-term product stability.',
-      'Beyond implementation, I act as a technical leader and multiplier within teams. I mentor engineers, lead code reviews, and foster collaboration across teams, ensuring knowledge sharing and consistent quality. I focus on pragmatic decision-making, clean architecture, and continuous improvement to enable teams to deliver impactful and maintainable products.',
-      'I am particularly interested in building high-performance, AI-driven applications and evolving frontend systems into scalable platforms. My goal is not only to deliver features, but to create systems and teams that can scale efficiently, adapt quickly, and generate measurable business value over time.',
+      'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years building scalable enterprise Angular apps. I own frontend delivery end-to-end: architecture, implementation, quality, and rollout.',
+      'At DATEV I drive frontend architecture across initiatives, set clear engineering standards, and improved team efficiency by 50% through modern patterns and tighter delivery workflows.',
+      'I translate product goals into technical strategy, ship with TypeScript, RxJS, Signals, and NgRx Signal Store, and keep quality high with Jest and Cypress.',
+      'As a multiplier I mentor engineers and run reviews. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
     ],
 
     highlights: [
