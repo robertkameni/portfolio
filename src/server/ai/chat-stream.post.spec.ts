@@ -23,7 +23,7 @@ vi.mock('h3', async () => {
 });
 
 vi.mock('./deepseek.client', () => ({
-  DEFAULT_DEEPSEEK_CHAT_MODEL: 'deepseek-chat',
+  DEFAULT_DEEPSEEK_CHAT_MODEL: 'deepseek-flash',
   getAIClient: getAIClientMock,
 }));
 

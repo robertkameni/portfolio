@@ -28,7 +28,7 @@ describe('deepseek.client', () => {
     await expect(
       requestDeepSeekCompletion([{ role: 'user', content: 'hi' }], {
         stream: false,
-        model: 'deepseek-chat',
+        model: 'deepseek-flash',
         responseMimeType: 'application/json',
       }),
     ).rejects.toMatchObject({ status: 500 });
@@ -42,7 +42,7 @@ describe('deepseek.client', () => {
       json: async () => ({ choices: [{ message: { content: 'answer' } }] }),
     }) as unknown as typeof fetch;
 
-    const result = await runDeepSeekCompletion([{ role: 'user', content: 'q' }], { model: 'deepseek-chat' });
+    const result = await runDeepSeekCompletion([{ role: 'user', content: 'q' }], { model: 'deepseek-flash' });
     expect(result.response.text()).toBe('answer');
   });
 
@@ -59,7 +59,7 @@ describe('deepseek.client', () => {
     }) as unknown as typeof fetch;
 
     const client = getAIClient();
-    const model = client.getGenerativeModel({ model: 'deepseek-chat', systemInstruction: 'sys' });
+    const model = client.getGenerativeModel({ model: 'deepseek-flash', systemInstruction: 'sys' });
     const chat = model.startChat({
       history: [{ role: 'user', parts: [{ text: 'hello' }] }],
       generationConfig: { maxOutputTokens: 10 },

@@ -86,7 +86,7 @@ const trimmedChatModelEnv = process.env['DEEPSEEK_CHAT_MODEL']?.trim();
 const trimmedVisitorModelEnv = process.env['DEEPSEEK_VISITOR_MODEL']?.trim();
 
 /** Chat streaming + portfolio twin (OpenAI-compatible id sent to DeepSeek). */
-export const DEFAULT_DEEPSEEK_CHAT_MODEL = trimmedChatModelEnv || 'deepseek-chat';
+export const DEFAULT_DEEPSEEK_CHAT_MODEL = trimmedChatModelEnv || 'deepseek-flash';
 
 /** Visitor classification JSON call (defaults to chat model). */
 export const DEFAULT_DEEPSEEK_VISITOR_MODEL = trimmedVisitorModelEnv || DEFAULT_DEEPSEEK_CHAT_MODEL;
