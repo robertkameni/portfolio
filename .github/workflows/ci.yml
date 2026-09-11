@@ -34,7 +34,7 @@ jobs:
         run: npm run lint
 
       - name: Prettier format fix
-        run: npm run format:fix
+        run: npm run format
 
       - name: Commit and push formatting changes
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository

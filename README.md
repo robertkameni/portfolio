@@ -156,7 +156,8 @@ npm run dev
 | `npm run test` | Run Vitest in watch mode |
 | `npm run lint` | ESLint check |
 | `npm run typecheck` | TypeScript check (app + specs + server) |
-| `npm run format:fix` | Prettier auto-format |
+| `npm run format:fix` | Prettier on staged files (also runs via Husky pre-commit) |
+| `npm run format` | Prettier on all `src` files |
 | `npm run build:analyze` | Build + generate Rollup treemap |
 | `npm run check:bundles` | Validate gzip bundle budgets |
 

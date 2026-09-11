@@ -19,13 +19,17 @@
     "backfill:project-images": "tsx scripts/backfill-project-cover-images.ts",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
-    "format:fix": "npm run format",
+    "format:fix": "lint-staged",
     "build:analyze": "node scripts/build-analyze.mjs",
     "check:bundles": "node scripts/check-bundle-budgets.mjs",
     "preview": "vite preview --outDir dist/client --host localhost --port 4173 --strictPort",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "prepare": "husky"
   },
   "private": true,
+  "lint-staged": {
+    "src/**/*.{ts,html,css,scss,json}": "prettier --write"
+  },
   "dependencies": {
     "@analogjs/router": "^2.7.2",
     "@angular/common": "^22.1.6",
@@ -70,7 +74,9 @@
     "@typescript-eslint/parser": "^8.70.0",
     "dotenv": "^17.4.2",
     "eslint": "^10.10.0",
+    "husky": "^9.1.7",
     "jsdom": "^30.0.1",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.6",
     "prisma": "^7.10.0",
     "rollup-plugin-visualizer": "^7.1.1",
