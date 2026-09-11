@@ -128,18 +128,17 @@ export const EN_COPY: SiteCopy = {
       hiringManager: 'Ready to Lead & Deliver',
     },
     founderParagraphs: [
-      'I specialize in bringing ambitious SaaS products from 0 to 1. My focus is on establishing a clean, scalable architecture early on, ensuring your application can handle rapid growth without accumulating technical debt.',
-      'Founders need speed to market without sacrificing product stability. I architect end-to-end solutions using modern Angular and Nitro backends that allow your product to pivot quickly. Furthermore, I leverage Large Language Models (LLMs) and custom AI agents to build highly intelligent, scalable features that give your platform a competitive edge from day one.',
+      'I take SaaS products from 0 to 1 with clean architecture early, so growth does not pile up avoidable technical debt.',
+      'With modern Angular, Nitro backends, and focused LLM use, I ship systems that move fast without losing stability.',
     ],
     recruiterParagraphs: [
-      'As a Technical Lead, I bring a proven track record of significantly increasing development team efficiency, establishing strict code quality standards, and successfully delivering highly complex enterprise-grade Angular applications.',
-      'I excel in large-scale, multi-team Scrum environments. Beyond writing clean code, I focus heavily on mentoring junior and mid-level developers, streamlining CI/CD pipelines, and integrating AI-driven tooling to accelerate the software development lifecycle across the engineering department.',
+      'As a Technical Lead I raise team efficiency, set quality standards, and deliver complex enterprise Angular applications reliably.',
+      'In large Scrum setups I focus on technical leadership, CI/CD, and AI-assisted tooling so delivery stays predictable.',
     ],
     developerParagraphs: [
-      'I am deeply passionate about the modern Angular ecosystem and pushing the framework to its limits. I love migrating legacy applications to zoneless architectures using Angular Signals and building robust, predictable state management systems with the NgRx Signal Store.',
-      "I enjoy solving complex architectural challenges, setting up scalable Nx monorepo structures, and exploring how we can use AI logic and LLMs to power highly scalable, self-adapting application architectures. If you're interested in discussing reactive programming patterns or AI integration, let's connect.",
+      'I live in the modern Angular ecosystem. I modernize legacy apps toward zoneless architecture with Signals and build state with the NgRx Signal Store.',
+      "Complex architecture, Nx monorepos, and AI/LLM integration are part of my day-to-day. If you want to talk reactive patterns, let's connect.",
     ],
-    previewSplitToken: 'Signals and NgRx Signal Store.',
   },
   contact: {
     validation: {
@@ -220,7 +219,7 @@ export const EN_COPY: SiteCopy = {
         items: [
           {
             title: 'Technical Leadership:',
-            description: 'Mentoring teams on modern Angular paradigms and enforcing clean architectural standards.',
+            description: 'Technical leadership for teams on modern Angular paradigms and enforcing clean architectural standards.',
           },
           {
             title: 'Testing Culture:',

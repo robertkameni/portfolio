@@ -83,12 +83,10 @@ export const defaultProfile: ProfileData = {
   about: {
     title: 'About Me',
     paragraphs: [
-      'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years of experience delivering scalable enterprise web applications and leading Angular initiatives in complex, cross-functional Scrum environments. I take ownership of frontend delivery end-to-end, from architecture and technical planning to implementation, quality assurance, and production rollout.',
-      'At DATEV, I drive frontend architecture across multiple initiatives, delivering complex Angular solutions while establishing clear engineering standards that improve consistency and long-term maintainability. By introducing modern frontend patterns, optimizing workflows, and standardizing development practices, I increased overall team efficiency by 50% and significantly reduced delivery friction.',
-      'I operate at the intersection of business and technology, translating product requirements into clear technical strategies and executable roadmaps. I break down complex initiatives into structured deliverables, align engineering decisions with product goals, and ensure teams can deliver predictable, high-quality outcomes under enterprise constraints.',
-      'My technical expertise includes TypeScript, RxJS, and modern Angular patterns such as Signals and NgRx Signal Store. I design scalable frontend architectures, optimize application performance, and implement robust testing strategies using Jest and Cypress to ensure reliability, reduce regressions, and support long-term product stability.',
-      'Beyond implementation, I act as a technical leader and multiplier within teams. I mentor engineers, lead code reviews, and foster collaboration across teams, ensuring knowledge sharing and consistent quality. I focus on pragmatic decision-making, clean architecture, and continuous improvement to enable teams to deliver impactful and maintainable products.',
-      'I am particularly interested in building high-performance, AI-driven applications and evolving frontend systems into scalable platforms. My goal is not only to deliver features, but to create systems and teams that can scale efficiently, adapt quickly, and generate measurable business value over time.',
+      'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years building scalable enterprise Angular apps. I own frontend delivery end-to-end: architecture, implementation, quality, and rollout.',
+      'At DATEV I drive frontend architecture across initiatives, set clear engineering standards, and improved team efficiency by 50% through modern patterns and tighter delivery workflows.',
+      'I translate product goals into technical strategy, ship with TypeScript, RxJS, Signals, and NgRx Signal Store, and keep quality high with Jest and Cypress.',
+      'As a Technical Lead I guide teams from the technical side and run reviews. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
     ],
 
     highlights: [
@@ -104,9 +102,14 @@ export const defaultProfile: ProfileData = {
       },
       {
         title: 'Technical Leadership and Team Scaling',
-        description: 'Led code reviews, mentored developers, and established engineering standards to scale delivery quality and team effectiveness.',
+        description: 'Led code reviews, guided developers technically, and established engineering standards to scale delivery quality and team effectiveness.',
         iconPath:
           'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
+      },
+      {
+        title: 'AI-Driven Development',
+        description: 'Integrate LLMs and AI tooling into architecture and delivery to ship faster while keeping quality and maintainability high.',
+        iconPath: 'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z',
       },
     ],
   },

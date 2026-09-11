@@ -111,8 +111,8 @@ sequenceDiagram
 | `UPSTASH_REDIS_REST_URL` | no | Redis for rate limits in production | `redis://...` |
 | **AI / DeepSeek** | | | |
 | `DEEPSEEK_API_KEY` | yes | API key for chat + visitor intelligence | `sk-...` |
-| `DEEPSEEK_CHAT_MODEL` | no | Model name (default: `deepseek-chat`) | `deepseek-chat` |
-| `DEEPSEEK_VISITOR_MODEL` | no | Separate model for visitor analysis | `deepseek-chat` |
+| `DEEPSEEK_CHAT_MODEL` | no | Model name (default: `deepseek-flash`) | `deepseek-flash` |
+| `DEEPSEEK_VISITOR_MODEL` | no | Separate model for visitor analysis | `deepseek-flash` |
 | `DEEPSEEK_THINKING_ENABLED` | no | Enable reasoning output | `true` |
 | `DEEPSEEK_FETCH_TIMEOUT_MS` | no | HTTP timeout in ms (default: 120000) | `120000` |
 | **Cal.com** | | | |
@@ -156,7 +156,8 @@ npm run dev
 | `npm run test` | Run Vitest in watch mode |
 | `npm run lint` | ESLint check |
 | `npm run typecheck` | TypeScript check (app + specs + server) |
-| `npm run format:fix` | Prettier auto-format |
+| `npm run format:fix` | Prettier on staged files (also runs via Husky pre-commit) |
+| `npm run format` | Prettier on all `src` files |
 | `npm run build:analyze` | Build + generate Rollup treemap |
 | `npm run check:bundles` | Validate gzip bundle budgets |
 

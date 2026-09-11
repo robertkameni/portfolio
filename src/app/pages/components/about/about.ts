@@ -40,14 +40,14 @@ export class About {
 
     switch (profile.visitorType) {
       case 'founder':
-        return [...this.copy().about.founderParagraphs, ...baseParas.slice(1)];
+        return [...this.copy().about.founderParagraphs, ...baseParas.slice(1, 3)];
 
       case 'recruiter':
       case 'hiring_manager':
-        return [...this.copy().about.recruiterParagraphs, ...baseParas];
+        return [...this.copy().about.recruiterParagraphs, ...baseParas.slice(0, 2)];
 
       case 'developer':
-        return [...this.copy().about.developerParagraphs, ...baseParas.slice(2)];
+        return [...this.copy().about.developerParagraphs, ...baseParas.slice(2, 4)];
 
       default:
         return baseParas;
@@ -62,18 +62,7 @@ export class About {
       return paragraphs;
     }
 
-    const previewParagraphs = paragraphs.slice(0, 2);
-    const token = this.copy().about.previewSplitToken;
-    const thirdParagraph = paragraphs.slice(2).find((p) => p.includes(token)) ?? paragraphs[2] ?? '';
-    const tokenIndex = thirdParagraph.indexOf(token);
-
-    if (tokenIndex > -1) {
-      previewParagraphs.push(`${thirdParagraph.slice(0, tokenIndex).trim()}`);
-      return previewParagraphs;
-    }
-
-    previewParagraphs.push(`${thirdParagraph.slice(0, 180).trim()}`);
-    return previewParagraphs;
+    return paragraphs.slice(0, 2);
   });
 
   toggleAbout() {
