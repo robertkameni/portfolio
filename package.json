@@ -88,6 +88,7 @@
     "@prisma/config": {
       "deepmerge-ts": "8.0.2"
     },
-    "@hono/node-server": "^2.0.5"
+    "@hono/node-server": "^2.0.5",
+    "mysql2": "^3.23.1"
   }
 }
