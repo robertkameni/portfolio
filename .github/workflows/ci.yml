@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -33,25 +33,8 @@ jobs:
       - name: ESLint
         run: npm run lint
 
-      - name: Prettier format fix
-        run: npm run format
-
-      - name: Commit and push formatting changes
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          if git diff --exit-code; then
-            echo "No formatting changes to commit."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "chore: apply Prettier formatting"
-            git push
-          fi
-
-      - name: Prettier format check (non-blocking)
+      - name: Prettier format check
         run: npm run format:check
-        continue-on-error: true
 
       - name: TypeScript (app + specs)
         run: npm run typecheck
