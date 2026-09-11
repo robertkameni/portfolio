@@ -17,7 +17,7 @@ export class SiteToolbarComponent {
 
   protected locale = this.localeService.locale;
   protected copy = this.localeService.copy;
-  protected readonly devLabel = isDevMode() ? 'DEV-VORSCHAU' : this.copy().devProxy.label;
+  protected readonly devLabel = isDevMode() ? 'DEV · LIVE' : this.copy().devProxy.label;
 
   constructor(private router: Router) {}
 
