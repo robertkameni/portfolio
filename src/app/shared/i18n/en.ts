@@ -55,7 +55,7 @@ export const EN_COPY: SiteCopy = {
     loadErrorMessage: 'Failed to load project details.',
   },
   devProxy: {
-    label: 'Preview',
+    label: 'Live',
     back: 'Back',
     home: 'Home',
     admin: 'Admin',
