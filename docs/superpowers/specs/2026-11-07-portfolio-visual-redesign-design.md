@@ -95,7 +95,22 @@ Steps:
 
 `--text-meta` is always uppercase and always mono. Numerals in dates, years, and metrics use `font-variant-numeric: tabular-nums`.
 
-The Tailwind `--text-*` scale in the current `@theme` is removed and replaced by the table above, so `text-4xl` and friends stop meaning something different from the design system.
+### 4.2.1 Component classes
+
+Rather than repeat four arbitrary-value utilities per heading, `styles.css` defines one class per step. Templates use these instead of raw `text-*` sizing.
+
+```css
+.type-display { font-size: var(--text-display); line-height: 0.95; font-weight: 600; letter-spacing: -0.03em; color: var(--color-ink); }
+.type-lead    { font-size: var(--text-lead);    line-height: 1.4;  font-weight: 500; letter-spacing: -0.01em; }
+.type-h2      { font-size: var(--text-h2);      line-height: 1.1;  font-weight: 600; letter-spacing: -0.02em; color: var(--color-ink); }
+.type-h3      { font-size: var(--text-h3);      line-height: 1.4;  font-weight: 600; color: var(--color-ink); }
+.type-meta    { font-family: var(--font-mono); font-size: var(--text-meta); line-height: 1.4; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+.type-metric  { font-size: var(--text-metric);  line-height: 1;    font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+```
+
+`.toolbar-option` and `.field` follow the same pattern and are defined in the tasks that introduce them.
+
+The fluid `clamp()` overrides currently assigned to Tailwind's `--text-xs`…`--text-8xl` are removed, so those utilities return to their default values and stay usable inside admin tables and forms. The public type system is carried by `.type-*` component classes (section 4.2.1), not by overriding Tailwind's scale.
 
 ### 4.3 Space
 
