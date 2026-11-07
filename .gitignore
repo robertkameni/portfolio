@@ -67,3 +67,6 @@ prisma/generated
 # Refactoring specific files
 ERRORS_FIXED.md
 REFACTORING_REALTIME_CHAT.md
+
+# Superpowers scratch (progress ledger, task briefs)
+/.superpowers/
