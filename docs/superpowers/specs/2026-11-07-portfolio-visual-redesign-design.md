@@ -321,7 +321,7 @@ No `window` scroll listeners, no parallax, no marquees, no scroll hijacking.
 Add to `SiteCopy` and both `de.ts` / `en.ts`:
 
 - `focus.title`: `Schwerpunkt` / `What I do`
-- `stack.eyebrow`: `Technisches Arsenal` / `Toolset`
+- `stack.eyebrow`: `Werkzeuge` / `Toolset`
 - `projects.unavailable`: short honest line for the empty state
 - `contact.nameLabel`, `contact.emailLabel`, `contact.messageLabel`
 - `contact.sendLabel` (replaces the hardcoded `'Sending...'` in the template)

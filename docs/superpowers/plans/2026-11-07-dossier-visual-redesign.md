@@ -715,7 +715,7 @@ In `de.ts`, merge:
 
 ```ts
   focus: { title: 'Schwerpunkt' },
-  stack: { eyebrow: 'Technisches Arsenal' },
+  stack: { eyebrow: 'Werkzeuge' },
 ```
 
 ```ts

@@ -20,7 +20,7 @@ export const DE_COPY: SiteCopy = {
     socialLinkAriaLabel: 'Profil von Robert auf {platform} besuchen (öffnet in neuem Tab)',
   },
   focus: { title: 'Schwerpunkt' },
-  stack: { eyebrow: 'Technisches Arsenal' },
+  stack: { eyebrow: 'Werkzeuge' },
   skills: {
     title: 'Technisches Arsenal',
   },
