@@ -1,4 +1,8 @@
 export type SiteCopy = {
+  footer: {
+    /** Use `{year}` for the current year. */
+    copyright: string;
+  };
   common: {
     showMore: string;
     showLess: string;
@@ -17,6 +21,12 @@ export type SiteCopy = {
     /** Use `{platform}` — replaced with LinkedIn, Xing, etc. */
     socialLinkAriaLabel: string;
   };
+  focus: {
+    title: string;
+  };
+  stack: {
+    eyebrow: string;
+  };
   skills: {
     title: string;
   };
@@ -32,6 +42,7 @@ export type SiteCopy = {
     openProjectCta: string;
     /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */
     openProjectAriaLabel: string;
+    unavailable: string;
   };
   projectsPage: {
     title: string;
@@ -73,6 +84,7 @@ export type SiteCopy = {
     toggleOpenAriaLabel: string;
     toggleCloseAriaLabel: string;
     sendAriaLabel: string;
+    launcherLabel: string;
   };
   adminLogin: {
     title: string;
@@ -161,6 +173,11 @@ export type SiteCopy = {
     };
     placeholderName: string;
     placeholderEmail: string;
+    nameLabel: string;
+    emailLabel: string;
+    messageLabel: string;
+    sendLabel: string;
+    sendingLabel: string;
     submitSuccess: string;
     submitError: string;
   };

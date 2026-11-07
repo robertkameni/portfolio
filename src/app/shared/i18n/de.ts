@@ -1,6 +1,7 @@
 import type { SiteCopy } from './site-copy.types';
 
 export const DE_COPY: SiteCopy = {
+  footer: { copyright: '© {year} Robert Kameni' },
   common: {
     showMore: 'mehr anzeigen...',
     showLess: 'weniger anzeigen...',
@@ -18,6 +19,8 @@ export const DE_COPY: SiteCopy = {
   intro: {
     socialLinkAriaLabel: 'Profil von Robert auf {platform} besuchen (öffnet in neuem Tab)',
   },
+  focus: { title: 'Schwerpunkt' },
+  stack: { eyebrow: 'Technisches Arsenal' },
   skills: {
     title: 'Technisches Arsenal',
   },
@@ -31,6 +34,7 @@ export const DE_COPY: SiteCopy = {
     empty: 'Noch keine Projekte veröffentlicht.',
     openProjectCta: 'Öffnen →',
     openProjectAriaLabel: 'Projekt öffnen: {title}',
+    unavailable: 'Projektbeschreibungen folgen in Kürze.',
   },
   projectsPage: {
     title: 'Projekte',
@@ -72,6 +76,7 @@ export const DE_COPY: SiteCopy = {
     toggleOpenAriaLabel: 'Chat mit dem Digital Twin öffnen',
     toggleCloseAriaLabel: 'Chat schließen',
     sendAriaLabel: 'Nachricht senden',
+    launcherLabel: 'Frag den Twin',
   },
   adminLogin: {
     title: 'Admin-Anmeldung',
@@ -169,6 +174,11 @@ export const DE_COPY: SiteCopy = {
     },
     placeholderName: 'Name',
     placeholderEmail: 'E-Mail',
+    nameLabel: 'Name',
+    emailLabel: 'E-Mail',
+    messageLabel: 'Nachricht',
+    sendLabel: 'Nachricht senden',
+    sendingLabel: 'Wird gesendet',
     submitSuccess: 'Nachricht gesendet! Ich melde mich so bald ich kann.',
     submitError: 'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
   },

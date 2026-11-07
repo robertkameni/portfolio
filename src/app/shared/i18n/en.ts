@@ -1,6 +1,7 @@
 import type { SiteCopy } from './site-copy.types';
 
 export const EN_COPY: SiteCopy = {
+  footer: { copyright: '© {year} Robert Kameni' },
   common: {
     showMore: 'show more...',
     showLess: 'show less...',
@@ -18,6 +19,8 @@ export const EN_COPY: SiteCopy = {
   intro: {
     socialLinkAriaLabel: "Visit Robert's {platform} profile (opens in a new tab)",
   },
+  focus: { title: 'What I do' },
+  stack: { eyebrow: 'Toolset' },
   skills: {
     title: 'Technical Arsenal',
   },
@@ -31,6 +34,7 @@ export const EN_COPY: SiteCopy = {
     empty: 'No projects published yet.',
     openProjectCta: 'Open →',
     openProjectAriaLabel: 'Open project: {title}',
+    unavailable: 'Case write-ups are in progress.',
   },
   projectsPage: {
     title: 'Projects',
@@ -72,6 +76,7 @@ export const EN_COPY: SiteCopy = {
     toggleOpenAriaLabel: 'Open chat with the digital twin',
     toggleCloseAriaLabel: 'Close chat',
     sendAriaLabel: 'Send message',
+    launcherLabel: 'Ask the twin',
   },
   adminLogin: {
     title: 'Admin Login',
@@ -169,6 +174,11 @@ export const EN_COPY: SiteCopy = {
     },
     placeholderName: 'Name',
     placeholderEmail: 'Email',
+    nameLabel: 'Name',
+    emailLabel: 'Email',
+    messageLabel: 'Message',
+    sendLabel: 'Send message',
+    sendingLabel: 'Sending',
     submitSuccess: 'Message sent successfully! I will get back to you soon.',
     submitError: 'Failed to send message. Please try again or email me directly.',
   },
