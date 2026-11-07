@@ -53,6 +53,19 @@ describe('FadeInDirective', () => {
     expect(box.dataset['visible']).toBeUndefined();
   });
 
+  it('never writes inline styles', () => {
+    const box = render();
+    expect(box.getAttribute('style')).toBeNull();
+  });
+
+  it('reveals immediately when IntersectionObserver is unavailable', () => {
+    vi.stubGlobal('IntersectionObserver', undefined);
+
+    const box = render();
+    expect(box.classList.contains('reveal')).toBe(false);
+    expect(box.dataset['visible']).toBe('true');
+  });
+
   it('reveals the element on intersection', () => {
     const box = render();
     trigger([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);

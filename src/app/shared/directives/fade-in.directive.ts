@@ -17,7 +17,7 @@ export class FadeInDirective implements OnInit, OnDestroy {
 
     const node = this.el.nativeElement;
 
-    if (this.prefersReducedMotion()) {
+    if (this.prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
       node.dataset['visible'] = 'true';
       return;
     }

@@ -6,6 +6,14 @@
     "target": "es2022",
     "types": ["node", "vitest/globals"]
   },
-  "files": ["src/test-setup.ts"],
+  // The base config excludes `src/**/*.spec.ts` so specs stay out of the app
+  // build, and that `exclude` is inherited here, so `include` cannot pull a
+  // spec into the program. A spec that declares its own Angular host
+  // component must be listed explicitly: without it, the Angular plugin
+  // cannot strip the decorators and the file fails to parse under Vitest.
+  "files": [
+    "src/test-setup.ts",
+    "src/app/shared/directives/fade-in.directive.spec.ts"
+  ],
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"]
 }
