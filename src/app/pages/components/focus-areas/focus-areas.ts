@@ -24,7 +24,7 @@ export class FocusAreas {
     const type = profile?.visitorType;
     const heroCopy = this.copy().hero;
 
-    return (this.cards() ?? []).map((baseCard) => {
+    return this.cards().map((baseCard) => {
       const card = { ...baseCard };
       const lower = baseCard.title.toLowerCase();
 
