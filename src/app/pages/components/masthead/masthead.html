@@ -8,8 +8,9 @@
 
         <p class="mt-4 max-w-[46ch] text-ink-2">{{ description() }}</p>
 
+        @if (socials().length > 0) {
         <ul class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
-          @for (social of socials(); track social.platform) {
+          @for (social of socials(); track social.url) {
           <li>
             <a
               [href]="social.url"
@@ -23,6 +24,7 @@
           </li>
           }
         </ul>
+        }
       </div>
 
       <div class="md:justify-self-end">
@@ -31,10 +33,11 @@
           srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
           width="480"
           height="600"
-          sizes="(min-width: 768px) 30vw, 80vw"
-          alt="Robert Kameni"
+          sizes="(min-width: 768px) 20rem, 80vw"
+          [alt]="name()"
           decoding="async"
-          loading="lazy"
+          loading="eager"
+          fetchpriority="high"
           class="aspect-[4/5] w-full max-w-[20rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0"
         />
       </div>
