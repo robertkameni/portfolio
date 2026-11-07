@@ -3,6 +3,7 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import './app/shared/i18n/register-locales';
 
+import './fonts.css';
 import './styles.css';
 
 bootstrapApplication(App, appConfig)

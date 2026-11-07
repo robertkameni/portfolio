@@ -1,88 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <title>Robert Kameni's CV</title>
-  <meta
-    name="description"
-    content="Portfolio of Robert Kameni — Technical Lead & frontend engineer (Angular, full stack). Selected projects, experience, and contact."
-  />
-  <base href="/portfolio/"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-  <style>
-    html, body {
-      height: 100%
-    }
-
-    body {
-      background: #000;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      font-family: Inter, system-ui, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased
-    }
-
-    a {
-      color: inherit
-    }
-
-    #boot-loader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at 50% 20%, rgba(34, 197, 94, .14), transparent 40%), #000
-    }
-
-    #boot-loader .shell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .75rem;
-      color: #fff;
-      text-align: center
-    }
-
-    #boot-loader .dot {
-      width: .75rem;
-      height: .75rem;
-      border-radius: 9999px;
-      background: #22c55e;
-      box-shadow: 0 0 24px rgba(34, 197, 94, .7);
-      animation: pulse 1.2s ease-in-out infinite
-    }
-
-    #boot-loader .title {
-      font: 700 14px/1.2 Inter, system-ui, sans-serif;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #22c55e
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(.85);
-        opacity: .55
+  <head>
+    <meta charset="utf-8" />
+    <title>Robert Kameni's CV</title>
+    <meta name="description" content="Portfolio of Robert Kameni: Technical Lead and frontend engineer (Angular, full stack). Selected projects, experience, and contact." />
+    <base href="/portfolio/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      html,
+      body {
+        height: 100%;
       }
-      50% {
-        transform: scale(1);
-        opacity: 1
+
+      body {
+        background: #f1f2f2;
+        color: #101113;
+        margin: 0;
+        padding: 0;
+        font-family: 'Instrument Sans Variable', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
-    }
-  </style>
-</head>
-<body>
-<div id="boot-loader" aria-hidden="true">
-  <div class="shell">
-    <div class="dot"></div>
-    <div class="title">Loading portfolio</div>
-  </div>
-</div>
-<app-root></app-root>
-<script type="module" src="/src/main.ts"></script>
-</body>
+
+      a {
+        color: inherit;
+      }
+
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f2f2;
+      }
+
+      #boot-loader .shell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        text-align: center;
+      }
+
+      #boot-loader .bar {
+        width: 6rem;
+        height: 1px;
+        background: #d6d8d9;
+        overflow: hidden;
+      }
+
+      #boot-loader .bar::after {
+        content: '';
+        display: block;
+        width: 40%;
+        height: 1px;
+        background: #c0430f;
+        animation: sweep 1.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+
+      #boot-loader .title {
+        font:
+          500 11px/1.4 'JetBrains Mono Variable',
+          ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #63686d;
+      }
+
+      @keyframes sweep {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(300%);
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body,
+        #boot-loader {
+          background: #141516;
+          color: #eceded;
+        }
+        #boot-loader .bar {
+          background: #2c2f31;
+        }
+        #boot-loader .bar::after {
+          background: #ff8350;
+        }
+        #boot-loader .title {
+          color: #858a8d;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #boot-loader .bar::after {
+          animation: none;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot-loader" aria-hidden="true">
+      <div class="shell">
+        <div class="bar"></div>
+        <div class="title">Loading portfolio</div>
+      </div>
+    </div>
+    <app-root></app-root>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
