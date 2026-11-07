@@ -1,0 +1,43 @@
+<section trackBehavior="intro_viewed" class="pb-20 pt-16 md:pb-24 md:pt-20">
+  <div class="page-shell">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-[7fr_4fr] md:items-end md:gap-16">
+      <div class="min-w-0">
+        <h1 class="type-display">{{ name() }}</h1>
+
+        <p class="type-lead mt-6 max-w-[38ch] text-ink-2">{{ role() }}</p>
+
+        <p class="mt-4 max-w-[46ch] text-ink-2">{{ description() }}</p>
+
+        <ul class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+          @for (social of socials(); track social.platform) {
+          <li>
+            <a
+              [href]="social.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="socialAriaLabel(social.platform)"
+              class="type-meta text-ink-3 underline decoration-transparent underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-current"
+            >
+              {{ social.platform }}
+            </a>
+          </li>
+          }
+        </ul>
+      </div>
+
+      <div class="md:justify-self-end">
+        <img
+          src="/assets/lucas-600.jpg"
+          srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
+          width="480"
+          height="600"
+          sizes="(min-width: 768px) 30vw, 80vw"
+          alt="Robert Kameni"
+          decoding="async"
+          loading="lazy"
+          class="aspect-[4/5] w-full max-w-[20rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0"
+        />
+      </div>
+    </div>
+  </div>
+</section>
