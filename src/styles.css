@@ -363,4 +363,27 @@
     color: var(--color-ink);
     border-bottom-color: var(--color-accent);
   }
+
+  .loader-bar {
+    height: 1px;
+    width: 33%;
+    background: var(--color-accent);
+    animation: loader-sweep 1.4s var(--ease-out) infinite;
+  }
+
+  @keyframes loader-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(300%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loader-bar {
+      animation: none;
+      width: 100%;
+    }
+  }
 }

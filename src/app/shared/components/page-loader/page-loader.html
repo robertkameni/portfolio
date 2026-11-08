@@ -1,1 +1,8 @@
-<div class="flex min-h-screen items-center justify-center text-white font-mono">{{ message() }}</div>
+<div class="flex min-h-screen items-center justify-center bg-paper" role="status" aria-live="polite">
+  <div class="w-48">
+    <p class="type-meta text-ink-3">{{ message() }}</p>
+    <div class="mt-3 overflow-hidden border-t border-rule">
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+</div>
