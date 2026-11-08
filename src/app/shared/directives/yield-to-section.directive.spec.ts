@@ -41,8 +41,23 @@ async function settle(fixture: { detectChanges: () => void }): Promise<void> {
 }
 
 describe('YieldToSectionDirective', () => {
+  let viewportMatches = true;
+
   beforeEach(() => {
     globalThis.IntersectionObserver = FakeObserver as unknown as typeof IntersectionObserver;
+    // jsdom has no matchMedia; the directive only needs `matches` and events.
+    viewportMatches = true;
+    window.matchMedia = ((query: string) => ({
+      matches: viewportMatches,
+      media: query,
+      onchange: null,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia;
+
     TestBed.configureTestingModule({
       imports: [HostComponent],
       providers: [provideZonelessChangeDetection()],
@@ -102,6 +117,18 @@ describe('YieldToSectionDirective', () => {
     fixture.componentInstance.enabled.set(false);
     await settle(fixture);
 
+    expect(launcher.hasAttribute('data-yielded')).toBe(false);
+  });
+
+  it('leaves the control alone on a wide viewport', async () => {
+    viewportMatches = false;
+    const { fixture, launcher } = render();
+    await settle(fixture);
+
+    trigger([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    // On desktop the launcher is the only way into the chat; a corner clip on
+    // the submit button is not worth removing it for.
     expect(launcher.hasAttribute('data-yielded')).toBe(false);
   });
 });

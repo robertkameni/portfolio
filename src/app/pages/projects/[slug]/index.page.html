@@ -3,7 +3,7 @@
     <a
       [routerLink]="goBackLink()"
       [fragment]="previewMode() ? '' : 'projects-section'"
-      class="type-meta inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent"
+      class="tap-area type-meta inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent"
     >
       <span aria-hidden="true">&#8592;</span>
       {{ copy().projectDetail.backToProjects }}
@@ -62,7 +62,7 @@
             [href]="project.projectUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 font-semibold text-accent underline-offset-4 hover:underline"
+            class="tap-area inline-flex items-center gap-2 font-semibold text-accent underline-offset-4 hover:underline"
             [attr.aria-label]="copy().projectDetail.liveSiteAriaLabel"
           >
             {{ copy().projectDetail.liveSiteLinkLabel }}

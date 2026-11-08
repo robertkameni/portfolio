@@ -1,5 +1,6 @@
 <div yieldToSection="contact" [enabled]="!chatStore.isOpen()" class="fixed bottom-6 right-6 z-50">
   <button
+    #launcher
     type="button"
     (click)="toggleChat()"
     [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
@@ -95,7 +96,7 @@
           type="submit"
           [disabled]="!newMessage().trim() || chatStore.isTyping()"
           [attr.aria-label]="copy().chat.sendAriaLabel"
-          class="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-base bg-accent text-paper transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-base bg-accent text-paper transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden="true">&#8594;</span>
         </button>
