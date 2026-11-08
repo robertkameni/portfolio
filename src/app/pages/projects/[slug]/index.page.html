@@ -12,8 +12,8 @@
     @if (projectResource.isLoading()) {
     <p class="type-meta mt-10 text-ink-3">{{ copy().projectDetail.loading }}</p>
     } @else if (projectResource.error()) {
-    <div class="mt-10 max-w-[65ch] rounded-base border border-accent bg-accent-wash p-6">
-      <h1 class="type-h3 mb-2 text-accent">{{ getErrorTitle(projectResource.error()) }}</h1>
+    <div class="mt-10 max-w-[65ch] rounded-base border border-accent border-l-2 bg-accent-wash p-6">
+      <h1 class="type-h3 mb-2 text-ink">{{ getErrorTitle(projectResource.error()) }}</h1>
       <p class="text-sm text-ink-2">{{ getErrorMessage(projectResource.error()) }}</p>
     </div>
     } @else if (projectResource.value()?.data; as project) {
@@ -40,7 +40,7 @@
       } @if (project.tags.length > 0) {
       <section class="flex flex-wrap gap-2">
         @for (tag of project.tags; track tag) {
-        <span class="type-meta rounded-base border border-rule bg-paper-2 px-3 py-1 text-accent transition-colors hover:text-ink">{{ tag }}</span>
+        <span class="type-meta rounded-base border border-rule bg-transparent px-3 py-1 text-ink-2 transition-colors hover:text-ink">{{ tag }}</span>
         }
       </section>
       }

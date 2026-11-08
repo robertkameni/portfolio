@@ -30,16 +30,14 @@
     </div>
     }
 
-    <a
-      [routerLink]="['/projects', project.slug]"
-      [attr.aria-label]="openProjectAriaLabel(project.title)"
+    <span
       class="type-meta mt-4 inline-flex items-center gap-2 text-accent"
       tabindex="-1"
       aria-hidden="true"
     >
       {{ projectCopy().openProjectCta }}
       <span class="transition-transform duration-150 group-hover:translate-x-0.5">&#8594;</span>
-    </a>
+    </span>
   </article>
   }
 </div>
