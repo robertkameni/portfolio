@@ -1,5 +1,7 @@
 // @vitest-environment node
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
@@ -70,5 +72,27 @@ describe('design tokens', () => {
 
   it('declares a single border radius scale', () => {
     expect(css).toContain('--radius-base: 2px');
+  });
+});
+
+function templateFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) return templateFiles(full);
+    return full.endsWith('.html') ? [full] : [];
+  });
+}
+
+describe('templates', () => {
+  const appDir = fileURLToPath(new URL('./app', import.meta.url));
+
+  it('contain no hardcoded hex colours', () => {
+    const offenders = templateFiles(appDir).filter((file) => /#[0-9a-fA-F]{3,8}\b/.test(readFileSync(file, 'utf8').replace(/&#\d+;/g, '')));
+    expect(offenders).toEqual([]);
+  });
+
+  it('use no pill or large corner radii', () => {
+    const offenders = templateFiles(appDir).filter((file) => /rounded-(xl|lg|md|2xl|3xl)\b/.test(readFileSync(file, 'utf8')));
+    expect(offenders).toEqual([]);
   });
 });
