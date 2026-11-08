@@ -313,6 +313,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Cloud & Daten:',
             description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.',
           },
+          {
+            title: 'Security & Sessions:',
+            description: 'Kurzlebige Access-Tokens mit Refresh-Rotation, httpOnly-Cookies und SameSite=strict; CSP-Reports überwachen die öffentlichen Endpunkte.',
+          },
         ],
       },
       founder: {
@@ -329,6 +333,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Continuous Delivery:',
             description: 'Automatisierte Deployments, um fortlaufend Business Value auszuliefern.',
+          },
+          {
+            title: 'Sicherheit von Anfang an:',
+            description: 'Auth, Sessions und Eingabeprüfung entstehen mit dem Produkt, nicht als späterer Härtungsschritt.',
           },
         ],
       },
@@ -347,6 +355,10 @@ export const DE_COPY: SiteCopy = {
             title: 'CI/CD & Delivery:',
             description: 'Automatisierung verlässlicher Build- und Delivery-Prozesse für reibungslose Auslieferung.',
           },
+          {
+            title: 'Enterprise Security:',
+            description: 'Getrennte Access- und Refresh-Tokens, httpOnly-Cookies und CSP-Reporting nach Enterprise-Maßstab.',
+          },
         ],
       },
       developer: {
@@ -363,6 +375,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Cloud & Daten:',
             description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.',
+          },
+          {
+            title: 'Auth-Architektur:',
+            description: 'JWT-Verifikation im Middleware-Layer, Refresh-Rotation und strikte Cookie-Flags als zweite Verteidigungslinie.',
           },
         ],
       },

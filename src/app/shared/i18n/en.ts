@@ -313,6 +313,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Cloud & Data:',
             description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
           },
+          {
+            title: 'Security & Sessions:',
+            description: 'Short-lived access tokens with refresh rotation, httpOnly cookies and SameSite=strict; CSP reports watch the public endpoints.',
+          },
         ],
       },
       founder: {
@@ -329,6 +333,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Continuous Delivery:',
             description: 'Automated deployment pipelines to continuously ship business value without breaking things.',
+          },
+          {
+            title: 'Secure from the start:',
+            description: 'Auth, sessions, and input validation are built with the product rather than hardened on later.',
           },
         ],
       },
@@ -347,6 +355,10 @@ export const EN_COPY: SiteCopy = {
             title: 'CI/CD & Delivery:',
             description: 'Automating reliable build pipelines to guarantee frictionless software delivery processes.',
           },
+          {
+            title: 'Enterprise Security:',
+            description: 'Separate access and refresh tokens, httpOnly cookies, and CSP reporting at enterprise standard.',
+          },
         ],
       },
       developer: {
@@ -363,6 +375,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Cloud & Data:',
             description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
+          },
+          {
+            title: 'Auth architecture:',
+            description: 'JWT verification in a middleware layer, refresh rotation, and strict cookie flags as a second line of defense.',
           },
         ],
       },
