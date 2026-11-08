@@ -1,17 +1,29 @@
-<div yieldToSection="contact" [enabled]="!chatStore.isOpen()" class="fixed bottom-6 right-6 z-50">
+<div class="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
   <button
     #launcher
     type="button"
     (click)="toggleChat()"
     [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
     [attr.aria-expanded]="chatStore.isOpen()"
-    class="type-meta inline-flex cursor-pointer items-center gap-2 rounded-base bg-ink px-4 py-3 text-paper transition-colors duration-150 hover:bg-accent"
+    class="inline-flex size-12 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
   >
     @if (chatStore.isOpen()) {
-    <span aria-hidden="true">&#10005;</span>
+    <!-- Phosphor Icons "x" (regular), MIT. -->
+    <svg class="size-5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+      <path
+        d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+      />
+    </svg>
     } @else {
-    <span aria-hidden="true">&#8594;</span>
-    } {{ chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.launcherLabel }}
+    <!-- Phosphor Icons "chat-circle-dots" (regular), MIT. A speech bubble reads
+         as conversation at 24px; the label next to it carries the identity. -->
+    <svg class="size-5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+      <path
+        d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"
+      />
+    </svg>
+    }
+    <span class="hidden sm:inline">{{ chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.launcherLabel }}</span>
   </button>
 
   @if (chatStore.isOpen()) {

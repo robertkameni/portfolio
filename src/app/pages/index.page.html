@@ -50,16 +50,22 @@
 @if (store.data()) { @defer (on interaction(chatLauncher)) {
 <chat-widget />
 } @placeholder {
-<div yieldToSection="contact" class="fixed bottom-6 right-6 z-50">
+<div class="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
   <button
     #chatLauncher
     type="button"
     (click)="openChatFromLauncher()"
     [attr.aria-label]="copy().chat.toggleOpenAriaLabel"
-    class="type-meta inline-flex cursor-pointer items-center gap-2 rounded-base bg-ink px-4 py-3 text-paper transition-colors duration-150 hover:bg-accent"
+    class="inline-flex size-12 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
   >
-    {{ copy().chat.launcherLabel }}
-    <span aria-hidden="true">&#8594;</span>
+    <!-- Same phosphor chat mark as the loaded widget, so the first paint does
+         not swap a text button for an icon. -->
+    <svg class="size-5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+      <path
+        d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"
+      />
+    </svg>
+    <span class="hidden sm:inline">{{ copy().chat.launcherLabel }}</span>
   </button>
 </div>
 } }
