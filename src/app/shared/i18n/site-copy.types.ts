@@ -38,11 +38,11 @@ export type SiteCopy = {
     loading: string;
     error: string;
     empty: string;
+    unavailable: string;
     /** Short project-card link label (heading above already shows the title). */
     openProjectCta: string;
     /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */
     openProjectAriaLabel: string;
-    unavailable: string;
   };
   projectsPage: {
     title: string;
@@ -143,6 +143,12 @@ export type SiteCopy = {
     founderParagraphs: [string, string];
     recruiterParagraphs: [string, string];
     developerParagraphs: [string, string];
+    /** Sentence that ends the collapsed preview of the third paragraph. */
+    previewSplitToken: string;
+    metric: {
+      value: string;
+      caption: string;
+    };
   };
   contact: {
     validation: {

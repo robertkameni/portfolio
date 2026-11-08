@@ -32,9 +32,9 @@ export const EN_COPY: SiteCopy = {
     loading: 'Loading projects...',
     error: 'Could not load projects.',
     empty: 'No projects published yet.',
+    unavailable: 'Case write-ups are in progress.',
     openProjectCta: 'Open →',
     openProjectAriaLabel: 'Open project: {title}',
-    unavailable: 'Case write-ups are in progress.',
   },
   projectsPage: {
     title: 'Projects',
@@ -144,6 +144,8 @@ export const EN_COPY: SiteCopy = {
       'I live in the modern Angular ecosystem. I modernize legacy apps toward zoneless architecture with Signals and build state with the NgRx Signal Store.',
       "Complex architecture, Nx monorepos, and AI/LLM integration are part of my day-to-day. If you want to talk reactive patterns, let's connect.",
     ],
+    previewSplitToken: 'Signals and NgRx Signal Store.',
+    metric: { value: '50%', caption: 'faster team delivery at DATEV' },
   },
   contact: {
     validation: {

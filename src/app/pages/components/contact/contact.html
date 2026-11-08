@@ -1,9 +1,9 @@
-<section trackBehavior="contact_viewed" class="flex px-4 py-4 md:py-6 justify-center text-white">
-  <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-6 md:p-10 shadow-2xl">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-12">
-      <div class="flex flex-col justify-center text-left">
-        <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>
-        <p class="text-gray-300 mb-10 text-lg">{{ adaptiveDescription() }}</p>
+<section trackBehavior="contact_viewed" class="border-t border-rule py-24">
+  <div class="page-shell">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-[5fr_7fr] md:gap-16">
+      <div class="min-w-0">
+        <h2 class="type-h2">{{ adaptiveTitle() }}</h2>
+        <p class="mt-4 max-w-[40ch] text-ink-2">{{ adaptiveDescription() }}</p>
 
         <dl class="mt-10 divide-y divide-rule border-t border-rule">
           @for (feature of data().features; track feature.title) {
@@ -33,13 +33,7 @@
 
           <form-field [control]="form.message()">
             <label class="type-meta text-ink-3" for="contact-message">{{ copy().contact.messageLabel }}</label>
-            <textarea
-              id="contact-message"
-              [formField]="form.message"
-              [placeholder]="adaptivePlaceholder()"
-              rows="4"
-              class="field resize-none"
-            ></textarea>
+            <textarea id="contact-message" [formField]="form.message" [placeholder]="adaptivePlaceholder()" rows="4" class="field resize-none"></textarea>
           </form-field>
 
           <button

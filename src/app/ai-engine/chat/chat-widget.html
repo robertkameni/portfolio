@@ -10,8 +10,7 @@
     <span aria-hidden="true">&#10005;</span>
     } @else {
     <span aria-hidden="true">&#8594;</span>
-    }
-    {{ chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.launcherLabel }}
+    } {{ chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.launcherLabel }}
   </button>
 
   @if (chatStore.isOpen()) {
@@ -37,14 +36,14 @@
           <button
             (click)="newMessage.set(copy().chat.promptAngular); sendMessage()"
             [disabled]="chatStore.isTyping()"
-            class="text-xs bg-[#0a2912] border border-[#143c1a] hover:bg-[#143c1a] hover:border-primary text-gray-200 hover:text-white py-2 px-3 rounded-full transition-colors w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+            class="block w-full cursor-pointer py-3 text-left text-ink-2 transition-colors duration-150 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ copy().chat.promptAngular }}
           </button>
           <button
             (click)="newMessage.set(copy().chat.promptFreelance); sendMessage()"
             [disabled]="chatStore.isTyping()"
-            class="text-xs bg-[#0a2912] border border-[#143c1a] hover:bg-[#143c1a] hover:border-primary text-gray-200 hover:text-white py-2 px-3 rounded-full transition-colors w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+            class="block w-full cursor-pointer py-3 text-left text-ink-2 transition-colors duration-150 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ copy().chat.promptFreelance }}
           </button>
