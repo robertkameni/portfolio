@@ -14,12 +14,13 @@
 </site-toolbar>
 
 <main id="main" class="min-h-screen bg-paper">
+  <div class="scroll-progress" aria-hidden="true"></div>
   @if (store.isLoading()) {
   <page-loader [message]="copy().home.loadingProfile" />
   } @else if (store.error()) {
   <page-loader [message]="copy().home.failedProfile" />
   } @else if (store.data(); as profile) {
-  <masthead [data]="profile.intro" [locale]="profile.locale" fadeIn />
+  <masthead [data]="profile.intro" [locale]="profile.locale" />
 
   <focus-areas [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
 

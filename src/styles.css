@@ -483,3 +483,190 @@
     text-underline-offset: 4px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion layer
+   Rhythm for a document: motion marks reading order (entrance), structure
+   (hairlines drawing), and state (hover / press). Nothing loops for decoration.
+
+   Vocabulary is borrowed from the Team Sim landing page (staggered rise,
+   drawn rules, scroll-linked progress); the ornament is not: no orbs, no
+   gradient text, no pulsing dots, because those fight the Dossier restraint.
+--------------------------------------------------------------------------- */
+
+:root {
+  --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-rise: 700ms;
+  --stagger: 60ms;
+  --rise-blur: 6px;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--rise-blur));
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scroll-sweep {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes portrait-settle {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@layer components {
+  /* Entrance on insertion: the masthead, which is above the fold by definition.
+     `--i` sets the position in the cascade, so a block staggers without JS. */
+  .enter {
+    animation: rise-in var(--dur-rise) var(--ease-rise) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger));
+  }
+
+  /* Staggered children of a revealed section. They stay unset until the host
+     section intersects, so nothing animates off-screen. */
+  [data-stagger] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .reveal[data-visible='true'] [data-stagger] {
+    animation: rise-in var(--dur-rise) var(--ease-rise) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger));
+  }
+
+  /* Hairline that draws left to right when its host section is revealed.
+     Replaces a static `border-top`, so the rule reads as structure forming. */
+  .edge-top {
+    position: relative;
+  }
+
+  .edge-top::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: var(--color-rule);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .reveal[data-visible='true'] .edge-top::before,
+  .edge-top[data-visible='true']::before {
+    animation: rule-draw 900ms var(--ease-rise) both;
+  }
+
+  /* Reading position in a long document. Purely a status indicator. */
+  .scroll-progress {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 45;
+    height: 2px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: scroll-sweep linear both;
+      animation-timeline: scroll();
+    }
+  }
+
+  .project-row {
+    transition: background-color var(--dur-base) var(--ease-out);
+  }
+
+  .project-row:hover,
+  .project-row:focus-within {
+    background-color: var(--color-paper-2);
+  }
+
+  .chat-bubble {
+    animation: message-in 240ms var(--ease-out) both;
+  }
+
+  .chat-panel {
+    animation: message-in 200ms var(--ease-out) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .portrait-settle {
+      animation: portrait-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 55%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter,
+  [data-stagger],
+  .chat-bubble,
+  .chat-panel,
+  .portrait-settle {
+    animation: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .edge-top::before {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .reveal,
+  .reveal[data-visible='true'] {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .scroll-progress {
+    animation: none !important;
+    display: none;
+  }
+}

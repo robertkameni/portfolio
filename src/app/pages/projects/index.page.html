@@ -1,9 +1,9 @@
 <main id="main" class="min-h-screen bg-paper pb-24 pt-16">
   <div class="page-shell">
     <div class="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
-      <h1 class="type-display">{{ copy().projectsPage.title }}</h1>
+      <h1 class="type-display enter" style="--i: 0">{{ copy().projectsPage.title }}</h1>
 
-      <a [routerLink]="['/']" fragment="projects-section" class="type-meta mb-2 inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent">
+      <a [routerLink]="['/']" fragment="projects-section" class="type-meta enter mb-2 inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent" style="--i: 1">
         <span aria-hidden="true">&#8592;</span>
         {{ copy().projectsPage.backToPortfolio }}
       </a>

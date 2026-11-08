@@ -4,8 +4,8 @@
     <h2 class="type-h2 mt-3">{{ copy().skills.title }}</h2>
 
     <div class="mt-10 grid grid-cols-2 gap-px bg-rule md:grid-cols-3">
-      @for (skill of skills(); track skill.name) {
-      <div trackBehavior="skill_viewed_{{ skill.name }}" class="group bg-paper px-5 py-6">
+      @for (skill of skills(); track skill.name; let i = $index) {
+      <div trackBehavior="skill_viewed_{{ skill.name }}" data-stagger [style.--i]="i" class="group bg-paper px-5 py-6">
         <span class="text-[0.9375rem] font-medium text-ink-2 transition-colors duration-150 group-hover:text-ink">{{ skill.name }}</span>
       </div>
       }

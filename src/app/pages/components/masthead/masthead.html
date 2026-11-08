@@ -2,14 +2,14 @@
   <div class="page-shell">
     <div class="grid grid-cols-1 gap-10 md:grid-cols-[7fr_4fr] md:items-end md:gap-16">
       <div class="min-w-0">
-        <h1 class="type-display">{{ name() }}</h1>
+        <h1 class="type-display enter" style="--i: 0">{{ name() }}</h1>
 
-        <p class="type-lead mt-6 max-w-[38ch] text-ink-2">{{ role() }}</p>
+        <p class="type-lead enter mt-6 max-w-[38ch] text-ink-2" style="--i: 1">{{ role() }}</p>
 
-        <p class="mt-4 max-w-[46ch] text-ink-2">{{ description() }}</p>
+        <p class="enter mt-4 max-w-[46ch] text-ink-2" style="--i: 2">{{ description() }}</p>
 
         @if (socials().length > 0) {
-        <ul class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+        <ul class="enter mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" style="--i: 3">
           @for (social of socials(); track social.url) {
           <li>
             <a
@@ -27,7 +27,7 @@
         }
       </div>
 
-      <div class="md:justify-self-end">
+      <div class="enter md:justify-self-end" style="--i: 1">
         <img
           src="/assets/lucas-600.jpg"
           srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
@@ -38,7 +38,7 @@
           decoding="async"
           loading="eager"
           fetchpriority="high"
-          class="aspect-4/5 w-full max-w-[20rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0"
+          class="portrait-settle aspect-4/5 w-full max-w-[20rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0"
         />
       </div>
     </div>

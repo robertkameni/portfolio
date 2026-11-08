@@ -13,7 +13,8 @@
   // cannot strip the decorators and the file fails to parse under Vitest.
   "files": [
     "src/test-setup.ts",
-    "src/app/shared/directives/fade-in.directive.spec.ts"
+    "src/app/shared/directives/fade-in.directive.spec.ts",
+    "src/app/shared/directives/count-up.directive.spec.ts"
   ],
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"]
 }

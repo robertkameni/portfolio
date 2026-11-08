@@ -1,4 +1,4 @@
-<section trackBehavior="contact_viewed" class="border-t border-rule py-24">
+<section trackBehavior="contact_viewed" class="edge-top py-24">
   <div class="page-shell">
     <div class="grid grid-cols-1 gap-12 md:grid-cols-[5fr_7fr] md:gap-16">
       <div class="min-w-0">
@@ -6,8 +6,8 @@
         <p class="mt-4 max-w-[40ch] text-ink-2">{{ adaptiveDescription() }}</p>
 
         <dl class="mt-10 divide-y divide-rule border-t border-rule">
-          @for (feature of data().features; track feature.title) {
-          <div class="py-4">
+          @for (feature of data().features; track feature.title; let i = $index) {
+          <div data-stagger [style.--i]="i + 1" class="py-4">
             <dt class="type-h3">{{ feature.title }}</dt>
             <dd class="mt-1 text-ink-2">{{ feature.description }}</dd>
           </div>
@@ -16,7 +16,7 @@
       </div>
 
       <div class="min-w-0">
-        <form (submit)="submit($event)" class="flex flex-col gap-8" novalidate>
+        <form (submit)="submit($event)" class="flex flex-col gap-8" novalidate data-stagger style="--i: 2">
           @if (statusMessage(); as msg) {
           <status-alert [type]="statusType()">{{ msg }}</status-alert>
           }

@@ -1,17 +1,17 @@
-<section trackBehavior="hero_viewed" class="border-t border-rule py-16">
+<section trackBehavior="hero_viewed" class="edge-top py-16">
   <div class="page-shell">
     <h2 class="type-h2">{{ copy().focus.title }}</h2>
 
     <div class="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-rule">
-      @for (card of adaptiveCards(); track card.title) {
-      <article trackBehavior="hero_card_viewed_{{ card.title }}" class="md:px-10 md:first:pl-0 md:last:pr-0">
+      @for (card of adaptiveCards(); track card.title; let i = $index) {
+      <article trackBehavior="hero_card_viewed_{{ card.title }}" data-stagger [style.--i]="i" class="md:px-10 md:first:pl-0 md:last:pr-0">
         <p class="type-meta text-ink-3">{{ card.title }}</p>
         <p class="mt-2 font-mono text-[0.8125rem] text-ink-3">{{ card.subtitle }}</p>
         <p class="mt-4 max-w-[42ch] text-ink-2">{{ card.description }}</p>
 
         <ul class="mt-6 divide-y divide-rule border-t border-rule">
-          @for (item of card.items; track item.title) {
-          <li class="py-4">
+          @for (item of card.items; track item.title; let j = $index) {
+          <li data-stagger [style.--i]="i + j + 1" class="py-4">
             <h3 class="type-h3">{{ item.title }}</h3>
             <p class="mt-1 text-ink-2">{{ item.description }}</p>
           </li>
