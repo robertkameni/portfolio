@@ -1031,7 +1031,7 @@ import type { SkillCard } from './interface/skill-card';
 const cards: SkillCard[] = [
   {
     title: 'Frontend',
-    subtitle: 'Angular | RxJS | TypeScript',
+    subtitle: 'Angular | NextJS | RxJS | TypeScript',
     iconPath: 'M0 0',
     description: 'Reactive UI architecture.',
     items: [

@@ -13,7 +13,7 @@ const cards: SkillCard[] = [
     // adaptive hero copy, so the base items (the ones that carry colons) must
     // be the ones rendered for the normalisation assertion to be meaningful.
     title: 'Interface Engineering',
-    subtitle: 'Angular | RxJS | TypeScript',
+    subtitle: 'Angular | NextJS | RxJS | TypeScript',
     iconPath: 'M0 0',
     description: 'Reactive UI architecture.',
     items: [
