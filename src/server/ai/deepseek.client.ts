@@ -106,9 +106,9 @@ function resolveRetryOptions(options: RetryOptions): Required<RetryOptions> {
 }
 
 function resolveApiKey(): string {
-  const apiKey = process.env['DEEPSEEK_API_KEY'] ?? process.env['GEMINI_API_KEY'];
+  const apiKey = process.env['DEEPSEEK_API_KEY'];
   if (!apiKey) {
-    throw new Error('DEEPSEEK_API_KEY is not set (GEMINI_API_KEY is accepted only as a legacy alias). Check your .env file.');
+    throw new Error('DEEPSEEK_API_KEY is not set. Check your .env file.');
   }
   return apiKey;
 }
