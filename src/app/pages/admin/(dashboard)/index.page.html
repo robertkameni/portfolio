@@ -1,46 +1,37 @@
-<div class="p-4 md:p-8 text-white">
-  <div class="flex items-center justify-between">
-    <h1 class="text-3xl font-bold mb-6 text-primary">Intelligence Dashboard</h1>
-    <button
-      (click)="navigateHome()"
-      class="text-xs cursor-pointer inline-flex items-center justify-center gap12 px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition w-full sm:w-auto"
-    >
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-        <path
-          d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
-        />
-      </svg>
-      {{ copy().devProxy.home }}
-    </button>
+<div class="p-4 md:p-8 text-ink">
+  <div class="flex items-center justify-between gap-4">
+    <h1 class="admin-h1">Intelligence Dashboard</h1>
+    <button (click)="navigateHome()" class="admin-btn shrink-0">{{ copy().devProxy.home }}</button>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-      <h2 class="text-xl font-semibold mb-2">Live Visitors</h2>
-      <p class="text-3xl text-primary font-mono">0</p>
+
+  <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="admin-card">
+      <h2 class="admin-h2">Live Visitors</h2>
+      <p class="type-metric mt-2 text-ink">0</p>
     </div>
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-      <h2 class="text-xl font-semibold mb-2">New Messages</h2>
-      <p class="text-3xl text-primary font-mono">{{ newMessagesCount() }}</p>
+    <div class="admin-card">
+      <h2 class="admin-h2">New Messages</h2>
+      <p class="type-metric mt-2 text-ink">{{ newMessagesCount() }}</p>
     </div>
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-6 shadow-lg">
-      <h2 class="text-xl font-semibold mb-2">AI Insights</h2>
-      <p class="text-3xl text-primary font-mono">0</p>
+    <div class="admin-card">
+      <h2 class="admin-h2">AI Insights</h2>
+      <p class="type-metric mt-2 text-ink">0</p>
     </div>
   </div>
 
-  <h2 class="text-xl font-semibold text-gray-300 mb-4">Quick Navigation</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <a routerLink="/admin/projects" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-      <p class="text-primary font-bold text-lg group-hover:underline">Projects →</p>
-      <p class="text-gray-400 text-sm mt-1">Create and manage portfolio projects</p>
+  <h2 class="admin-h2 mt-10 mb-4">Quick Navigation</h2>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <a routerLink="/admin/projects" class="admin-card group">
+      <p class="admin-h2 text-accent group-hover:underline">Projects →</p>
+      <p class="mt-1 text-[0.875rem] text-ink-2">Create and manage portfolio projects</p>
     </a>
-    <a routerLink="/admin/messages" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-      <p class="text-primary font-bold text-lg group-hover:underline">Messages →</p>
-      <p class="text-gray-400 text-sm mt-1">View contact form submissions</p>
+    <a routerLink="/admin/messages" class="admin-card group">
+      <p class="admin-h2 text-accent group-hover:underline">Messages →</p>
+      <p class="mt-1 text-[0.875rem] text-ink-2">View contact form submissions</p>
     </a>
-    <a routerLink="/admin/intelligence" class="bg-surface border border-[#143c1a] rounded-xl p-5 hover:border-primary transition group">
-      <p class="text-primary font-bold text-lg group-hover:underline">Intelligence →</p>
-      <p class="text-gray-400 text-sm mt-1">AI visitor analysis and insights</p>
+    <a routerLink="/admin/intelligence" class="admin-card group">
+      <p class="admin-h2 text-accent group-hover:underline">Intelligence →</p>
+      <p class="mt-1 text-[0.875rem] text-ink-2">AI visitor analysis and insights</p>
     </a>
   </div>
 </div>

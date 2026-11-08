@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 describe('AdminProjectsPage — CRUD happy paths', () => {
   let page: AdminProjectsPage;
   let mockService: Partial<AdminProjectsService>;
-  let store: AdminProjectsStore;
+  let store: InstanceType<typeof AdminProjectsStore>;
 
   beforeEach(async () => {
     mockService = {
@@ -78,6 +78,10 @@ describe('AdminProjectsPage — CRUD happy paths', () => {
       page.createProject({
         title: 'Blocked',
         slug: 'blocked',
+        description: '',
+        contentMarkdown: '',
+        coverImageUrl: '',
+        projectUrl: '',
         tags: [],
         isPublished: false,
       });
@@ -97,6 +101,10 @@ describe('AdminProjectsPage — CRUD happy paths', () => {
         id: 'del-1',
         slug: 'to-delete',
         title: 'To Delete',
+        description: null,
+        contentMarkdown: null,
+        coverImageUrl: null,
+        projectUrl: null,
         tags: [],
         isPublished: false,
         createdAt: '2026-01-01T00:00:00.000Z',

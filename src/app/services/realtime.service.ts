@@ -1,4 +1,4 @@
-import { computed, inject, OnDestroy, PLATFORM_ID, Service, signal } from '@angular/core';
+import { computed, inject, isDevMode, OnDestroy, PLATFORM_ID, Service, signal } from '@angular/core';
 import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
 import { AnalyticsService } from './analytics.service';
@@ -28,6 +28,15 @@ export class RealtimeService implements OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly MAX_TOKEN_RETRIES = 4;
   private readonly TOKEN_RETRY_BASE_DELAY_MS = 300;
+  /**
+   * After the token endpoint fails, do not hammer it on every navigation.
+   * Live updates are an enhancement: when the backend is down the site keeps
+   * working, so a quiet cooldown is the right trade-off.
+   */
+  private readonly TOKEN_FAILURE_COOLDOWN_MS = 60_000;
+
+  private tokenCooldownUntil = 0;
+  private hasLoggedConnectionFailure = false;
 
   private eventSource: EventSource | null = null;
   private currentChatStream: EventSource | null = null;
@@ -49,6 +58,13 @@ export class RealtimeService implements OnDestroy {
       return;
     }
 
+    // The token endpoint is still cooling down after a failure: stay disconnected
+    // without another round trip.
+    if (Date.now() < this.tokenCooldownUntil) {
+      this.connectionStatus.set('disconnected');
+      return;
+    }
+
     this.currentSessionId = clientSessionId;
     this.connectionStatus.set('connecting');
 
@@ -64,8 +80,19 @@ export class RealtimeService implements OnDestroy {
         this.eventSource?.close();
         this.eventSource = null;
         this.connectionStatus.set('disconnected');
-        console.error('[RealtimeService] failed to connect:', error);
+        this.tokenCooldownUntil = Date.now() + this.TOKEN_FAILURE_COOLDOWN_MS;
+        this.logConnectionFailureOnce(error);
       });
+  }
+
+  private logConnectionFailureOnce(error: unknown): void {
+    if (this.hasLoggedConnectionFailure || !isDevMode()) {
+      return;
+    }
+
+    this.hasLoggedConnectionFailure = true;
+    const detail = error instanceof Error ? error.message : String(error);
+    console.warn('[RealtimeService] Live updates unavailable, continuing without them:', detail);
   }
 
   private clearReconnectTimeout(): void {
@@ -168,6 +195,7 @@ export class RealtimeService implements OnDestroy {
       this.reconnectAttempts = 0;
       this.clearReconnectTimeout();
       this.connectionStatus.set('connected');
+      this.hasLoggedConnectionFailure = false;
     };
 
     this.eventSource.onerror = () => {

@@ -1,4 +1,4 @@
-import { afterRenderEffect, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { afterRenderEffect, Component, computed, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { SafeHtmlDirective } from '../../shared/directives/safe-html.directive';
@@ -19,11 +19,20 @@ export class ChatWidget {
   protected copy = computed(() => getSiteCopy(this.locale()));
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
+  private readonly composer = viewChild<ElementRef<HTMLInputElement>>('composer');
+  private readonly launcher = viewChild<ElementRef<HTMLButtonElement>>('launcher');
 
   newMessage = signal('');
   private markdownParser: ((content: string) => string) | null = null;
   private markdownParserLoading = false;
   private markdownReady = signal(false);
+
+  /* Text for the polite live region. Announced when a reply finishes, not while
+     it streams: a token-by-token announcement is unusable noise. */
+  protected readonly liveAnnouncement = signal('');
+
+  private wasTyping = false;
+  private wasOpen = false;
 
   constructor() {
     // Restore the automatic scroll logic
@@ -38,6 +47,33 @@ export class ChatWidget {
         }
       },
     });
+
+    // Move focus into the panel when it opens, so keyboard users do not have to
+    // tab from the page start. On close, hand it back to the launcher instead of
+    // dropping focus on a detached node. Only on the transition, otherwise a
+    // re-render would pull focus back out of the send button.
+    afterRenderEffect({
+      write: () => {
+        const open = this.chatStore.isOpen();
+        if (open && !this.wasOpen) {
+          this.composer()?.nativeElement.focus();
+        } else if (!open && this.wasOpen) {
+          this.launcher()?.nativeElement.focus();
+        }
+        this.wasOpen = open;
+      },
+    });
+
+    effect(() => {
+      const typing = this.chatStore.isTyping();
+      if (this.wasTyping && !typing) {
+        const last = this.chatStore.messages().at(-1);
+        if (last?.role === 'assistant') {
+          this.liveAnnouncement.set(last.content);
+        }
+      }
+      this.wasTyping = typing;
+    });
   }
 
   toggleChat() {
@@ -45,6 +81,14 @@ export class ChatWidget {
       this.loadMarkdownParser();
     }
     this.chatStore.toggleChat();
+  }
+
+  /* A panel that declares itself a dialog has to answer Escape. */
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    if (this.chatStore.isOpen()) {
+      this.chatStore.toggleChat();
+    }
   }
 
   onInputChange(event: Event) {

@@ -6,6 +6,12 @@
     "target": "es2022",
     "types": ["node", "vitest/globals"]
   },
+  // The base config excludes `src/**/*.spec.ts` so specs stay out of the app
+  // build. That `exclude` is inherited here and beats `include`, so it has to be
+  // cleared: otherwise the specs are not part of any TypeScript program, which
+  // breaks specs that declare Angular decorators (the Angular plugin cannot
+  // strip them) and makes editors report phantom errors in spec files.
   "files": ["src/test-setup.ts"],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"],
+  "exclude": []
 }

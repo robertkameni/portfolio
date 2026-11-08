@@ -1,32 +1,19 @@
-<div fadeIn class="flex items-center justify-center min-h-screen bg-gray-900 relative z-10001">
-  <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-lg">
-    <h1 class="text-2xl font-bold text-center text-white">{{ copy().adminLogin.title }}</h1>
-    <form (ngSubmit)="submit()" class="space-y-4">
+<div fadeIn class="relative z-10001 flex min-h-screen items-center justify-center bg-paper p-4">
+  <div class="admin-card w-full max-w-md">
+    <h1 class="admin-h1 text-center text-[1.5rem]">{{ copy().adminLogin.title }}</h1>
+    <form (ngSubmit)="submit()" class="mt-6 space-y-6">
       <div>
-        <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.email }}</label>
-        <input
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          required
-          class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <label class="type-meta text-ink-3" for="admin-login-email">{{ copy().adminLogin.email }}</label>
+        <input id="admin-login-email" type="email" [(ngModel)]="email" name="email" required class="field" />
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300">{{ copy().adminLogin.password }}</label>
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          autocomplete="current-password"
-          required
-          class="w-full px-3 py-2 mt-1 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <label class="type-meta text-ink-3" for="admin-login-password">{{ copy().adminLogin.password }}</label>
+        <input id="admin-login-password" type="password" [(ngModel)]="password" name="password" autocomplete="current-password" required class="field" />
       </div>
       @if (errorMessage()) {
-      <p class="text-sm text-center text-red-400">{{ errorMessage() }}</p>
+      <p class="text-center text-[0.875rem] text-accent">{{ errorMessage() }}</p>
       }
-      <button type="submit" [disabled]="isLoading()" class="w-full px-4 py-2 mt-6 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
+      <button type="submit" [disabled]="isLoading()" class="admin-btn admin-btn-primary mt-6 w-full">
         {{ isLoading() ? copy().adminLogin.loggingIn : copy().adminLogin.login }}
       </button>
     </form>
@@ -34,7 +21,7 @@
 </div>
 
 @if (toastMessage()) {
-<div role="status" aria-live="polite" class="fixed bottom-6 right-6 z-10002">
-  <div class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow">{{ toastMessage() }}</div>
+<div role="status" aria-live="polite" class="fixed right-6 bottom-6 z-10002">
+  <div class="rounded-base bg-accent px-4 py-2 text-paper">{{ toastMessage() }}</div>
 </div>
 }

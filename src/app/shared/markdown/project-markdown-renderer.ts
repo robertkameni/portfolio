@@ -4,19 +4,13 @@ export function createProjectMarkdownRenderer(RendererCtor: typeof Renderer): Re
   const renderer = new RendererCtor();
 
   renderer.heading = function ({ tokens, depth }) {
-    const sizeMap = {
-      1: 'font-size: clamp(1.25rem, 3vw, 1.5rem)',
-      2: 'font-size: clamp(1rem, 2.5vw, 1.25rem)',
-      3: 'font-size: clamp(0.875rem, 2vw, 1rem)',
-    };
-    const style = sizeMap[depth as 1 | 2 | 3] || 'font-size: clamp(0.875rem, 1.5vw, 1rem)';
     const text = this.parser.parseInline(tokens);
-    return `<h${depth} style="${style}" class="font-bold mt-6 mb-3 text-primary">${text}</h${depth}>`;
+    return `<h${depth}>${text}</h${depth}>`;
   };
 
   renderer.paragraph = function ({ tokens }) {
     const text = this.parser.parseInline(tokens);
-    return `<p style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="mb-4 leading-7">${text}</p>`;
+    return `<p>${text}</p>`;
   };
 
   renderer.list = function ({ items, ordered }) {
@@ -25,14 +19,14 @@ export function createProjectMarkdownRenderer(RendererCtor: typeof Renderer): Re
     const html = items
       .map((item) => {
         const text = this.parser.parseInline(item.tokens);
-        return `<li style="font-size: clamp(0.875rem, 2vw, 1.125rem)" class="ml-5 mb-2">${text}</li>`;
+        return `<li>${text}</li>`;
       })
       .join('');
-    return `<${tag} class="${listClass} ml-4 mb-4">${html}</${tag}>`;
+    return `<${tag} class="${listClass} mb-4 ml-4">${html}</${tag}>`;
   };
 
   renderer.image = ({ href, text, title }) => {
-    return `<img src="${href}" alt="${text}" title="${title || ''}" style="max-width: clamp(100%, 90vw, 100%); height: auto;" class="rounded-lg my-6"/>`;
+    return `<img src="${href}" alt="${text}" title="${title || ''}" class="my-6 max-w-full" />`;
   };
 
   renderer.strong = function ({ tokens }) {
@@ -47,27 +41,41 @@ export function createProjectMarkdownRenderer(RendererCtor: typeof Renderer): Re
       .map((cell) => {
         const content = this.parser.parseInline(cell.tokens);
         const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-        return `<th${align}>${content}</th>`;
+        return `<th role="columnheader"${align}>${content}</th>`;
       })
       .join('');
+
+    const headerLabels = token.header.map((cell) => cell.text ?? '');
 
     const bodyRows = token.rows
       .map((row) => {
         const cells = row
-          .map((cell) => {
+          .map((cell, index) => {
             const content = this.parser.parseInline(cell.tokens);
             const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-            return `<td${align}>${content}</td>`;
+            /* The column name ships with the cell as a hidden span, not a data
+               attribute: Angular's sanitizer strips data-*. Below md,
+               styles.css hides the header row and reveals this label, so each
+               row reads as a card with no sideways scrolling. aria-hidden keeps
+               it out of the accessibility tree, where the column header from
+               thead already provides the same information. */
+            const label = headerLabels[index] ?? '';
+            const labelSpan = index === 0 || !label ? '' : `<span class="cell-label" aria-hidden="true">${escapeHtml(label)}</span>`;
+            return `<td role="cell"${align}>${labelSpan}${content}</td>`;
           })
           .join('');
-        return `<tr>${cells}</tr>`;
+        return `<tr role="row">${cells}</tr>`;
       })
       .join('');
 
-    return `<div class="markdown-table-wrap"><table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+    return `<div class="markdown-table-wrap"><table role="table"><thead role="rowgroup"><tr role="row">${headerCells}</tr></thead><tbody role="rowgroup">${bodyRows}</tbody></table></div>`;
   };
 
   return renderer;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 export function normalizeProjectMarkdown(markdown: string): string {

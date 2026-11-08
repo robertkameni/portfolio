@@ -1,9 +1,10 @@
 import type { SiteCopy } from './site-copy.types';
 
 export const EN_COPY: SiteCopy = {
+  footer: { copyright: '© {year} Robert Kameni' },
   common: {
-    showMore: 'show more...',
-    showLess: 'show less...',
+    showMore: 'show more',
+    showLess: 'show less',
   },
   home: {
     founder: 'Founder',
@@ -18,6 +19,8 @@ export const EN_COPY: SiteCopy = {
   intro: {
     socialLinkAriaLabel: "Visit Robert's {platform} profile (opens in a new tab)",
   },
+  focus: { title: 'What I do' },
+  stack: { eyebrow: 'Toolset' },
   skills: {
     title: 'Technical Arsenal',
   },
@@ -29,6 +32,9 @@ export const EN_COPY: SiteCopy = {
     loading: 'Loading projects...',
     error: 'Could not load projects.',
     empty: 'No projects published yet.',
+    unavailable: 'Case write-ups are in progress.',
+    viewLive: 'View live',
+    viewLiveAriaLabel: 'Open {title} live (opens in a new tab)',
     openProjectCta: 'Open →',
     openProjectAriaLabel: 'Open project: {title}',
   },
@@ -38,6 +44,20 @@ export const EN_COPY: SiteCopy = {
     loading: 'Loading projects...',
     error: 'Could not load projects.',
     empty: 'No projects published yet.',
+    filterLabel: 'Filter by stack',
+    filterAll: 'All',
+    filterAngular: 'Angular',
+    filterReact: 'React & Next.js',
+    filterCountAriaLabel: '{count} projects',
+    filterEmpty: 'No project in this stack.',
+  },
+  notFoundPage: {
+    statusLabel: '404',
+    title: 'This page does not exist',
+    description: 'The link is outdated or the address contains a typo.',
+    linksLabel: 'Continue to',
+    home: 'Back to the home page',
+    projects: 'View projects',
   },
   projectDetail: {
     backToProjects: 'Back to projects',
@@ -49,6 +69,9 @@ export const EN_COPY: SiteCopy = {
     liveSiteHeading: 'Live site',
     liveSiteLinkLabel: 'Visit live site',
     liveSiteAriaLabel: 'Open live project site in a new tab',
+    zoomTriggerAriaLabel: 'Open screenshot at full size: {title}',
+    zoomDialogLabel: 'Screenshot at full size',
+    zoomClose: 'Close',
     notFoundTitle: 'Project not found',
     loadErrorTitle: 'Could not load project',
     notFoundMessage: 'The project slug does not exist or the project is not published yet.',
@@ -72,6 +95,8 @@ export const EN_COPY: SiteCopy = {
     toggleOpenAriaLabel: 'Open chat with the digital twin',
     toggleCloseAriaLabel: 'Close chat',
     sendAriaLabel: 'Send message',
+    launcherLabel: 'Ask the twin',
+    inputAriaLabel: 'Your message to the twin',
   },
   adminLogin: {
     title: 'Admin Login',
@@ -139,6 +164,8 @@ export const EN_COPY: SiteCopy = {
       'I live in the modern Angular ecosystem. I modernize legacy apps toward zoneless architecture with Signals and build state with the NgRx Signal Store.',
       "Complex architecture, Nx monorepos, and AI/LLM integration are part of my day-to-day. If you want to talk reactive patterns, let's connect.",
     ],
+    previewSplitToken: 'Signals and NgRx Signal Store.',
+    metric: { value: '50%', caption: 'faster team delivery at DATEV' },
   },
   contact: {
     validation: {
@@ -169,6 +196,11 @@ export const EN_COPY: SiteCopy = {
     },
     placeholderName: 'Name',
     placeholderEmail: 'Email',
+    nameLabel: 'Name',
+    emailLabel: 'Email',
+    messageLabel: 'Message',
+    sendLabel: 'Send message',
+    sendingLabel: 'Sending',
     submitSuccess: 'Message sent successfully! I will get back to you soon.',
     submitError: 'Failed to send message. Please try again or email me directly.',
   },
@@ -195,6 +227,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Performance & Scaling:',
             description: 'Deep optimization of Core Web Vitals, SSR hydration, and structuring scalable Nx monorepos.',
           },
+          {
+            title: 'Next.js & React:',
+            description: 'App Router applications with React 19, Server Components, and streamed responses, including AI products.',
+          },
         ],
       },
       founder: {
@@ -211,6 +247,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Reliable Releases:',
             description: 'Automated frontend testing with Playwright and Jest to ensure UI features never break.',
+          },
+          {
+            title: 'Full stack, one deploy:',
+            description: 'Next.js as the product framework: pages, API routes, and database access together, without a second backend.',
           },
         ],
       },
@@ -229,6 +269,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Scalable Workflows:',
             description: 'Structuring Nx workspaces and CI/CD pipelines for large, multi-team enterprise environments.',
           },
+          {
+            title: 'A second framework stack:',
+            description: 'Production Next.js and React 19 applications alongside Angular, using the App Router and Server Components.',
+          },
         ],
       },
       developer: {
@@ -245,6 +289,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Performance Primitives:',
             description: 'Optimizing hydration strategies, lazy-loaded routes, and efficient change detection cycles.',
+          },
+          {
+            title: 'React ecosystem:',
+            description: 'Next.js App Router, Server Components, and React 19, including streaming responses and React hydration.',
           },
         ],
       },
@@ -265,6 +313,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Cloud & Data:',
             description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
           },
+          {
+            title: 'Security & Sessions:',
+            description: 'Short-lived access tokens with refresh rotation, httpOnly cookies and SameSite=strict; CSP reports watch the public endpoints.',
+          },
         ],
       },
       founder: {
@@ -281,6 +333,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Continuous Delivery:',
             description: 'Automated deployment pipelines to continuously ship business value without breaking things.',
+          },
+          {
+            title: 'Secure from the start:',
+            description: 'Auth, sessions, and input validation are built with the product rather than hardened on later.',
           },
         ],
       },
@@ -299,6 +355,10 @@ export const EN_COPY: SiteCopy = {
             title: 'CI/CD & Delivery:',
             description: 'Automating reliable build pipelines to guarantee frictionless software delivery processes.',
           },
+          {
+            title: 'Enterprise Security:',
+            description: 'Separate access and refresh tokens, httpOnly cookies, and CSP reporting at enterprise standard.',
+          },
         ],
       },
       developer: {
@@ -315,6 +375,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Cloud & Data:',
             description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
+          },
+          {
+            title: 'Auth architecture:',
+            description: 'JWT verification in a middleware layer, refresh rotation, and strict cookie flags as a second line of defense.',
           },
         ],
       },

@@ -9,6 +9,7 @@ import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { getResponsiveImageAttrs } from '../../../shared/utils/image-url';
 import { FadeInDirective } from '../../../shared/directives/fade-in.directive';
 import { SafeHtmlDirective } from '../../../shared/directives/safe-html.directive';
+import { ScreenshotZoom } from '../../../shared/components/screenshot-zoom/screenshot-zoom';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
 import { LocaleService } from '../../../shared/services/locale.service';
@@ -21,7 +22,7 @@ export const routeMeta = withRenderMode('server');
 @Component({
   selector: 'project-overview-page',
   standalone: true,
-  imports: [DatePipe, RouterLink, FadeInDirective, SafeHtmlDirective],
+  imports: [DatePipe, RouterLink, FadeInDirective, SafeHtmlDirective, ScreenshotZoom],
   templateUrl: './index.page.html',
 })
 export default class ProjectOverviewPage {
@@ -96,6 +97,10 @@ export default class ProjectOverviewPage {
     } finally {
       this.markdownParserLoading = false;
     }
+  }
+
+  protected zoomTriggerAriaLabel(title: string): string {
+    return this.copy().projectDetail.zoomTriggerAriaLabel.replace('{title}', title);
   }
 
   getErrorTitle(error: unknown): string {

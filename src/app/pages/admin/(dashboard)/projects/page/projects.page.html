@@ -1,30 +1,17 @@
 <site-toolbar homeUrl="/">
-  <div class="hidden sm:block flex-1"></div>
-  <button
-    (click)="navigateToAdmin()"
-    class="text-xs cursor-pointer inline-flex items-center gap-1 px-4 py-1.5 bg-primary text-black font-semibold rounded-lg hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-      <path d="M2 5h20v14H2V5zm10 7L3 6v12h18V6l-9 6z" />
-    </svg>
-    {{ copy().devProxy.admin }}
-  </button>
-  <div class="w-full sm:w-auto ml-auto flex justify-end">
-    <button
-      (click)="toggleForm()"
-      class="text-xs cursor-pointer inline-flex items-center gap-1 px-4 py-2 bg-primary text-black font-semibold rounded-lg hover:bg-[#16a34a] transition w-full sm:w-auto mt-2 sm:mt-0 justify-center"
-    >
-      <span>+</span>
+  <div class="ml-auto">
+    <button (click)="toggleForm()" class="admin-btn-primary admin-btn mt-2 w-auto justify-center whitespace-nowrap sm:mt-0">
+      <span aria-hidden="true">+</span>
       {{ showForm() ? copy().adminProjects.cancel : copy().adminProjects.newProject }}
     </button>
   </div>
 </site-toolbar>
 
-<div class="px-4 py-8 md:p-8 text-white max-w-5xl mx-auto" fadeIn>
-  <div class="mb-8 flex items-center justify-between">
+<div class="mx-auto max-w-5xl px-4 py-8 text-ink md:p-8" fadeIn>
+  <div class="mb-8 flex items-center justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-primary">{{ copy().adminProjects.title }}</h1>
-      <p class="text-gray-400 text-sm mt-1">{{ copy().adminProjects.subtitle }}</p>
+      <h1 class="admin-h1">{{ copy().adminProjects.title }}</h1>
+      <p class="mt-1 text-[0.875rem] text-ink-2">{{ copy().adminProjects.subtitle }}</p>
     </div>
   </div>
 
@@ -47,47 +34,43 @@
     />
   </div>
   } @if (store.isLoading()) {
-  <div class="text-gray-400 font-mono py-12 text-center">{{ copy().adminProjects.loading }}</div>
+  <div class="py-12 text-center font-mono text-ink-2">{{ copy().adminProjects.loading }}</div>
   } @else if (store.data() === null) {
-  <div class="text-gray-500 py-12 text-center text-sm">{{ copy().adminProjects.loadingIdle }}</div>
+  <div class="py-12 text-center text-[0.875rem] text-ink-3">{{ copy().adminProjects.loadingIdle }}</div>
   } @else if (store.error()) {
-  <div class="text-red-400 py-8 text-center text-sm">{{ store.error() }}</div>
+  <div class="py-8 text-center text-[0.875rem] text-accent">{{ store.error() }}</div>
   } @else {
-  <div class="space-y-3" fadeIn>
+  <div class="mt-2" fadeIn>
     @for (project of store.data() ?? []; track project.id) {
-    <div class="bg-surface border border-[#143c1a] rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-      <div class="flex items-center gap-4 min-w-0 flex-wrap flex-1">
-        <span class="px-2 py-0.5 rounded text-xs font-medium" [class]="project.isPublished ? 'bg-green-900 text-green-300' : 'bg-gray-800 text-gray-400'">
+    <div class="admin-row md:flex-row md:items-center md:justify-between">
+      <div class="flex min-w-0 flex-1 flex-wrap items-center gap-4">
+        <span class="admin-chip" [attr.data-live]="project.isPublished ? 'true' : null">
           {{ project.isPublished ? copy().adminProjects.published : copy().adminProjects.draft }}
         </span>
 
         <div class="min-w-0">
-          <p class="text-white font-medium truncate">{{ project.title }}</p>
-          <p class="text-gray-500 text-xs truncate">/projects/{{ project.slug }}</p>
+          <p class="truncate font-medium text-ink">{{ project.title }}</p>
+          <p class="truncate text-[0.75rem] text-ink-3">/projects/{{ project.slug }}</p>
         </div>
       </div>
 
-      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-3 md:gap-4 min-w-0">
-        <div class="hidden md:flex items-center justify-start gap-1 flex-wrap w-60">
+      <div class="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-end md:gap-4">
+        <div class="hidden w-60 flex-wrap items-center justify-start gap-1 md:flex">
           @if (project.tags && project.tags.length > 0) { @for (tag of firstTags(project.tags); track tag) {
-          <span class="text-xs px-2 py-0.5 bg-[#07200f] text-primary rounded whitespace-nowrap shrink-0">{{ tag }}</span>
+          <span class="admin-chip shrink-0 whitespace-nowrap">{{ tag }}</span>
           } }
         </div>
       </div>
-      <div class="flex gap-4 justify-start">
-        <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }" class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
-          {{ copy().adminProjects.view }}
-        </a>
+      <div class="flex justify-start gap-4">
+        <a [routerLink]="['/projects', project.slug]" [queryParams]="{ preview: 'admin' }" class="admin-link">{{ copy().adminProjects.view }}</a>
 
-        <a [routerLink]="['/projects', project.slug, 'edit']" [queryParams]="{ preview: 'admin' }" class="text-sm text-gray-400 transition cursor-pointer hover:text-primary">
-          {{ copy().adminProjects.edit }}
-        </a>
+        <a [routerLink]="['/projects', project.slug, 'edit']" [queryParams]="{ preview: 'admin' }" class="admin-link">{{ copy().adminProjects.edit }}</a>
 
-        <a class="text-sm text-gray-400 transition cursor-pointer hover:text-primary" (click)="deleteProject(project.id, project.title)">{{ copy().adminProjects.delete }}</a>
+        <a class="admin-link" (click)="deleteProject(project.id, project.title)">{{ copy().adminProjects.delete }}</a>
       </div>
     </div>
     } @empty {
-    <p class="text-gray-500 text-center py-12">{{ copy().adminProjects.empty }}</p>
+    <p class="py-12 text-center text-ink-3">{{ copy().adminProjects.empty }}</p>
     }
   </div>
   }

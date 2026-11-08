@@ -1,0 +1,28 @@
+<main id="main" class="flex min-h-screen flex-col bg-paper">
+  <div class="page-shell flex flex-1 flex-col justify-center py-20 md:py-24">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-[1fr_auto] md:items-end md:gap-16">
+      <div class="min-w-0">
+        <p class="type-meta text-ink-3">{{ copy().statusLabel }}</p>
+        <h1 class="type-display mt-4">{{ copy().title }}</h1>
+        <p class="mt-6 max-w-[42ch] text-ink-2">{{ copy().description }}</p>
+      </div>
+
+      <nav [attr.aria-label]="copy().linksLabel" class="md:min-w-56">
+        <ul class="border-t border-rule">
+          <li class="border-b border-rule">
+            <a routerLink="/" class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent">
+              {{ copy().home }}
+              <span aria-hidden="true">&#8594;</span>
+            </a>
+          </li>
+          <li class="border-b border-rule">
+            <a routerLink="/projects" class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent">
+              {{ copy().projects }}
+              <span aria-hidden="true">&#8594;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</main>

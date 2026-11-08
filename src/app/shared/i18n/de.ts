@@ -1,9 +1,10 @@
 import type { SiteCopy } from './site-copy.types';
 
 export const DE_COPY: SiteCopy = {
+  footer: { copyright: '© {year} Robert Kameni' },
   common: {
-    showMore: 'mehr anzeigen...',
-    showLess: 'weniger anzeigen...',
+    showMore: 'mehr anzeigen',
+    showLess: 'weniger anzeigen',
   },
   home: {
     founder: 'Founder',
@@ -18,6 +19,8 @@ export const DE_COPY: SiteCopy = {
   intro: {
     socialLinkAriaLabel: 'Profil von Robert auf {platform} besuchen (öffnet in neuem Tab)',
   },
+  focus: { title: 'Schwerpunkt' },
+  stack: { eyebrow: 'Werkzeuge' },
   skills: {
     title: 'Technisches Arsenal',
   },
@@ -29,6 +32,9 @@ export const DE_COPY: SiteCopy = {
     loading: 'Projekte werden geladen...',
     error: 'Projekte konnten nicht geladen werden.',
     empty: 'Noch keine Projekte veröffentlicht.',
+    unavailable: 'Projektbeschreibungen folgen in Kürze.',
+    viewLive: 'Live ansehen',
+    viewLiveAriaLabel: '{title} live öffnen (öffnet in neuem Tab)',
     openProjectCta: 'Öffnen →',
     openProjectAriaLabel: 'Projekt öffnen: {title}',
   },
@@ -38,6 +44,20 @@ export const DE_COPY: SiteCopy = {
     loading: 'Projekte werden geladen...',
     error: 'Projekte konnten nicht geladen werden.',
     empty: 'Noch keine Projekte veröffentlicht.',
+    filterLabel: 'Nach Stack filtern',
+    filterAll: 'Alle',
+    filterAngular: 'Angular',
+    filterReact: 'React & Next.js',
+    filterCountAriaLabel: '{count} Projekte',
+    filterEmpty: 'Kein Projekt in diesem Stack.',
+  },
+  notFoundPage: {
+    statusLabel: '404',
+    title: 'Diese Seite existiert nicht',
+    description: 'Der Link ist veraltet oder die Adresse enthält einen Tippfehler.',
+    linksLabel: 'Weiter zu',
+    home: 'Zur Startseite',
+    projects: 'Projekte ansehen',
   },
   projectDetail: {
     backToProjects: 'Zurück zu den Projekten',
@@ -49,6 +69,9 @@ export const DE_COPY: SiteCopy = {
     liveSiteHeading: 'Live-Website',
     liveSiteLinkLabel: 'Live-Website besuchen',
     liveSiteAriaLabel: 'Live-Projektwebsite in neuem Tab öffnen',
+    zoomTriggerAriaLabel: 'Screenshot in voller Größe öffnen: {title}',
+    zoomDialogLabel: 'Screenshot in voller Größe',
+    zoomClose: 'Schließen',
     notFoundTitle: 'Projekt nicht gefunden',
     loadErrorTitle: 'Projekt konnte nicht geladen werden',
     notFoundMessage: 'Der Projekt-Slug existiert nicht oder das Projekt ist noch nicht veröffentlicht.',
@@ -72,6 +95,8 @@ export const DE_COPY: SiteCopy = {
     toggleOpenAriaLabel: 'Chat mit dem Digital Twin öffnen',
     toggleCloseAriaLabel: 'Chat schließen',
     sendAriaLabel: 'Nachricht senden',
+    launcherLabel: 'Frag den Twin',
+    inputAriaLabel: 'Deine Nachricht an den Twin',
   },
   adminLogin: {
     title: 'Admin-Anmeldung',
@@ -139,6 +164,8 @@ export const DE_COPY: SiteCopy = {
       'Im modernen Angular-Ökosystem fühle ich mich zu Hause. Legacy-Apps modernisiere ich hin zu zoneless Architektur mit Signals und baue State mit dem NgRx Signal Store.',
       'Komplexe Architektur, Nx-Monorepos und AI/LLM-Integration gehören zu meinem Alltag. Wenn du über reaktive Patterns sprechen willst, lass uns austauschen.',
     ],
+    previewSplitToken: 'Signals und NgRx Signal Store.',
+    metric: { value: '50%', caption: 'schnellere Team-Lieferung bei der DATEV' },
   },
   contact: {
     validation: {
@@ -169,6 +196,11 @@ export const DE_COPY: SiteCopy = {
     },
     placeholderName: 'Name',
     placeholderEmail: 'E-Mail',
+    nameLabel: 'Name',
+    emailLabel: 'E-Mail',
+    messageLabel: 'Nachricht',
+    sendLabel: 'Nachricht senden',
+    sendingLabel: 'Wird gesendet',
     submitSuccess: 'Nachricht gesendet! Ich melde mich so bald ich kann.',
     submitError: 'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
   },
@@ -195,6 +227,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Performance & Skalierung:',
             description: 'Optimierung von Core Web Vitals, SSR-Hydration und Aufbau skalierbarer Nx-Monorepos.',
           },
+          {
+            title: 'Next.js & React:',
+            description: 'App-Router-Anwendungen mit React 19, Server Components und gestreamten Antworten, unter anderem für AI-Produkte.',
+          },
         ],
       },
       founder: {
@@ -211,6 +247,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Verlässliche Releases:',
             description: 'Automatisierte Frontend-Tests mit Playwright und Jest, damit UI-Features stabil bleiben.',
+          },
+          {
+            title: 'Full-Stack in einem Deploy:',
+            description: 'Next.js als Produkt-Framework: Seiten, API-Routen und Datenbankzugriff zusammen, ohne zweites Backend.',
           },
         ],
       },
@@ -229,6 +269,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Skalierbare Workflows:',
             description: 'Strukturierung von Nx-Workspaces und CI/CD-Pipelines für große Multi-Team-Umgebungen.',
           },
+          {
+            title: 'Zweiter Framework-Stack:',
+            description: 'Neben Angular produktive Next.js- und React-19-Anwendungen mit App Router und Server Components.',
+          },
         ],
       },
       developer: {
@@ -245,6 +289,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Performance-Primitiven:',
             description: 'Optimierung von Hydration-Strategien, Lazy-Loaded-Routes und effizienter Change Detection.',
+          },
+          {
+            title: 'React-Ökosystem:',
+            description: 'Next.js App Router, Server Components und React 19, inklusive Streaming-Antworten und React-spezifischer Hydration.',
           },
         ],
       },
@@ -265,6 +313,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Cloud & Daten:',
             description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.',
           },
+          {
+            title: 'Security & Sessions:',
+            description: 'Kurzlebige Access-Tokens mit Refresh-Rotation, httpOnly-Cookies und SameSite=strict; CSP-Reports überwachen die öffentlichen Endpunkte.',
+          },
         ],
       },
       founder: {
@@ -281,6 +333,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Continuous Delivery:',
             description: 'Automatisierte Deployments, um fortlaufend Business Value auszuliefern.',
+          },
+          {
+            title: 'Sicherheit von Anfang an:',
+            description: 'Auth, Sessions und Eingabeprüfung entstehen mit dem Produkt, nicht als späterer Härtungsschritt.',
           },
         ],
       },
@@ -299,6 +355,10 @@ export const DE_COPY: SiteCopy = {
             title: 'CI/CD & Delivery:',
             description: 'Automatisierung verlässlicher Build- und Delivery-Prozesse für reibungslose Auslieferung.',
           },
+          {
+            title: 'Enterprise Security:',
+            description: 'Getrennte Access- und Refresh-Tokens, httpOnly-Cookies und CSP-Reporting nach Enterprise-Maßstab.',
+          },
         ],
       },
       developer: {
@@ -315,6 +375,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Cloud & Daten:',
             description: 'Nahtlose PostgreSQL-/Prisma-Integration und edge-fähige Deployments ohne Downtime.',
+          },
+          {
+            title: 'Auth-Architektur:',
+            description: 'JWT-Verifikation im Middleware-Layer, Refresh-Rotation und strikte Cookie-Flags als zweite Verteidigungslinie.',
           },
         ],
       },

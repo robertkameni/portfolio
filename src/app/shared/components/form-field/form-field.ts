@@ -8,4 +8,11 @@ import { FieldState } from '@angular/forms/signals';
 })
 export class FormField {
   control = input.required<FieldState<string, string>>();
+
+  /**
+   * Id for the error text, so the input can point at it with aria-describedby.
+   * Without it a screen reader announces the field as valid while a red message
+   * sits below it.
+   */
+  errorId = input<string | null>(null);
 }

@@ -1,5 +1,5 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
 import { AdminProjectsService } from '../../../services/admin-projects.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,7 +18,6 @@ import { AdminProjectsStore } from '../../../store/projects.store';
   templateUrl: './projects/page/projects.page.html',
 })
 export default class AdminProjectsPage implements OnInit {
-  private router = inject(Router);
   private readonly adminProjectsService = inject(AdminProjectsService);
   private readonly localeService = inject(LocaleService);
   private readonly destroyRef = inject(DestroyRef);
@@ -35,14 +34,6 @@ export default class AdminProjectsPage implements OnInit {
 
   ngOnInit() {
     this.store.load();
-  }
-
-  navigateHome() {
-    this.router.navigate(['/']);
-  }
-
-  navigateToAdmin() {
-    this.router.navigate(['/admin']);
   }
 
   toggleForm() {

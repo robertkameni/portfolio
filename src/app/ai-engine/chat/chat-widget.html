@@ -1,64 +1,64 @@
-<!-- Floating Action Button -->
-<div class="fixed bottom-6 right-6 z-50">
+<div class="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
   <button
+    #launcher
     type="button"
     (click)="toggleChat()"
     [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
     [attr.aria-expanded]="chatStore.isOpen()"
-    class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black size-10 shrink-0 p-0 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+    class="inline-flex size-12 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
   >
     @if (chatStore.isOpen()) {
-    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    <!-- Phosphor Icons "x" (regular), MIT. -->
+    <svg class="size-5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+      <path
+        d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+      />
     </svg>
     } @else {
-    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <!-- Phosphor Icons "chat-circle-dots" (regular), MIT. A speech bubble reads
+         as conversation at 24px; the label next to it carries the identity. -->
+    <svg class="size-5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
       <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-      ></path>
+        d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"
+      />
     </svg>
     }
+    <span class="hidden sm:inline">{{ chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.launcherLabel }}</span>
   </button>
 
   @if (chatStore.isOpen()) {
   <div
-    class="fixed bottom-24 right-2 w-[calc(100vw-1rem)] max-w-106.25 h-[68vh] max-h-[68vh] bg-[#020a04] border border-[#0f2e15] rounded-2xl shadow-2xl flex flex-col overflow-x-hidden overflow-y-auto sm:absolute sm:left-auto sm:translate-x-0 sm:top-auto sm:bottom-16 sm:right-0 sm:w-80 sm:h-125 sm:max-h-[80vh] md:w-96"
+    role="dialog"
+    [attr.aria-label]="copy().chat.title"
+    class="chat-panel fixed bottom-24 right-2 flex h-[68vh] max-h-[68vh] w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-base border border-rule bg-surface shadow-[0_12px_32px_rgb(16_17_19/0.08)] sm:absolute sm:bottom-16 sm:left-auto sm:right-0 sm:top-auto sm:h-125 sm:max-h-[80vh] sm:w-80 md:w-96"
   >
-    <div class="bg-[#0a2912] border-b border-[#143c1a] p-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="relative">
-          <div class="w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-primary">
-            <span class="text-primary font-bold">RK</span>
-          </div>
-          <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a2912] rounded-full"></div>
-        </div>
-        <div>
-          <h3 class="text-white font-bold text-sm">{{ copy().chat.title }}</h3>
-          <p class="text-xs text-gray-400">{{ copy().chat.subtitle }}</p>
-        </div>
+    <div class="flex items-center gap-3 border-b border-rule bg-paper-2 p-4">
+      <div class="flex size-9 shrink-0 items-center justify-center rounded-base border border-accent bg-paper">
+        <span class="type-meta text-accent">RK</span>
+      </div>
+      <div class="min-w-0">
+        <p class="type-h3">{{ copy().chat.title }}</p>
+        <p class="type-meta mt-0.5 text-ink-3">{{ copy().chat.subtitle }}</p>
       </div>
     </div>
 
-    <div #messagesContainer class="flex-1 overflow-y-contains p-4 space-y-4 bg-background scroll-smooth">
+    <div #messagesContainer class="flex-1 space-y-4 overflow-y-auto overscroll-contain bg-paper p-4">
       @if (chatStore.messages().length === 0) {
-      <div class="text-center text-gray-500 mt-10">
-        <p class="text-sm">{{ copy().chat.introLine1 }}</p>
-        <p class="text-sm mt-2">{{ copy().chat.introLine2 }}</p>
-        <div class="mt-4 space-y-2">
+      <div class="mt-6">
+        <p class="text-ink-2">{{ copy().chat.introLine1 }}</p>
+        <p class="mt-2 text-ink-2">{{ copy().chat.introLine2 }}</p>
+        <div class="mt-6 divide-y divide-rule border-t border-rule">
           <button
             (click)="newMessage.set(copy().chat.promptAngular); sendMessage()"
             [disabled]="chatStore.isTyping()"
-            class="text-xs bg-[#0a2912] border border-[#143c1a] hover:bg-[#143c1a] hover:border-primary text-gray-200 hover:text-white py-2 px-3 rounded-full transition-colors w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+            class="block w-full cursor-pointer py-3 text-left text-ink-2 transition-colors duration-150 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ copy().chat.promptAngular }}
           </button>
           <button
             (click)="newMessage.set(copy().chat.promptFreelance); sendMessage()"
             [disabled]="chatStore.isTyping()"
-            class="text-xs bg-[#0a2912] border border-[#143c1a] hover:bg-[#143c1a] hover:border-primary text-gray-200 hover:text-white py-2 px-3 rounded-full transition-colors w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+            class="block w-full cursor-pointer py-3 text-left text-ink-2 transition-colors duration-150 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ copy().chat.promptFreelance }}
           </button>
@@ -68,10 +68,10 @@
       <div [class]="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
         <div
           [class]="
-                msg.role === 'user'
-                  ? 'bg-primary text-black max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-2 text-sm'
-                  : 'bg-surface border border-[#143c1a] text-white max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-2 text-sm'
-              "
+            msg.role === 'user'
+              ? 'chat-bubble max-w-[80%] rounded-base bg-ink px-4 py-2 text-paper'
+              : 'chat-bubble max-w-[80%] rounded-base border border-rule bg-surface px-4 py-2 text-ink'
+          "
         >
           @if (msg.role === 'assistant') {
           <div class="chat-markdown" [safeHtml]="renderAssistantMessage(msg.content)"></div>
@@ -79,37 +79,38 @@
         </div>
       </div>
       } @if (chatStore.isTyping()) {
-      <div class="flex justify-start">
-        <div class="bg-surface border border-[#143c1a] text-white rounded-2xl rounded-tl-sm px-4 py-3 flex space-x-1">
-          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-        </div>
+      <div class="flex items-center gap-1.5">
+        <span class="chat-typing-dot size-1.5 rounded-full bg-ink-3"></span>
+        <span class="chat-typing-dot size-1.5 rounded-full bg-ink-3" style="animation-delay: 0.15s"></span>
+        <span class="chat-typing-dot size-1.5 rounded-full bg-ink-3" style="animation-delay: 0.3s"></span>
         <span class="sr-only">{{ copy().chat.typingSrOnly }}</span>
       </div>
       }
+      <!-- Announced once the reply is complete. A live region on the message
+           list would read out every streamed token. -->
+      <p class="sr-only" aria-live="polite">{{ liveAnnouncement() }}</p>
     </div>
 
-    <div class="p-3 bg-[#0a2912] border-t border-[#143c1a]">
-      <form (submit)="sendMessage($event)" class="flex items-center space-x-2">
+    <div class="border-t border-rule bg-paper-2 p-3">
+      <form (submit)="sendMessage($event)" class="flex items-end gap-3">
         <input
+          #composer
           type="text"
           [value]="newMessage()"
           (input)="onInputChange($event)"
           (keyup.enter)="sendMessage()"
           [placeholder]="copy().chat.placeholder"
-          class="flex-1 bg-background border border-[#143c1a] rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+          [attr.aria-label]="copy().chat.inputAriaLabel"
+          class="field flex-1"
           autocomplete="off"
         />
         <button
           type="submit"
           [disabled]="!newMessage().trim() || chatStore.isTyping()"
           [attr.aria-label]="copy().chat.sendAriaLabel"
-          class="bg-primary hover:bg-[#16a34a] disabled:bg-gray-600 disabled:cursor-not-allowed text-black w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+          class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-base bg-accent text-paper transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-          </svg>
+          <span aria-hidden="true">&#8594;</span>
         </button>
       </form>
     </div>

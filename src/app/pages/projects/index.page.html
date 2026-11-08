@@ -1,28 +1,49 @@
-<main class="bg-background min-h-screen text-white px-4 py-12 md:px-8 md:py-16">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex mb-12 justify-between items-center">
-      <div>
-        <h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">{{ copy().projectsPage.title }}</h1>
-        <div class="h-1 w-16 bg-white"></div>
-      </div>
+<main id="main" class="min-h-screen bg-paper pb-24 pt-16">
+  <div class="page-shell">
+    <div class="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
+      <h1 class="type-display enter" style="--i: 0">{{ copy().projectsPage.title }}</h1>
+
       <a
         [routerLink]="['/']"
         fragment="projects-section"
-        class="inline-flex items-center gap-2 mb-3 text-base font-bold link-color-primary-hover underline-offset-4 hover:underline hover:decoration-current"
+        class="tap-area type-meta enter mb-2 inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent"
+        style="--i: 1"
       >
-        <span aria-hidden="true">←</span>
+        <span aria-hidden="true">&#8592;</span>
         {{ copy().projectsPage.backToPortfolio }}
       </a>
     </div>
 
     @if (store.isLoading()) {
-    <div class="flex items-center justify-center py-24 text-gray-400 font-mono">{{ copy().projectsPage.loading }}</div>
+    <p class="type-meta mt-10 text-ink-3">{{ copy().projectsPage.loading }}</p>
     } @else if (store.error()) {
-    <div class="text-red-400 py-12">{{ copy().projectsPage.error }}</div>
-    } @else if ((store.data() ?? []).length === 0) {
-    <div class="text-gray-500 py-12">{{ copy().projectsPage.empty }}</div>
+    <p class="mt-10 text-accent">{{ copy().projectsPage.error }}</p>
+    } @else if (projects().length === 0) {
+    <p class="mt-10 text-ink-2">{{ copy().projectsPage.empty }}</p>
+    } @else { @if (availableFamilies().length > 1) {
+    <div role="group" [attr.aria-label]="copy().projectsPage.filterLabel" class="mt-6 flex flex-wrap items-center gap-x-6 border-b border-rule pb-2">
+      <button type="button" class="toolbar-option cursor-pointer" [attr.aria-pressed]="activeFamily() === null" (click)="selectFamily(null)">
+        {{ copy().projectsPage.filterAll }}
+        <span class="ml-2 tabular-nums text-ink-3" aria-hidden="true">{{ projects().length }}</span>
+      </button>
+
+      @for (family of availableFamilies(); track family) {
+      <button
+        type="button"
+        class="toolbar-option cursor-pointer"
+        [attr.aria-pressed]="activeFamily() === family"
+        [attr.aria-label]="familyAriaLabel(family)"
+        (click)="selectFamily(family)"
+      >
+        {{ familyLabel(family) }}
+        <span class="ml-2 tabular-nums text-ink-3" aria-hidden="true">{{ countFor().get(family) }}</span>
+      </button>
+      }
+    </div>
+    } @if (visibleProjects().length === 0) {
+    <p class="mt-10 text-ink-2">{{ copy().projectsPage.filterEmpty }}</p>
     } @else {
-    <projects-list [projects]="store.data()!" [locale]="locale()" />
-    }
+    <projects-list [projects]="visibleProjects()" [locale]="locale()" />
+    } }
   </div>
 </main>

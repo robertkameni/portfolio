@@ -1,11 +1,11 @@
-<div>
+<div class="flex flex-col gap-2">
   <ng-content select="label"></ng-content>
   <ng-content select="input, textarea, select"></ng-content>
 
   @if (control().invalid() && control().touched()) {
-  <div class="text-red-400 text-sm mt-1">
+  <div [attr.id]="errorId() || null" class="text-accent" role="alert">
     @for (error of control().errors(); track error) {
-    <p>{{ error.message }}</p>
+    <p class="text-[0.8125rem]">{{ error.message }}</p>
     }
   </div>
   }

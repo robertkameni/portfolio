@@ -1,4 +1,21 @@
+/** One bullet inside a focus card. */
+export type HeroCopyItem = { title: string; description: string };
+
+/**
+ * A focus card for one audience. The item list is open-ended on purpose: the
+ * frontend card carries four points (Angular and the Next.js stack), the
+ * backend card three, and a fixed-length tuple only gets in the way of that.
+ */
+export type HeroVariantCopy = {
+  description: string;
+  items: readonly HeroCopyItem[];
+};
+
 export type SiteCopy = {
+  footer: {
+    /** Use `{year}` for the current year. */
+    copyright: string;
+  };
   common: {
     showMore: string;
     showLess: string;
@@ -17,6 +34,12 @@ export type SiteCopy = {
     /** Use `{platform}` — replaced with LinkedIn, Xing, etc. */
     socialLinkAriaLabel: string;
   };
+  focus: {
+    title: string;
+  };
+  stack: {
+    eyebrow: string;
+  };
   skills: {
     title: string;
   };
@@ -28,6 +51,11 @@ export type SiteCopy = {
     loading: string;
     error: string;
     empty: string;
+    unavailable: string;
+    /** External link label shown when the project has a live URL. */
+    viewLive: string;
+    /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */
+    viewLiveAriaLabel: string;
     /** Short project-card link label (heading above already shows the title). */
     openProjectCta: string;
     /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */
@@ -39,6 +67,22 @@ export type SiteCopy = {
     loading: string;
     error: string;
     empty: string;
+    filterLabel: string;
+    filterAll: string;
+    filterAngular: string;
+    filterReact: string;
+    filterCountAriaLabel: string;
+    filterEmpty: string;
+  };
+  notFoundPage: {
+    /** Big mono status label above the headline. */
+    statusLabel: string;
+    title: string;
+    description: string;
+    /** Accessible name for the list of destinations. */
+    linksLabel: string;
+    home: string;
+    projects: string;
   };
   projectDetail: {
     backToProjects: string;
@@ -50,6 +94,9 @@ export type SiteCopy = {
     liveSiteHeading: string;
     liveSiteLinkLabel: string;
     liveSiteAriaLabel: string;
+    zoomTriggerAriaLabel: string;
+    zoomDialogLabel: string;
+    zoomClose: string;
     notFoundTitle: string;
     loadErrorTitle: string;
     notFoundMessage: string;
@@ -73,6 +120,8 @@ export type SiteCopy = {
     toggleOpenAriaLabel: string;
     toggleCloseAriaLabel: string;
     sendAriaLabel: string;
+    launcherLabel: string;
+    inputAriaLabel: string;
   };
   adminLogin: {
     title: string;
@@ -131,6 +180,12 @@ export type SiteCopy = {
     founderParagraphs: [string, string];
     recruiterParagraphs: [string, string];
     developerParagraphs: [string, string];
+    /** Sentence that ends the collapsed preview of the third paragraph. */
+    previewSplitToken: string;
+    metric: {
+      value: string;
+      caption: string;
+    };
   };
   contact: {
     validation: {
@@ -161,6 +216,11 @@ export type SiteCopy = {
     };
     placeholderName: string;
     placeholderEmail: string;
+    nameLabel: string;
+    emailLabel: string;
+    messageLabel: string;
+    sendLabel: string;
+    sendingLabel: string;
     submitSuccess: string;
     submitError: string;
   };
@@ -172,40 +232,16 @@ export type SiteCopy = {
       developer: string;
     };
     frontend: {
-      default: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      founder: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      recruiter: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      developer: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
+      default: HeroVariantCopy;
+      founder: HeroVariantCopy;
+      recruiter: HeroVariantCopy;
+      developer: HeroVariantCopy;
     };
     backend: {
-      default: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      founder: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      recruiter: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      developer: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
+      default: HeroVariantCopy;
+      founder: HeroVariantCopy;
+      recruiter: HeroVariantCopy;
+      developer: HeroVariantCopy;
     };
   };
 };

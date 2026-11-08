@@ -1,48 +1,45 @@
 import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
 import { withRenderMode } from '../shared/routing/render-mode.types';
 import { PortfolioStore } from '../store/portfolio.store';
-import { AnalyticsService } from '../services/analytics.service';
-import { About } from './components/about/about';
-import { SkillsBento } from './components/skills-bento/skills-bento';
-import { Hero } from './components/hero/hero';
-import { Intro } from './components/intro/intro';
-import { ChatWidget } from '../ai-engine';
-import { Contact } from './components/contact/contact';
-import { ProjectsSection } from './components/projects/projects-section';
-import { PageLoader } from '../shared/components/page-loader/page-loader';
+import { VisitorStore } from '../store/visitor.store';
+import { ChatStore } from '../store/chat.store';
+import { getSiteCopy } from '../shared/i18n/site-copy';
 import { FadeInDirective } from '../shared/directives/fade-in.directive';
 import { SiteToolbarComponent } from '../shared/components/site-toolbar/site-toolbar';
-import { VisitorStore } from '../store/visitor.store';
-import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
-import { getSiteCopy } from '../shared/i18n/site-copy';
+import { PageLoader } from '../shared/components/page-loader/page-loader';
+import { Masthead } from './components/masthead/masthead';
+import { FocusAreas } from './components/focus-areas/focus-areas';
+import { SkillsBento } from './components/skills-bento/skills-bento';
+import { About } from './components/about/about';
+import { ProjectsSection } from './components/projects/projects-section';
+import { Contact } from './components/contact/contact';
 import { Footer } from './components/footer/footer';
-import { ChatStore } from '../store/chat.store';
+import { ChatWidget } from '../ai-engine';
 
 export const routeMeta = withRenderMode('server');
 
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [SkillsBento, Hero, About, Footer, Intro, ChatWidget, Contact, ProjectsSection, PageLoader, FadeInDirective, SiteToolbarComponent],
+  imports: [Masthead, FocusAreas, SkillsBento, About, ProjectsSection, Contact, Footer, ChatWidget, PageLoader, FadeInDirective, SiteToolbarComponent],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {
   store = inject(PortfolioStore);
-  private visitorStore = inject(VisitorStore);
-  auth = inject(AuthService);
-  private router = inject(Router);
-  private analytics = inject(AnalyticsService);
-  private chatStore = inject(ChatStore);
+  private readonly visitorStore = inject(VisitorStore);
+  private readonly chatStore = inject(ChatStore);
 
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
+
+  readonly activeProfile = computed(() => this.visitorStore.profile()?.visitorType ?? null);
 
   setMockProfile(type: import('../shared/types/visitor.types').VisitorProfileAnalysis['visitorType'] | null) {
     if (!type) {
       this.visitorStore.setProfile(null);
       return;
     }
+
     this.visitorStore.setProfile({
       visitorType: type,
       confidenceScore: 1,
@@ -54,29 +51,6 @@ export default class Home implements OnInit {
 
   ngOnInit() {
     this.store.loadProfile();
-  }
-
-  onAdminClick() {
-    try {
-      if (this.auth.isAuthenticated()) {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/admin/login']);
-      }
-    } catch (e) {
-      this.router.navigate(['/admin/login']);
-    }
-  }
-
-  navigateToAdmin() {
-    this.router.navigate(['/admin']);
-  }
-
-  logout() {
-    this.auth.logout().subscribe({
-      next: () => this.router.navigateByUrl('/'),
-      error: () => this.router.navigateByUrl('/admin/login'),
-    });
   }
 
   openChatFromLauncher() {

@@ -2,13 +2,14 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { AboutData } from './interface/about-data';
 import { VisitorStore } from '../../../store/visitor.store';
 import { TrackBehaviorDirective } from '../../../ai-engine';
+import { CountUpDirective } from '../../../shared/directives/count-up.directive';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 @Component({
   selector: 'about',
   standalone: true,
-  imports: [TrackBehaviorDirective],
+  imports: [TrackBehaviorDirective, CountUpDirective],
   templateUrl: './about.html',
 })
 export class About {

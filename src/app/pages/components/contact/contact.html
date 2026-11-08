@@ -1,66 +1,74 @@
-<section trackBehavior="contact_viewed" class="flex px-4 py-4 md:py-6 justify-center text-white">
-  <div class="w-full max-w-6xl border bg-[#020a04] border-[#0f2e15] rounded-2xl p-6 md:p-10 shadow-2xl">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 xs:gap-12">
-      <div class="flex flex-col justify-center text-left">
-        <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>
-        <p class="text-gray-300 mb-10 text-lg">{{ adaptiveDescription() }}</p>
+<section trackBehavior="contact_viewed" class="edge-top py-16 md:py-24">
+  <div class="page-shell">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-[5fr_7fr] md:gap-16">
+      <div class="min-w-0">
+        <h2 class="type-h2">{{ adaptiveTitle() }}</h2>
+        <p class="mt-4 max-w-[40ch] text-ink-2">{{ adaptiveDescription() }}</p>
 
-        <div class="space-y-8 text-left">
-          @for (feature of data().features; track feature.title) {
-          <div class="flex items-start">
-            <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
-              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="feature.iconPath"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-white font-bold text-lg">{{ feature.title }}</h3>
-              <p class="text-gray-400 text-sm mt-1">{{ feature.description }}</p>
-            </div>
+        <dl class="mt-10 divide-y divide-rule border-t border-rule">
+          @for (feature of data().features; track feature.title; let i = $index) {
+          <div data-stagger [style.--i]="i + 1" class="py-4">
+            <dt class="type-h3">{{ feature.title }}</dt>
+            <dd class="mt-1 text-ink-2">{{ feature.description }}</dd>
           </div>
           }
-        </div>
+        </dl>
       </div>
 
-      <div class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
-        <form (submit)="submit($event)" class="flex flex-col gap-4 w-full text-left">
+      <div class="min-w-0">
+        <form (submit)="submit($event)" class="flex flex-col gap-8" novalidate data-stagger style="--i: 2">
           @if (statusMessage(); as msg) {
           <status-alert [type]="statusType()">{{ msg }}</status-alert>
           }
 
-          <form-field [control]="form.name()">
+          <form-field [control]="form.name()" errorId="contact-name-error">
+            <label class="type-meta text-ink-3" for="contact-name">{{ copy().contact.nameLabel }}</label>
             <input
+              id="contact-name"
               type="text"
+              autocomplete="name"
               [formField]="form.name"
               [placeholder]="copy().contact.placeholderName"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
+              [attr.aria-invalid]="form.name().touched() && form.name().invalid() ? 'true' : null"
+              [attr.aria-describedby]="form.name().touched() && form.name().invalid() ? 'contact-name-error' : null"
+              class="field"
             />
           </form-field>
 
-          <form-field [control]="form.email()">
+          <form-field [control]="form.email()" errorId="contact-email-error">
+            <label class="type-meta text-ink-3" for="contact-email">{{ copy().contact.emailLabel }}</label>
             <input
+              id="contact-email"
               type="email"
+              autocomplete="email"
               [formField]="form.email"
               [placeholder]="copy().contact.placeholderEmail"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
+              [attr.aria-invalid]="form.email().touched() && form.email().invalid() ? 'true' : null"
+              [attr.aria-describedby]="form.email().touched() && form.email().invalid() ? 'contact-email-error' : null"
+              class="field"
             />
           </form-field>
 
-          <form-field [control]="form.message()">
+          <form-field [control]="form.message()" errorId="contact-message-error">
+            <label class="type-meta text-ink-3" for="contact-message">{{ copy().contact.messageLabel }}</label>
             <textarea
+              id="contact-message"
               [formField]="form.message"
               [placeholder]="adaptivePlaceholder()"
               rows="4"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors resize-none"
+              [attr.aria-invalid]="form.message().touched() && form.message().invalid() ? 'true' : null"
+              [attr.aria-describedby]="form.message().touched() && form.message().invalid() ? 'contact-message-error' : null"
+              class="field resize-none"
             ></textarea>
           </form-field>
 
           <button
             type="submit"
             [disabled]="!form().valid() || isSubmitting()"
-            class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black font-bold py-4 px-6 rounded-lg transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="mt-2 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-base bg-accent px-6 py-3 font-medium text-paper transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--color-accent)_88%,black)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
           >
-            {{ isSubmitting() ? 'Sending...' : adaptiveButtonText() }}
+            {{ isSubmitting() ? copy().contact.sendingLabel : adaptiveButtonText() }}
+            <span aria-hidden="true">&#8594;</span>
           </button>
         </form>
       </div>
