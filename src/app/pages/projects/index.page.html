@@ -3,7 +3,12 @@
     <div class="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
       <h1 class="type-display enter" style="--i: 0">{{ copy().projectsPage.title }}</h1>
 
-      <a [routerLink]="['/']" fragment="projects-section" class="type-meta enter mb-2 inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent" style="--i: 1">
+      <a
+        [routerLink]="['/']"
+        fragment="projects-section"
+        class="tap-area type-meta enter mb-2 inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent"
+        style="--i: 1"
+      >
         <span aria-hidden="true">&#8592;</span>
         {{ copy().projectsPage.backToPortfolio }}
       </a>
@@ -13,10 +18,32 @@
     <p class="type-meta mt-10 text-ink-3">{{ copy().projectsPage.loading }}</p>
     } @else if (store.error()) {
     <p class="mt-10 text-accent">{{ copy().projectsPage.error }}</p>
-    } @else if ((store.data() ?? []).length === 0) {
+    } @else if (projects().length === 0) {
     <p class="mt-10 text-ink-2">{{ copy().projectsPage.empty }}</p>
+    } @else { @if (availableFamilies().length > 1) {
+    <div role="group" [attr.aria-label]="copy().projectsPage.filterLabel" class="mt-6 flex flex-wrap items-center gap-x-6 border-b border-rule pb-2">
+      <button type="button" class="toolbar-option cursor-pointer" [attr.aria-pressed]="activeFamily() === null" (click)="selectFamily(null)">
+        {{ copy().projectsPage.filterAll }}
+        <span class="ml-2 tabular-nums text-ink-3" aria-hidden="true">{{ projects().length }}</span>
+      </button>
+
+      @for (family of availableFamilies(); track family) {
+      <button
+        type="button"
+        class="toolbar-option cursor-pointer"
+        [attr.aria-pressed]="activeFamily() === family"
+        [attr.aria-label]="familyAriaLabel(family)"
+        (click)="selectFamily(family)"
+      >
+        {{ familyLabel(family) }}
+        <span class="ml-2 tabular-nums text-ink-3" aria-hidden="true">{{ countFor().get(family) }}</span>
+      </button>
+      }
+    </div>
+    } @if (visibleProjects().length === 0) {
+    <p class="mt-10 text-ink-2">{{ copy().projectsPage.filterEmpty }}</p>
     } @else {
-    <projects-list [projects]="store.data()!" [locale]="locale()" />
-    }
+    <projects-list [projects]="visibleProjects()" [locale]="locale()" />
+    } }
   </div>
 </main>

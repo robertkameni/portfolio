@@ -54,6 +54,12 @@ export type SiteCopy = {
     loading: string;
     error: string;
     empty: string;
+    filterLabel: string;
+    filterAll: string;
+    filterAngular: string;
+    filterReact: string;
+    filterCountAriaLabel: string;
+    filterEmpty: string;
   };
   projectDetail: {
     backToProjects: string;
@@ -65,6 +71,9 @@ export type SiteCopy = {
     liveSiteHeading: string;
     liveSiteLinkLabel: string;
     liveSiteAriaLabel: string;
+    zoomTriggerAriaLabel: string;
+    zoomDialogLabel: string;
+    zoomClose: string;
     notFoundTitle: string;
     loadErrorTitle: string;
     notFoundMessage: string;

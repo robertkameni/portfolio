@@ -14,6 +14,10 @@
   --color-accent: #c0430f;
   --color-accent-wash: #f7e9e2;
 
+  /* Modal scrim: always dark, in both themes, so a light-mode screenshot keeps
+     its contrast when it is inspected full size. */
+  --color-scrim: #101113;
+
   /* Aliases kept so templates that are not migrated yet still resolve. */
   --color-background: #f1f2f2;
   --color-primary: #c0430f;
@@ -60,6 +64,7 @@
     --color-rule: #2c2f31;
     --color-accent: #ff8350;
     --color-accent-wash: #2a1a13;
+    --color-scrim: #0b0c0d;
     --color-background: #141516;
     --color-primary: #ff8350;
   }
@@ -176,6 +181,46 @@
     top: -6px;
     min-height: 44px;
     height: calc(100% + 6px);
+  }
+
+  /* Full-size evidence. The platform provides the top layer and focus trap;
+     these rules only strip the UA frame and size the image against the
+     viewport rather than against an auto-height box. */
+  .zoom-dialog {
+    max-width: none;
+    max-height: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .zoom-dialog::backdrop {
+    background: var(--color-scrim);
+    opacity: 0.95;
+  }
+
+  .zoom-dialog[open] {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .zoom-dialog-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 6rem);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-base);
   }
 
   .reveal {

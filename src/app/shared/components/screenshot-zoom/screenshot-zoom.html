@@ -1,0 +1,19 @@
+<button #trigger type="button" (click)="open()" [attr.aria-label]="triggerLabel()" class="group block w-full cursor-zoom-in text-left">
+  <span
+    class="block aspect-16/10 max-h-104 overflow-hidden rounded-base border border-rule bg-paper-2 transition-colors duration-150 group-hover:border-ink-3 group-focus-visible:border-accent"
+  >
+    <img [src]="src()" [attr.srcset]="srcset() || null" [attr.sizes]="sizes() || null" [alt]="alt()" class="block h-full w-full object-cover object-top" loading="lazy" />
+  </span>
+</button>
+
+<dialog #dialog (close)="onClosed()" (click)="onBackdropClick($event)" [attr.aria-label]="dialogLabel()" class="zoom-dialog">
+  <img [src]="src()" [attr.srcset]="srcset() || null" [attr.sizes]="sizes() || null" [alt]="alt()" class="zoom-dialog-image" />
+
+  <button
+    type="button"
+    (click)="close()"
+    class="tap-area type-meta absolute right-3 top-3 cursor-pointer bg-paper px-4 py-3 text-ink transition-colors hover:bg-accent hover:text-paper md:right-6 md:top-6"
+  >
+    {{ closeLabel() }}
+  </button>
+</dialog>
