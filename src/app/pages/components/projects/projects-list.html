@@ -3,11 +3,7 @@
   <article trackBehavior="project_viewed_{{ project.slug }}" class="group border-b border-rule py-8">
     <div class="grid gap-x-8 gap-y-2 md:grid-cols-[1fr_auto] md:items-baseline">
       <h3 class="text-[length:var(--text-lead)] font-medium leading-snug">
-        <a
-          [routerLink]="['/projects', project.slug]"
-          [attr.aria-label]="openProjectAriaLabel(project.title)"
-          class="text-ink transition-colors duration-150 hover:text-accent"
-        >
+        <a [routerLink]="['/projects', project.slug]" [attr.aria-label]="openProjectAriaLabel(project.title)" class="text-ink transition-colors duration-150 hover:text-accent">
           {{ project.title }}
         </a>
       </h3>
@@ -17,7 +13,9 @@
 
     @if (project.tags && project.tags.length > 0) {
     <p class="type-meta mt-3 text-ink-3">
-      @for (t of project.tags; track t) { {{ t }}@if (!$last) {<span class="px-2" aria-hidden="true">&middot;</span>} }
+      @for (t of project.tags; track t) { {{ t }}@if (!$last) {
+      <span class="px-2" aria-hidden="true">&middot;</span>
+      } }
     </p>
     } @if (project.description) {
     <div class="mt-3 max-w-[65ch] text-ink-2">
@@ -30,11 +28,7 @@
     </div>
     }
 
-    <span
-      class="type-meta mt-4 inline-flex items-center gap-2 text-accent"
-      tabindex="-1"
-      aria-hidden="true"
-    >
+    <span class="type-meta mt-4 inline-flex items-center gap-2 text-accent" tabindex="-1" aria-hidden="true">
       {{ projectCopy().openProjectCta }}
       <span class="transition-transform duration-150 group-hover:translate-x-0.5">&#8594;</span>
     </span>

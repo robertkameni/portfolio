@@ -1,8 +1,3 @@
-<div
-  role="status"
-  class="border-l-2 bg-paper-2 px-4 py-3"
-  [class.border-accent]="type() === 'error'"
-  [class.border-ink]="type() === 'success'"
->
+<div role="status" class="border-l-2 bg-paper-2 px-4 py-3" [class.border-accent]="type() === 'error'" [class.border-ink]="type() === 'success'">
   <p class="text-[0.9375rem] text-ink"><ng-content></ng-content></p>
 </div>

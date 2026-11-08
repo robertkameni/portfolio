@@ -21,19 +21,7 @@ export const routeMeta = withRenderMode('server');
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [
-    Masthead,
-    FocusAreas,
-    SkillsBento,
-    About,
-    ProjectsSection,
-    Contact,
-    Footer,
-    ChatWidget,
-    PageLoader,
-    FadeInDirective,
-    SiteToolbarComponent,
-  ],
+  imports: [Masthead, FocusAreas, SkillsBento, About, ProjectsSection, Contact, Footer, ChatWidget, PageLoader, FadeInDirective, SiteToolbarComponent],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {
