@@ -22,6 +22,10 @@ const PAGE_EXPECTATIONS: Array<{ path: string; mode: AppRenderMode }> = [
 
 describe('hybrid-render.config — routeMeta anti-drift', () => {
   for (const entry of PAGE_EXPECTATIONS) {
+    // Each case dynamically imports a page module, which pulls in Angular and
+    // its templates. That runs well past the 5s default when the whole suite is
+    // competing for workers, so the timeout is set generously here rather than
+    // letting CI flake on machine load.
     it(`${entry.path} → routeMeta.renderMode is "${entry.mode}"`, async () => {
       const mod = (await import(/* @vite-ignore */ entry.path)) as {
         routeMeta?: { renderMode?: string };
@@ -32,6 +36,6 @@ describe('hybrid-render.config — routeMeta anti-drift', () => {
         mod.routeMeta!.renderMode,
         `${entry.path} renderMode is "${mod.routeMeta!.renderMode}", expected "${entry.mode}" — update HYBRID_RENDER_ROUTES in hybrid-render.config.ts if the render mode changed intentionally`,
       ).toBe(entry.mode);
-    });
+    }, 30_000);
   }
 });

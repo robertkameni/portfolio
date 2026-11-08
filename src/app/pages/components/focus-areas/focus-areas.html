@@ -6,7 +6,7 @@
       @for (card of adaptiveCards(); track card.title; let i = $index) {
       <article trackBehavior="hero_card_viewed_{{ card.title }}" data-stagger [style.--i]="i" class="md:px-10 md:first:pl-0 md:last:pr-0">
         <p class="type-meta text-ink-3">{{ card.title }}</p>
-        <p class="mt-2 font-mono text-[0.8125rem] text-ink-3">{{ card.subtitle }}</p>
+        <p class="type-meta mt-2 text-ink-3">{{ card.subtitle }}</p>
         <p class="mt-4 max-w-[42ch] text-ink-2">{{ card.description }}</p>
 
         <ul class="mt-6 divide-y divide-rule border-t border-rule">

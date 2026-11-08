@@ -322,6 +322,16 @@
     overflow-x: auto;
     border: 1px solid var(--color-rule);
     border-radius: var(--radius-base);
+    /* Scroll shadows: a table wider than the column scrolls sideways, and on a
+       phone nothing said so. Two pairs of gradients do it in pure CSS. The
+       first pair is `local`, so it scrolls with the content and covers the
+       shadow exactly at each end; the second is `scroll`, pinned to the box.
+       Net effect: an edge shadow appears only while there is more to see. */
+    background:
+      linear-gradient(to right, var(--color-paper) 40%, transparent) left center / 2rem 100% no-repeat local,
+      linear-gradient(to left, var(--color-paper) 40%, transparent) right center / 2rem 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--color-ink) 18%, transparent), transparent) left center / 0.6rem 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--color-ink) 18%, transparent), transparent) right center / 0.6rem 100% no-repeat scroll;
   }
 
   .project-markdown table {
@@ -744,5 +754,104 @@
   .scroll-progress {
     animation: none !important;
     display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Print
+
+   A CV gets printed, and a screenshot of the printed page is what ends up in
+   a PDF or on a hiring manager's desk. Two things break that: floating chrome
+   lands once and covers content on every sheet, and dark-mode paper prints as
+   a solid block of ink.
+
+   Rendered surfaces also have to lose their screen-only treatment: the entry
+   animation leaves sections at opacity 0, and the scroll progress bar sits at
+   scaleX(0). Both are invisible state that a printer renders literally.
+--------------------------------------------------------------------------- */
+
+@media print {
+  /* Print always uses the light palette, whatever the reader's scheme is.
+     Values come from the Dossier tokens rather than new hexes: a dark scheme
+     would otherwise print as a solid block of ink. */
+  :root {
+    --color-paper: #f1f2f2;
+    --color-paper-2: #e9eaea;
+    --color-surface: #fafafa;
+    --color-ink: #101113;
+    --color-ink-2: #4c5054;
+    --color-ink-3: #63686d;
+    --color-rule: #d6d8d9;
+  }
+
+  html,
+  body {
+    background: #f1f2f2 !important;
+    color: #101113 !important;
+  }
+
+  /* Chrome that only makes sense on a screen with a pointer. */
+  .scroll-progress,
+  site-toolbar,
+  chat-widget,
+  .fixed,
+  .tap-area::after {
+    display: none !important;
+  }
+
+  /* Opacity and transform are animation state, not design. */
+  .enter,
+  [data-stagger],
+  .reveal,
+  .reveal[data-visible='true'] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .edge-top::before {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Keep an entry from being split across two sheets. */
+  article,
+  li,
+  .admin-card,
+  figure,
+  .project-markdown pre,
+  .project-markdown table {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Underline rather than colour: colour is unreliable on a mono printer. */
+  a {
+    color: #101113 !important;
+    text-decoration: underline;
+  }
+
+  /* A link's destination is invisible on paper. */
+  .project-markdown a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* Screenshots are evidence; do not let them run to a second sheet. */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
+
+  .zoom-dialog {
+    display: none !important;
   }
 }
