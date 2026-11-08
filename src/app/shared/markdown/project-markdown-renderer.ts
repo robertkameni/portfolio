@@ -41,27 +41,41 @@ export function createProjectMarkdownRenderer(RendererCtor: typeof Renderer): Re
       .map((cell) => {
         const content = this.parser.parseInline(cell.tokens);
         const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-        return `<th${align}>${content}</th>`;
+        return `<th role="columnheader"${align}>${content}</th>`;
       })
       .join('');
+
+    const headerLabels = token.header.map((cell) => cell.text ?? '');
 
     const bodyRows = token.rows
       .map((row) => {
         const cells = row
-          .map((cell) => {
+          .map((cell, index) => {
             const content = this.parser.parseInline(cell.tokens);
             const align = cell.align ? ` style="text-align: ${cell.align}"` : '';
-            return `<td${align}>${content}</td>`;
+            /* The column name ships with the cell as a hidden span, not a data
+               attribute: Angular's sanitizer strips data-*. Below md,
+               styles.css hides the header row and reveals this label, so each
+               row reads as a card with no sideways scrolling. aria-hidden keeps
+               it out of the accessibility tree, where the column header from
+               thead already provides the same information. */
+            const label = headerLabels[index] ?? '';
+            const labelSpan = index === 0 || !label ? '' : `<span class="cell-label" aria-hidden="true">${escapeHtml(label)}</span>`;
+            return `<td role="cell"${align}>${labelSpan}${content}</td>`;
           })
           .join('');
-        return `<tr>${cells}</tr>`;
+        return `<tr role="row">${cells}</tr>`;
       })
       .join('');
 
-    return `<div class="markdown-table-wrap"><table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+    return `<div class="markdown-table-wrap"><table role="table"><thead role="rowgroup"><tr role="row">${headerCells}</tr></thead><tbody role="rowgroup">${bodyRows}</tbody></table></div>`;
   };
 
   return renderer;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 export function normalizeProjectMarkdown(markdown: string): string {
