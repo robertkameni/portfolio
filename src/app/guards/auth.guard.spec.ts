@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, isObservable, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
@@ -49,7 +49,14 @@ describe('authGuard', () => {
       ],
     });
 
-    const result = await firstValueFrom(TestBed.runInInjectionContext(() => authGuard(route, state)));
+    const guardResult = TestBed.runInInjectionContext(() => authGuard(route, state));
+
+    // authGuard returns MaybeAsync; this path goes through the async branch.
+    if (!isObservable(guardResult)) {
+      throw new Error('expected authGuard to return an Observable on the unauthenticated path');
+    }
+
+    const result = await firstValueFrom(guardResult);
     expect(createUrlTree).toHaveBeenCalledWith(['/admin/login'], {
       queryParams: { returnUrl: '/admin/projects' },
     });

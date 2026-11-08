@@ -7,14 +7,11 @@
     "types": ["node", "vitest/globals"]
   },
   // The base config excludes `src/**/*.spec.ts` so specs stay out of the app
-  // build, and that `exclude` is inherited here, so `include` cannot pull a
-  // spec into the program. A spec that declares its own Angular host
-  // component must be listed explicitly: without it, the Angular plugin
-  // cannot strip the decorators and the file fails to parse under Vitest.
-  "files": [
-    "src/test-setup.ts",
-    "src/app/shared/directives/fade-in.directive.spec.ts",
-    "src/app/shared/directives/count-up.directive.spec.ts"
-  ],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"]
+  // build. That `exclude` is inherited here and beats `include`, so it has to be
+  // cleared: otherwise the specs are not part of any TypeScript program, which
+  // breaks specs that declare Angular decorators (the Angular plugin cannot
+  // strip them) and makes editors report phantom errors in spec files.
+  "files": ["src/test-setup.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/**/*.ts"],
+  "exclude": []
 }
