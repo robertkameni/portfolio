@@ -227,6 +227,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Performance & Skalierung:',
             description: 'Optimierung von Core Web Vitals, SSR-Hydration und Aufbau skalierbarer Nx-Monorepos.',
           },
+          {
+            title: 'Next.js & React:',
+            description: 'App-Router-Anwendungen mit React 19, Server Components und gestreamten Antworten, unter anderem für AI-Produkte.',
+          },
         ],
       },
       founder: {
@@ -243,6 +247,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Verlässliche Releases:',
             description: 'Automatisierte Frontend-Tests mit Playwright und Jest, damit UI-Features stabil bleiben.',
+          },
+          {
+            title: 'Full-Stack in einem Deploy:',
+            description: 'Next.js als Produkt-Framework: Seiten, API-Routen und Datenbankzugriff zusammen, ohne zweites Backend.',
           },
         ],
       },
@@ -261,6 +269,10 @@ export const DE_COPY: SiteCopy = {
             title: 'Skalierbare Workflows:',
             description: 'Strukturierung von Nx-Workspaces und CI/CD-Pipelines für große Multi-Team-Umgebungen.',
           },
+          {
+            title: 'Zweiter Framework-Stack:',
+            description: 'Neben Angular produktive Next.js- und React-19-Anwendungen mit App Router und Server Components.',
+          },
         ],
       },
       developer: {
@@ -277,6 +289,10 @@ export const DE_COPY: SiteCopy = {
           {
             title: 'Performance-Primitiven:',
             description: 'Optimierung von Hydration-Strategien, Lazy-Loaded-Routes und effizienter Change Detection.',
+          },
+          {
+            title: 'React-Ökosystem:',
+            description: 'Next.js App Router, Server Components und React 19, inklusive Streaming-Antworten und React-spezifischer Hydration.',
           },
         ],
       },

@@ -1,3 +1,16 @@
+/** One bullet inside a focus card. */
+export type HeroCopyItem = { title: string; description: string };
+
+/**
+ * A focus card for one audience. The item list is open-ended on purpose: the
+ * frontend card carries four points (Angular and the Next.js stack), the
+ * backend card three, and a fixed-length tuple only gets in the way of that.
+ */
+export type HeroVariantCopy = {
+  description: string;
+  items: readonly HeroCopyItem[];
+};
+
 export type SiteCopy = {
   footer: {
     /** Use `{year}` for the current year. */
@@ -219,40 +232,16 @@ export type SiteCopy = {
       developer: string;
     };
     frontend: {
-      default: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      founder: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      recruiter: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      developer: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
+      default: HeroVariantCopy;
+      founder: HeroVariantCopy;
+      recruiter: HeroVariantCopy;
+      developer: HeroVariantCopy;
     };
     backend: {
-      default: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      founder: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      recruiter: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
-      developer: {
-        description: string;
-        items: [{ title: string; description: string }, { title: string; description: string }, { title: string; description: string }];
-      };
+      default: HeroVariantCopy;
+      founder: HeroVariantCopy;
+      recruiter: HeroVariantCopy;
+      developer: HeroVariantCopy;
     };
   };
 };

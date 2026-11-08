@@ -227,6 +227,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Performance & Scaling:',
             description: 'Deep optimization of Core Web Vitals, SSR hydration, and structuring scalable Nx monorepos.',
           },
+          {
+            title: 'Next.js & React:',
+            description: 'App Router applications with React 19, Server Components, and streamed responses, including AI products.',
+          },
         ],
       },
       founder: {
@@ -243,6 +247,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Reliable Releases:',
             description: 'Automated frontend testing with Playwright and Jest to ensure UI features never break.',
+          },
+          {
+            title: 'Full stack, one deploy:',
+            description: 'Next.js as the product framework: pages, API routes, and database access together, without a second backend.',
           },
         ],
       },
@@ -261,6 +269,10 @@ export const EN_COPY: SiteCopy = {
             title: 'Scalable Workflows:',
             description: 'Structuring Nx workspaces and CI/CD pipelines for large, multi-team enterprise environments.',
           },
+          {
+            title: 'A second framework stack:',
+            description: 'Production Next.js and React 19 applications alongside Angular, using the App Router and Server Components.',
+          },
         ],
       },
       developer: {
@@ -277,6 +289,10 @@ export const EN_COPY: SiteCopy = {
           {
             title: 'Performance Primitives:',
             description: 'Optimizing hydration strategies, lazy-loaded routes, and efficient change detection cycles.',
+          },
+          {
+            title: 'React ecosystem:',
+            description: 'Next.js App Router, Server Components, and React 19, including streaming responses and React hydration.',
           },
         ],
       },
