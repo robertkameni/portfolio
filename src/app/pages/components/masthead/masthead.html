@@ -1,4 +1,4 @@
-<section trackBehavior="intro_viewed" class="pb-20 pt-16 md:pb-24 md:pt-20">
+<section trackBehavior="intro_viewed" class="pb-14 pt-12 md:pb-24 md:pt-20">
   <div class="page-shell">
     <div class="grid grid-cols-1 gap-10 md:grid-cols-[7fr_4fr] md:items-end md:gap-16">
       <div class="min-w-0">
@@ -9,7 +9,7 @@
         <p class="enter mt-4 max-w-[46ch] text-ink-2" style="--i: 2">{{ description() }}</p>
 
         @if (socials().length > 0) {
-        <ul class="enter mt-10 flex flex-wrap items-center gap-x-8 gap-y-3" style="--i: 3">
+        <ul class="enter mt-8 flex flex-wrap items-center gap-x-8 gap-y-3" style="--i: 3">
           @for (social of socials(); track social.url) {
           <li>
             <a
@@ -17,7 +17,7 @@
               target="_blank"
               rel="noopener noreferrer"
               [attr.aria-label]="socialAriaLabel(social.platform)"
-              class="type-meta text-ink-3 underline decoration-transparent underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-current"
+              class="tap-area type-meta text-ink-3 underline decoration-transparent underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-current"
             >
               {{ social.platform }}
             </a>
@@ -38,7 +38,7 @@
           decoding="async"
           loading="eager"
           fetchpriority="high"
-          class="portrait-settle aspect-4/5 w-full max-w-[20rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0"
+          class="portrait-settle aspect-4/5 w-full max-w-[15rem] object-cover object-top grayscale transition-[filter] duration-500 hover:grayscale-0 md:max-w-[20rem]"
         />
       </div>
     </div>

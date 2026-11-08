@@ -93,4 +93,26 @@ describe('ProjectsList', () => {
 
     expect(img?.getAttribute('alt')).toContain('Demo Project');
   });
+
+  it('caps the tag list and counts the remainder', () => {
+    const fixture = render([project({ tags: ['Angular', 'TypeScript', 'Zod', 'PWA', 'Offline', 'IndexedDB', 'NestJS'] })]);
+
+    const tagRow = fixture.nativeElement.querySelector('article p.type-meta') as HTMLElement;
+
+    // Four visible tags keep the row to one line; the rest become a count.
+    expect(tagRow.textContent).toContain('Angular');
+    expect(tagRow.textContent).toContain('PWA');
+    expect(tagRow.textContent).not.toContain('IndexedDB');
+    expect(tagRow.textContent).toContain('+3');
+  });
+
+  it('omits the remainder count when every tag fits', () => {
+    const fixture = render([project({ tags: ['Angular', 'TypeScript'] })]);
+
+    const tagRow = fixture.nativeElement.querySelector('article p.type-meta') as HTMLElement;
+
+    expect(tagRow.textContent).toContain('Angular');
+    expect(tagRow.textContent).toContain('TypeScript');
+    expect(tagRow.textContent).not.toContain('+');
+  });
 });

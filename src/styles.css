@@ -35,7 +35,9 @@
   --text-h3: 1.0625rem;
   --text-body: 1rem;
   --text-small: 0.875rem;
-  --text-meta: 0.75rem;
+  /* 13px floor: 12px uppercase mono with wide tracking falls apart at arm's
+     length on a laptop. Nothing on the page may go below this. */
+  --text-meta: 0.8125rem;
   --text-metric: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
   --container: 78rem;
   --gutter: 1.5rem;
@@ -157,6 +159,23 @@
     font-weight: 600;
     letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Small mono links carry the page's navigation, but their text box is only
+     ~17px tall. This grows the touch target to 44px without touching the
+     type size or the vertical rhythm. Anchored at the top so the extra area
+     falls away from the paragraph above instead of over it. */
+  .tap-area {
+    position: relative;
+  }
+
+  .tap-area::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: -6px;
+    min-height: 44px;
+    height: calc(100% + 6px);
   }
 
   .reveal {

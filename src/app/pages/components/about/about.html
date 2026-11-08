@@ -1,4 +1,4 @@
-<section trackBehavior="about_viewed" class="edge-top py-24">
+<section trackBehavior="about_viewed" class="edge-top py-16 md:py-24">
   <div class="page-shell">
     <div class="grid grid-cols-1 gap-12 md:grid-cols-[7fr_4fr] md:gap-16">
       <div class="min-w-0">
@@ -15,7 +15,7 @@
           type="button"
           (click)="toggleAbout()"
           [attr.aria-expanded]="isExpanded()"
-          class="type-meta mt-8 inline-flex min-h-10 cursor-pointer items-center gap-2 border-b border-transparent pb-1 text-accent transition-colors duration-150 hover:border-current"
+          class="tap-area type-meta mt-8 inline-flex min-h-11 cursor-pointer items-center gap-2 border-b border-transparent pb-1 text-accent transition-colors duration-150 hover:border-current"
         >
           {{ isExpanded() ? copy().common.showLess : copy().common.showMore }}
           <span aria-hidden="true">&#8594;</span>
