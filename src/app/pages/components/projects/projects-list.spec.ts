@@ -66,4 +66,31 @@ describe('ProjectsList', () => {
 
     expect(fixture.nativeElement.textContent).toMatch(/2026/);
   });
+
+  it('shows a real screenshot when the project has evidence', () => {
+    const fixture = render([project({ coverImageUrl: '/assets/projects/atlas-bio.png' })]);
+
+    const img = fixture.nativeElement.querySelector('article img') as HTMLImageElement | null;
+
+    expect(img?.getAttribute('src')).toBe('/assets/projects/atlas-bio.png');
+    expect(img?.getAttribute('loading')).toBe('lazy');
+    // Fixed intrinsic size keeps the row from shifting while the image loads.
+    expect(img?.getAttribute('width')).toBe('1200');
+    expect(img?.getAttribute('height')).toBe('750');
+  });
+
+  it('renders no image slot at all when there is no evidence', () => {
+    const fixture = render([project({ coverImageUrl: null })]);
+
+    // No placeholder, no stock photo standing in for work that is internal.
+    expect(fixture.nativeElement.querySelector('article img')).toBeNull();
+  });
+
+  it('describes the screenshot for assistive tech', () => {
+    const fixture = render([project({ coverImageUrl: '/assets/projects/team-sim.png' })]);
+
+    const img = fixture.nativeElement.querySelector('article img') as HTMLImageElement | null;
+
+    expect(img?.getAttribute('alt')).toContain('Demo Project');
+  });
 });

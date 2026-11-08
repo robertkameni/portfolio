@@ -37,6 +37,10 @@ export class ProjectsList {
     return this.projectCopy().viewLiveAriaLabel.replaceAll('{title}', title);
   }
 
+  protected coverAlt(title: string): string {
+    return `${title}: Startseite der Anwendung`;
+  }
+
   protected currentDateLocale() {
     return toAngularLocale(this.locale());
   }

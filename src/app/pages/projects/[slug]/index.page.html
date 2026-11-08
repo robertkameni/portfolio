@@ -32,9 +32,9 @@
       </header>
 
       @if (project.coverImageUrl) {
-      <div class="h-44 overflow-hidden rounded-base border border-rule bg-paper-2 sm:h-52 md:h-60 lg:h-72">
+      <div class="aspect-16/10 max-h-104 overflow-hidden rounded-base border border-rule bg-paper-2">
         @if (coverImageAttrs(); as img) {
-        <img [src]="img.src" [srcset]="img.srcset" [sizes]="img.sizes" [alt]="project.title" class="block h-full w-full object-cover object-center" loading="lazy" />
+        <img [src]="img.src" [srcset]="img.srcset" [sizes]="img.sizes" [alt]="project.title" class="block h-full w-full object-cover object-top" loading="lazy" />
         }
       </div>
       } @if (project.tags.length > 0) {
