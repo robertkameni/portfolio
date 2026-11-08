@@ -30,7 +30,19 @@ export default defineEventHandler(async (event) => {
     );
   }
 
-  const user = await userRepository.findById(payload.userId);
+  let user: Awaited<ReturnType<typeof userRepository.findById>>;
+  try {
+    user = await userRepository.findById(payload.userId);
+  } catch (error) {
+    // An unguarded database call here turned a database outage into an unhandled
+    // rejection, which killed the dev server instead of returning a response.
+    console.error('[Auth Middleware] User lookup failed:', error instanceof Error ? error.message : String(error));
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Service Unavailable: Cannot verify the session right now.',
+    });
+  }
+
   if (!user) {
     return sendError(
       event,
