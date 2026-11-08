@@ -22,9 +22,9 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      a {
-        color: inherit;
-      }
+  /* Tailwind's preflight already sets `a { color: inherit }` inside the base
+     layer. Declaring it here as well would be unlayered, which outranks every
+     `@layer utilities` colour class and silently breaks accent links. */
 
       #boot-loader {
         position: fixed;
