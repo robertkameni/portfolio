@@ -33,6 +33,10 @@ export class ProjectsList {
     return this.projectCopy().openProjectAriaLabel.replaceAll('{title}', title);
   }
 
+  protected viewLiveAriaLabel(title: string): string {
+    return this.projectCopy().viewLiveAriaLabel.replaceAll('{title}', title);
+  }
+
   protected currentDateLocale() {
     return toAngularLocale(this.locale());
   }

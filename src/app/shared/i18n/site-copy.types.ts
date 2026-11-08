@@ -39,6 +39,10 @@ export type SiteCopy = {
     error: string;
     empty: string;
     unavailable: string;
+    /** External link label shown when the project has a live URL. */
+    viewLive: string;
+    /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */
+    viewLiveAriaLabel: string;
     /** Short project-card link label (heading above already shows the title). */
     openProjectCta: string;
     /** Accessible name; use `{title}` placeholder so each destination stays unique for assistive tech. */

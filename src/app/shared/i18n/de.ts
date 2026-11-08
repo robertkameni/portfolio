@@ -33,6 +33,8 @@ export const DE_COPY: SiteCopy = {
     error: 'Projekte konnten nicht geladen werden.',
     empty: 'Noch keine Projekte veröffentlicht.',
     unavailable: 'Projektbeschreibungen folgen in Kürze.',
+    viewLive: 'Live ansehen',
+    viewLiveAriaLabel: '{title} live öffnen (öffnet in neuem Tab)',
     openProjectCta: 'Öffnen →',
     openProjectAriaLabel: 'Projekt öffnen: {title}',
   },

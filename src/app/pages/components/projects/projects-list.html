@@ -8,7 +8,7 @@
         </a>
       </h3>
 
-      <time class="type-meta text-ink-3 tabular-nums">{{ project.createdAt | date: undefined : undefined : currentDateLocale() }}</time>
+      <span class="type-meta text-ink-3 tabular-nums">{{ project.createdAt | date: 'MMM y' : undefined : currentDateLocale() }}</span>
     </div>
 
     @if (project.tags && project.tags.length > 0) {
@@ -26,12 +26,18 @@
       </button>
       }
     </div>
+    } @if (project.projectUrl) {
+    <a
+      [href]="project.projectUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      [attr.aria-label]="viewLiveAriaLabel(project.title)"
+      class="type-meta mt-4 inline-flex items-center gap-2 text-accent underline-offset-4 hover:underline"
+    >
+      {{ projectCopy().viewLive }}
+      <span class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true">&#8594;</span>
+    </a>
     }
-
-    <span class="type-meta mt-4 inline-flex items-center gap-2 text-accent" tabindex="-1" aria-hidden="true">
-      {{ projectCopy().openProjectCta }}
-      <span class="transition-transform duration-150 group-hover:translate-x-0.5">&#8594;</span>
-    </span>
   </article>
   }
 </div>
