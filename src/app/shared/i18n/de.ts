@@ -51,6 +51,14 @@ export const DE_COPY: SiteCopy = {
     filterCountAriaLabel: '{count} Projekte',
     filterEmpty: 'Kein Projekt in diesem Stack.',
   },
+  notFoundPage: {
+    statusLabel: '404',
+    title: 'Diese Seite existiert nicht',
+    description: 'Der Link ist veraltet oder die Adresse enthält einen Tippfehler.',
+    linksLabel: 'Weiter zu',
+    home: 'Zur Startseite',
+    projects: 'Projekte ansehen',
+  },
   projectDetail: {
     backToProjects: 'Zurück zu den Projekten',
     loading: 'Projekt wird geladen...',

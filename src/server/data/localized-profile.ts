@@ -41,7 +41,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
         {
           ...heroCard0,
           title: 'Frontend',
-          subtitle: 'Angular | RxJS | TypeScript',
+          subtitle: 'Angular | NextJS | RxJS | TypeScript',
           description: 'Ich spezialisiere mich auf Angular-Entwicklung und entwickle skalierbare, performante Webanwendungen.',
           items: [
             { ...heroCard0Item0, title: 'Performance-Optimierung:', description: 'Runtime- und Architekturmaßnahmen, Signal Store und NgRx.' },

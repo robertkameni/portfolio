@@ -13,6 +13,9 @@ export const HYBRID_RENDER_ROUTES: ReadonlyArray<{ path: string; mode: AppRender
   { path: '/projects/*', mode: 'server' },
   { path: '/admin/**', mode: 'client' },
   { path: '/projects/*/edit', mode: 'client' },
+  // Catch-all: unknown addresses render the not-found page instead of a blank
+  // document. Must stay last so it never outranks a real route.
+  { path: '/**', mode: 'server' },
 ];
 
 /** Nitro routeRules: client-only (no SSR shell generation). */

@@ -61,6 +61,16 @@ export type SiteCopy = {
     filterCountAriaLabel: string;
     filterEmpty: string;
   };
+  notFoundPage: {
+    /** Big mono status label above the headline. */
+    statusLabel: string;
+    title: string;
+    description: string;
+    /** Accessible name for the list of destinations. */
+    linksLabel: string;
+    home: string;
+    projects: string;
+  };
   projectDetail: {
     backToProjects: string;
     loading: string;

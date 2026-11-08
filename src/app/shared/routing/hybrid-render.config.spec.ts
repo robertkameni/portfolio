@@ -17,6 +17,7 @@ const PAGE_EXPECTATIONS: Array<{ path: string; mode: AppRenderMode }> = [
   { path: '../../pages/projects/[slug]/edit.page', mode: 'client' },
   { path: '../../pages/admin/login/index.page', mode: 'client' },
   { path: '../../pages/admin/(dashboard)/layout', mode: 'client' },
+  { path: '../../pages/[...notFound].page', mode: 'server' },
 ];
 
 describe('hybrid-render.config — routeMeta anti-drift', () => {
