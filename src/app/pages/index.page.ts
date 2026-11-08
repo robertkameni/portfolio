@@ -5,6 +5,7 @@ import { VisitorStore } from '../store/visitor.store';
 import { ChatStore } from '../store/chat.store';
 import { getSiteCopy } from '../shared/i18n/site-copy';
 import { FadeInDirective } from '../shared/directives/fade-in.directive';
+import { YieldToSectionDirective } from '../shared/directives/yield-to-section.directive';
 import { SiteToolbarComponent } from '../shared/components/site-toolbar/site-toolbar';
 import { PageLoader } from '../shared/components/page-loader/page-loader';
 import { Masthead } from './components/masthead/masthead';
@@ -21,7 +22,7 @@ export const routeMeta = withRenderMode('server');
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [Masthead, FocusAreas, SkillsBento, About, ProjectsSection, Contact, Footer, ChatWidget, PageLoader, FadeInDirective, SiteToolbarComponent],
+  imports: [Masthead, FocusAreas, SkillsBento, About, ProjectsSection, Contact, Footer, ChatWidget, PageLoader, FadeInDirective, YieldToSectionDirective, SiteToolbarComponent],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {

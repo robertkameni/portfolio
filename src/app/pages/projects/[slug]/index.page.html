@@ -42,7 +42,7 @@
         [closeLabel]="copy().projectDetail.zoomClose"
       />
       } } @if (project.tags.length > 0) {
-      <section class="flex flex-wrap gap-2">
+      <section class="flex flex-wrap gap-2 pbs-4">
         @for (tag of project.tags; track tag) {
         <span class="type-meta rounded-base border border-rule bg-transparent px-3 py-1 text-ink-2 transition-colors hover:text-ink">{{ tag }}</span>
         }

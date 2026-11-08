@@ -2,13 +2,14 @@ import { afterRenderEffect, Component, computed, ElementRef, inject, signal, vie
 import { ChatStore } from '../../store/chat.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { SafeHtmlDirective } from '../../shared/directives/safe-html.directive';
+import { YieldToSectionDirective } from '../../shared/directives/yield-to-section.directive';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
 
 @Component({
   selector: 'chat-widget',
   standalone: true,
-  imports: [SafeHtmlDirective],
+  imports: [SafeHtmlDirective, YieldToSectionDirective],
   templateUrl: './chat-widget.html',
 })
 export class ChatWidget {

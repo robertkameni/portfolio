@@ -50,7 +50,7 @@
 @if (store.data()) { @defer (on interaction(chatLauncher)) {
 <chat-widget />
 } @placeholder {
-<div class="fixed bottom-6 right-6 z-50">
+<div yieldToSection="contact" class="fixed bottom-6 right-6 z-50">
   <button
     #chatLauncher
     type="button"

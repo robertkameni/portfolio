@@ -183,6 +183,18 @@
     height: calc(100% + 6px);
   }
 
+  /* A floating control that has stepped aside for a section that needs the same
+     corner. visibility (not just opacity) keeps it out of the tab order and the
+     accessibility tree. */
+  [data-yielded] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 160ms var(--ease-out),
+      visibility 0s linear 160ms;
+  }
+
   /* Full-size evidence. The platform provides the top layer and focus trap;
      these rules only strip the UA frame and size the image against the
      viewport rather than against an auto-height box. */
