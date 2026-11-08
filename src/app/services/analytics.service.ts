@@ -46,6 +46,23 @@ export class AnalyticsService {
   private readonly ANALYSIS_COOLDOWN_MS = 120_000;
   private readonly SYNC_BATCH_SIZE = 50;
 
+  /**
+   * Upload policy: retry a few times with exponential backoff, then stop and stay
+   * quiet for a cooldown window. Without a cap, a failing endpoint produced one
+   * request every 500ms forever, which flooded the console and kept the app from
+   * ever becoming stable (Angular hydration warning NG0506).
+   */
+  private readonly SYNC_MAX_ATTEMPTS = 3;
+  private readonly SYNC_RETRY_BASE_DELAY_MS = 800;
+  private readonly SYNC_RETRY_MAX_DELAY_MS = 15_000;
+  private readonly SYNC_COOLDOWN_MS = 60_000;
+  private readonly MAX_QUEUED_EVENTS = 200;
+
+  private syncAttempt = 0;
+  private syncCooldownUntil = 0;
+  private syncRetryHandle: ReturnType<typeof setTimeout> | null = null;
+  private syncFailureLogged = false;
+
   private readonly SYNC_ENDPOINT = '/api/sys/sync';
 
   constructor() {
@@ -93,35 +110,76 @@ export class AnalyticsService {
       return;
     }
 
+    // Circuit breaker: once the retry budget is spent, stop talking to the
+    // endpoint until the cooldown expires. Events stay queued and are retried by
+    // the next tracked event or the `pagehide` beacon.
+    if (Date.now() < this.syncCooldownUntil) {
+      this.isFlushing = false;
+      return;
+    }
+
     this.isFlushing = true;
     const batch = this.eventQueue.splice(0, this.SYNC_BATCH_SIZE);
-    let shouldRetryLater = false;
 
     try {
       const res = await firstValueFrom(this.http.post<ApiSuccess<SyncResultBody>>(this.SYNC_ENDPOINT, batch));
       const persisted = res.data?.persistedEvents ?? 0;
+
+      this.syncAttempt = 0;
+      this.syncCooldownUntil = 0;
+      this.syncFailureLogged = false;
 
       this.unanalyzedEventCount += persisted;
       if (this.unanalyzedEventCount >= this.EVENTS_BEFORE_ANALYSIS) {
         this.scheduleAnalysis();
       }
     } catch {
-      this.eventQueue = [...batch, ...this.eventQueue];
-      shouldRetryLater = true;
-    } finally {
-      if (shouldRetryLater) {
-        setTimeout(() => {
-          void this.flushQueue();
-        }, 500);
-        return;
-      }
-
-      if (this.eventQueue.length > 0) {
-        void this.flushQueue();
-      } else {
-        this.isFlushing = false;
-      }
+      this.requeueBatch(batch);
+      this.scheduleSyncRetry();
+      return;
     }
+
+    if (this.eventQueue.length > 0) {
+      void this.flushQueue();
+    } else {
+      this.isFlushing = false;
+    }
+  }
+
+  private requeueBatch(batch: QueuedAnalyticsEvent[]): void {
+    this.eventQueue = [...batch, ...this.eventQueue].slice(0, this.MAX_QUEUED_EVENTS);
+  }
+
+  private scheduleSyncRetry(): void {
+    if (this.syncAttempt >= this.SYNC_MAX_ATTEMPTS) {
+      this.syncAttempt = 0;
+      this.syncCooldownUntil = Date.now() + this.SYNC_COOLDOWN_MS;
+      this.isFlushing = false;
+      this.logSyncFailureOnce();
+      return;
+    }
+
+    const backoff = Math.min(this.SYNC_RETRY_BASE_DELAY_MS * 2 ** this.syncAttempt, this.SYNC_RETRY_MAX_DELAY_MS);
+    const delay = backoff + Math.floor(Math.random() * 250);
+    this.syncAttempt++;
+
+    if (this.syncRetryHandle) {
+      clearTimeout(this.syncRetryHandle);
+    }
+
+    this.syncRetryHandle = setTimeout(() => {
+      this.syncRetryHandle = null;
+      void this.flushQueue();
+    }, delay);
+  }
+
+  private logSyncFailureOnce(): void {
+    if (this.syncFailureLogged || !isDevMode()) {
+      return;
+    }
+
+    this.syncFailureLogged = true;
+    console.warn('[Analytics] Sync endpoint unavailable. Pausing uploads for a minute.');
   }
 
   private scheduleAnalysis(): void {
