@@ -5,62 +5,50 @@
         <h2 class="text-primary text-4xl font-bold mb-4">{{ adaptiveTitle() }}</h2>
         <p class="text-gray-300 mb-10 text-lg">{{ adaptiveDescription() }}</p>
 
-        <div class="space-y-8 text-left">
+        <dl class="mt-10 divide-y divide-rule border-t border-rule">
           @for (feature of data().features; track feature.title) {
-          <div class="flex items-start">
-            <div class="bg-[#0a2912] p-2 rounded-full mr-4 shrink-0 mt-1">
-              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="feature.iconPath"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-white font-bold text-lg">{{ feature.title }}</h3>
-              <p class="text-gray-400 text-sm mt-1">{{ feature.description }}</p>
-            </div>
+          <div class="py-4">
+            <dt class="type-h3">{{ feature.title }}</dt>
+            <dd class="mt-1 text-ink-2">{{ feature.description }}</dd>
           </div>
           }
-        </div>
+        </dl>
       </div>
 
-      <div class="bg-surface border border-[#143c1a] rounded-xl pt-4 pb-4 pr-3 pl-3 mb-4 xs:p-6 flex flex-col justify-center items-center text-center shadow-lg">
-        <form (submit)="submit($event)" class="flex flex-col gap-4 w-full text-left">
+      <div class="min-w-0">
+        <form (submit)="submit($event)" class="flex flex-col gap-8" novalidate>
           @if (statusMessage(); as msg) {
           <status-alert [type]="statusType()">{{ msg }}</status-alert>
           }
 
           <form-field [control]="form.name()">
-            <input
-              type="text"
-              [formField]="form.name"
-              [placeholder]="copy().contact.placeholderName"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
-            />
+            <label class="type-meta text-ink-3" for="contact-name">{{ copy().contact.nameLabel }}</label>
+            <input id="contact-name" type="text" autocomplete="name" [formField]="form.name" [placeholder]="copy().contact.placeholderName" class="field" />
           </form-field>
 
           <form-field [control]="form.email()">
-            <input
-              type="email"
-              [formField]="form.email"
-              [placeholder]="copy().contact.placeholderEmail"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
-            />
+            <label class="type-meta text-ink-3" for="contact-email">{{ copy().contact.emailLabel }}</label>
+            <input id="contact-email" type="email" autocomplete="email" [formField]="form.email" [placeholder]="copy().contact.placeholderEmail" class="field" />
           </form-field>
 
           <form-field [control]="form.message()">
+            <label class="type-meta text-ink-3" for="contact-message">{{ copy().contact.messageLabel }}</label>
             <textarea
+              id="contact-message"
               [formField]="form.message"
               [placeholder]="adaptivePlaceholder()"
               rows="4"
-              class="w-full p-4 bg-[#0a2912] border border-[#143c1a] rounded-lg text-white focus:outline-none focus:border-primary transition-colors resize-none"
+              class="field resize-none"
             ></textarea>
           </form-field>
 
           <button
             type="submit"
             [disabled]="!form().valid() || isSubmitting()"
-            class="cursor-pointer bg-primary hover:bg-[#16a34a] text-black font-bold py-4 px-6 rounded-lg transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="mt-2 inline-flex cursor-pointer items-center justify-center gap-2 rounded-base bg-accent px-6 py-3 font-medium text-paper transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--color-accent)_88%,black)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {{ isSubmitting() ? 'Sending...' : adaptiveButtonText() }}
+            {{ isSubmitting() ? copy().contact.sendingLabel : copy().contact.sendLabel }}
+            <span aria-hidden="true">&#8594;</span>
           </button>
         </form>
       </div>
