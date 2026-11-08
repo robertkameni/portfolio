@@ -88,6 +88,7 @@ export const DE_COPY: SiteCopy = {
     toggleCloseAriaLabel: 'Chat schließen',
     sendAriaLabel: 'Nachricht senden',
     launcherLabel: 'Frag den Twin',
+    inputAriaLabel: 'Deine Nachricht an den Twin',
   },
   adminLogin: {
     title: 'Admin-Anmeldung',

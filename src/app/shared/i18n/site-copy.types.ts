@@ -98,6 +98,7 @@ export type SiteCopy = {
     toggleCloseAriaLabel: string;
     sendAriaLabel: string;
     launcherLabel: string;
+    inputAriaLabel: string;
   };
   adminLogin: {
     title: string;

@@ -88,6 +88,7 @@ export const EN_COPY: SiteCopy = {
     toggleCloseAriaLabel: 'Close chat',
     sendAriaLabel: 'Send message',
     launcherLabel: 'Ask the twin',
+    inputAriaLabel: 'Your message to the twin',
   },
   adminLogin: {
     title: 'Admin Login',
