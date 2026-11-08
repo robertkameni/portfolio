@@ -3,8 +3,8 @@ import type { SiteCopy } from './site-copy.types';
 export const DE_COPY: SiteCopy = {
   footer: { copyright: '© {year} Robert Kameni' },
   common: {
-    showMore: 'mehr anzeigen...',
-    showLess: 'weniger anzeigen...',
+    showMore: 'mehr anzeigen',
+    showLess: 'weniger anzeigen',
   },
   home: {
     founder: 'Founder',

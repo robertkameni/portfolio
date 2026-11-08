@@ -62,14 +62,6 @@ export class ProjectsList {
     return Math.max(0, (project.tags?.length ?? 0) - ProjectsList.collapsedTagCount);
   }
 
-  protected visibleDescription(project: ProjectListItem): string {
-    const text = project.description ?? '';
-    if (!this.descriptionNeedsToggle(text) || this.descriptionExpandedIds().has(project.id)) {
-      return text;
-    }
-    return truncateDescriptionPreview(text, ProjectsList.descriptionCollapsedMaxChars);
-  }
-
   protected descriptionExpanded(projectId: string): boolean {
     return this.descriptionExpandedIds().has(projectId);
   }
@@ -84,12 +76,4 @@ export class ProjectsList {
       return next;
     });
   }
-}
-
-function truncateDescriptionPreview(text: string, max: number): string {
-  if (text.length <= max) return text;
-  const slice = text.slice(0, max);
-  const lastSpace = slice.lastIndexOf(' ');
-  const end = lastSpace > max * 0.55 ? lastSpace : max;
-  return `${slice.slice(0, end).trimEnd()}…`;
 }
