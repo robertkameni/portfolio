@@ -44,6 +44,11 @@ export function serverError(statusMessage: string, code = 'INTERNAL_SERVER_ERROR
   return createError({ statusCode: 500, statusMessage, data: buildErrorData(statusMessage, code) });
 }
 
+/** A dependency (database, upstream API) is unavailable. Retrying later may succeed. */
+export function serviceUnavailable(statusMessage: string, code = 'SERVICE_UNAVAILABLE') {
+  return createError({ statusCode: 503, statusMessage, data: buildErrorData(statusMessage, code) });
+}
+
 export function mapApiError(error: unknown, fallbackStatusMessage: string, fallbackStatusCode = 500, fallbackCode = 'INTERNAL_SERVER_ERROR') {
   const maybeApiError = (error ?? {}) as ApiErrorLike;
 
