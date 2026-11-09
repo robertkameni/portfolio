@@ -87,3 +87,104 @@ describe('RealtimeService outage handling', () => {
     expect(fetchMock.mock.calls.length).toBeGreaterThan(callsAfterFirstFailure);
   });
 });
+
+describe('RealtimeService session readiness', () => {
+  let service: RealtimeService;
+  let fetchMock: ReturnType<typeof vi.fn>;
+  let eventSourceUrls: string[];
+
+  class FakeEventSource {
+    onopen: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    onmessage: ((event: unknown) => void) | null = null;
+    close(): void {}
+    constructor(public url: string) {
+      eventSourceUrls.push(url);
+    }
+  }
+
+  function tokenResponse(body: unknown, status: number) {
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Unauthorized',
+      headers: { get: () => 'application/json' },
+      json: async () => body,
+    };
+  }
+
+  const sessionNotReady = () => tokenResponse({ status: 'error', message: 'Unauthorized: Invalid session.', code: 'INVALID_SESSION' }, 401);
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    eventSourceUrls = [];
+    vi.stubGlobal('EventSource', FakeEventSource);
+    vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener: () => undefined, removeEventListener: () => undefined }));
+
+    TestBed.configureTestingModule({
+      providers: [
+        RealtimeService,
+        { provide: VisitorStore, useValue: { setProfile: () => undefined } },
+        { provide: ChatStore, useValue: { messages: () => [], appendAssistantToken: () => undefined, setTyping: () => undefined } },
+        { provide: AnalyticsService, useValue: { getClientSessionId: () => 'session-1' } },
+      ],
+    });
+    service = TestBed.inject(RealtimeService);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('does not retry an unregistered session on the transient backoff', async () => {
+    fetchMock = vi.fn().mockResolvedValue(sessionNotReady());
+    vi.stubGlobal('fetch', fetchMock);
+
+    service.connect('session-1');
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    // One request, not the four of the transient-failure chain: the same
+    // rejected request cannot start succeeding 300ms later.
+    expect(fetchMock.mock.calls.length).toBe(1);
+  });
+
+  it('asks once more after the analytics sync has had time to create the session', async () => {
+    fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(sessionNotReady())
+      .mockResolvedValue(tokenResponse({ status: 'success', data: { sessionId: 'session-1', token: 'tok', expiresInMs: 120000 } }, 200));
+    vi.stubGlobal('fetch', fetchMock);
+
+    service.connect('session-1');
+    await vi.advanceTimersByTimeAsync(3_000);
+
+    expect(fetchMock.mock.calls.length).toBe(2);
+    expect(eventSourceUrls.length).toBe(1);
+    expect(eventSourceUrls[0]).toContain('token=tok');
+  });
+
+  it('schedules at most one deferred attempt, not an endless loop', async () => {
+    fetchMock = vi.fn().mockResolvedValue(sessionNotReady());
+    vi.stubGlobal('fetch', fetchMock);
+
+    service.connect('session-1');
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(2);
+  });
+
+  it('does not retry a session that belongs to someone else', async () => {
+    fetchMock = vi.fn().mockResolvedValue(tokenResponse({ status: 'error', message: 'Unauthorized: Session fingerprint mismatch.', code: 'SESSION_MISMATCH' }, 401));
+    vi.stubGlobal('fetch', fetchMock);
+
+    service.connect('session-1');
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    // A mismatched fingerprint is a decision, not a race.
+    expect(fetchMock.mock.calls.length).toBe(1);
+  });
+});
