@@ -24,17 +24,16 @@
 
   <focus-areas [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
 
-  @defer (hydrate on idle) {
   <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn />
-  } @defer (hydrate on idle) {
+
   <about [data]="profile.about" [locale]="profile.locale" fadeIn />
-  } @defer (hydrate on idle) {
+
   <projects-section [locale]="profile.locale" fadeIn />
-  } @defer (hydrate on idle) {
+
   <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
-  } @defer (hydrate on idle) {
+
   <dev-footer fadeIn />
-  } }
+  }
 </main>
 
 @if (store.data()) { @defer (on interaction(chatLauncher)) {
