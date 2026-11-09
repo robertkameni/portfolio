@@ -24,26 +24,16 @@
 
   <focus-areas [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
 
-  @defer (on idle) {
+  @defer (hydrate on idle) {
   <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn />
-  } @placeholder (minimum 200ms) {
-  <div class="h-24"></div>
-  } @defer (on idle) {
+  } @defer (hydrate on idle) {
   <about [data]="profile.about" [locale]="profile.locale" fadeIn />
-  } @placeholder (minimum 200ms) {
-  <div class="h-32"></div>
-  } @defer (on idle) {
+  } @defer (hydrate on idle) {
   <projects-section [locale]="profile.locale" fadeIn />
-  } @placeholder (minimum 200ms) {
-  <div class="h-32"></div>
-  } @defer (on idle) {
+  } @defer (hydrate on idle) {
   <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
-  } @placeholder (minimum 200ms) {
-  <div class="h-32"></div>
-  } @defer (on idle) {
+  } @defer (hydrate on idle) {
   <dev-footer fadeIn />
-  } @placeholder (minimum 200ms) {
-  <div class="h-16"></div>
   } }
 </main>
 
