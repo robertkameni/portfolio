@@ -35,6 +35,23 @@ export class RealtimeService implements OnDestroy {
    */
   private readonly TOKEN_FAILURE_COOLDOWN_MS = 60_000;
 
+  /**
+   * The visitor session row is created by the analytics sync that runs right
+   * after hydration, so the first token request can lose that race. This is how
+   * long to wait before asking once more, rather than retrying a rejected request
+   * on the short transient-failure backoff.
+   */
+  private readonly SESSION_SETTLE_DELAY_MS = 2_500;
+
+  /**
+   * One deferred attempt covers a slow analytics sync; more than that is a
+   * session that will not appear, and asking again forever only burns requests.
+   */
+  private readonly SESSION_RETRY_MAX = 1;
+
+  private sessionRetryScheduled = false;
+  private sessionRetryCount = 0;
+
   private tokenCooldownUntil = 0;
   private hasLoggedConnectionFailure = false;
 
@@ -80,6 +97,23 @@ export class RealtimeService implements OnDestroy {
         this.eventSource?.close();
         this.eventSource = null;
         this.connectionStatus.set('disconnected');
+
+        // Losing the race with the analytics sync is expected once per visit.
+        // Asking again a moment later succeeds where an immediate retry burst
+        // only produced identical 401s. Bounded: a session that never appears
+        // must not become an endless timeout chain.
+        if (this.isSessionNotReadyError(error) && !this.sessionRetryScheduled && this.sessionRetryCount < this.SESSION_RETRY_MAX) {
+          this.sessionRetryScheduled = true;
+          this.sessionRetryCount += 1;
+          this.clearReconnectTimeout();
+          this.reconnectTimeoutHandle = setTimeout(() => {
+            this.reconnectTimeoutHandle = null;
+            this.sessionRetryScheduled = false;
+            this.connect(clientSessionId);
+          }, this.SESSION_SETTLE_DELAY_MS);
+          return;
+        }
+
         this.tokenCooldownUntil = Date.now() + this.TOKEN_FAILURE_COOLDOWN_MS;
         this.logConnectionFailureOnce(error);
       });
@@ -156,16 +190,19 @@ export class RealtimeService implements OnDestroy {
 
     const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse> & {
       message?: string;
+      code?: string;
     };
 
     if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
       const error = new Error(`Failed to fetch realtime token: ${response.status} ${payload.message ?? payload.status}`) as Error & {
         status?: number;
         statusText?: string;
+        code?: string;
         body?: unknown;
       };
       error.status = response.status;
       error.statusText = response.statusText;
+      error.code = payload.code;
       error.body = payload;
       throw error;
     }
@@ -174,7 +211,7 @@ export class RealtimeService implements OnDestroy {
   }
 
   private shouldRetryForTokenError(error: unknown): boolean {
-    const typed = error as { status?: number; message?: string; body?: { message?: string }; isNetworkError?: boolean };
+    const typed = error as { status?: number; message?: string; code?: string; body?: { message?: string; code?: string }; isNetworkError?: boolean };
 
     if (typed.isNetworkError) {
       return true;
@@ -184,8 +221,23 @@ export class RealtimeService implements OnDestroy {
       return true;
     }
 
+    // An unregistered session cannot become valid by asking again in 300ms.
+    // Analytics sync creates the row, so the caller schedules one deferred
+    // attempt instead of a burst of identical requests.
+    const code = typed.code ?? typed.body?.code;
+    if (code === 'INVALID_SESSION' || code === 'SESSION_MISMATCH') {
+      return false;
+    }
+
     const message = typed.message?.toLowerCase() ?? typed.body?.message?.toLowerCase() ?? '';
     return typed.status === 401 && message.includes('invalid session');
+  }
+
+  /** True when the token request failed only because the session is not registered yet. */
+  private isSessionNotReadyError(error: unknown): boolean {
+    const typed = error as { code?: string; body?: { code?: string } };
+    const code = typed.code ?? typed.body?.code;
+    return code === 'INVALID_SESSION';
   }
 
   private connectEventStream(query: string): void {
@@ -196,6 +248,9 @@ export class RealtimeService implements OnDestroy {
       this.clearReconnectTimeout();
       this.connectionStatus.set('connected');
       this.hasLoggedConnectionFailure = false;
+      // A successful connection proves the session exists; a later reconnect in
+      // this visit may use the deferred attempt again.
+      this.sessionRetryCount = 0;
     };
 
     this.eventSource.onerror = () => {

@@ -45,11 +45,15 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!session) {
-    throw unauthorized('Unauthorized: Invalid session.');
+    // A machine-readable code, because "the visitor session has not been
+    // registered yet" is a different situation from a rejected credential: the
+    // client must not treat it as a transient failure to hammer, and it must not
+    // give up for good either. Analytics sync creates this row moments later.
+    throw unauthorized('Unauthorized: Invalid session.', 'INVALID_SESSION');
   }
 
   if (session.ipAddress && session.ipAddress !== requestIp) {
-    throw unauthorized('Unauthorized: Session fingerprint mismatch.');
+    throw unauthorized('Unauthorized: Session fingerprint mismatch.', 'SESSION_MISMATCH');
   }
 
   const nonce = randomUUID();

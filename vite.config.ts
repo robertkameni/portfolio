@@ -18,6 +18,11 @@ const analyzePlugins = analyzeBundles
 export default defineConfig(({ mode }) => ({
   build: {
     target: ['es2020'],
+    /* Never inline fonts as data: URIs. The CSP declares `font-src 'self'`, so an
+       inlined subset font is blocked on every page load and reported to
+       /api/csp-report once per visitor. A plain 0 keeps every asset a file,
+       which is also better for caching. */
+    assetsInlineLimit: 0,
   },
   resolve: {
     mainFields: ['module'],
