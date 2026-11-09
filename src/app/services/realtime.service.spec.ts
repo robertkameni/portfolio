@@ -113,7 +113,18 @@ describe('RealtimeService session readiness', () => {
     };
   }
 
-  const sessionNotReady = () => tokenResponse({ status: 'error', message: 'Unauthorized: Invalid session.', code: 'INVALID_SESSION' }, 401);
+  const sessionNotReady = () =>
+    tokenResponse(
+      {
+        error: true,
+        statusCode: 401,
+        statusMessage: 'Unauthorized: Invalid session.',
+        // The API nests its error body: this is the shape the server really
+        // returns, and reading `code` at the top level silently missed it.
+        data: { status: 'error', message: 'Unauthorized: Invalid session.', code: 'INVALID_SESSION' },
+      },
+      401,
+    );
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -178,13 +189,35 @@ describe('RealtimeService session readiness', () => {
   });
 
   it('does not retry a session that belongs to someone else', async () => {
-    fetchMock = vi.fn().mockResolvedValue(tokenResponse({ status: 'error', message: 'Unauthorized: Session fingerprint mismatch.', code: 'SESSION_MISMATCH' }, 401));
+    fetchMock = vi.fn().mockResolvedValue(
+      tokenResponse(
+        {
+          error: true,
+          statusCode: 401,
+          data: { status: 'error', message: 'Unauthorized: Session fingerprint mismatch.', code: 'SESSION_MISMATCH' },
+        },
+        401,
+      ),
+    );
     vi.stubGlobal('fetch', fetchMock);
 
     service.connect('session-1');
     await vi.advanceTimersByTimeAsync(10_000);
 
     // A mismatched fingerprint is a decision, not a race.
+    expect(fetchMock.mock.calls.length).toBe(1);
+  });
+
+  it('finds the error code where the API actually puts it', async () => {
+    // Regression guard: the code lives at data.code. Reading it from the top
+    // level made every 401 look like a transient failure, which is how three
+    // identical requests per visit survived a fix that looked correct.
+    fetchMock = vi.fn().mockResolvedValue(sessionNotReady());
+    vi.stubGlobal('fetch', fetchMock);
+
+    service.connect('session-1');
+    await vi.advanceTimersByTimeAsync(1_000);
+
     expect(fetchMock.mock.calls.length).toBe(1);
   });
 });

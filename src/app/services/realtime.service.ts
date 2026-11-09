@@ -191,6 +191,8 @@ export class RealtimeService implements OnDestroy {
     const payload = (await response.json()) as ApiSuccess<RealtimeTokenResponse> & {
       message?: string;
       code?: string;
+      /** h3 nests the error body here; the code is not at the top level. */
+      data?: { status?: string; message?: string; code?: string };
     };
 
     if (!response.ok || payload.status !== 'success' || !payload.data?.token) {
@@ -202,7 +204,7 @@ export class RealtimeService implements OnDestroy {
       };
       error.status = response.status;
       error.statusText = response.statusText;
-      error.code = payload.code;
+      error.code = payload.code ?? payload.data?.code;
       error.body = payload;
       throw error;
     }
@@ -211,7 +213,13 @@ export class RealtimeService implements OnDestroy {
   }
 
   private shouldRetryForTokenError(error: unknown): boolean {
-    const typed = error as { status?: number; message?: string; code?: string; body?: { message?: string; code?: string }; isNetworkError?: boolean };
+    const typed = error as {
+      status?: number;
+      message?: string;
+      code?: string;
+      body?: { message?: string; code?: string; data?: { code?: string } };
+      isNetworkError?: boolean;
+    };
 
     if (typed.isNetworkError) {
       return true;
@@ -224,7 +232,7 @@ export class RealtimeService implements OnDestroy {
     // An unregistered session cannot become valid by asking again in 300ms.
     // Analytics sync creates the row, so the caller schedules one deferred
     // attempt instead of a burst of identical requests.
-    const code = typed.code ?? typed.body?.code;
+    const code = this.errorCode(error);
     if (code === 'INVALID_SESSION' || code === 'SESSION_MISMATCH') {
       return false;
     }
@@ -235,9 +243,16 @@ export class RealtimeService implements OnDestroy {
 
   /** True when the token request failed only because the session is not registered yet. */
   private isSessionNotReadyError(error: unknown): boolean {
-    const typed = error as { code?: string; body?: { code?: string } };
-    const code = typed.code ?? typed.body?.code;
-    return code === 'INVALID_SESSION';
+    return this.errorCode(error) === 'INVALID_SESSION';
+  }
+
+  /**
+   * The API nests its error body under `data`, so the code is at
+   * `body.data.code`, not next to `status`.
+   */
+  private errorCode(error: unknown): string | undefined {
+    const typed = error as { code?: string; body?: { code?: string; data?: { code?: string } } };
+    return typed.code ?? typed.body?.data?.code ?? typed.body?.code;
   }
 
   private connectEventStream(query: string): void {
