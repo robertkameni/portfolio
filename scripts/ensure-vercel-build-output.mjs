@@ -139,9 +139,15 @@ if (inlineHashes.size > 0) {
   }
 
   if (patched) {
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf8');
     console.log('[build] CSP hashes injected into .vercel/output/config.json');
   } else {
     console.warn('[build] No Content-Security-Policy header found in config.json routes — hashes not injected.');
   }
 }
+
+// ── 4. Persist ────────────────────────────────────────────────────────────────
+// Written unconditionally: the sitemap route above must survive even when no
+// inline hashes were found.
+
+fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf8');
+console.log('[build] .vercel/output/config.json written');
