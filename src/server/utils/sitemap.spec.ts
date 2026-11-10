@@ -1,9 +1,23 @@
 // @vitest-environment node
-import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { buildSitemapEntries, escapeXml, renderSitemapXml, toW3CDate } from './sitemap';
 import { absoluteUrl, resolveSiteLocation, type SiteLocation } from './site-url';
+
+type VercelRoute = { src?: string; dest?: string; handle?: string; headers?: Record<string, string> };
+
+type RoutingModule = {
+  SITEMAP_DESTINATION: string;
+  SITEMAP_ROUTE_SRC: string;
+  ensureSitemapRoute: (config: { routes?: VercelRoute[] }) => {
+    config: { routes: VercelRoute[] };
+    inserted: boolean;
+  };
+};
+
+/* The build script is plain ESM under scripts/, so it is loaded at runtime
+   rather than resolved by the TypeScript program. */
+const routing = (await import(fileURLToPath(new URL('../../../scripts/vercel-routing.mjs', import.meta.url)))) as RoutingModule;
 
 const LOCATION: SiteLocation = { origin: 'https://example.test', basePath: '/portfolio' };
 
@@ -129,30 +143,54 @@ describe('toW3CDate', () => {
   });
 });
 
-describe('vercel rewrites', () => {
-  const config = JSON.parse(readFileSync(fileURLToPath(new URL('../../../vercel.json', import.meta.url)), 'utf8'));
-  const rewrites: Array<{ source: string; destination: string }> = config.rewrites ?? [];
+describe('vercel build output routing', () => {
+  const { SITEMAP_DESTINATION, SITEMAP_ROUTE_SRC, ensureSitemapRoute } = routing;
 
-  it('routes the advertised sitemap URL to the generator', () => {
-    // robots.txt advertises https://lucastar.de/portfolio/sitemap.xml. Without
-    // this rewrite the Angular catch-all answers that URL with an HTML 404.
-    const match = rewrites.find((rule) => rule.source === '/portfolio/sitemap.xml');
+  const buildOutputRoutes = [
+    { src: '/admin/(.*)', headers: { 'x-analog-no-ssr': '1' } },
+    { src: '/projects/(.*)/edit', headers: { 'x-analog-no-ssr': '1' } },
+    { handle: 'filesystem' },
+    { src: '/(.*)', dest: '/__fallback' },
+  ];
 
-    expect(match?.destination).toBe('/api/sitemap');
+  it('inserts the sitemap route ahead of the filesystem handler', () => {
+    const { config } = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
+    const index = config.routes.findIndex((route) => route.src === SITEMAP_ROUTE_SRC);
+    const filesystemIndex = config.routes.findIndex((route) => route.handle === 'filesystem');
+
+    // Both later entries would win: filesystem serves files, and /(.*) sends
+    // everything else to the SSR function, which renders the Angular 404.
+    expect(index).toBeGreaterThanOrEqual(0);
+    expect(index).toBeLessThan(filesystemIndex);
   });
 
-  it('also serves the bare /sitemap.xml, which the Link headers reference', () => {
-    const match = rewrites.find((rule) => rule.source === '/sitemap.xml');
+  it('routes both the base-path and the bare sitemap address', () => {
+    const pattern = new RegExp(`^${SITEMAP_ROUTE_SRC}$`);
 
-    expect(match?.destination).toBe('/api/sitemap');
+    expect(pattern.test('/sitemap.xml')).toBe(true);
+    expect(pattern.test('/portfolio/sitemap.xml')).toBe(true);
+    expect(pattern.test('/portfolio/projects')).toBe(false);
   });
 
-  it('places the sitemap rules before the catch-all rewrite', () => {
-    // Rewrites stop at the first match, so ordering is the whole contract.
-    const sitemapIndex = rewrites.findIndex((rule) => rule.destination === '/api/sitemap');
-    const basePathIndex = rewrites.findIndex((rule) => rule.source === '/portfolio/(.*)');
+  it('points at the handler that is actually reachable', () => {
+    const { config } = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
+    const route = config.routes.find((entry) => entry.src === SITEMAP_ROUTE_SRC);
 
-    expect(sitemapIndex).toBeGreaterThanOrEqual(0);
-    expect(sitemapIndex).toBeLessThan(basePathIndex);
+    expect(route?.dest).toBe(SITEMAP_DESTINATION);
+  });
+
+  it('is idempotent, so rebuilding does not stack duplicates', () => {
+    const first = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
+    const second = ensureSitemapRoute(first.config);
+
+    expect(first.inserted).toBe(true);
+    expect(second.inserted).toBe(false);
+    expect(second.config.routes.filter((route) => route.src === SITEMAP_ROUTE_SRC)).toHaveLength(1);
+  });
+
+  it('still inserts when the table has no filesystem handler', () => {
+    const { config } = ensureSitemapRoute({ routes: [{ src: '/(.*)', dest: '/__fallback' }] });
+
+    expect(config.routes[0]?.src).toBe(SITEMAP_ROUTE_SRC);
   });
 });
