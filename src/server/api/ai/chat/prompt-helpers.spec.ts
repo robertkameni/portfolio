@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { buildIntentHint, buildSystemInstruction } from './prompt-helpers';
+import { buildIntentHint, buildSystemInstruction, selectRelevantProjects } from './prompt-helpers';
 
 const PROFILE = {
   name: 'Robert Kameni',
@@ -16,6 +16,62 @@ function instruction(message = 'Tell me about your Angular experience'): string 
     calcomEnabled: false,
   });
 }
+
+const PROJECTS = [
+  { title: 'ATLAS-BIO', description: null, tags: ['Next.js 16', 'TypeScript', 'PWA'], updatedAt: '2026-11-08T00:00:00.000Z' },
+  { title: 'HirePath Jobs', description: null, tags: ['Angular', 'NestJS', 'DeepSeek'], updatedAt: '2026-11-08T00:00:01.000Z' },
+  { title: 'AI Engineering Team Simulator', description: null, tags: ['Next.js 16', 'React 19'], updatedAt: '2026-11-08T00:00:02.000Z' },
+  { title: 'DATEV Kanzlei Platform', description: null, tags: ['Angular 22', 'Signals', 'Technical Lead'], updatedAt: '2026-11-08T00:00:03.000Z' },
+  { title: 'The Engineering Forge', description: null, tags: ['Next.js 16', 'BullMQ'], updatedAt: '2026-11-08T00:00:04.000Z' },
+  { title: 'Deployment Control Platform', description: null, tags: ['Angular 16', 'Monorepo', 'NgRx'], updatedAt: '2026-11-08T00:00:05.000Z' },
+  { title: 'Factoring Modernization', description: null, tags: ['Angular 15', 'RxJS', 'NgRx'], updatedAt: '2026-11-08T00:00:06.000Z' },
+  { title: 'Employee Management', description: null, tags: ['Angular 14', 'Spring Boot'], updatedAt: '2026-11-08T00:00:07.000Z' },
+];
+
+describe('project selection', () => {
+  it('puts the Angular case studies first for an Angular question', () => {
+    const picked = selectRelevantProjects(PROJECTS, 'Erzähl mir von deiner Angular-Erfahrung', 6);
+    const titles = picked.map((project) => project.title);
+
+    // The four Angular case studies are the ones that answer this question, and
+    // they are not the three the home page already shows.
+    expect(titles).toContain('DATEV Kanzlei Platform');
+    expect(titles).toContain('Deployment Control Platform');
+    expect(titles).toContain('Factoring Modernization');
+    expect(titles).toContain('Employee Management');
+  });
+
+  it('matches a version-suffixed tag against the plain technology name', () => {
+    const picked = selectRelevantProjects(PROJECTS, 'how much angular do you write', 3);
+
+    expect(picked[0]?.tags.some((tag) => tag.toLowerCase().startsWith('angular'))).toBe(true);
+  });
+
+  it('prefers Next.js projects for a Next.js question', () => {
+    const picked = selectRelevantProjects(PROJECTS, 'Was hast du mit Next.js gebaut?', 3);
+
+    expect(picked.every((project) => project.tags.some((tag) => /next\.js/i.test(tag)))).toBe(true);
+  });
+
+  it('still fills the list when nothing matches', () => {
+    const picked = selectRelevantProjects(PROJECTS, 'Wie ist das Wetter?', 6);
+
+    // No match must not mean an empty context; the newest rows are the fallback.
+    expect(picked).toHaveLength(6);
+  });
+
+  it('returns fewer than the limit when there are fewer projects', () => {
+    expect(selectRelevantProjects(PROJECTS.slice(0, 2), 'Angular', 6)).toHaveLength(2);
+  });
+
+  it('is deterministic for equal scores', () => {
+    const first = selectRelevantProjects(PROJECTS, 'Wie ist das Wetter?', 6).map((project) => project.title);
+    const shuffled = [...PROJECTS].reverse();
+    const second = selectRelevantProjects(shuffled, 'Wie ist das Wetter?', 6).map((project) => project.title);
+
+    expect(second).toEqual(first);
+  });
+});
 
 /**
  * The prompt is text the model imitates. Punctuation and shape in the
@@ -40,13 +96,44 @@ describe('chat system instruction', () => {
     expect(buildIntentHint('backend api')).not.toMatch(/[\u2014\u2013]/);
   });
 
-  it('does not require a closing question after every answer', () => {
+  it('treats the About text as page copy the visitor has already read', () => {
     const text = instruction();
 
-    expect(text).toMatch(/do not end every reply with an offer or a question/i);
-    // The old instruction asked for "then one optional next-step sentence"
-    // every time, which produced the same sales closing in all replies.
-    expect(text).not.toMatch(/then one optional next-step sentence/i);
+    expect(text).toMatch(/THE PERSON ALREADY READ THE PAGE/i);
+    expect(text).toMatch(/do not paraphrase it/i);
+    // Without this label the model recites the About paragraphs, which is what
+    // a recruiter had just read on the page.
+    expect(text).toContain('ABOUT TEXT');
+    expect(text).toMatch(/already read/i);
+  });
+
+  it('does not require a closing question, and forbids a sales close', () => {
+    const text = instruction();
+
+    expect(text).toMatch(/do not end with a question by default/i);
+    expect(text).toMatch(/never close with an offer/i);
+  });
+
+  it('forbids opening with a tenure formula', () => {
+    expect(instruction()).toMatch(/do not open with a tenure line/i);
+    expect(instruction()).toMatch(/experience questions: do not summarise your career/i);
+  });
+
+  it('bans announcing a highlight instead of making one', () => {
+    // Observed leakage: "der Teil, der nicht auf der Seite steht" and
+    // "der Teil, der nicht in Zahlen steht". Same move, different wording.
+    const text = instruction();
+    expect(text).toMatch(/never announce a turn or a highlight/i);
+    expect(text).toMatch(/der Teil, der/i);
+  });
+
+  it('allows a shorter answer when there is nothing to add', () => {
+    expect(instruction()).toMatch(/answer shorter instead of padding/i);
+  });
+
+  it('points at project context as the material the page does not show', () => {
+    expect(instruction()).toMatch(/reach for PROJECT CONTEXT first/i);
+    expect(instruction()).toMatch(/three newest projects/i);
   });
 
   it('asks for prose rather than a bullet list by default', () => {

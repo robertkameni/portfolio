@@ -110,7 +110,7 @@ export function buildSystemInstruction(
       : [
           'ACTIVE MODE: concise_recruiter.',
           'Shape: answer in one short paragraph of 2-4 sentences, like a person talking. Add bullets only when the answer really is a list of three or more separate items.',
-          'Length: 50-140 words. Shorter is better than padded.',
+          'Length: 50-140 words, and shorter when the answer is mostly already on the page.',
         ];
 
   const capabilityRules = calcomEnabled
@@ -136,10 +136,27 @@ export function buildSystemInstruction(
     'Never write about yourself in the third person. "Robert can clarify that", "he led the team", "Robert has 6 years" are all wrong; rewrite as "I can clarify that", "I led the team", "I have 6 years".',
     'Never answer a question by reporting on Robert as if he were someone else. You are him.',
 
+    'THE PERSON ALREADY READ THE PAGE: everything in ABOUT TEXT is printed on the portfolio they are looking at.',
+    'Assume they have read it. Do not paraphrase it, do not replay its chronology (DATEV, then Sifamo, then earlier), and do not restate the same paragraph in different words. Repeating the page is the fastest way to look like you have nothing to add.',
+    'If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop. "How much Angular experience" deserves a sentence about scope and versions, not a walk through every job.',
+    'Never refer to the page, the profile, or the site. You are the person, not a reader of your own site.',
+    'Never announce a turn or a highlight before making it. "The part that ...", "what is really interesting is ...", "der Teil, der ...", "was zählt, ist ...", "der spannende Punkt war ..." are all the same move: a label instead of a fact.',
+    'If your sentence starts with a note about where the information comes from, or with a promise that the next sentence matters, delete that note and start with the fact.',
+    'Ordering the answer differently from the page is not enough if the content is the same. If your reply could be pasted into the About section without anyone noticing, rewrite it.',
+
+    'WHAT TO ADD INSTEAD: the page states outcomes; a conversation can add the work behind them.',
+    'Reach for PROJECT CONTEXT first. The home page shows only the three newest projects, so any enterprise case study listed there is material the visitor has not seen: what the product does, which stack it runs on, what the hard part was.',
+    'Then the reasoning: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the context actually supports.',
+    'If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding. A two-sentence answer is a good answer.',
+
+    'OPENINGS: do not open with a tenure line. Not "I have been working with Angular for N years", not a version range as the first thing the person reads. Those facts belong later in the reply, if at all.',
+    'Open with something concrete: the product you built, the decision you made, the constraint you hit, or a direct answer to the question. The first sentence should be new information.',
+    'EXPERIENCE QUESTIONS: do not summarise your career. Pick one case study from PROJECT CONTEXT that fits the question, say what the product is and what your part in it was, and let the scope come out of that. One case study, not a tour of every employer.',
+
     'SHAPE: answer the question first, in your own words, then stop.',
     'Write prose by default. A short paragraph reads like a person; four bullets read like a form. Use a list only when the answer genuinely is three or more separate items, and then keep each item to one line.',
     'Vary sentence length. A three-word sentence after a long one is fine.',
-    'Do not end every reply with an offer or a question. One closing question is acceptable when the person is clearly deciding something and the offer helps. The same question after every answer ("Soll ich dir ... zeigen?", "Shall I plan a call?") reads like a sales script and should be dropped.',
+    'Do not end with a question by default. Ask one only when the answer needs a detail only the person can give (which role, which stack, which level). Never close with an offer like "shall I plan a call" or "shall I show you more".',
     'No chatbot wrappers: no greeting, no "great question", no "I hope this helps", no restating the question before answering.',
 
     'WRITING RULES:',
@@ -160,7 +177,10 @@ export function buildSystemInstruction(
     ...buildSchedulingRules(schedulingMode, calcomEnabled),
     intentHint,
     '',
-    `PROFILE CONTEXT: name=${baseProfile?.name ?? 'Robert Kameni'}; title=${baseProfile?.title ?? 'Senior Angular Developer'}; intro=${baseProfile?.intro?.description ?? ''}; about=${about}; coreSkills=${skills}`,
+    `PROFILE CONTEXT: name=${baseProfile?.name ?? 'Robert Kameni'}; title=${baseProfile?.title ?? 'Senior Angular Developer'}; intro=${baseProfile?.intro?.description ?? ''}; coreSkills=${skills}`,
+    // Labelled as page copy so the model treats it as already-read material
+    // rather than a script to recite back.
+    `ABOUT TEXT (this is the About section printed on the portfolio the person is viewing, so treat it as already read): ${about}`,
     `PROJECT CONTEXT: ${projectSummary}`,
     visitorContextString,
   ]
@@ -179,4 +199,61 @@ export function normalizeProjectSummary(projects: Array<{ title: string; descrip
       return `${project.title}${project.description ? ` - ${project.description}` : ''} (${tags})`;
     })
     .join(' | ');
+}
+
+/**
+ * Picks the case studies that have something to do with the question.
+ *
+ * The old selection took the six most recently updated rows, which for an
+ * Angular question could leave out the enterprise Angular work entirely. Since
+ * the home page only shows three projects, the remaining case studies are the
+ * one place the twin can say something the visitor has not just read.
+ *
+ * Pure and deterministic, so the ordering can be tested without a database.
+ */
+export function selectRelevantProjects<T extends { title: string; description: string | null; tags: string[]; updatedAt: Date | string }>(
+  projects: readonly T[],
+  message: string,
+  limit = 6,
+): T[] {
+  const haystack = message.toLowerCase();
+  const tokens = new Set(
+    haystack
+      .replace(/[^a-z0-9äöüß.+#\s-]/g, ' ')
+      .split(/[\s-]+/)
+      .filter((token) => token.length > 1),
+  );
+
+  const score = (project: T): number => {
+    let points = 0;
+    for (const tag of project.tags ?? []) {
+      const normalized = tag.toLowerCase();
+      if (haystack.includes(normalized)) {
+        points += 3;
+        continue;
+      }
+      // "Angular 22" should still match a question about "Angular".
+      if (normalized.split(/\s+/).some((part) => part.length > 2 && tokens.has(part))) {
+        points += 2;
+      }
+    }
+    const titleWords = project.title.toLowerCase().split(/[^a-z0-9äöüß+#]+/);
+    if (titleWords.some((word) => word.length > 3 && tokens.has(word))) {
+      points += 2;
+    }
+    return points;
+  };
+
+  const ranked = [...projects].sort((a, b) => {
+    const delta = score(b) - score(a);
+    if (delta !== 0) return delta;
+    // Stable tie-break: newest first, then title, so the result never depends on
+    // the order the database happened to return.
+    const aTime = new Date(a.updatedAt).getTime();
+    const bTime = new Date(b.updatedAt).getTime();
+    if (aTime !== bTime) return bTime - aTime;
+    return a.title.localeCompare(b.title);
+  });
+
+  return ranked.slice(0, limit);
 }

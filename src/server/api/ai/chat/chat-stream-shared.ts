@@ -4,7 +4,7 @@ import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
 import { readPositiveIntFromEnv } from '../../../utils/env.util';
 import { rateLimiter } from '../../../utils/rate-limiter';
-import { buildIntentHint, detectResponseMode, normalizeProjectSummary } from './prompt-helpers';
+import { buildIntentHint, detectResponseMode, selectRelevantProjects, normalizeProjectSummary } from './prompt-helpers';
 import { writeSseError } from './stream-utils';
 
 const CHAT_SESSION_WINDOW_MS = readPositiveIntFromEnv('AI_CHAT_SESSION_WINDOW_MS', 60_000);
@@ -39,13 +39,15 @@ export async function enforceChatRateLimits(event: H3Event, limiterKey: string):
 
 export async function loadChatPromptContext(message: string) {
   const baseProfile = (await profileRepository.find()) ?? defaultProfile;
+  // All published rows are read, then ranked against the question. Taking the
+  // six most recently updated ones used to drop the enterprise Angular work
+  // from exactly the questions that needed it.
   const publishedProjects = await prisma.project.findMany({
     where: { isPublished: true },
-    select: { title: true, description: true, tags: true },
+    select: { title: true, description: true, tags: true, updatedAt: true },
     orderBy: { updatedAt: 'desc' },
-    take: 6,
   });
-  const projectSummary = normalizeProjectSummary(publishedProjects);
+  const projectSummary = normalizeProjectSummary(selectRelevantProjects(publishedProjects, message, 6));
   const responseMode = detectResponseMode(message);
   const intentHint = buildIntentHint(message);
 
