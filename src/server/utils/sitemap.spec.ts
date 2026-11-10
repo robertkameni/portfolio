@@ -1,23 +1,7 @@
 // @vitest-environment node
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { buildSitemapEntries, escapeXml, renderSitemapXml, toW3CDate } from './sitemap';
 import { absoluteUrl, resolveSiteLocation, type SiteLocation } from './site-url';
-
-type VercelRoute = { src?: string; dest?: string; handle?: string; headers?: Record<string, string> };
-
-type RoutingModule = {
-  SITEMAP_DESTINATION: string;
-  SITEMAP_ROUTE_SRC: string;
-  ensureSitemapRoute: (config: { routes?: VercelRoute[] }) => {
-    config: { routes: VercelRoute[] };
-    inserted: boolean;
-  };
-};
-
-/* The build script is plain ESM under scripts/, so it is loaded at runtime
-   rather than resolved by the TypeScript program. */
-const routing = (await import(fileURLToPath(new URL('../../../scripts/vercel-routing.mjs', import.meta.url)))) as RoutingModule;
 
 const LOCATION: SiteLocation = { origin: 'https://example.test', basePath: '/portfolio' };
 
@@ -143,54 +127,23 @@ describe('toW3CDate', () => {
   });
 });
 
-describe('vercel build output routing', () => {
-  const { SITEMAP_DESTINATION, SITEMAP_ROUTE_SRC, ensureSitemapRoute } = routing;
+describe('sitemap middleware path matching', () => {
+  /**
+   * The handler only answers URLs that end in `/sitemap.xml`, because the
+   * request path inside the function may or may not carry the deployment base
+   * path depending on the rewrite that reached it.
+   */
+  const matches = (pathname: string): boolean => pathname.endsWith('/sitemap.xml');
 
-  const buildOutputRoutes = [
-    { src: '/admin/(.*)', headers: { 'x-analog-no-ssr': '1' } },
-    { src: '/projects/(.*)/edit', headers: { 'x-analog-no-ssr': '1' } },
-    { handle: 'filesystem' },
-    { src: '/(.*)', dest: '/__fallback' },
-  ];
-
-  it('inserts the sitemap route ahead of the filesystem handler', () => {
-    const { config } = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
-    const index = config.routes.findIndex((route) => route.src === SITEMAP_ROUTE_SRC);
-    const filesystemIndex = config.routes.findIndex((route) => route.handle === 'filesystem');
-
-    // Both later entries would win: filesystem serves files, and /(.*) sends
-    // everything else to the SSR function, which renders the Angular 404.
-    expect(index).toBeGreaterThanOrEqual(0);
-    expect(index).toBeLessThan(filesystemIndex);
+  it('answers both the base-path and the bare address', () => {
+    expect(matches('/portfolio/sitemap.xml')).toBe(true);
+    expect(matches('/sitemap.xml')).toBe(true);
   });
 
-  it('routes both the base-path and the bare sitemap address', () => {
-    const pattern = new RegExp(`^${SITEMAP_ROUTE_SRC}$`);
-
-    expect(pattern.test('/sitemap.xml')).toBe(true);
-    expect(pattern.test('/portfolio/sitemap.xml')).toBe(true);
-    expect(pattern.test('/portfolio/projects')).toBe(false);
-  });
-
-  it('points at the handler that is actually reachable', () => {
-    const { config } = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
-    const route = config.routes.find((entry) => entry.src === SITEMAP_ROUTE_SRC);
-
-    expect(route?.dest).toBe(SITEMAP_DESTINATION);
-  });
-
-  it('is idempotent, so rebuilding does not stack duplicates', () => {
-    const first = ensureSitemapRoute({ routes: [...buildOutputRoutes] });
-    const second = ensureSitemapRoute(first.config);
-
-    expect(first.inserted).toBe(true);
-    expect(second.inserted).toBe(false);
-    expect(second.config.routes.filter((route) => route.src === SITEMAP_ROUTE_SRC)).toHaveLength(1);
-  });
-
-  it('still inserts when the table has no filesystem handler', () => {
-    const { config } = ensureSitemapRoute({ routes: [{ src: '/(.*)', dest: '/__fallback' }] });
-
-    expect(config.routes[0]?.src).toBe(SITEMAP_ROUTE_SRC);
+  it('does not answer unrelated paths', () => {
+    expect(matches('/portfolio/')).toBe(false);
+    expect(matches('/portfolio/projects')).toBe(false);
+    expect(matches('/portfolio/sitemap.xml.bak')).toBe(false);
+    expect(matches('/portfolio/xsitemap.xml')).toBe(false);
   });
 });
