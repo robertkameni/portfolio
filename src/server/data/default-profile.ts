@@ -2,13 +2,14 @@ import type { ProfileData } from '../../app/shared/types/profile-data';
 
 export const defaultProfile: ProfileData = {
   name: 'Robert Kameni',
-  title: 'Technical Lead Frontend Specialist',
+  title: 'Technical Lead Frontend Engineer',
   phone: '+4917630131077',
   email: 'robertkameni83@gmail.com',
   intro: {
     name: 'Robert Kameni',
-    title: 'Technical Lead Frontend Specialist',
-    description: 'Specializing in modern web technologies, high-quality scalable Angular applications, and creating elegant solutions to complex problems.',
+    title: 'Technical Lead Frontend Engineer',
+    description:
+      'Technical Lead Frontend Engineer working in Angular (v8 to v22) and Next.js/React, building scalable enterprise web applications and leading teams that ship them.',
     socials: [
       {
         platform: 'LinkedIn',

@@ -35,6 +35,17 @@ describe('design tokens', () => {
     expect(css).toContain('--color-accent: #ff8350');
   });
 
+  it('gives the chat panel a surface of its own', () => {
+    // A panel that reuses --color-paper is the same colour as the page behind
+    // it, which is why the open chat used to read as part of the document.
+    expect(css).toContain('--color-chat: #fdf8f4');
+    expect(css).toContain('--color-chat-2: #f4e9e2');
+    expect(css).toContain('--color-chat-rule: #e2cabe');
+    expect(darkBlock).toContain('--color-chat: #2b211a');
+    expect(darkBlock).toContain('--color-chat-2: #1e1712');
+    expect(darkBlock).toContain('--color-chat-rule: #4c392e');
+  });
+
   it('overrides every colour token in the dark block', () => {
     expect(darkBlock).not.toBe('');
     for (const token of [

@@ -19,6 +19,7 @@ const CANONICAL = {
   javaVersion: 'Java 21',
   angularVersion: 'Angular 22',
   nextjs: 'Next.js',
+  jobTitle: 'Technical Lead Frontend Engineer',
 };
 
 function allProfileText(profile: ProfileData): string {
@@ -60,6 +61,13 @@ describe('profile facts stay current', () => {
   it.each(profiles)('%s name the frontend stack the CV lists', (_label, text) => {
     expect(text).toContain(CANONICAL.angularVersion);
     expect(text).toContain(CANONICAL.nextjs);
+  });
+
+  it('uses the job title the CV lists, not an invented variant', () => {
+    // "Specialist" appeared only in this project; the CV says Engineer.
+    expect(defaultProfile.title).toBe(CANONICAL.jobTitle);
+    expect(allProfileText(defaultProfile)).not.toMatch(/Frontend Specialist/);
+    expect(allProfileText(localizeProfile(defaultProfile, 'de') as ProfileData)).not.toMatch(/Frontend Spezialist/);
   });
 
   it('keeps the German and English profiles structurally identical', () => {

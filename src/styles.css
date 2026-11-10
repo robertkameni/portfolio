@@ -14,6 +14,16 @@
   --color-accent: #c0430f;
   --color-accent-wash: #f7e9e2;
 
+  /* The twin's panel is a surface of its own, not a card lying on the page.
+     It is a warm paper in both schemes, so the dialog separates from the cool
+     grey page behind it before the border, the accent edge, or the shadow is
+     read. `chat` is the panel body, `chat-2` the header and composer rails,
+     `chat-rule` their hairlines. Never reuse `paper` inside the panel: that is
+     the exact colour of the page. */
+  --color-chat: #fdf8f4;
+  --color-chat-2: #f4e9e2;
+  --color-chat-rule: #e2cabe;
+
   /* Modal scrim: always dark, in both themes, so a light-mode screenshot keeps
      its contrast when it is inspected full size. */
   --color-scrim: #101113;
@@ -45,6 +55,9 @@
   --text-metric: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
   --container: 78rem;
   --gutter: 1.5rem;
+  /* Lift for floating surfaces. Tinted from the scrim, not a pure black drop
+     shadow, so it reads as shade under the page's own ink. */
+  --shadow-panel: 0 20px 48px color-mix(in srgb, var(--color-scrim) 18%, transparent), 0 2px 8px color-mix(in srgb, var(--color-scrim) 10%, transparent);
 }
 
 @media (min-width: 768px) {
@@ -64,9 +77,15 @@
     --color-rule: #2c2f31;
     --color-accent: #ff8350;
     --color-accent-wash: #2a1a13;
+    --color-chat: #2b211a;
+    --color-chat-2: #1e1712;
+    --color-chat-rule: #4c392e;
     --color-scrim: #0b0c0d;
     --color-background: #141516;
     --color-primary: #ff8350;
+    /* A dark page has no ambient light to cast shade, so the panel is lifted by
+       depth and a top bevel instead. */
+    --shadow-panel: 0 24px 60px color-mix(in srgb, var(--color-scrim) 82%, transparent), inset 0 1px 0 color-mix(in srgb, var(--color-ink) 7%, transparent);
   }
 }
 
@@ -537,6 +556,13 @@
     opacity: 1;
   }
 
+  /* Inside the twin's panel the input sits on the warm chat rail, so its rule
+     is warm as well. Declared before the hover and focus rules so those still
+     win with the ink and accent colours. */
+  .chat-panel .field {
+    border-bottom-color: var(--color-chat-rule);
+  }
+
   .field:hover {
     border-bottom-color: var(--color-ink-3);
   }
@@ -873,16 +899,16 @@
     font-family: var(--font-mono);
     font-size: 0.9em;
     padding: 0.0625rem 0.25rem;
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--color-chat-rule);
     border-radius: var(--radius-base);
-    background: var(--color-paper-2);
+    background: var(--color-chat);
   }
 
   .chat-markdown pre {
     padding: 0.625rem 0.75rem;
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--color-chat-rule);
     border-radius: var(--radius-base);
-    background: var(--color-paper-2);
+    background: var(--color-chat);
     overflow-x: auto;
   }
 
@@ -895,14 +921,14 @@
 
   .chat-markdown blockquote {
     padding-inline-start: 0.75rem;
-    border-inline-start: 2px solid var(--color-rule);
+    border-inline-start: 2px solid var(--color-chat-rule);
     color: var(--color-ink-3);
   }
 
   .chat-markdown hr {
     margin-block: 0.75rem;
     border: 0;
-    border-top: 1px solid var(--color-rule);
+    border-top: 1px solid var(--color-chat-rule);
   }
 
   .chat-markdown table {
@@ -914,7 +940,7 @@
   .chat-markdown th,
   .chat-markdown td {
     padding: 0.25rem 0.5rem;
-    border-bottom: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-chat-rule);
     text-align: left;
     vertical-align: top;
   }
@@ -927,7 +953,10 @@
     color: var(--color-ink-3);
   }
 
+  /* The panel floats above the document, so it wears the page's only elevation.
+     Its own surface colours live in the chat tokens above. */
   .chat-panel {
+    box-shadow: var(--shadow-panel);
     animation: message-in 200ms var(--ease-out) both;
   }
 

@@ -31,11 +31,12 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
     return {
       ...baseProfile,
       locale,
-      title: 'Technischer Lead Frontend Spezialist',
+      title: 'Technischer Lead Frontend Engineer',
       intro: {
         ...baseProfile.intro,
-        title: 'Technischer Lead Frontend Spezialist',
-        description: 'Spezialisiert auf moderne Webtechnologien, hochwertige skalierbare Angular-Anwendungen und elegante Lösungen für komplexe Herausforderungen.',
+        title: 'Technischer Lead Frontend Engineer',
+        description:
+          'Technischer Lead Frontend Engineer mit Schwerpunkt Angular (v8 bis v22) und Next.js/React: skalierbare Enterprise-Webanwendungen und Teams, die sie zuverlässig liefern.',
       },
       heroCards: [
         {

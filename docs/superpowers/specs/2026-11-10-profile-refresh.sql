@@ -7,6 +7,14 @@ update profiles
 set
   "updatedAt" = now(),
 
+  -- Job title matches the role the CV lists at DATEV; "Specialist" appears nowhere in it.
+  "title" = 'Technical Lead Frontend Engineer',
+  "intro" = jsonb_set(
+    jsonb_set("intro", '{title}', to_jsonb('Technical Lead Frontend Engineer'::text)),
+    '{description}',
+    to_jsonb('Technical Lead Frontend Engineer working in Angular (v8 to v22) and Next.js/React, building scalable enterprise web applications and leading teams that ship them.'::text)
+  ),
+
   -- Frontend and backend stack labels shown on the focus cards.
   "heroCards" = jsonb_set(
     jsonb_set(

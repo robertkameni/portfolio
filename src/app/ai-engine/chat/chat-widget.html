@@ -5,7 +5,12 @@
     (click)="toggleChat()"
     [attr.aria-label]="chatStore.isOpen() ? copy().chat.toggleCloseAriaLabel : copy().chat.toggleOpenAriaLabel"
     [attr.aria-expanded]="chatStore.isOpen()"
-    class="inline-flex size-12 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
+    [class]="
+      'inline-flex size-12 cursor-pointer items-center justify-center rounded-base border transition-colors duration-150 sm:h-12 sm:w-auto sm:gap-2 sm:px-4 ' +
+      (chatStore.isOpen()
+        ? 'border-chat-rule bg-chat text-ink hover:border-accent hover:text-accent'
+        : 'border-ink bg-ink text-paper hover:border-accent hover:bg-accent')
+    "
   >
     @if (chatStore.isOpen()) {
     <!-- Phosphor Icons "x" (regular), MIT. -->
@@ -30,10 +35,10 @@
   <div
     role="dialog"
     [attr.aria-label]="copy().chat.title"
-    class="chat-panel fixed bottom-24 right-2 flex h-[68vh] max-h-[68vh] w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-base border border-rule bg-surface shadow-[0_12px_32px_rgb(16_17_19/0.08)] sm:absolute sm:bottom-16 sm:left-auto sm:right-0 sm:top-auto sm:h-125 sm:max-h-[80vh] sm:w-80 md:w-96"
+    class="chat-panel fixed bottom-24 right-2 flex h-[68vh] max-h-[68vh] w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-base border border-chat-rule border-t-2 border-t-accent bg-chat sm:absolute sm:bottom-16 sm:left-auto sm:right-0 sm:top-auto sm:h-125 sm:max-h-[80vh] sm:w-80 md:w-96"
   >
-    <div class="flex items-center gap-3 border-b border-rule bg-paper-2 p-4">
-      <div class="flex size-9 shrink-0 items-center justify-center rounded-base border border-accent bg-paper">
+    <div class="flex items-center gap-3 border-b border-chat-rule bg-chat-2 p-4">
+      <div class="flex size-9 shrink-0 items-center justify-center rounded-base border border-accent bg-chat">
         <span class="type-meta text-accent">RK</span>
       </div>
       <div class="min-w-0">
@@ -42,12 +47,12 @@
       </div>
     </div>
 
-    <div #messagesContainer class="flex-1 space-y-4 overflow-y-auto overscroll-contain bg-paper p-4">
+    <div #messagesContainer class="flex-1 space-y-4 overflow-y-auto overscroll-contain bg-chat p-4">
       @if (chatStore.messages().length === 0) {
       <div class="mt-6">
         <p class="text-ink-2">{{ copy().chat.introLine1 }}</p>
         <p class="mt-2 text-ink-2">{{ copy().chat.introLine2 }}</p>
-        <div class="mt-6 divide-y divide-rule border-t border-rule">
+        <div class="mt-6 divide-y divide-chat-rule border-t border-chat-rule">
           <button
             (click)="newMessage.set(copy().chat.promptAngular); sendMessage()"
             [disabled]="chatStore.isTyping()"
@@ -70,7 +75,7 @@
           [class]="
             msg.role === 'user'
               ? 'chat-bubble max-w-[80%] rounded-base bg-ink px-4 py-2 text-paper'
-              : 'chat-bubble max-w-[80%] rounded-base border border-rule bg-surface px-4 py-2 text-ink'
+              : 'chat-bubble max-w-[80%] rounded-base border border-chat-rule bg-chat-2 px-4 py-2 text-ink'
           "
         >
           @if (msg.role === 'assistant') {
@@ -91,7 +96,7 @@
       <p class="sr-only" aria-live="polite">{{ liveAnnouncement() }}</p>
     </div>
 
-    <div class="border-t border-rule bg-paper-2 p-3">
+    <div class="border-t border-chat-rule bg-chat-2 p-3">
       <form (submit)="sendMessage($event)" class="flex items-end gap-3">
         <input
           #composer
