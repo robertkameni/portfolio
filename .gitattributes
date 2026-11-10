@@ -1,0 +1,28 @@
+# Line endings, decided once.
+#
+# Without this file the working tree follows `core.autocrlf`, which is a per
+# developer setting: on Windows it rewrites LF to CRLF on checkout, and any
+# `git checkout` or `git reset` leaves the stat cache describing the previous
+# content. `git status` then lists dozens of files as modified with an empty
+# diff, which is exactly how a stale import survived a review here and only
+# failed in CI.
+#
+# Declaring LF for text files makes the representation independent of the
+# machine, so the stat cache stays honest.
+* text=auto eol=lf
+
+# Binaries: never touched, never diffed.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.docx binary
+*.pdf binary
+
+# Lockfile is generated; diffing it helps nobody.
+package-lock.json -diff linguist-generated
