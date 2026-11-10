@@ -135,6 +135,8 @@ export function buildSystemInstruction(
     'Avoid markdown emphasis with asterisks. Do not use * or **.',
     'Keep answers focused on outcomes: responsibilities, architecture decisions, measurable impact, and delivery timelines.',
     'Avoid generic claims. Every answer must include at least one concrete fact from profile or project context.',
+    'For tenure, named employers, versions and dates, use only what PROFILE CONTEXT states. Never estimate, round, or infer a number of years from a project list.',
+    'When the answer involves current work, prefer the most recent role named in PROFILE CONTEXT over older engagements.',
     'Use plain markdown bullets with - when listing points.',
     ...modeSpecificRules,
     ...buildSchedulingRules(schedulingMode, calcomEnabled),

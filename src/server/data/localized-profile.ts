@@ -41,7 +41,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
         {
           ...heroCard0,
           title: 'Frontend',
-          subtitle: 'Angular | NextJS | RxJS | TypeScript',
+          subtitle: 'Angular | Next.js | React | TypeScript',
           description: 'Ich spezialisiere mich auf Angular-Entwicklung und entwickle skalierbare, performante Webanwendungen.',
           items: [
             { ...heroCard0Item0, title: 'Performance-Optimierung:', description: 'Runtime- und Architekturmaßnahmen, Signal Store und NgRx.' },
@@ -52,10 +52,10 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
         {
           ...heroCard1,
           title: 'Backend & Qualität',
-          subtitle: 'Java 17 | Spring Boot 3 | Testing',
+          subtitle: 'Java 21 | Spring Boot 3 | Testing',
           description: 'Erfahren in Enterprise-Backends und in der Sicherstellung langfristiger Code-Stabilität.',
           items: [
-            { ...heroCard1Item0, title: 'API-Integration:', description: 'Anbindung moderner Angular-Frontends an Services mit Java 17 und Spring Boot 3.' },
+            { ...heroCard1Item0, title: 'API-Integration:', description: 'Anbindung moderner Angular-Frontends an Services mit Java 21 und Spring Boot 3.' },
             { ...heroCard1Item1, title: 'Testing:', description: 'Umfassende automatisierte Tests mit Jest und Cypress für Unit- und E2E-Abdeckung.' },
             { ...heroCard1Item2, title: 'Stabilität:', description: 'Fehlerbehebung in Produktion, Root-Cause-Analyse und langfristige Prävention.' },
           ],
@@ -74,10 +74,12 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
       about: {
         title: 'Über mich',
         paragraphs: [
-          'Ich bin Robert Kameni, Technical Lead Frontend mit mehr als 4 Jahren Erfahrung in skalierbaren Enterprise-Angular-Apps. Ich verantworte Frontend end-to-end: Architektur, Umsetzung, Qualität und Go-live.',
-          'Bei DATEV gestalte ich Frontend-Architekturen über Initiativen hinweg, setze klare Engineering-Standards und habe die Team-Effizienz um 50 % gesteigert.',
-          'Ich übersetze Produktziele in technische Strategie, arbeite mit TypeScript, RxJS, Signals und NgRx Signal Store und sichere Qualität mit Jest und Cypress.',
-          'Als Technical Lead führe ich Teams aus technischer Sicht und leite Reviews. Mich treiben performante, AI-fähige Frontends und Teams, die ohne Qualitätsverlust skalieren.',
+          'Ich bin Robert Kameni, Technical Lead Frontend Engineer mit rund 6 Jahren Erfahrung in komplexen Enterprise-Webanwendungen, überwiegend mit Angular (v8 bis v22) sowie Next.js und React. Ich verantworte Frontend end-to-end: Architektur, Umsetzung, Qualität und Go-live.',
+          'Bei der DATEV eG (seit 08/2024) verantworte ich Frontend-Architektur und technische Ausrichtung für zwei Scrum-Teams mit acht Entwickler:innen, inklusive Mentoring von zwei Junior- und Mid-Level-Entwickler:innen. Ich führe die Angular-Architektur mit Fokus auf Skalierbarkeit, Performance und Wartbarkeit und habe AI-gestützte Entwicklungsprozesse (GitHub Copilot, spec-driven Development) im Team etabliert.',
+          'Messbare Ergebnisse bei DATEV: 30 % weniger Entwicklungszeit durch ein Design System mit 50+ wiederverwendbaren Angular-Komponenten, 25 % kleinere Bundles und 40 % kürzere Ladezeiten, dazu Angular 22 mit Signals und NgRx Signal Store in 5+ Anwendungsmodulen, wodurch state-bezogene Produktionsfehler im ersten Quartal um 50 % sanken. Zusätzlich habe ich ein neues Produkt AI-first auf Next.js 15/16 (App Router) und React 19 konzipiert und geleitet.',
+          'Davor war ich 2,5 Jahre als IT-Consultant im Frontend bei der Sifamo GmbH (02/2022 bis 07/2024) in zwei langfristigen Grossprojekten: Neuentwicklung des Frontends einer Factoring-Software mit Angular 15, RxJS und NgRx (30 % kürzere Ladezeiten) sowie Web-Komponenten für eine Deployment-Control-Plattform und Migration eines Nx-Monorepos von Angular 15 auf 16 über fünf Anwendungen (60 % weniger Fehler).',
+          'Technisch reicht mein Spektrum von TypeScript, RxJS, Signals, NgRx Signal Store, Jest und Cypress bis zur Backend-Seite mit Java 21 und Spring Boot 3, sodass ich API-Verträge mit Backend-Teams direkt mittrage statt nur zu übergeben.',
+          'Als Technical Lead führe ich Teams aus technischer Sicht, leite Reviews und setze Engineering-Standards. Mich treiben performante, AI-fähige Frontends und Teams, die ohne Qualitätsverlust skalieren.',
         ],
         highlights: [
           {
@@ -106,7 +108,7 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
         title: 'Lass uns vernetzen',
         description: 'Bereit, Ideen in echte Produkte zu verwandeln? Lass uns besprechen, wie wir gemeinsam etwas Starkes aufbauen können.',
         features: [
-          { ...contactFeature0, title: '4+ Jahre Erfahrung', description: 'Skalierbare Webanwendungen bauen' },
+          { ...contactFeature0, title: '6+ Jahre Erfahrung', description: 'Skalierbare Webanwendungen bauen' },
           { ...contactFeature1, title: 'Full-Stack-Expertise', description: 'Senior Angular Entwickler mit vielseitiger Backend-Erfahrung' },
           { ...contactFeature2, title: 'Vielfältiges Projektportfolio', description: 'Von Startups bis zu Enterprise-Lösungen' },
         ],

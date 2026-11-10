@@ -7,7 +7,7 @@
  */
 export const agentHomepageMarkdown = `# Robert Kameni — portfolio (agent-oriented summary)
 
-**Role:** Technical Lead Frontend Specialist — Angular, TypeScript, enterprise web, full stack collaboration.
+**Role:** Technical Lead Frontend Engineer — Angular (v8 to Angular 22), Next.js 15/16 with React 19, enterprise web, full stack collaboration.
 
 **Canonical site:** https://lucastar.de/portfolio/
 
@@ -20,7 +20,9 @@ export const agentHomepageMarkdown = `# Robert Kameni — portfolio (agent-orien
 
 ## Summary
 
-Technical Lead focused on scalable Angular applications (Signals, NgRx Signal Store, RxJS), integration with Java 17 / Spring Boot APIs, automated testing (Jest, Cypress), performance and architecture, and Scrum delivery in cross-functional teams.
+Technical Lead Frontend Engineer with around 6 years in complex enterprise web applications, mainly Angular (v8 to Angular 22) and Next.js 15/16 with React 19. Currently at DATEV eG (since 08/2024), owning frontend architecture for two Scrum teams (eight developers) and leading AI-assisted delivery workflows.
+
+Focus: scalable Angular applications (Signals, NgRx Signal Store, RxJS), Next.js App Router products, integration with Java 21 / Spring Boot 3 APIs, automated testing (Jest, Cypress), performance and architecture, and Scrum delivery in cross-functional teams.
 
 ## How to fetch this content
 
