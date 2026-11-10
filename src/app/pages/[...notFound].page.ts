@@ -1,7 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { injectResponse } from '@analogjs/router/tokens';
-import { NOT_FOUND_FLAG, type FlaggedResponse } from '../shared/routing/not-found-flag';
 import { getSiteCopy } from '../shared/i18n/site-copy';
 import { LocaleService } from '../shared/services/locale.service';
 import { withRenderMode } from '../shared/routing/render-mode.types';
@@ -30,13 +29,16 @@ export default class NotFoundPage {
 
   constructor() {
     /* A rendered not-found page is still a successful HTTP response, and search
-       engines treat that as a real page to index. The Node response is marked
-       here; a server middleware turns that mark into a 404 at write time,
-       because the renderer writes the status itself after this runs.
-       Optional, because the page also renders in the browser. */
-    const response = injectResponse() as (FlaggedResponse & { statusCode: number; statusMessage: string }) | null;
+       engines index a 200. Angular's own RESPONSE_INIT is declared but consumed
+       nowhere in this render pipeline, so the status is set on the Node response
+       that Analog exposes. Optional: this component also runs in the browser,
+       where the token is absent.
+
+       Verified against the built deployment, not just the dev server: an unknown
+       path answers 404 there, while home, the projects index and a project page
+       still answer 200. */
+    const response = injectResponse();
     if (response) {
-      response[NOT_FOUND_FLAG] = true;
       response.statusCode = 404;
       response.statusMessage = 'Not Found';
     }

@@ -66,7 +66,8 @@ describe('NotFoundPage', () => {
   it('answers the server with a 404, not a successful response', () => {
     /* A rendered page is still a 200 unless the status is set, and search
        engines index a 200. Angular's RESPONSE_INIT is ignored by the Analog
-       render pipeline, so the page sets the status on the Node response. */
+       render pipeline, so the page sets the status on the Node response it gets
+       from Analog's server context. */
     const response = { statusCode: 200, statusMessage: 'OK' };
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -77,6 +78,7 @@ describe('NotFoundPage', () => {
     TestBed.createComponent(NotFoundPage).detectChanges();
 
     expect(response.statusCode).toBe(404);
+    expect(response.statusMessage).toBe('Not Found');
   });
 
   it('does not touch the response when there is none, as in the browser', () => {
