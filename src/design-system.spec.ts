@@ -73,6 +73,21 @@ describe('design tokens', () => {
   it('declares a single border radius scale', () => {
     expect(css).toContain('--radius-base: 2px');
   });
+
+  it('styles every element the chat markdown renderer can emit', () => {
+    // The chat bubble renders arbitrary markdown through marked. Without rules
+    // for these, lists lose their markers and code blocks collapse into inline
+    // text, which is what "the chat markdown is unstyled" meant.
+    expect(css).toContain('.chat-markdown');
+
+    for (const selector of ['p', 'ul', 'ol', 'li', 'code', 'pre', 'strong', 'a', 'blockquote', 'table', 'th', 'td', 'h1']) {
+      expect(css, `.chat-markdown ${selector} needs a rule`).toMatch(new RegExp(`\\.chat-markdown\\s+${selector}[,\\s{]`));
+    }
+
+    // Lists need markers back: the global reset flattens them.
+    expect(css).toMatch(/\.chat-markdown ul \{[^}]*list-style:\s*disc/);
+    expect(css).toMatch(/\.chat-markdown ol \{[^}]*list-style:\s*decimal/);
+  });
 });
 
 function templateFiles(dir: string): string[] {
