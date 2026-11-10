@@ -35,6 +35,17 @@ describe('design tokens', () => {
     expect(css).toContain('--color-accent: #ff8350');
   });
 
+  it('gives the chat panel a surface of its own', () => {
+    // A panel that reuses --color-paper is the same colour as the page behind
+    // it, which is why the open chat used to read as part of the document.
+    expect(css).toContain('--color-chat: #fdf8f4');
+    expect(css).toContain('--color-chat-2: #f4e9e2');
+    expect(css).toContain('--color-chat-rule: #e2cabe');
+    expect(darkBlock).toContain('--color-chat: #2b211a');
+    expect(darkBlock).toContain('--color-chat-2: #1e1712');
+    expect(darkBlock).toContain('--color-chat-rule: #4c392e');
+  });
+
   it('overrides every colour token in the dark block', () => {
     expect(darkBlock).not.toBe('');
     for (const token of [
@@ -72,6 +83,21 @@ describe('design tokens', () => {
 
   it('declares a single border radius scale', () => {
     expect(css).toContain('--radius-base: 2px');
+  });
+
+  it('styles every element the chat markdown renderer can emit', () => {
+    // The chat bubble renders arbitrary markdown through marked. Without rules
+    // for these, lists lose their markers and code blocks collapse into inline
+    // text, which is what "the chat markdown is unstyled" meant.
+    expect(css).toContain('.chat-markdown');
+
+    for (const selector of ['p', 'ul', 'ol', 'li', 'code', 'pre', 'strong', 'a', 'blockquote', 'table', 'th', 'td', 'h1']) {
+      expect(css, `.chat-markdown ${selector} needs a rule`).toMatch(new RegExp(`\\.chat-markdown\\s+${selector}[,\\s{]`));
+    }
+
+    // Lists need markers back: the global reset flattens them.
+    expect(css).toMatch(/\.chat-markdown ul \{[^}]*list-style:\s*disc/);
+    expect(css).toMatch(/\.chat-markdown ol \{[^}]*list-style:\s*decimal/);
   });
 });
 

@@ -205,7 +205,7 @@ export const DE_COPY: SiteCopy = {
     submitError: 'Senden ist fehlgeschlagen. Bitte versuche es erneut oder schreib mir direkt eine E-Mail.',
   },
   hero: {
-    defaultTitle: 'Technischer Lead Frontend Spezialist',
+    defaultTitle: 'Technischer Lead Frontend Engineer',
     adaptiveTitle: {
       recruiter: 'Senior Engineer, bereit dein nächstes Projekt voranzutreiben',
       founder: 'Skalierbare Lösungen für ambitionierte Startups',

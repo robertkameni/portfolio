@@ -2,13 +2,14 @@ import type { ProfileData } from '../../app/shared/types/profile-data';
 
 export const defaultProfile: ProfileData = {
   name: 'Robert Kameni',
-  title: 'Technical Lead Frontend Specialist',
+  title: 'Technical Lead Frontend Engineer',
   phone: '+4917630131077',
   email: 'robertkameni83@gmail.com',
   intro: {
     name: 'Robert Kameni',
-    title: 'Technical Lead Frontend Specialist',
-    description: 'Specializing in modern web technologies, high-quality scalable Angular applications, and creating elegant solutions to complex problems.',
+    title: 'Technical Lead Frontend Engineer',
+    description:
+      'Technical Lead Frontend Engineer working in Angular (v8 to v22) and Next.js/React, building scalable enterprise web applications and leading teams that ship them.',
     socials: [
       {
         platform: 'LinkedIn',
@@ -27,7 +28,7 @@ export const defaultProfile: ProfileData = {
   heroCards: [
     {
       title: 'Frontend',
-      subtitle: 'Angular | NextJS | RxJS | TypeScript',
+      subtitle: 'Angular | Next.js | React | TypeScript',
       iconPath: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
       description: 'I specialize in Angular development, creating scalable and high-performance web applications.',
       items: [
@@ -41,13 +42,13 @@ export const defaultProfile: ProfileData = {
     },
     {
       title: 'Backend & Quality',
-      subtitle: 'Java 17 | Springboot 3 | Testing',
+      subtitle: 'Java 21 | Spring Boot 3 | Testing',
       iconPath: 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01',
       description: 'Skilled in enterprise backend environments and ensuring code stability.',
       items: [
         {
           title: 'API Integration:',
-          description: 'Connecting modern Angular frontends with Java 17 and Springboot 3 services.',
+          description: 'Connecting modern Angular frontends with Java 21 and Springboot 3 services.',
         },
         {
           title: 'Testing:',
@@ -73,7 +74,7 @@ export const defaultProfile: ProfileData = {
       iconFilled: true,
     },
     { name: 'Testing & Quality', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-    { name: 'Java 17', iconPath: 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2' },
+    { name: 'Java 21', iconPath: 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2' },
     {
       name: 'Springboot 3',
       iconPath: 'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6a6 6 0 100 12 6 6 0 000-12z',
@@ -83,10 +84,12 @@ export const defaultProfile: ProfileData = {
   about: {
     title: 'About Me',
     paragraphs: [
-      'I am Robert Kameni, a Technical Lead Frontend Developer with 4+ years building scalable enterprise Angular apps. I own frontend delivery end-to-end: architecture, implementation, quality, and rollout.',
-      'At DATEV I drive frontend architecture across initiatives, set clear engineering standards, and improved team efficiency by 50% through modern patterns and tighter delivery workflows.',
-      'I translate product goals into technical strategy, ship with TypeScript, RxJS, Signals, and NgRx Signal Store, and keep quality high with Jest and Cypress.',
-      'As a Technical Lead I guide teams from the technical side and run reviews. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
+      'I am Robert Kameni, a Technical Lead Frontend Engineer with around 6 years of experience building complex enterprise web applications, mainly Angular (v8 to v22) and Next.js/React. I own frontend delivery end to end: architecture, implementation, quality, and go-live.',
+      'At DATEV eG (since 08/2024) I own the frontend architecture and technical direction for two Scrum teams with eight developers, including mentoring two junior and mid-level engineers. I lead the Angular architecture with a focus on scalability, performance, and maintainability, and I introduced AI-assisted development workflows (GitHub Copilot, spec-driven development).',
+      'Measurable results at DATEV: feature development time down 30% through a design system with 50+ reusable Angular components, bundle size down 25% and load times down 40%, and Angular 22 with Signals and NgRx Signal Store adopted across 5+ application modules, which cut state-related production errors by 50% in the first quarter. I also designed and led a new product built AI-first on Next.js 15/16 (App Router) and React 19.',
+      'Before DATEV I spent 2.5 years as an IT consultant in frontend roles at Sifamo GmbH (02/2022 to 07/2024), with two long-term enterprise engagements: rebuilding the frontend of a factoring product on Angular 15 with RxJS and NgRx (load times down 30%), and building web components for a deployment-control platform plus migrating an Nx monorepo from Angular 15 to 16 across five applications (error rate down 60%).',
+      'My technical range covers TypeScript, RxJS, Signals, NgRx Signal Store, Jest, Cypress, and the Java 21 / Spring Boot 3 backend side, so I can hold an API contract with a backend team instead of handing work over.',
+      'As a Technical Lead I guide teams from the technical side, run reviews, and set engineering standards. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
     ],
 
     highlights: [
@@ -118,7 +121,7 @@ export const defaultProfile: ProfileData = {
     description: "Ready to bring your ideas to life? Let's discuss how we work together to create something amazing.",
     features: [
       {
-        title: '4+ Years Experience',
+        title: '6+ Years Experience',
         description: 'Building scalable web applications',
         iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       },

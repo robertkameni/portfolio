@@ -114,11 +114,10 @@ export class ChatWidget {
 
   renderAssistantMessage(content: string): string {
     this.markdownReady();
-    const html = this.markdownParser ? this.markdownParser(content) : this.renderPlainText(content);
-    return html
-      .replace(/<ul>/g, '<ul class="list-disc pl-5 my-2 space-y-1">')
-      .replace(/<ol>/g, '<ol class="list-decimal pl-5 my-2 space-y-1">')
-      .replace(/<p>/g, '<p class="leading-relaxed mb-2">');
+    /* `marked` output is styled by the .chat-markdown block in styles.css, not by
+       utility classes injected here: the chat panel is narrow, so its typography
+       has its own rules rather than the page's. */
+    return this.markdownParser ? this.markdownParser(content) : this.renderPlainText(content);
   }
 
   private async loadMarkdownParser(): Promise<void> {

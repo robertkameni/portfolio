@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { RESPONSE } from '@analogjs/router/tokens';
 import { beforeEach, describe, expect, it } from 'vitest';
 import NotFoundPage from './[...notFound].page';
 import { HYBRID_RENDER_ROUTES } from '../shared/routing/hybrid-render.config';
@@ -60,5 +61,31 @@ describe('NotFoundPage', () => {
     const last = HYBRID_RENDER_ROUTES.at(-1);
 
     expect(last?.path).toBe('/**');
+  });
+
+  it('answers the server with a 404, not a successful response', () => {
+    /* A rendered page is still a 200 unless the status is set, and search
+       engines index a 200. Angular's RESPONSE_INIT is ignored by the Analog
+       render pipeline, so the page sets the status on the Node response it gets
+       from Analog's server context. */
+    const response = { statusCode: 200, statusMessage: 'OK' };
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [NotFoundPage],
+      providers: [provideZonelessChangeDetection(), provideRouter([]), { provide: RESPONSE, useValue: response }],
+    });
+
+    TestBed.createComponent(NotFoundPage).detectChanges();
+
+    expect(response.statusCode).toBe(404);
+    expect(response.statusMessage).toBe('Not Found');
+  });
+
+  it('does not touch the response when there is none, as in the browser', () => {
+    // The token is absent client-side; the page must still render.
+    const fixture = TestBed.createComponent(NotFoundPage);
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('main')).not.toBeNull();
   });
 });

@@ -205,7 +205,7 @@ export const EN_COPY: SiteCopy = {
     submitError: 'Failed to send message. Please try again or email me directly.',
   },
   hero: {
-    defaultTitle: 'Technical Lead Frontend Specialist',
+    defaultTitle: 'Technical Lead Frontend Engineer',
     adaptiveTitle: {
       recruiter: 'Senior Engineer Ready to Drive Your Next Project',
       founder: 'Architecting Scalable Solutions for Ambitious Startups',
