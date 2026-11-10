@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { buildSitemapEntries, escapeXml, renderSitemapXml, toW3CDate } from './sitemap';
 import { absoluteUrl, resolveSiteLocation, type SiteLocation } from './site-url';
@@ -124,5 +126,33 @@ describe('toW3CDate', () => {
 
   it('accepts a Date as well as a string', () => {
     expect(toW3CDate(new Date('2026-03-04T00:00:00.000Z'))).toBe('2026-03-04');
+  });
+});
+
+describe('vercel rewrites', () => {
+  const config = JSON.parse(readFileSync(fileURLToPath(new URL('../../../vercel.json', import.meta.url)), 'utf8'));
+  const rewrites: Array<{ source: string; destination: string }> = config.rewrites ?? [];
+
+  it('routes the advertised sitemap URL to the generator', () => {
+    // robots.txt advertises https://lucastar.de/portfolio/sitemap.xml. Without
+    // this rewrite the Angular catch-all answers that URL with an HTML 404.
+    const match = rewrites.find((rule) => rule.source === '/portfolio/sitemap.xml');
+
+    expect(match?.destination).toBe('/api/sitemap');
+  });
+
+  it('also serves the bare /sitemap.xml, which the Link headers reference', () => {
+    const match = rewrites.find((rule) => rule.source === '/sitemap.xml');
+
+    expect(match?.destination).toBe('/api/sitemap');
+  });
+
+  it('places the sitemap rules before the catch-all rewrite', () => {
+    // Rewrites stop at the first match, so ordering is the whole contract.
+    const sitemapIndex = rewrites.findIndex((rule) => rule.destination === '/api/sitemap');
+    const basePathIndex = rewrites.findIndex((rule) => rule.source === '/portfolio/(.*)');
+
+    expect(sitemapIndex).toBeGreaterThanOrEqual(0);
+    expect(sitemapIndex).toBeLessThan(basePathIndex);
   });
 });

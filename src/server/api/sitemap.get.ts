@@ -3,13 +3,16 @@ import { projectRepository } from '../db/repositories/project.repository';
 import { buildSitemapEntries, renderSitemapXml } from '../utils/sitemap';
 
 /**
- * `/sitemap.xml` (also reachable as `/portfolio/sitemap.xml` through the
- * vercel.json rewrite).
+ * The generated sitemap, served as an API route because that is the only path
+ * Nitro reliably owns here: the Angular catch-all page answers every other URL,
+ * including `/sitemap.xml`, with the not-found document.
+ *
+ * `vercel.json` rewrites `/sitemap.xml` and `/portfolio/sitemap.xml` onto this
+ * handler, so crawlers see the address `robots.txt` already advertises.
  *
  * Generated from the database rather than shipped as a static file: the static
  * version had drifted and was missing two of eight published projects,
- * including the newest one. A crawler reading it never learned those pages
- * existed.
+ * including the newest one.
  */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'content-type', 'application/xml; charset=utf-8');
