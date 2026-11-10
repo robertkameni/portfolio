@@ -44,21 +44,6 @@ try {
 
 console.log('[build] Vercel Build Output API present at .vercel/output/config.json');
 
-// ── 1b. Route the sitemap addresses to the generator ─────────────────────────
-// In Build Output API mode the routing table comes from this file, not from
-// vercel.json's `rewrites`. Without this entry `/(.*)` sends the sitemap URL to
-// the SSR function, which answers with the Angular not-found page.
-
-const { ensureSitemapRoute } = await import('./vercel-routing.mjs');
-const sitemapRouting = ensureSitemapRoute(config);
-config = sitemapRouting.config;
-
-if (sitemapRouting.inserted) {
-  console.log('[build] Sitemap route injected into .vercel/output/config.json');
-} else {
-  console.log('[build] Sitemap route already present in .vercel/output/config.json');
-}
-
 // ── 2. Collect SHA-256 hashes from every inline <script> in static HTML ───────
 
 function sha256Base64(content) {
