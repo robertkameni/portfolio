@@ -3,7 +3,35 @@ export type ResponseMode = 'concise_recruiter' | 'storytelling_recruiter';
 export type BuildSystemInstructionOptions = {
   schedulingMode?: boolean;
   calcomEnabled?: boolean;
+  caseStudy?: string;
 };
+
+export function caseStudyForInstruction(schedulingMode: boolean, caseStudy: string): string {
+  if (schedulingMode) {
+    return '';
+  }
+  return caseStudy;
+}
+
+function projectContextRules(caseStudy: string): string[] {
+  if (!caseStudy) {
+    return [
+      'No case study text is attached. PROJECT CONTEXT is a name list, not a story.',
+      'Do not invent a walkthrough from those titles and one-line descriptions. You may name a project from that list when asked what else you have built.',
+    ];
+  }
+
+  return [
+    'CASE STUDY is the one story. PROJECT CONTEXT is the name list: title, one-line description, tags.',
+    'Tell that one case study in prose: what the product is, what your part was, the hard part, and the result.',
+    'Length for that retell: 120-180 words. This length replaces the active mode length.',
+    'The markdown headings in the case study are notes. Do not copy them as the outline of the reply.',
+    'Do not tour the other projects in PROJECT CONTEXT.',
+    'Answer in the language of the question. The case study may be German. Do not translate it as a separate step before answering.',
+    'A practical question wins over that retell, even when the same message also matches a project. Practical means rate, salary, availability, location, or start date.',
+    'For a practical question, keep the concise length, 50-140 words. Do not retell the case study. If a number is missing from the context, say so.',
+  ];
+}
 
 const FREELANCE_SIGNALS = ['freelance', 'freiberuf', 'nebenprojekt', 'nebenjob', 'nebenbei', 'contract work', 'contractor', 'auftragsarbeit', 'selbstständig', 'selbstaendig', 'selbststaendig'];
 
@@ -102,7 +130,7 @@ export function buildSystemInstruction(
   intentHint: string,
   options: BuildSystemInstructionOptions = {},
 ): string {
-  const { schedulingMode = false, calcomEnabled = false } = options;
+  const { schedulingMode = false, calcomEnabled = false, caseStudy = '' } = options;
   const about = baseProfile?.about?.paragraphs?.join(' ') ?? '';
   const skills = Array.isArray(baseProfile?.skills)
     ? baseProfile.skills
@@ -157,13 +185,13 @@ export function buildSystemInstruction(
     'Ordering the answer differently from the page is not enough if the content is the same. If your reply could be pasted into the About section without anyone noticing, rewrite it.',
 
     'WHAT TO ADD INSTEAD: the page states outcomes; a conversation can add the work behind them.',
-    'Reach for PROJECT CONTEXT first. The home page shows only the three newest projects, so any enterprise case study listed there is material the visitor has not seen: what the product does, which stack it runs on, what the hard part was.',
+    ...projectContextRules(caseStudy),
     'Then the reasoning: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the context actually supports.',
     'If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding. A two-sentence answer is a good answer.',
 
     'OPENINGS: do not open with a tenure line. Not "I have been working with Angular for N years", not a version range as the first thing the person reads. Those facts belong later in the reply, if at all.',
     'Open with something concrete: the product you built, the decision you made, the constraint you hit, or a direct answer to the question. The first sentence should be new information.',
-    'EXPERIENCE QUESTIONS: do not summarise your career. Pick one case study from PROJECT CONTEXT that fits the question, say what the product is and what your part in it was, and let the scope come out of that. One case study, not a tour of every employer.',
+    'EXPERIENCE QUESTIONS: do not summarise your career. When a case study block is attached, tell that one. When it is not, do not reconstruct one from PROJECT CONTEXT.',
 
     'SHAPE: answer the question first, in your own words, then stop.',
     'Write prose by default. A short paragraph reads like a person; four bullets read like a form. Use a list only when the answer genuinely is three or more separate items, and then keep each item to one line.',
@@ -196,6 +224,7 @@ export function buildSystemInstruction(
     // rather than a script to recite back.
     `ABOUT TEXT (this is the About section printed on the portfolio the person is viewing, so treat it as already read): ${about}`,
     `PROJECT CONTEXT: ${projectSummary}`,
+    caseStudy,
     visitorContextString,
   ]
     .filter(Boolean)

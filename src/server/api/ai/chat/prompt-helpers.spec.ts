@@ -1,6 +1,16 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { buildIntentHint, buildProjectPromptContext, buildSystemInstruction, scoreProject, selectRelevantProjects, trimCaseStudy, CASE_STUDY_CHAR_CAP } from './prompt-helpers';
+import {
+  buildIntentHint,
+  buildProjectPromptContext,
+  buildSystemInstruction,
+  caseStudyForInstruction,
+  scoreProject,
+  selectRelevantProjects,
+  trimCaseStudy,
+  CASE_STUDY_CHAR_CAP,
+  CASE_STUDY_PREFIX,
+} from './prompt-helpers';
 
 const STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
 
@@ -18,6 +28,16 @@ function instruction(message = 'Tell me about your Angular experience'): string 
     calcomEnabled: false,
   });
 }
+
+function instructionWithStudy(caseStudy: string, options: { schedulingMode?: boolean } = {}): string {
+  return buildSystemInstruction(PROFILE, 'ATLAS-BIO | HirePath Jobs', '', 'concise_recruiter', buildIntentHint('Tell me about Angular'), {
+    schedulingMode: options.schedulingMode ?? false,
+    calcomEnabled: false,
+    caseStudy,
+  });
+}
+
+const SAMPLE_STUDY = `${CASE_STUDY_PREFIX}DATEV Kanzlei Platform\nThe product runs the office. I led the frontend. The hard part was the shared state. Feature time dropped.`;
 
 const PROJECTS = [
   { title: 'ATLAS-BIO', description: null, tags: ['Next.js 16', 'TypeScript', 'PWA'], updatedAt: '2026-11-08T00:00:00.000Z' },
@@ -202,9 +222,39 @@ describe('chat system instruction', () => {
     expect(instruction()).toMatch(/answer shorter instead of padding/i);
   });
 
-  it('points at project context as the material the page does not show', () => {
-    expect(instruction()).toMatch(/reach for PROJECT CONTEXT first/i);
-    expect(instruction()).toMatch(/three newest projects/i);
+  it('does not invent a case study from the short list', () => {
+    const text = instruction();
+
+    expect(text).toMatch(/do not invent a walkthrough/i);
+    expect(text).not.toMatch(/120-180 words/);
+    expect(text).not.toContain(CASE_STUDY_PREFIX);
+  });
+
+  it('tells one study when a block is attached', () => {
+    const text = instructionWithStudy(SAMPLE_STUDY);
+
+    expect(text).toContain(SAMPLE_STUDY);
+    expect(text).toMatch(/what the product is, what your part was, the hard part, and the result/i);
+    expect(text).toMatch(/120-180 words/);
+    expect(text).toMatch(/practical question wins/i);
+    expect(text).toMatch(/rate, salary, availability, location, or start date/i);
+    expect(text).toMatch(/do not retell the case study/i);
+    expect(text).toMatch(/50-140 words/);
+    expect(text).toMatch(/markdown headings/i);
+    expect(text).toMatch(/do not tour the other projects/i);
+    expect(text).toMatch(/language of the question/i);
+  });
+
+  it('drops the block in scheduling mode even when the loader found one', () => {
+    const withheld = caseStudyForInstruction(true, SAMPLE_STUDY);
+    const kept = caseStudyForInstruction(false, SAMPLE_STUDY);
+    const text = instructionWithStudy(withheld, { schedulingMode: true });
+
+    expect(withheld).toBe('');
+    expect(kept).toBe(SAMPLE_STUDY);
+    expect(text).not.toContain(CASE_STUDY_PREFIX);
+    expect(text).not.toContain('The product runs the office');
+    expect(text).toMatch(/do not invent a walkthrough/i);
   });
 
   it('asks for prose rather than a bullet list by default', () => {
