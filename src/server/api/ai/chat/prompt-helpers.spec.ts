@@ -19,6 +19,7 @@ describe('case study wiring', () => {
     const stream = readFileSync(new URL('./stream.post.ts', import.meta.url), 'utf8');
 
     expect(loader).toContain('contentMarkdown: true');
+    expect(loader).not.toContain('contentMarkdownEn');
     expect(loader).toContain('buildProjectPromptContext(');
     expect(stream).toContain('caseStudyForInstruction(schedulingMode, caseStudy)');
   });
@@ -41,12 +42,22 @@ function instruction(message = 'Tell me about your Angular experience'): string 
   });
 }
 
-function instructionWithStudy(caseStudy: string, options: { schedulingMode?: boolean } = {}): string {
-  return buildSystemInstruction(PROFILE, 'ATLAS-BIO | HirePath Jobs', '', 'concise_recruiter', buildIntentHint('Tell me about Angular'), {
-    schedulingMode: options.schedulingMode ?? false,
-    calcomEnabled: false,
-    caseStudy,
-  });
+function instructionWithStudy(
+  caseStudy: string,
+  options: { schedulingMode?: boolean; mode?: 'concise_recruiter' | 'storytelling_recruiter' } = {},
+): string {
+  return buildSystemInstruction(
+    PROFILE,
+    'ATLAS-BIO | HirePath Jobs',
+    '',
+    options.mode ?? 'concise_recruiter',
+    buildIntentHint('Tell me about Angular'),
+    {
+      schedulingMode: options.schedulingMode ?? false,
+      calcomEnabled: false,
+      caseStudy,
+    },
+  );
 }
 
 const SAMPLE_STUDY = `${CASE_STUDY_PREFIX}DATEV Kanzlei Platform\nThe product runs the office. I led the frontend. The hard part was the shared state. Feature time dropped.`;
@@ -262,6 +273,35 @@ describe('chat system instruction', () => {
     expect(text).toMatch(/markdown headings/i);
     expect(text).toMatch(/do not tour the other projects/i);
     expect(text).toMatch(/language of the question/i);
+  });
+
+  it('drops storytelling mode rules when a case study is attached', () => {
+    const text = instructionWithStudy(SAMPLE_STUDY, { mode: 'storytelling_recruiter' });
+
+    expect(text).not.toContain('ACTIVE MODE: storytelling_recruiter');
+    expect(text).not.toContain('Length: 120-220 words.');
+  });
+
+  it('does not apply the one-to-two-sentence ABOUT TEXT cap when a study is attached', () => {
+    const text = instructionWithStudy(SAMPLE_STUDY);
+
+    expect(text).not.toContain('If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop.');
+    expect(text).toMatch(/one-to-two-sentence cap does not apply/i);
+    expect(text).toMatch(/attached study is told in the 120-180 form unless the question is practical/i);
+    expect(instruction()).toContain(
+      'If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop. "How much Angular experience" deserves a sentence about scope and versions, not a walk through every job.',
+    );
+  });
+
+  it('keeps study reasoning inside the retell and omits it when no study is attached', () => {
+    const without = instruction();
+    const withStudy = instructionWithStudy(SAMPLE_STUDY);
+
+    expect(without).not.toMatch(/which constraint shaped a decision/i);
+    expect(withStudy).toMatch(/which constraint shaped a decision, what you would do differently now, how you got the team to agree/i);
+    expect(withStudy).not.toContain('Then the reasoning');
+    expect(withStudy).toMatch(/belongs inside the 120-180 retell/i);
+    expect(withStudy).toMatch(/only reasoning that the study contains/i);
   });
 
   it('keeps active mode length rules when no case study is attached', () => {

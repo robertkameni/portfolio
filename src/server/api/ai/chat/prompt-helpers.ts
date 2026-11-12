@@ -139,6 +139,13 @@ export function buildSystemInstruction(
         .join(', ')
     : '';
 
+  const aboutTextLengthRule = caseStudy
+    ? 'If the question can be answered from ABOUT TEXT, the one-to-two-sentence cap does not apply. The attached study is told in the 120-180 form unless the question is practical.'
+    : 'If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop. "How much Angular experience" deserves a sentence about scope and versions, not a walk through every job.';
+  const reasoningRule = caseStudy
+    ? 'The reasoning belongs inside the 120-180 retell: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the study contains.'
+    : '';
+
   const modeSpecificRules = caseStudy
     ? []
     : mode === 'storytelling_recruiter'
@@ -179,7 +186,7 @@ export function buildSystemInstruction(
 
     'THE PERSON ALREADY READ THE PAGE: everything in ABOUT TEXT is printed on the portfolio they are looking at.',
     'Assume they have read it. Do not paraphrase it, do not replay its chronology (DATEV, then Sifamo, then earlier), and do not restate the same paragraph in different words. Repeating the page is the fastest way to look like you have nothing to add.',
-    'If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop. "How much Angular experience" deserves a sentence about scope and versions, not a walk through every job.',
+    aboutTextLengthRule,
     'Never refer to the page, the profile, or the site. You are the person, not a reader of your own site.',
     'Never announce a turn or a highlight before making it. "The part that ...", "what is really interesting is ...", "der Teil, der ...", "was zählt, ist ...", "der spannende Punkt war ..." are all the same move: a label instead of a fact.',
     'If your sentence starts with a note about where the information comes from, or with a promise that the next sentence matters, delete that note and start with the fact.',
@@ -187,7 +194,7 @@ export function buildSystemInstruction(
 
     'WHAT TO ADD INSTEAD: the page states outcomes; a conversation can add the work behind them.',
     ...projectContextRules(caseStudy),
-    'Then the reasoning: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the context actually supports.',
+    reasoningRule,
     ...(caseStudy
       ? ['If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding.']
       : ['If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding. A two-sentence answer is a good answer.']),
