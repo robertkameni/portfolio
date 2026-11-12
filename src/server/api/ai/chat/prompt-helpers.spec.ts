@@ -238,11 +238,25 @@ describe('chat system instruction', () => {
     expect(text).toMatch(/120-180 words/);
     expect(text).toMatch(/practical question wins/i);
     expect(text).toMatch(/rate, salary, availability, location, or start date/i);
+    expect(text).toMatch(/Satz, Gehalt, Verfügbarkeit, Ort, Startdatum/i);
     expect(text).toMatch(/do not retell the case study/i);
-    expect(text).toMatch(/50-140 words/);
+    const lengthLines = text.split('\n').filter((line) => line.includes('50-140 words'));
+    expect(lengthLines).toHaveLength(1);
+    expect(lengthLines[0]).toMatch(/For a practical question/i);
+    expect(text).not.toContain('Length: 50-140 words, and shorter when the answer is mostly already on the page.');
+    expect(text).not.toContain('Length: 120-220 words.');
+    expect(text).not.toContain('2-4 sentences');
+    expect(text).not.toContain('A two-sentence answer is a good answer.');
     expect(text).toMatch(/markdown headings/i);
     expect(text).toMatch(/do not tour the other projects/i);
     expect(text).toMatch(/language of the question/i);
+  });
+
+  it('keeps active mode length rules when no case study is attached', () => {
+    const text = instruction();
+
+    expect(text).toContain('Length: 50-140 words, and shorter when the answer is mostly already on the page.');
+    expect(text).toMatch(/A two-sentence answer is a good answer/i);
   });
 
   it('drops the block in scheduling mode even when the loader found one', () => {

@@ -28,7 +28,7 @@ function projectContextRules(caseStudy: string): string[] {
     'The markdown headings in the case study are notes. Do not copy them as the outline of the reply.',
     'Do not tour the other projects in PROJECT CONTEXT.',
     'Answer in the language of the question. The case study may be German. Do not translate it as a separate step before answering.',
-    'A practical question wins over that retell, even when the same message also matches a project. Practical means rate, salary, availability, location, or start date.',
+    'A practical question wins over that retell, even when the same message also matches a project. Practical means rate, salary, availability, location, or start date, and Satz, Gehalt, Verfügbarkeit, Ort, Startdatum.',
     'For a practical question, keep the concise length, 50-140 words. Do not retell the case study. If a number is missing from the context, say so.',
   ];
 }
@@ -139,8 +139,9 @@ export function buildSystemInstruction(
         .join(', ')
     : '';
 
-  const modeSpecificRules =
-    mode === 'storytelling_recruiter'
+  const modeSpecificRules = caseStudy
+    ? []
+    : mode === 'storytelling_recruiter'
       ? [
           'ACTIVE MODE: storytelling_recruiter.',
           'Shape: open with the direct answer in one sentence, then one story from my own work, then what it meant for the team.',
@@ -187,7 +188,9 @@ export function buildSystemInstruction(
     'WHAT TO ADD INSTEAD: the page states outcomes; a conversation can add the work behind them.',
     ...projectContextRules(caseStudy),
     'Then the reasoning: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the context actually supports.',
-    'If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding. A two-sentence answer is a good answer.',
+    ...(caseStudy
+      ? ['If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding.']
+      : ['If you cannot add anything beyond what the visitor already saw, answer shorter instead of padding. A two-sentence answer is a good answer.']),
 
     'OPENINGS: do not open with a tenure line. Not "I have been working with Angular for N years", not a version range as the first thing the person reads. Those facts belong later in the reply, if at all.',
     'Open with something concrete: the product you built, the decision you made, the constraint you hit, or a direct answer to the question. The first sentence should be new information.',
