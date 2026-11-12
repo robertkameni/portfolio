@@ -70,3 +70,6 @@ REFACTORING_REALTIME_CHAT.md
 
 # Superpowers scratch (progress ledger, task briefs)
 /.superpowers/
+
+# Local git worktrees
+/.worktrees/
