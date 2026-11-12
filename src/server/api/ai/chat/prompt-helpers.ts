@@ -215,6 +215,53 @@ export function normalizeProjectSummary(projects: Array<{ title: string; descrip
     .join(' | ');
 }
 
+export const CASE_STUDY_CHAR_CAP = 4000;
+
+export const CASE_STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
+
+export function scoreProject(project: { title: string; tags: string[] }, message: string): number {
+  const haystack = message.toLowerCase();
+  const tokens = new Set(
+    haystack
+      .replace(/[^a-z0-9äöüß.+#\s-]/g, ' ')
+      .split(/[\s-]+/)
+      .filter((token) => token.length > 1),
+  );
+  let points = 0;
+  for (const tag of project.tags ?? []) {
+    const normalized = tag.toLowerCase();
+    if (haystack.includes(normalized)) {
+      points += 3;
+      continue;
+    }
+    if (normalized.split(/\s+/).some((part) => part.length > 2 && tokens.has(part))) {
+      points += 2;
+    }
+  }
+  const titleWords = project.title.toLowerCase().split(/[^a-z0-9äöüß+#]+/);
+  if (titleWords.some((word) => word.length > 3 && tokens.has(word))) {
+    points += 2;
+  }
+  return points;
+}
+
+export function trimCaseStudy(markdown: string, cap = CASE_STUDY_CHAR_CAP): string {
+  const text = markdown.trim();
+  if (text.length <= cap) {
+    return text;
+  }
+  const window = text.slice(0, cap);
+  const blank = window.lastIndexOf('\n\n');
+  if (blank > 0) {
+    return window.slice(0, blank).trimEnd();
+  }
+  const newline = window.lastIndexOf('\n');
+  if (newline > 0) {
+    return window.slice(0, newline).trimEnd();
+  }
+  return window;
+}
+
 /**
  * Picks the case studies that have something to do with the question.
  *
@@ -230,36 +277,8 @@ export function selectRelevantProjects<T extends { title: string; description: s
   message: string,
   limit = 6,
 ): T[] {
-  const haystack = message.toLowerCase();
-  const tokens = new Set(
-    haystack
-      .replace(/[^a-z0-9äöüß.+#\s-]/g, ' ')
-      .split(/[\s-]+/)
-      .filter((token) => token.length > 1),
-  );
-
-  const score = (project: T): number => {
-    let points = 0;
-    for (const tag of project.tags ?? []) {
-      const normalized = tag.toLowerCase();
-      if (haystack.includes(normalized)) {
-        points += 3;
-        continue;
-      }
-      // "Angular 22" should still match a question about "Angular".
-      if (normalized.split(/\s+/).some((part) => part.length > 2 && tokens.has(part))) {
-        points += 2;
-      }
-    }
-    const titleWords = project.title.toLowerCase().split(/[^a-z0-9äöüß+#]+/);
-    if (titleWords.some((word) => word.length > 3 && tokens.has(word))) {
-      points += 2;
-    }
-    return points;
-  };
-
   const ranked = [...projects].sort((a, b) => {
-    const delta = score(b) - score(a);
+    const delta = scoreProject(b, message) - scoreProject(a, message);
     if (delta !== 0) return delta;
     // Stable tie-break: newest first, then title, so the result never depends on
     // the order the database happened to return.
@@ -270,4 +289,36 @@ export function selectRelevantProjects<T extends { title: string; description: s
   });
 
   return ranked.slice(0, limit);
+}
+
+export type ProjectPromptContext = {
+  projectSummary: string;
+  caseStudy: string;
+};
+
+export function buildProjectPromptContext(
+  projects: readonly {
+    title: string;
+    description: string | null;
+    tags: string[];
+    updatedAt: Date | string;
+    contentMarkdown?: string | null;
+  }[],
+  message: string,
+  limit = 6,
+): ProjectPromptContext {
+  const ranked = selectRelevantProjects(projects, message, limit);
+  const projectSummary = normalizeProjectSummary(ranked);
+  const winner = ranked[0];
+  if (!winner || scoreProject(winner, message) <= 0) {
+    return { projectSummary, caseStudy: '' };
+  }
+  const body = trimCaseStudy(winner.contentMarkdown ?? '');
+  if (!body) {
+    return { projectSummary, caseStudy: '' };
+  }
+  return {
+    projectSummary,
+    caseStudy: `${CASE_STUDY_PREFIX}${winner.title}\n${body}`,
+  };
 }

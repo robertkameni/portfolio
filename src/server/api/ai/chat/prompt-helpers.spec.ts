@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { buildIntentHint, buildSystemInstruction, selectRelevantProjects } from './prompt-helpers';
+import { buildIntentHint, buildProjectPromptContext, buildSystemInstruction, scoreProject, selectRelevantProjects, trimCaseStudy, CASE_STUDY_CHAR_CAP } from './prompt-helpers';
+
+const STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
 
 const PROFILE = {
   name: 'Robert Kameni',
@@ -27,6 +29,75 @@ const PROJECTS = [
   { title: 'Factoring Modernization', description: null, tags: ['Angular 15', 'RxJS', 'NgRx'], updatedAt: '2026-11-08T00:00:06.000Z' },
   { title: 'Employee Management', description: null, tags: ['Angular 14', 'Spring Boot'], updatedAt: '2026-11-08T00:00:07.000Z' },
 ];
+
+describe('case study block', () => {
+  const angular = {
+    title: 'DATEV Kanzlei Platform',
+    description: 'Lead frontend',
+    tags: ['Angular 22', 'Signals'],
+    updatedAt: '2026-11-02T00:00:00.000Z',
+    contentMarkdown: 'WINNER BODY',
+  };
+  const react = {
+    title: 'ATLAS-BIO',
+    description: 'Shop',
+    tags: ['React'],
+    updatedAt: '2026-11-03T00:00:00.000Z',
+    contentMarkdown: 'SECOND BODY',
+  };
+
+  it('leaves the block empty when nothing matches, and keeps the short list', () => {
+    const result = buildProjectPromptContext([angular, react], 'Wie ist das Wetter?');
+
+    expect(scoreProject(angular, 'Wie ist das Wetter?')).toBe(0);
+    expect(result.caseStudy).toBe('');
+    expect(result.projectSummary).toContain('DATEV Kanzlei Platform');
+    expect(result.projectSummary).toContain('ATLAS-BIO');
+  });
+
+  it('puts only the winner body in the block', () => {
+    const result = buildProjectPromptContext([react, angular], 'Erzähl mir von deiner Angular-Erfahrung');
+
+    expect(result.caseStudy.startsWith(`${STUDY_PREFIX}DATEV Kanzlei Platform\n`)).toBe(true);
+    expect(result.caseStudy).toContain('WINNER BODY');
+    expect(result.caseStudy).not.toContain('SECOND BODY');
+    expect(result.projectSummary).toContain('ATLAS-BIO');
+    expect(result.projectSummary).toContain('DATEV Kanzlei Platform');
+  });
+
+  it('skips a blank body even when the project matches', () => {
+    const result = buildProjectPromptContext([{ ...angular, contentMarkdown: '  \n  ' }], 'Angular');
+
+    expect(result.caseStudy).toBe('');
+    expect(result.projectSummary).toContain('DATEV Kanzlei Platform');
+  });
+
+  it('cuts a long body at the last blank line before the cap', () => {
+    const markdown = `${'A'.repeat(100)}\n\n${'B'.repeat(CASE_STUDY_CHAR_CAP)}`;
+    const result = buildProjectPromptContext([{ ...angular, contentMarkdown: markdown }], 'Angular');
+
+    expect(result.caseStudy).toContain('A'.repeat(100));
+    expect(result.caseStudy).not.toContain('B');
+    expect(result.caseStudy.endsWith('...')).toBe(false);
+  });
+
+  it('cuts a single long line at the cap', () => {
+    expect(trimCaseStudy('C'.repeat(CASE_STUDY_CHAR_CAP + 500))).toBe('C'.repeat(CASE_STUDY_CHAR_CAP));
+  });
+
+  it('cuts at the last newline when there is no blank line', () => {
+    const head = 'D'.repeat(50);
+    const tail = 'E'.repeat(CASE_STUDY_CHAR_CAP);
+    expect(trimCaseStudy(`${head}\n${tail}`)).toBe(head);
+  });
+
+  it('keeps the empty-database sentence and an empty block', () => {
+    const result = buildProjectPromptContext([], 'Angular');
+
+    expect(result.projectSummary).toBe('No published project metadata found in database.');
+    expect(result.caseStudy).toBe('');
+  });
+});
 
 describe('project selection', () => {
   it('puts the Angular case studies first for an Angular question', () => {
