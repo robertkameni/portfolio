@@ -32,9 +32,13 @@ vi.mock('./chat-security', () => ({
   logChatInteraction: vi.fn(),
 }));
 
-vi.mock('../api/ai/chat/prompt-helpers', () => ({
-  buildSystemInstruction: vi.fn(() => 'system'),
-}));
+vi.mock('../api/ai/chat/prompt-helpers', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api/ai/chat/prompt-helpers')>();
+  return {
+    ...actual,
+    buildSystemInstruction: vi.fn(() => 'system'),
+  };
+});
 
 vi.mock('../api/ai/chat/stream-request-utils', () => ({
   parseAndValidatePostChatRequest: parseMock,
