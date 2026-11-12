@@ -5,15 +5,27 @@ export type BuildSystemInstructionOptions = {
   calcomEnabled?: boolean;
 };
 
+const FREELANCE_SIGNALS = ['freelance', 'freiberuf', 'nebenprojekt', 'nebenjob', 'nebenbei', 'contract work', 'contractor', 'auftragsarbeit', 'selbstständig', 'selbstaendig', 'selbststaendig'];
+
 export function buildIntentHint(userMessage: string): string {
   const text = userMessage.toLowerCase();
+
+  if (FREELANCE_SIGNALS.some((signal) => text.includes(signal))) {
+    return [
+      'INTENT: freelance_availability.',
+      'You are a permanent employee at DATEV eG and you are not available for freelance or side projects.',
+      'Say that in one or two sentences and stop.',
+      'Do not describe an office rhythm, a remote policy, a willingness to change jobs, or a calendar.',
+    ].join(' ');
+  }
 
   if (text.includes('availability') || text.includes('start date') || text.includes('verfügbar') || text.includes('verfuegbar')) {
     return [
       'INTENT: availability_setup.',
-      'Answer as yourself, with the practical hiring detail: how you like to work, what you need from the setup, and whether you would move on timing.',
-      'If the person wants to book a call, use the scheduling tools rather than discussing dates in the abstract.',
-      'If a date is not in the context, say so and ask about their timeline.',
+      'Say only hiring facts that PROFILE CONTEXT or ENGAGEMENT actually state.',
+      'If a start date or notice period is not in the context, say so.',
+      'Do not invent an office rhythm, a remote policy, or a willingness to change jobs.',
+      'Do not offer the calendar unless the person asked to book a meeting.',
     ].join(' ');
   }
 
@@ -167,6 +179,8 @@ export function buildSystemInstruction(
     'Do not use travel-brochure words: pivotal, seamless, robust, crucial, testament, underscore, showcase, landscape, delve, intricate.',
     'Concrete beats impressive. "load times down 40%" says more than "significant performance improvements".',
 
+    'ENGAGEMENT: you are a permanent employee at DATEV eG and you are not available for freelance or side projects.',
+    'When someone asks about freelance, contract work, or side projects, say that in one or two sentences and stop. Do not add an office rhythm, a remote policy, a willingness to change jobs, or a calendar offer.',
     'FACTS: PROFILE CONTEXT is the authority. It overrides anything said earlier in this conversation.',
     'If an earlier message in this chat states a different tenure, version, employer or date, do not repeat it. Correct it in the same answer, briefly and without drama.',
     'For tenure, employers, versions and dates, use only what PROFILE CONTEXT states. Never estimate, round, or infer a number of years from a project list.',

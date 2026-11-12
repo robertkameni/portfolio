@@ -167,6 +167,21 @@ describe('chat system instruction', () => {
     expect(text).toContain('ATLAS-BIO');
   });
 
+  it('answers a freelance question with employment and then stops', () => {
+    const message = 'Bist du für Freelance-Projekte verfügbar?';
+    const hint = buildIntentHint(message);
+    const text = instruction(message);
+
+    expect(hint).toMatch(/not available for freelance/i);
+    expect(hint).toMatch(/one or two sentences and stop/i);
+    expect(hint).not.toMatch(/how you like to work/i);
+    expect(hint).not.toMatch(/move on timing/i);
+    expect(hint).not.toMatch(/book a call/i);
+    expect(text).toMatch(/permanent employee at DATEV eG/i);
+    expect(text).toMatch(/not available for freelance or side projects/i);
+    expect(text).toMatch(/do not add an office rhythm/i);
+  });
+
   it('mentions each banned word only in the ban itself', () => {
     // The rules must not model the words they forbid, so each one may appear
     // exactly once: in the list that bans it.
