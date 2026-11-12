@@ -4,7 +4,7 @@ import { profileRepository } from '../../../db/repositories/profile.repository';
 import { defaultProfile } from '../../../data/default-profile';
 import { readPositiveIntFromEnv } from '../../../utils/env.util';
 import { rateLimiter } from '../../../utils/rate-limiter';
-import { buildIntentHint, detectResponseMode, selectRelevantProjects, normalizeProjectSummary } from './prompt-helpers';
+import { buildIntentHint, buildProjectPromptContext, detectResponseMode } from './prompt-helpers';
 import { writeSseError } from './stream-utils';
 
 const CHAT_SESSION_WINDOW_MS = readPositiveIntFromEnv('AI_CHAT_SESSION_WINDOW_MS', 60_000);
@@ -44,12 +44,12 @@ export async function loadChatPromptContext(message: string) {
   // from exactly the questions that needed it.
   const publishedProjects = await prisma.project.findMany({
     where: { isPublished: true },
-    select: { title: true, description: true, tags: true, updatedAt: true },
+    select: { title: true, description: true, tags: true, updatedAt: true, contentMarkdown: true },
     orderBy: { updatedAt: 'desc' },
   });
-  const projectSummary = normalizeProjectSummary(selectRelevantProjects(publishedProjects, message, 6));
+  const { projectSummary, caseStudy } = buildProjectPromptContext(publishedProjects, message);
   const responseMode = detectResponseMode(message);
   const intentHint = buildIntentHint(message);
 
-  return { baseProfile, projectSummary, responseMode, intentHint };
+  return { baseProfile, projectSummary, caseStudy, responseMode, intentHint };
 }

@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   buildIntentHint,
@@ -11,6 +12,17 @@ import {
   CASE_STUDY_CHAR_CAP,
   CASE_STUDY_PREFIX,
 } from './prompt-helpers';
+
+describe('case study wiring', () => {
+  it('loads contentMarkdown and withholds the block while scheduling', () => {
+    const loader = readFileSync(new URL('./chat-stream-shared.ts', import.meta.url), 'utf8');
+    const stream = readFileSync(new URL('./stream.post.ts', import.meta.url), 'utf8');
+
+    expect(loader).toContain('contentMarkdown: true');
+    expect(loader).toContain('buildProjectPromptContext(');
+    expect(stream).toContain('caseStudyForInstruction(schedulingMode, caseStudy)');
+  });
+});
 
 const STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
 

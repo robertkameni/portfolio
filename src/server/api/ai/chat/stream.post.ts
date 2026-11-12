@@ -2,7 +2,7 @@ import { defineEventHandler, getRequestIP, setHeader, type H3Event } from 'h3';
 import { DEFAULT_DEEPSEEK_CHAT_MODEL, getAIClient } from '../../../ai/deepseek.client';
 import { generateRequestId, logChatInteraction } from '../../../ai/chat-security';
 import { isCalcomConfigured } from '../../../utils/env.util';
-import { buildSystemInstruction } from './prompt-helpers';
+import { buildSystemInstruction, caseStudyForInstruction } from './prompt-helpers';
 import { parseAndValidatePostChatRequest } from './stream-request-utils';
 import { applySseHeaders, createChatModelSafe, streamChatResponseSafe, writeSseError } from './stream-utils';
 import { resolveVisitorContextString } from './visitor-context';
@@ -41,7 +41,7 @@ export async function handleChatStreamPost(event: H3Event): Promise<void> {
 
     logChatInteraction(requestId, sessionId, message, 'started');
 
-    const { baseProfile, projectSummary, responseMode, intentHint } = await loadChatPromptContext(message);
+    const { baseProfile, projectSummary, caseStudy, responseMode, intentHint } = await loadChatPromptContext(message);
     const visitorContextString = await resolveVisitorContextString(sessionId, '[chat-stream] visitor context fetch failed');
     const schedulingMode = isSchedulingMode(limiterKey);
     const calcomEnabled = isCalcomConfigured();
@@ -49,6 +49,7 @@ export async function handleChatStreamPost(event: H3Event): Promise<void> {
     const systemInstruction = buildSystemInstruction(baseProfile, projectSummary, visitorContextString, responseMode, intentHint, {
       schedulingMode,
       calcomEnabled,
+      caseStudy: caseStudyForInstruction(schedulingMode, caseStudy),
     });
 
     if (schedulingMode && calcomEnabled) {
