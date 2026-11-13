@@ -4,15 +4,15 @@
     trackBehavior="project_viewed_{{ project.slug }}"
     data-stagger
     [style.--i]="i"
-    class="project-row group border-b border-rule px-6 py-8"
+    class="project-row group border-b border-rule py-8"
     [class.md:py-12]="i === 0"
     [class.project-feature]="i === 0"
   >
     <div
       class="project-layout grid grid-cols-1 gap-x-10 gap-y-5"
       [class.md:grid-cols-[auto_1fr]]="i !== 0"
-      [class.md:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]]="i === 0"
-      [class.md:items-center]="i === 0"
+      [class.lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]]="i === 0"
+      [class.lg:items-center]="i === 0"
     >
       @if (project.coverImageUrl) {
       <!-- The screenshot is the largest element in the row, so it carries the
@@ -53,7 +53,7 @@
           @for (t of visibleTags(project); track t) {
           <span>{{ t }}</span>
           } @if (hiddenTagCount(project) > 0) {
-          <span class="text-accent">+{{ hiddenTagCount(project) }}</span>
+          <span class="text-ink-2">+{{ hiddenTagCount(project) }}</span>
           }
         </p>
         } @if (project.description) {
@@ -66,7 +66,7 @@
           } @else {
           <p class="line-clamp-2 whitespace-pre-wrap md:line-clamp-4">{{ project.description }}</p>
           } @if (descriptionNeedsToggle(project.description)) {
-          <button type="button" class="tap-area type-meta mt-2 cursor-pointer text-accent hover:underline" (click)="toggleDescription(project.id, $event)">
+          <button type="button" class="tap-area link-quiet type-meta mt-3 cursor-pointer" (click)="toggleDescription(project.id, $event)">
             {{ descriptionExpanded(project.id) ? commonCopy().showLess : commonCopy().showMore }}
           </button>
           }
@@ -77,7 +77,7 @@
           target="_blank"
           rel="noopener noreferrer"
           [attr.aria-label]="viewLiveAriaLabel(project.title)"
-          class="tap-area type-meta mt-4 inline-flex items-center gap-2 text-accent underline-offset-4 hover:underline"
+          class="tap-area link-quiet type-meta mt-4 inline-flex items-center gap-2"
         >
           {{ projectCopy().viewLive }}
           <span class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true">&#8594;</span>

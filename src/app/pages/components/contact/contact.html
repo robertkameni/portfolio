@@ -1,13 +1,13 @@
-<section id="contact" trackBehavior="contact_viewed" class="edge-top py-16 md:py-24">
+<section id="contact" trackBehavior="contact_viewed" class="bg-paper-2 section">
   <div class="page-shell">
-    <div class="grid grid-cols-1 gap-12 md:grid-cols-[5fr_7fr] md:gap-16">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[5fr_7fr] lg:gap-20">
       <div class="min-w-0">
         <h2 class="type-h2">{{ adaptiveTitle() }}</h2>
         <p class="mt-4 max-w-[40ch] text-ink-2">{{ adaptiveDescription() }}</p>
 
         <dl class="mt-10 divide-y divide-rule border-t border-rule">
           @for (feature of data().features; track feature.title; let i = $index) {
-          <div data-stagger [style.--i]="i + 1" class="py-4">
+          <div data-stagger [style.--i]="i + 1" class="py-5">
             <dt class="type-h3">{{ feature.title }}</dt>
             <dd class="mt-1 text-ink-2">{{ feature.description }}</dd>
           </div>
@@ -15,7 +15,10 @@
         </dl>
       </div>
 
-      <div class="min-w-0 border border-rule bg-surface px-5 py-6 md:px-8 md:py-10">
+      <!-- The form is the same right rail as focus and about, not a card on a
+           card. Its fields already draw their own rules, so a box around them
+           only added a second frame. -->
+      <div class="min-w-0 lg:border-l lg:border-rule lg:pl-12">
         <form (submit)="submit($event)" class="flex flex-col gap-8" novalidate data-stagger style="--i: 2">
           @if (statusMessage(); as msg) {
           <status-alert [type]="statusType()">{{ msg }}</status-alert>

@@ -45,16 +45,28 @@
   color-scheme: light dark;
   --text-display: clamp(2.75rem, 1.35rem + 6.2vw, 6rem);
   --text-lead: clamp(1.125rem, 1rem + 0.7vw, 1.5rem);
-  --text-h2: clamp(1.6rem, 1.2rem + 1.7vw, 2.5rem);
-  --text-h3: 1.0625rem;
+  /* The section heading is the page's second voice. At 2.5rem it sat only a
+     little above a paragraph, so every section read as the same block of
+     text. At 3.25rem the heading carries the page and the body recedes. */
+  --text-h2: clamp(1.875rem, 1.1rem + 2.9vw, 3.25rem);
+  /* Article titles. A case study is the one place a subpage earns display
+     type, but never the home hero's 6rem: the masthead stays the loudest
+     line on the site. */
+  --text-title: clamp(2rem, 1.2rem + 3.2vw, 3.75rem);
+  --text-h3: 1.125rem;
   --text-body: 1rem;
   --text-small: 0.875rem;
   /* 13px floor: 12px uppercase mono with wide tracking falls apart at arm's
      length on a laptop. Nothing on the page may go below this. */
   --text-meta: 0.8125rem;
-  --text-metric: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  --text-metric: clamp(2.25rem, 1.4rem + 3vw, 4rem);
   --container: 78rem;
   --gutter: 1.5rem;
+  /* One vertical rhythm for the document. A section is a full breath; a
+     compact one is a paragraph turn. Padding is chosen from this pair, so the
+     page cannot drift into uniform spacing. */
+  --space-section: clamp(4rem, 6vw, 6rem);
+  --space-section-compact: clamp(3rem, 4.2vw, 4.5rem);
   /* Lift for floating surfaces. Tinted from the scrim, not a pure black drop
      shadow, so it reads as shade under the page's own ink. */
   --shadow-panel: 0 20px 48px color-mix(in srgb, var(--color-scrim) 18%, transparent), 0 2px 8px color-mix(in srgb, var(--color-scrim) 10%, transparent);
@@ -108,7 +120,7 @@
     color: var(--color-ink-2);
     font-family: var(--font-sans);
     font-size: var(--text-body);
-    line-height: 1.65;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -148,9 +160,9 @@
 
   .type-display {
     font-size: var(--text-display);
-    line-height: 0.95;
+    line-height: 0.92;
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     color: var(--color-ink);
   }
 
@@ -163,10 +175,19 @@
 
   .type-h2 {
     font-size: var(--text-h2);
-    line-height: 1.1;
+    line-height: 1.02;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     color: var(--color-ink);
+  }
+
+  .type-title {
+    font-size: var(--text-title);
+    line-height: 1.02;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    text-wrap: balance;
   }
 
   .type-h3 {
@@ -189,8 +210,36 @@
     font-size: var(--text-metric);
     line-height: 1;
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Every section takes its padding from the same pair of tokens, so the
+     document breathes at two speeds instead of one. */
+  .section {
+    padding-block: var(--space-section);
+  }
+
+  .section-compact {
+    padding-block: var(--space-section-compact);
+  }
+
+  /* A printed link. The rule is the affordance, not the colour: accent on
+     every small link made the page look highlighted rather than designed. */
+  .link-quiet {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-ink) 24%, transparent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      text-decoration-color var(--dur-fast) var(--ease-out);
+  }
+
+  .link-quiet:hover {
+    color: var(--color-accent);
+    text-decoration-color: currentColor;
   }
 
   /* Small mono links carry the page's navigation, but their text box is only
@@ -552,7 +601,10 @@
     width: 100%;
     background: transparent;
     border: 0;
-    border-bottom: 1px solid var(--color-rule);
+    /* A form field needs a line you can see. The hairline token is tuned for
+       section boundaries on paper; at 22% ink it stays a line on the tinted
+       contact block and in dark mode. */
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
     border-radius: var(--radius-base);
     padding: 0.625rem 0;
     color: var(--color-ink);
@@ -758,12 +810,6 @@
   }
 }
 
-@keyframes portrait-lag {
-  to {
-    transform: translateY(8%);
-  }
-}
-
 @keyframes shot-drift {
   from {
     transform: translateY(-3%);
@@ -848,7 +894,7 @@
   }
 
   .portrait {
-    box-shadow: -14px 14px 0 var(--color-accent-wash);
+    box-shadow: -12px 12px 0 var(--color-accent-wash);
   }
 
   .project-shot {
@@ -1034,11 +1080,8 @@
       animation-range: entry 0% cover 55%;
     }
 
-    .hero-portrait {
-      animation: portrait-lag linear both;
-      animation-timeline: view();
-      animation-range: contain 0% exit 100%;
-    }
+    /* The hero portrait is a composition anchor: it must sit exactly where the
+       grid puts it, so it keeps the entrance rise and takes no parallax. */
 
     .shot-parallax {
       animation: shot-drift linear both;

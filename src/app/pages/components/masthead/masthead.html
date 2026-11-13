@@ -1,35 +1,40 @@
 <section trackBehavior="intro_viewed" class="pb-16 pt-10 md:pb-24 md:pt-16">
   <div class="page-shell">
-    <div class="grid grid-cols-1 items-start gap-10 md:grid-cols-[minmax(0,1.25fr)_minmax(14rem,0.75fr)] md:gap-12 lg:items-center lg:gap-20">
+    <div class="grid grid-cols-1 items-start gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(15rem,0.7fr)] md:gap-16 lg:items-end lg:gap-20">
       <div class="min-w-0">
         <h1 class="type-display enter" style="--i: 0">{{ name() }}</h1>
 
         <p class="type-lead enter mt-6 max-w-[22ch] text-ink" style="--i: 1">{{ role() }}</p>
 
-        <p class="enter mt-4 max-w-[42ch] text-ink-2" style="--i: 2">{{ description() }}</p>
+        <!-- The rule turns the byline into a block: name, role, then the
+             supporting text and the exits. Without it the four lines were one
+             undifferentiated paragraph at display weight. -->
+        <div class="enter mt-8 border-t border-rule pt-6" style="--i: 2">
+          <p class="max-w-[46ch] text-ink-2">{{ description() }}</p>
 
-        <div class="enter mt-8 flex flex-wrap items-center gap-x-8 gap-y-3" style="--i: 3">
-          <a href="#projects-section" class="hero-cta tap-area inline-flex items-center whitespace-nowrap bg-ink px-4 py-2 text-paper hover:bg-accent active:translate-y-px">
-            {{ copy().projects.title }}
-          </a>
+          <div class="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+            <a href="#projects-section" class="hero-cta tap-area inline-flex items-center whitespace-nowrap bg-ink px-4 py-2 text-paper hover:bg-accent active:translate-y-px">
+              {{ copy().projects.title }}
+            </a>
 
-          @if (socials().length > 0) {
-          <ul class="flex flex-wrap items-center gap-x-8 gap-y-3">
-            @for (social of socials(); track social.url) {
-            <li>
-              <a
-                [href]="social.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                [attr.aria-label]="socialAriaLabel(social.platform)"
-                class="tap-area type-meta text-ink-3 underline decoration-transparent underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-current"
-              >
-                {{ social.platform }}
-              </a>
-            </li>
+            @if (socials().length > 0) {
+            <ul class="flex flex-wrap items-center gap-x-8 gap-y-3">
+              @for (social of socials(); track social.url) {
+              <li>
+                <a
+                  [href]="social.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.aria-label]="socialAriaLabel(social.platform)"
+                  class="tap-area type-meta text-ink-3 underline decoration-transparent underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-current"
+                >
+                  {{ social.platform }}
+                </a>
+              </li>
+              }
+            </ul>
             }
-          </ul>
-          }
+          </div>
         </div>
       </div>
 
@@ -39,12 +44,12 @@
           srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
           width="480"
           height="600"
-          sizes="(min-width: 768px) 26rem, 80vw"
+          sizes="(min-width: 768px) 30vw, 80vw"
           [alt]="name()"
           decoding="async"
           loading="eager"
           fetchpriority="high"
-          class="portrait hero-portrait aspect-4/5 w-full max-w-[20rem] object-cover object-top md:max-w-[26rem]"
+          class="portrait hero-portrait aspect-4/5 w-full max-w-[20rem] object-cover object-top md:max-w-none"
         />
       </div>
     </div>

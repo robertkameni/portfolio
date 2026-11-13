@@ -1,4 +1,4 @@
-<main id="main" class="min-h-screen bg-paper pb-24 pt-16" fadeIn>
+<main id="main" class="min-h-dvh bg-paper pb-24 pt-12 md:pt-16" fadeIn>
   <div class="page-shell">
     <a
       [routerLink]="goBackLink()"
@@ -24,7 +24,7 @@
           <time [attr.datetime]="project.createdAt">{{ project.createdAt | date: 'mediumDate' : undefined : angularLocale() }}</time>
         </div>
 
-        <h1 class="type-display">{{ project.title }}</h1>
+        <h1 class="type-title">{{ project.title }}</h1>
 
         @if (project.description) {
         <p class="type-lead text-ink-2">{{ project.description }}</p>
@@ -49,7 +49,7 @@
       </section>
       }
 
-      <section class="space-y-4 rounded-base border border-rule bg-surface p-6 md:p-8">
+      <section class="space-y-4">
         <h2 class="type-h2">{{ copy().projectDetail.overview }}</h2>
         @if (project.contentMarkdown) {
         <div class="project-markdown" [safeHtml]="renderedMarkdown()"></div>
@@ -62,7 +62,7 @@
             [href]="project.projectUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="tap-area inline-flex items-center gap-2 font-semibold text-accent underline-offset-4 hover:underline"
+            class="tap-area link-quiet inline-flex items-center gap-2 font-semibold"
             [attr.aria-label]="copy().projectDetail.liveSiteAriaLabel"
           >
             {{ copy().projectDetail.liveSiteLinkLabel }}

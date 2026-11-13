@@ -1,11 +1,26 @@
 <footer class="edge-top">
-  <div class="page-shell flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-    <p class="type-meta text-ink-3">{{ copyright() }}</p>
-    <nav [attr.aria-label]="copy().nav.label" class="flex flex-wrap gap-x-6">
-      <a href="#focus" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().focus.title }}</a>
-      <a href="#about" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().nav.about }}</a>
-      <a href="#projects-section" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().projects.title }}</a>
-      <a href="#contact" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().nav.contact }}</a>
+  <div class="page-shell flex flex-col gap-8 py-10 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="font-mono text-2xl font-semibold tracking-[0.02em] text-ink">RK</p>
+      <p class="type-meta mt-3 text-ink-3">{{ copyright() }}</p>
+    </div>
+
+    <nav [attr.aria-label]="copy().nav.label" class="grid grid-cols-2 gap-x-6 sm:flex sm:flex-wrap">
+      <a href="#focus" class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent">
+        {{ copy().focus.title }}
+      </a>
+      <a href="#about" class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent">
+        {{ copy().nav.about }}
+      </a>
+      <a
+        href="#projects-section"
+        class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent"
+      >
+        {{ copy().projects.title }}
+      </a>
+      <a href="#contact" class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent">
+        {{ copy().nav.contact }}
+      </a>
     </nav>
   </div>
 </footer>

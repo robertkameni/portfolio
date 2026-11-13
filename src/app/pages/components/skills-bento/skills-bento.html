@@ -1,4 +1,4 @@
-<section trackBehavior="skills_viewed" class="bg-paper-2 py-16 md:py-24">
+<section trackBehavior="skills_viewed" class="bg-paper-2 section-compact">
   <div class="page-shell">
     <h2 class="type-h2">{{ copy().skills.title }}</h2>
 
@@ -6,8 +6,12 @@
          labels into 186px cells, where the longest one wrapped to three lines
          and set the height of its row. There each skill is a small card that
          flows, which is compact and needs no scanning. From sm up the hairline
-         grid returns, with the lead skill taking half of the first row. -->
-    <div class="skill-grid mt-10 flex flex-wrap gap-2">
+         grid returns, with the lead skill taking half of the first row.
+
+         The lead skill is the one solid ink tile on the page. In a grid of
+         hairlines and paper, a single filled cell is the section's anchor, so
+         the eye has somewhere to land before it reads nine labels. -->
+    <div class="skill-grid mt-8 flex flex-wrap gap-2 md:mt-12">
       @for (skill of entries(); track skill.name; let i = $index) {
       <div
         trackBehavior="skill_viewed_{{ skill.name }}"
@@ -15,17 +19,17 @@
         [style.--i]="i"
         [attr.data-span]="span(i)"
         class="skill-cell group rounded-base border border-rule px-3 py-2 sm:rounded-none sm:border-0 {{ i === 0 ? 'sm:px-8 sm:py-10' : 'sm:px-5 sm:py-6' }}"
+        [class.bg-ink]="i === 0"
         [class.bg-paper]="i !== 0"
-        [class.bg-accent-wash]="i === 0"
       >
         <span
-          class="block font-medium leading-snug transition-colors duration-150 group-hover:text-ink {{ i === 0 ? 'text-(length:--text-lead) text-ink' : 'text-(length:--text-small) text-ink-2' }}"
+          class="block font-medium leading-snug transition-colors duration-150 {{ i === 0 ? 'text-(length:--text-lead) text-paper' : 'text-(length:--text-small) text-ink-2 group-hover:text-ink' }}"
         >
           {{ skill.name }}
         </span>
 
         @if (skill.detail) {
-        <span class="type-meta mt-1 block text-ink-3">{{ skill.detail }}</span>
+        <span class="type-meta mt-1 block {{ i === 0 ? 'text-paper opacity-70' : 'text-ink-3' }}">{{ skill.detail }}</span>
         }
       </div>
       }
