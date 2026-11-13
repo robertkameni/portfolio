@@ -66,6 +66,12 @@
   }
 }
 
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 4.75rem;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-paper: #141516;
@@ -92,7 +98,7 @@
 @layer base {
   html {
     background: var(--color-paper);
-    scroll-padding-top: 4.75rem;
+    scroll-padding-top: 9rem;
     scroll-behavior: smooth;
   }
 
@@ -1217,5 +1223,45 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+}
+
+/* Phone header. Four labels do not fit one line at 375px, and a flex wrap
+   leaves Kontakt alone on a second row. Two columns keep the page order and
+   line the pairs up with RK on the left and Admin on the right. */
+@media (max-width: 639px) {
+  [data-toolbar-mobile] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  [data-toolbar-mobile] > a {
+    justify-self: start;
+    width: max-content;
+  }
+
+  [data-toolbar-mobile] > a:nth-child(even) {
+    justify-self: end;
+  }
+}
+
+/* The launcher is fixed to the corner, so the footer keeps its links out of
+   that lane. On a phone the lane is the icon at the bottom; from 640px it is
+   the labelled button, and only the overlap with the centred column is padded. */
+footer .page-shell {
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 640px) {
+  footer .page-shell {
+    padding-bottom: 2rem;
+    padding-inline-end: max(var(--gutter), calc(14.5rem - (100vw - min(100vw, var(--container))) / 2));
+  }
+}
+
+@media print {
+  footer .page-shell {
+    padding-bottom: 2rem;
+    padding-inline-end: var(--gutter);
   }
 }

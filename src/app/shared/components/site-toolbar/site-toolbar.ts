@@ -1,4 +1,5 @@
-import { Component, inject, input } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
+import { afterNextRender, Component, ElementRef, inject, input, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { LocaleService } from '../../services/locale.service';
@@ -12,9 +13,29 @@ import { LocaleService } from '../../services/locale.service';
     class: 'sticky top-0 z-40 block w-full',
   },
 })
-export class SiteToolbarComponent {
+export class SiteToolbarComponent implements OnDestroy {
   private readonly localeService = inject(LocaleService);
   private readonly router = inject(Router);
+  private readonly scroller = inject(ViewportScroller);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private resizeObserver: ResizeObserver | null = null;
+
+  constructor() {
+    afterNextRender(() => {
+      const apply = () => this.scroller.setOffset([0, this.host.nativeElement.offsetHeight]);
+      apply();
+      if (typeof ResizeObserver === 'undefined') {
+        return;
+      }
+      this.resizeObserver = new ResizeObserver(apply);
+      this.resizeObserver.observe(this.host.nativeElement);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+  }
 
   readonly auth = inject(AuthService);
 

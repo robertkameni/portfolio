@@ -9,6 +9,12 @@
     <a href="#projects-section" class="toolbar-option">{{ copy().projects.title }}</a>
     <a href="#contact" class="toolbar-option">{{ copy().nav.contact }}</a>
   </nav>
+  <nav data-toolbar-mobile [attr.aria-label]="copy().nav.label" activeSection class="page-shell flex gap-x-5 border-t border-rule sm:flex-nowrap lg:hidden">
+    <a href="#focus" class="toolbar-option">{{ copy().focus.title }}</a>
+    <a href="#about" class="toolbar-option">{{ copy().nav.about }}</a>
+    <a href="#projects-section" class="toolbar-option">{{ copy().projects.title }}</a>
+    <a href="#contact" class="toolbar-option">{{ copy().nav.contact }}</a>
+  </nav>
   @if (devMode) {
   <div class="hidden items-center gap-5 sm:flex">
     <button (click)="setMockProfile('founder')" [attr.aria-pressed]="activeProfile() === 'founder'" class="toolbar-option cursor-pointer">{{ copy().home.founder }}</button>
