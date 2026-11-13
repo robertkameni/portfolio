@@ -2,8 +2,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { afterNextRender, Directive, ElementRef, inject, OnDestroy, PLATFORM_ID } from '@angular/core';
 
 /**
- * Marks the nav link whose section is in the reading band under the sticky
- * header. The band is the observer root, so this never listens to scroll.
+ * Marks the nav link for the section that has reached the sticky header.
+ * IntersectionObserver refreshes the mark as sections cross that edge.
+ * `scrollend` runs it once more when a tap's smooth scroll actually stops,
+ * because the last observer callback can land a few pixels too early.
  */
 @Directive({
   selector: '[activeSection]',
@@ -14,6 +16,12 @@ export class ActiveSectionDirective implements OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private observer: IntersectionObserver | null = null;
   private mutations: MutationObserver | null = null;
+  private pairsCache: { link: HTMLAnchorElement; section: HTMLElement }[] = [];
+  private readonly onSettle = () => {
+    if (this.pairsCache.length > 0) {
+      this.mark(this.pairsCache);
+    }
+  };
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -24,10 +32,16 @@ export class ActiveSectionDirective implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this.observer?.disconnect();
     this.observer = null;
     this.mutations?.disconnect();
     this.mutations = null;
+    document.removeEventListener('scrollend', this.onSettle);
+    window.visualViewport?.removeEventListener('resize', this.onSettle);
   }
 
   private bind(): void {
@@ -67,17 +81,31 @@ export class ActiveSectionDirective implements OnDestroy {
   }
 
   private observe(pairs: { link: HTMLAnchorElement; section: HTMLElement }[]): void {
+    this.pairsCache = pairs;
     this.observer = new IntersectionObserver(() => this.mark(pairs), { threshold: [0, 0.25, 0.6] });
 
     for (const { section } of pairs) {
       this.observer.observe(section);
     }
+
+    document.addEventListener('scrollend', this.onSettle);
+    window.visualViewport?.addEventListener('resize', this.onSettle);
+    this.mark(pairs);
+  }
+
+  private readingLine(): number {
+    const header = document.querySelector('site-toolbar');
+    const underHeader = header ? header.getBoundingClientRect().bottom : 0;
+    // A tapped section stops with its top against the header. On a phone that
+    // edge sits below 28% of the viewport, so a fraction-of-the-screen line
+    // leaves the mark on the previous item.
+    return underHeader + 12;
   }
 
   private mark(pairs: { link: HTMLAnchorElement; section: HTMLElement }[]): void {
-    // The last section whose top has crossed the reading line stays current,
+    // The last section whose top has reached the header stays current,
     // including through the stretches (the tool sheet) that have no link.
-    const line = window.innerHeight * 0.28;
+    const line = this.readingLine();
     let current = '';
     for (const { section } of pairs) {
       if (section.getBoundingClientRect().top <= line) {

@@ -1,4 +1,4 @@
-import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveSectionDirective } from './active-section.directive';
@@ -6,7 +6,9 @@ import { ActiveSectionDirective } from './active-section.directive';
 @Component({
   standalone: true,
   imports: [ActiveSectionDirective],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
+    <site-toolbar></site-toolbar>
     <nav activeSection>
       <a href="#focus">Focus</a>
       <a href="#about">About</a>
@@ -58,25 +60,27 @@ describe('ActiveSectionDirective', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  function place(node: HTMLElement, top: number): void {
+  function place(node: HTMLElement, top: number, height = 400): void {
     node.getBoundingClientRect = () =>
       ({
         top,
-        bottom: top + 400,
+        bottom: top + height,
         left: 0,
         right: 100,
         width: 100,
-        height: 400,
+        height,
         x: 0,
         y: top,
         toJSON: () => ({}),
       }) as DOMRect;
   }
 
-  it('marks the last section that has crossed the reading line', async () => {
+  it('marks the last section that has reached the header', async () => {
     const root = await render();
+    const bar = root.querySelector('site-toolbar') as HTMLElement;
     const focus = root.querySelector('#focus') as HTMLElement;
     const about = root.querySelector('#about') as HTMLElement;
+    place(bar, 0, 64);
     place(focus, 40);
     place(about, 900);
 
@@ -86,10 +90,30 @@ describe('ActiveSectionDirective', () => {
     expect(root.querySelector('a[href="#about"]')?.hasAttribute('aria-current')).toBe(false);
   });
 
-  it('clears the mark while the hero is still above every section', async () => {
+  it('marks the section parked under the header on a short phone', async () => {
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 500 });
     const root = await render();
+    const bar = root.querySelector('site-toolbar') as HTMLElement;
     const focus = root.querySelector('#focus') as HTMLElement;
     const about = root.querySelector('#about') as HTMLElement;
+    // Header bottom is 160. 28% of this viewport is 140, which used to leave
+    // the mark on Focus even though About is the section on screen.
+    place(bar, 0, 160);
+    place(focus, -500);
+    place(about, 164);
+
+    trigger([{ target: about, isIntersecting: true } as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    expect(root.querySelector('a[href="#about"]')?.getAttribute('aria-current')).toBe('true');
+    expect(root.querySelector('a[href="#focus"]')?.hasAttribute('aria-current')).toBe(false);
+  });
+
+  it('clears the mark while the hero is still above every section', async () => {
+    const root = await render();
+    const bar = root.querySelector('site-toolbar') as HTMLElement;
+    const focus = root.querySelector('#focus') as HTMLElement;
+    const about = root.querySelector('#about') as HTMLElement;
+    place(bar, 0, 64);
     place(focus, 40);
     place(about, 900);
     trigger([{ target: focus, isIntersecting: true } as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
