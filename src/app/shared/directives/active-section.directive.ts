@@ -103,15 +103,7 @@ export class ActiveSectionDirective implements OnDestroy {
   }
 
   private mark(pairs: { link: HTMLAnchorElement; section: HTMLElement }[]): void {
-    // The last section whose top has reached the header stays current,
-    // including through the stretches (the tool sheet) that have no link.
-    const line = this.readingLine();
-    let current = '';
-    for (const { section } of pairs) {
-      if (section.getBoundingClientRect().top <= line) {
-        current = section.id;
-      }
-    }
+    const current = this.currentSection(pairs);
 
     for (const { link, section } of pairs) {
       if (current !== '' && section.id === current) {
@@ -120,5 +112,42 @@ export class ActiveSectionDirective implements OnDestroy {
         link.removeAttribute('aria-current');
       }
     }
+  }
+
+  /**
+   * The section the reader is in.
+   *
+   * A section that covers the reading line owns the marker. When the line
+   * falls in a stretch with no link under it, the marker follows what is
+   * actually on screen: a section has to fill more than half of the space
+   * below the header. Picking "the last section whose top went past the line"
+   * instead would keep the previous item marked long after its content had
+   * scrolled away, which is what put the mark on Projects while the contact
+   * heading filled the screen.
+   */
+  private currentSection(pairs: { link: HTMLAnchorElement; section: HTMLElement }[]): string {
+    const line = this.readingLine();
+    const viewport = window.innerHeight;
+    let covering = '';
+    // Bar for taking the mark without covering the line. A section that only
+    // peeks in at the bottom does not get it.
+    let dominant = (viewport - line) / 2;
+    let closest = '';
+
+    for (const { section } of pairs) {
+      const { top, bottom } = section.getBoundingClientRect();
+
+      if (top <= line && bottom > line) {
+        covering = section.id;
+      }
+
+      const visible = Math.min(bottom, viewport) - Math.max(top, line);
+      if (visible > dominant) {
+        dominant = visible;
+        closest = section.id;
+      }
+    }
+
+    return covering !== '' ? covering : closest;
   }
 }

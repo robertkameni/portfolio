@@ -588,6 +588,43 @@
     border-bottom-color: var(--color-accent);
   }
 
+  /* A switch, not a place. The dev-mode persona buttons used to share the
+     option style, so a pressed one drew the same accent underline the nav uses
+     for "you are here" and the header showed two active items at once. A
+     filled chip says "this control is on" without borrowing the marker. */
+  .toolbar-toggle {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    line-height: 1.4;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-3);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-block: 0.375rem;
+    padding-inline: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-base);
+    background: none;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .toolbar-toggle:hover {
+    color: var(--color-ink);
+    border-color: var(--color-rule);
+  }
+
+  .toolbar-toggle[aria-pressed='true'] {
+    color: var(--color-paper);
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
   .loader-bar {
     height: 1px;
     width: 33%;

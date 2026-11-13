@@ -16,11 +16,11 @@
     <a href="#contact" class="toolbar-option">{{ copy().nav.contact }}</a>
   </nav>
   @if (devMode) {
-  <div class="hidden items-center gap-5 sm:flex">
-    <button (click)="setMockProfile('founder')" [attr.aria-pressed]="activeProfile() === 'founder'" class="toolbar-option cursor-pointer">{{ copy().home.founder }}</button>
-    <button (click)="setMockProfile('recruiter')" [attr.aria-pressed]="activeProfile() === 'recruiter'" class="toolbar-option cursor-pointer">{{ copy().home.recruiter }}</button>
-    <button (click)="setMockProfile('developer')" [attr.aria-pressed]="activeProfile() === 'developer'" class="toolbar-option cursor-pointer">{{ copy().home.developer }}</button>
-    <button (click)="setMockProfile(null)" [attr.aria-pressed]="activeProfile() === null" class="toolbar-option cursor-pointer">{{ copy().home.reset }}</button>
+  <div class="hidden items-center gap-1.5 sm:flex">
+    <button (click)="setMockProfile('founder')" [attr.aria-pressed]="activeProfile() === 'founder'" class="toolbar-toggle cursor-pointer">{{ copy().home.founder }}</button>
+    <button (click)="setMockProfile('recruiter')" [attr.aria-pressed]="activeProfile() === 'recruiter'" class="toolbar-toggle cursor-pointer">{{ copy().home.recruiter }}</button>
+    <button (click)="setMockProfile('developer')" [attr.aria-pressed]="activeProfile() === 'developer'" class="toolbar-toggle cursor-pointer">{{ copy().home.developer }}</button>
+    <button (click)="setMockProfile(null)" [attr.aria-pressed]="activeProfile() === null" class="toolbar-toggle cursor-pointer">{{ copy().home.reset }}</button>
   </div>
   }
 </site-toolbar>

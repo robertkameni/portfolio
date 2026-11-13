@@ -108,6 +108,41 @@ describe('ActiveSectionDirective', () => {
     expect(root.querySelector('a[href="#focus"]')?.hasAttribute('aria-current')).toBe(false);
   });
 
+  it('moves the mark to the section the reader is looking at when an unlinked block sits between two sections', async () => {
+    const root = await render();
+    const bar = root.querySelector('site-toolbar') as HTMLElement;
+    const focus = root.querySelector('#focus') as HTMLElement;
+    const about = root.querySelector('#about') as HTMLElement;
+    place(bar, 0, 64);
+    // The reading line is at 76. About has not reached it yet, but it fills
+    // most of the screen, so it is the section being read. This is the twin
+    // invite sitting between the project list and the contact form: the mark
+    // used to stay on the previous section for the whole stretch.
+    place(focus, -900, 400);
+    place(about, 114, 600);
+
+    trigger([{ target: about, isIntersecting: true } as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    expect(root.querySelector('a[href="#about"]')?.getAttribute('aria-current')).toBe('true');
+    expect(root.querySelector('a[href="#focus"]')?.hasAttribute('aria-current')).toBe(false);
+  });
+
+  it('clears the mark through a stretch that has no link and no section on screen', async () => {
+    const root = await render();
+    const bar = root.querySelector('site-toolbar') as HTMLElement;
+    const focus = root.querySelector('#focus') as HTMLElement;
+    const about = root.querySelector('#about') as HTMLElement;
+    place(bar, 0, 64);
+    // Focus has scrolled past, About has not arrived: the reader is inside an
+    // unlinked block, so no menu item is current.
+    place(focus, -2000, 400);
+    place(about, 2000, 400);
+
+    trigger([{ target: focus, isIntersecting: false } as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    expect(root.querySelector('[aria-current]')).toBeNull();
+  });
+
   it('clears the mark while the hero is still above every section', async () => {
     const root = await render();
     const bar = root.querySelector('site-toolbar') as HTMLElement;
