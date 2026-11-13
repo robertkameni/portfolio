@@ -18,6 +18,7 @@ function projectContextRules(caseStudy: string): string[] {
     return [
       'No case study text is attached. PROJECT CONTEXT is a name list, not a story.',
       'Do not invent a walkthrough from those titles and one-line descriptions. You may name a project from that list when asked what else you have built.',
+      'A follow-up that asks for another project gets one sentence that contains only the other project title, then stop. Do not describe what it does, its agents, its streaming, or its stack.',
     ];
   }
 
@@ -27,13 +28,30 @@ function projectContextRules(caseStudy: string): string[] {
     'Length for that retell: 120-180 words. This length replaces the active mode length.',
     'The markdown headings in the case study are notes. Do not copy them as the outline of the reply.',
     'Do not tour the other projects in PROJECT CONTEXT.',
+    'Name only the product in CASE STUDY. A second product, employer, or project makes the answer wrong.',
+    'The last paragraph is still about that same product. Do not end on a different employer. "Vorher bei DATEV" and "Davor" are the failure: delete that paragraph.',
+    'Do not close with a version range or a count of years. "v8 bis v22" and "rund 6 Jahren" are already on the page. Delete that ending.',
+    'Do not borrow the percentages, module counts, or team sizes from ABOUT TEXT. Those are already on the page. The facts in this reply come from CASE STUDY.',
+    'Stop after that one study. Do not ask which stage they want, and do not offer to go deeper. "sag welche", "dann gehe ich tiefer", and "wenn dich eine dieser Etappen interessiert" are closers. Delete them.',
     'Answer in the language of the question. The case study may be German. Do not translate it as a separate step before answering.',
     'A practical question wins over that retell, even when the same message also matches a project. Practical means rate, salary, availability, location, or start date, and Satz, Gehalt, Verfügbarkeit, Ort, Startdatum.',
     'For a practical question, keep the concise length, 50-140 words. Do not retell the case study. If a number is missing from the context, say so.',
   ];
 }
 
-const FREELANCE_SIGNALS = ['freelance', 'freiberuf', 'nebenprojekt', 'nebenjob', 'nebenbei', 'contract work', 'contractor', 'auftragsarbeit', 'selbstständig', 'selbstaendig', 'selbststaendig'];
+const FREELANCE_SIGNALS = [
+  'freelance',
+  'freiberuf',
+  'nebenprojekt',
+  'nebenjob',
+  'nebenbei',
+  'contract work',
+  'contractor',
+  'auftragsarbeit',
+  'selbstständig',
+  'selbstaendig',
+  'selbststaendig',
+];
 
 export function buildIntentHint(userMessage: string): string {
   const text = userMessage.toLowerCase();
@@ -143,7 +161,7 @@ export function buildSystemInstruction(
     ? 'If the question can be answered from ABOUT TEXT, the one-to-two-sentence cap does not apply. The attached study is told in the 120-180 form unless the question is practical.'
     : 'If the question can be answered from ABOUT TEXT, keep it to one or two sentences and stop. "How much Angular experience" deserves a sentence about scope and versions, not a walk through every job.';
   const reasoningRule = caseStudy
-    ? 'The reasoning belongs inside the 120-180 retell: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the study contains.'
+    ? 'The reasoning belongs inside the 120-180 retell: which constraint shaped a decision, what you would do differently now, how you got the team to agree. Use only reasoning that the study contains. Do not compare the study with another employer.'
     : '';
 
   const modeSpecificRules = caseStudy
@@ -223,8 +241,10 @@ export function buildSystemInstruction(
     'If an earlier message in this chat states a different tenure, version, employer or date, do not repeat it. Correct it in the same answer, briefly and without drama.',
     'For tenure, employers, versions and dates, use only what PROFILE CONTEXT states. Never estimate, round, or infer a number of years from a project list.',
     'Do not split your tenure by technology or by employer unless PROFILE CONTEXT gives that split. If it says around 6 years with Angular, do not turn the dates of two roles into "4 years of Angular".',
-    'When the answer involves current work, prefer the most recent role named in PROFILE CONTEXT over older engagements.',
-    'Every reply needs at least one concrete fact from the profile or project context, stated in plain words rather than as a headline.',
+    'When the answer involves current work and no case study is attached, prefer the most recent role named in PROFILE CONTEXT over older engagements.',
+    caseStudy
+      ? 'Every reply needs at least one concrete fact from CASE STUDY, stated in plain words rather than as a headline. Do not fill that slot with a percentage or a module count copied from ABOUT TEXT.'
+      : 'Every reply needs at least one concrete fact from the profile or project context, stated in plain words rather than as a headline.',
     ...modeSpecificRules,
     ...buildSchedulingRules(schedulingMode, calcomEnabled),
     intentHint,

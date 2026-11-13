@@ -34,6 +34,12 @@ export type SiteCopy = {
     /** Use `{platform}` — replaced with LinkedIn, Xing, etc. */
     socialLinkAriaLabel: string;
   };
+  nav: {
+    /** Accessible name for the in-page section links. */
+    label: string;
+    about: string;
+    contact: string;
+  };
   focus: {
     title: string;
   };

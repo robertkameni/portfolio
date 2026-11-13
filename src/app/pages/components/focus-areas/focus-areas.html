@@ -1,12 +1,17 @@
-<section trackBehavior="hero_viewed" class="edge-top py-16">
+<section id="focus" trackBehavior="hero_viewed" class="edge-top py-16 md:py-24">
   <div class="page-shell">
     <h2 class="type-h2">{{ copy().focus.title }}</h2>
 
-    <div class="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-rule">
+    <div class="mt-10 grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.75fr)] md:gap-14">
       @for (card of adaptiveCards(); track card.title; let i = $index) {
-      <article trackBehavior="hero_card_viewed_{{ card.title }}" data-stagger [style.--i]="i" class="md:px-10 md:first:pl-0 md:last:pr-0">
-        <p class="type-meta text-ink-3">{{ card.title }}</p>
-        <p class="type-meta mt-2 text-ink-3">{{ card.subtitle }}</p>
+      <article
+        trackBehavior="hero_card_viewed_{{ card.title }}"
+        data-stagger
+        [style.--i]="i"
+        [class]="i === 1 ? 'min-w-0 bg-paper-2 px-5 py-6 md:px-8 md:py-10' : 'min-w-0 md:py-10'"
+      >
+        <h3 class="text-(length:--text-lead) font-medium leading-snug text-ink">{{ card.title }}</h3>
+        <p class="type-meta mt-3 text-ink-3">{{ card.subtitle }}</p>
         <p class="mt-4 max-w-[42ch] text-ink-2">{{ card.description }}</p>
 
         <ul class="mt-6 divide-y divide-rule border-t border-rule">

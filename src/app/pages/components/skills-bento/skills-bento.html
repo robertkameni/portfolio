@@ -1,22 +1,28 @@
-<section trackBehavior="skills_viewed" class="py-16">
+<section trackBehavior="skills_viewed" class="bg-paper-2 py-16 md:py-24">
   <div class="page-shell">
-    <p class="type-meta text-ink-3">{{ copy().stack.eyebrow }}</p>
-    <h2 class="type-h2 mt-3">{{ copy().skills.title }}</h2>
+    <h2 class="type-h2">{{ copy().skills.title }}</h2>
 
     <!-- One DOM, two presentations. On a phone the specimen grid squeezed ten
          labels into 186px cells, where the longest one wrapped to three lines
          and set the height of its row. There each skill is a small card that
          flows, which is compact and needs no scanning. From sm up the hairline
-         grid returns exactly as before. -->
-    <div class="mt-10 flex flex-wrap gap-2 sm:grid sm:grid-cols-2 sm:gap-px sm:bg-rule md:grid-cols-3">
+         grid returns, with the lead skill taking half of the first row. -->
+    <div class="skill-grid mt-10 flex flex-wrap gap-2">
       @for (skill of entries(); track skill.name; let i = $index) {
       <div
         trackBehavior="skill_viewed_{{ skill.name }}"
         data-stagger
         [style.--i]="i"
-        class="group rounded-base border border-rule bg-paper px-3 py-2 sm:rounded-none sm:border-0 sm:px-5 sm:py-6"
+        [attr.data-span]="span(i)"
+        class="skill-cell group rounded-base border border-rule px-3 py-2 sm:rounded-none sm:border-0 {{ i === 0 ? 'sm:px-8 sm:py-10' : 'sm:px-5 sm:py-6' }}"
+        [class.bg-paper]="i !== 0"
+        [class.bg-accent-wash]="i === 0"
       >
-        <span class="block text-(length:--text-small) font-medium leading-snug text-ink-2 transition-colors duration-150 group-hover:text-ink">{{ skill.name }}</span>
+        <span
+          class="block font-medium leading-snug transition-colors duration-150 group-hover:text-ink {{ i === 0 ? 'text-(length:--text-lead) text-ink' : 'text-(length:--text-small) text-ink-2' }}"
+        >
+          {{ skill.name }}
+        </span>
 
         @if (skill.detail) {
         <span class="type-meta mt-1 block text-ink-3">{{ skill.detail }}</span>

@@ -16,6 +16,17 @@ export type SkillEntry = {
  * dictates the height of its whole row; split, the name stays scannable and the
  * qualifier becomes a second line that is allowed to wrap.
  */
+/**
+ * Nine tools fill a 12-column sheet without a gap: the lead skill takes half
+ * the first row, two companions split the rest, and the remainder sits three
+ * across. Any other count stays on the even three-column grid.
+ */
+export function skillSpan(index: number, total: number): 6 | 4 | 3 {
+  if (total === 9 && index === 0) return 6;
+  if (total === 9 && index < 3) return 3;
+  return 4;
+}
+
 export function splitSkillName(raw: string): SkillEntry {
   const match = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(raw);
   if (!match) {
@@ -36,4 +47,8 @@ export class SkillsBento {
   protected readonly copy = computed(() => getSiteCopy(this.locale()));
 
   protected readonly entries = computed(() => this.skills().map((skill) => splitSkillName(skill.name)));
+
+  protected span(index: number): 6 | 4 | 3 {
+    return skillSpan(index, this.entries().length);
+  }
 }

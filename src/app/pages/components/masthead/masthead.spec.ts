@@ -39,8 +39,9 @@ describe('Masthead', () => {
   it('renders one text link per social platform', () => {
     const fixture = render();
 
-    const links = [...fixture.nativeElement.querySelectorAll('a')] as HTMLAnchorElement[];
+    const links = [...fixture.nativeElement.querySelectorAll('ul a')] as HTMLAnchorElement[];
     expect(links.map((a) => a.textContent?.trim())).toEqual(['LinkedIn', 'Xing']);
+    expect(fixture.nativeElement.querySelector('a[href="#projects-section"]')?.textContent?.trim()).toBe('Projects');
     expect(fixture.nativeElement.querySelector('a svg')).toBeNull();
   });
 

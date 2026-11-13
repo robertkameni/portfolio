@@ -19,6 +19,11 @@ export const EN_COPY: SiteCopy = {
   intro: {
     socialLinkAriaLabel: "Visit Robert's {platform} profile (opens in a new tab)",
   },
+  nav: {
+    label: 'On this page',
+    about: 'About',
+    contact: 'Contact',
+  },
   focus: { title: 'What I do' },
   stack: { eyebrow: 'Toolset' },
   skills: {
@@ -165,7 +170,7 @@ export const EN_COPY: SiteCopy = {
       "Complex architecture, Nx monorepos, and AI/LLM integration are part of my day-to-day. If you want to talk reactive patterns, let's connect.",
     ],
     previewSplitToken: 'Signals and NgRx Signal Store.',
-    metric: { value: '50%', caption: 'faster team delivery at DATEV' },
+    metric: { value: '70%', caption: 'faster team delivery at DATEV' },
   },
   contact: {
     validation: {

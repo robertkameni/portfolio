@@ -42,22 +42,12 @@ function instruction(message = 'Tell me about your Angular experience'): string 
   });
 }
 
-function instructionWithStudy(
-  caseStudy: string,
-  options: { schedulingMode?: boolean; mode?: 'concise_recruiter' | 'storytelling_recruiter' } = {},
-): string {
-  return buildSystemInstruction(
-    PROFILE,
-    'ATLAS-BIO | HirePath Jobs',
-    '',
-    options.mode ?? 'concise_recruiter',
-    buildIntentHint('Tell me about Angular'),
-    {
-      schedulingMode: options.schedulingMode ?? false,
-      calcomEnabled: false,
-      caseStudy,
-    },
-  );
+function instructionWithStudy(caseStudy: string, options: { schedulingMode?: boolean; mode?: 'concise_recruiter' | 'storytelling_recruiter' } = {}): string {
+  return buildSystemInstruction(PROFILE, 'ATLAS-BIO | HirePath Jobs', '', options.mode ?? 'concise_recruiter', buildIntentHint('Tell me about Angular'), {
+    schedulingMode: options.schedulingMode ?? false,
+    calcomEnabled: false,
+    caseStudy,
+  });
 }
 
 const SAMPLE_STUDY = `${CASE_STUDY_PREFIX}DATEV Kanzlei Platform\nThe product runs the office. I led the frontend. The hard part was the shared state. Feature time dropped.`;
@@ -249,6 +239,8 @@ describe('chat system instruction', () => {
     const text = instruction();
 
     expect(text).toMatch(/do not invent a walkthrough/i);
+    expect(text).toMatch(/one sentence that contains only the other project title/i);
+    expect(text).toMatch(/do not describe what it does, its agents, its streaming, or its stack/i);
     expect(text).not.toMatch(/120-180 words/);
     expect(text).not.toContain(CASE_STUDY_PREFIX);
   });
@@ -272,6 +264,12 @@ describe('chat system instruction', () => {
     expect(text).not.toContain('A two-sentence answer is a good answer.');
     expect(text).toMatch(/markdown headings/i);
     expect(text).toMatch(/do not tour the other projects/i);
+    expect(text).toMatch(/name only the product in CASE STUDY/i);
+    expect(text).toMatch(/the last paragraph is still about that same product/i);
+    expect(text).toMatch(/Vorher bei DATEV/i);
+    expect(text).toMatch(/v8 bis v22/i);
+    expect(text).toMatch(/do not borrow the percentages, module counts, or team sizes from ABOUT TEXT/i);
+    expect(text).toMatch(/sag welche/i);
     expect(text).toMatch(/language of the question/i);
   });
 
@@ -302,6 +300,7 @@ describe('chat system instruction', () => {
     expect(withStudy).not.toContain('Then the reasoning');
     expect(withStudy).toMatch(/belongs inside the 120-180 retell/i);
     expect(withStudy).toMatch(/only reasoning that the study contains/i);
+    expect(withStudy).toMatch(/do not compare the study with another employer/i);
   });
 
   it('keeps active mode length rules when no case study is attached', () => {

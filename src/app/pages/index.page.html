@@ -3,6 +3,12 @@
 </a>
 
 <site-toolbar>
+  <nav [attr.aria-label]="copy().nav.label" activeSection class="hidden items-center gap-5 whitespace-nowrap lg:flex">
+    <a href="#focus" class="toolbar-option">{{ copy().focus.title }}</a>
+    <a href="#about" class="toolbar-option">{{ copy().nav.about }}</a>
+    <a href="#projects-section" class="toolbar-option">{{ copy().projects.title }}</a>
+    <a href="#contact" class="toolbar-option">{{ copy().nav.contact }}</a>
+  </nav>
   @if (devMode) {
   <div class="hidden items-center gap-5 sm:flex">
     <button (click)="setMockProfile('founder')" [attr.aria-pressed]="activeProfile() === 'founder'" class="toolbar-option cursor-pointer">{{ copy().home.founder }}</button>
@@ -45,7 +51,7 @@
     type="button"
     (click)="openChatFromLauncher()"
     [attr.aria-label]="copy().chat.toggleOpenAriaLabel"
-    class="inline-flex size-12 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
+    class="chat-launcher inline-flex size-14 cursor-pointer items-center justify-center rounded-base bg-ink text-paper transition-colors duration-150 hover:bg-accent sm:h-12 sm:w-auto sm:gap-2 sm:px-4"
   >
     <!-- Same phosphor chat mark as the loaded widget, so the first paint does
          not swap a text button for an icon. -->

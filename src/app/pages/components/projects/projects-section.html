@@ -1,16 +1,13 @@
 <section id="projects-section" class="edge-top py-16 md:py-20" restoreScrollPosition>
   <div class="page-shell">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="min-w-0">
-        <h2 class="type-h2">{{ copy().projects.title }}</h2>
-        <p class="mt-3 max-w-[52ch] text-ink-2">{{ copy().projects.description }}</p>
-      </div>
-
+    <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+      <h2 class="type-h2">{{ copy().projects.title }}</h2>
       <a routerLink="/projects" class="tap-area type-meta inline-flex items-center gap-2 text-accent">
         {{ copy().projects.viewAll }}
         <span aria-hidden="true">&#8594;</span>
       </a>
     </div>
+    <p class="mt-3 max-w-[52ch] text-ink-2">{{ copy().projects.description }}</p>
 
     @if (store.isLoading()) {
     <p class="type-meta mt-10 text-ink-3">{{ copy().projects.loading }}</p>

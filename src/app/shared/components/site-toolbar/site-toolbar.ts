@@ -8,6 +8,9 @@ import { LocaleService } from '../../services/locale.service';
   standalone: true,
   imports: [],
   templateUrl: './site-toolbar.html',
+  host: {
+    class: 'sticky top-0 z-40 block w-full',
+  },
 })
 export class SiteToolbarComponent {
   private readonly localeService = inject(LocaleService);

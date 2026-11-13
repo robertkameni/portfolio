@@ -9,7 +9,7 @@ import { CountUpDirective } from './count-up.directive';
   template: '<p [countUp]="label()" data-testid="metric">{{ label() }}</p>',
 })
 class HostComponent {
-  label = () => '50%';
+  label = () => '70%';
 }
 
 let trigger: IntersectionObserverCallback = () => undefined;
@@ -40,7 +40,7 @@ describe('CountUpDirective', () => {
     vi.unstubAllGlobals();
   });
 
-  function render(label = '50%'): HTMLElement {
+  function render(label = '70%'): HTMLElement {
     TestBed.configureTestingModule({
       imports: [HostComponent],
       providers: [provideZonelessChangeDetection()],
@@ -66,7 +66,7 @@ describe('CountUpDirective', () => {
     trigger([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
     vi.advanceTimersByTime(1200);
 
-    expect(el.textContent?.trim()).toBe('50%');
+    expect(el.textContent?.trim()).toBe('70%');
   });
 
   it('renders the final value immediately when motion is reduced', () => {
@@ -97,6 +97,6 @@ describe('CountUpDirective', () => {
 
     trigger([{ isIntersecting: false, boundingClientRect: { bottom: -40 } } as unknown as IntersectionObserverEntry], {} as IntersectionObserver);
 
-    expect(el.textContent?.trim()).toBe('50%');
+    expect(el.textContent?.trim()).toBe('70%');
   });
 });

@@ -1,20 +1,35 @@
 <div class="mt-10 border-t border-rule">
   @for (project of projects(); track project.id; let i = $index) {
-  <article trackBehavior="project_viewed_{{ project.slug }}" data-stagger [style.--i]="i" class="project-row group border-b border-rule py-8 px-6">
-    <div class="grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-[auto_1fr]">
+  <article
+    trackBehavior="project_viewed_{{ project.slug }}"
+    data-stagger
+    [style.--i]="i"
+    class="project-row group border-b border-rule px-6 py-8"
+    [class.md:py-12]="i === 0"
+    [class.project-feature]="i === 0"
+  >
+    <div
+      class="project-layout grid grid-cols-1 gap-x-10 gap-y-5"
+      [class.md:grid-cols-[auto_1fr]]="i !== 0"
+      [class.md:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]]="i === 0"
+      [class.md:items-center]="i === 0"
+    >
       @if (project.coverImageUrl) {
       <!-- The screenshot is the largest element in the row, so it carries the
            link too. A reader who taps the picture expects the case study. -->
-      <a [routerLink]="['/projects', project.slug]" [attr.aria-label]="openProjectAriaLabel(project.title)" class="block">
-        <img
-          [src]="project.coverImageUrl"
-          [alt]="coverAlt(project.title)"
-          width="1200"
-          height="750"
-          loading="lazy"
-          decoding="async"
-          class="aspect-16/10 w-full border border-rule object-cover object-top transition-colors duration-150 hover:border-ink-3 md:w-64"
-        />
+      <a [routerLink]="['/projects', project.slug]" [attr.aria-label]="openProjectAriaLabel(project.title)" class="project-shot-link block overflow-hidden">
+        <div class="shot-parallax">
+          <img
+            [src]="project.coverImageUrl"
+            [alt]="coverAlt(project.title)"
+            width="1200"
+            height="750"
+            loading="lazy"
+            decoding="async"
+            class="project-shot aspect-16/10 w-full border border-rule object-cover object-top"
+            [class.md:w-64]="i !== 0"
+          />
+        </div>
       </a>
       }
 

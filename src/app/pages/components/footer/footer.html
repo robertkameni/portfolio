@@ -1,5 +1,11 @@
 <footer class="edge-top">
-  <div class="page-shell py-8">
+  <div class="page-shell flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between">
     <p class="type-meta text-ink-3">{{ copyright() }}</p>
+    <nav [attr.aria-label]="copy().nav.label" class="flex flex-wrap gap-x-6">
+      <a href="#focus" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().focus.title }}</a>
+      <a href="#about" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().nav.about }}</a>
+      <a href="#projects-section" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().projects.title }}</a>
+      <a href="#contact" class="type-meta text-ink-3 transition-colors duration-150 hover:text-accent">{{ copy().nav.contact }}</a>
+    </nav>
   </div>
 </footer>
