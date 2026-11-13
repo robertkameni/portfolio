@@ -3,6 +3,7 @@ import { PLATFORM_ID, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { AdminProjectsService } from '../../../../services/admin-projects.service';
 import { AdminProjectsStore } from '../../../../store/projects.store';
 import { LocaleService } from '../../../../shared/services/locale.service';
@@ -25,6 +26,7 @@ describe('AdminProjectsPage — CRUD happy paths', () => {
       imports: [AdminProjectsPage],
       providers: [
         provideZonelessChangeDetection(),
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
         AdminProjectsStore,

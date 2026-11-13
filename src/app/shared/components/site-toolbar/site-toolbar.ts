@@ -1,13 +1,13 @@
 import { ViewportScroller } from '@angular/common';
 import { afterNextRender, Component, ElementRef, inject, input, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { LocaleService } from '../../services/locale.service';
 
 @Component({
   selector: 'site-toolbar',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './site-toolbar.html',
   host: {
     class: 'sticky top-0 z-40 block w-full',
@@ -66,10 +66,6 @@ export class SiteToolbarComponent implements OnDestroy {
       void this.router.navigate([url]);
       return;
     }
-    void this.router.navigateByUrl('/');
-  }
-
-  goHome() {
     void this.router.navigateByUrl('/');
   }
 
