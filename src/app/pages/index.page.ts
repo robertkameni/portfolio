@@ -13,6 +13,7 @@ import { FocusAreas } from './components/focus-areas/focus-areas';
 import { SkillsBento } from './components/skills-bento/skills-bento';
 import { About } from './components/about/about';
 import { ProjectsSection } from './components/projects/projects-section';
+import { TwinInvite } from './components/twin-invite/twin-invite';
 import { Contact } from './components/contact/contact';
 import { Footer } from './components/footer/footer';
 import { ChatWidget } from '../ai-engine';
@@ -22,7 +23,21 @@ export const routeMeta = withRenderMode('server');
 @Component({
   selector: 'home',
   standalone: true,
-  imports: [Masthead, FocusAreas, SkillsBento, About, ProjectsSection, Contact, Footer, ChatWidget, PageLoader, FadeInDirective, ActiveSectionDirective, SiteToolbarComponent],
+  imports: [
+    Masthead,
+    FocusAreas,
+    SkillsBento,
+    About,
+    ProjectsSection,
+    TwinInvite,
+    Contact,
+    Footer,
+    ChatWidget,
+    PageLoader,
+    FadeInDirective,
+    ActiveSectionDirective,
+    SiteToolbarComponent,
+  ],
   templateUrl: './index.page.html',
 })
 export default class Home implements OnInit {

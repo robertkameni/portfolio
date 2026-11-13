@@ -78,12 +78,20 @@
               : 'chat-bubble max-w-[80%] rounded-base border border-chat-rule bg-chat-2 px-4 py-2 text-ink'
           "
         >
-          @if (msg.role === 'assistant') {
+          @if (msg.role === 'assistant') { @if (isRevealing($index)) {
+          <!-- While the answer is arriving it is shown as plain text with the
+               caret inline after the last character, so the cursor sits where
+               the next word will land instead of on a line of its own. -->
+          <p class="chat-reveal">
+            {{ visibleAnswer() }}
+            <span class="chat-caret" aria-hidden="true"></span>
+          </p>
+          } @else {
           <div class="chat-markdown" [safeHtml]="renderAssistantMessage(msg.content)"></div>
-          } @else { {{ msg.content }} }
+          } } @else { {{ msg.content }} }
         </div>
       </div>
-      } @if (chatStore.isTyping()) {
+      } @if (chatStore.isTyping() && visibleAnswer().length === 0) {
       <div class="flex items-center gap-1.5">
         <span class="chat-typing-dot size-1.5 rounded-full bg-ink-3"></span>
         <span class="chat-typing-dot size-1.5 rounded-full bg-ink-3" style="animation-delay: 0.15s"></span>

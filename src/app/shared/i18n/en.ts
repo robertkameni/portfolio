@@ -103,6 +103,11 @@ export const EN_COPY: SiteCopy = {
     launcherLabel: 'Ask the twin',
     inputAriaLabel: 'Your message to the twin',
   },
+  twinInvite: {
+    title: 'Ask the twin',
+    description: 'An AI version of me, loaded with the case studies. Ask the question the page does not answer.',
+    prompts: ['Tell me about your Angular experience', 'Are you available for freelance work?', 'What have you built with Next.js?'],
+  },
   adminLogin: {
     title: 'Admin Login',
     email: 'Email',

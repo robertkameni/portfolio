@@ -1,0 +1,23 @@
+<section trackBehavior="twin_invite_viewed" class="section-compact edge-top">
+  <div class="page-shell">
+    <!-- The measure belongs to the sentence, not to the heading. Wrapping the
+         h2 in 52ch broke "Ask the twin" across two lines while every other
+         section heading on the page is a single line. -->
+    <h2 class="type-h2">{{ copy().twinInvite.title }}</h2>
+    <p class="mt-4 max-w-[52ch] text-ink-2">{{ copy().twinInvite.description }}</p>
+
+    <!-- Rows rather than chips: a question is a sentence, and a sentence needs
+         the full width to stay readable. The rule between them carries the
+         grouping, so no panel is needed. -->
+    <ul class="mt-8 max-w-[68ch] divide-y divide-rule border-y border-rule">
+      @for (prompt of copy().twinInvite.prompts; track prompt; let i = $index) {
+      <li data-stagger [style.--i]="i">
+        <button type="button" (click)="ask(prompt)" class="group flex w-full cursor-pointer items-baseline justify-between gap-6 py-5 text-left">
+          <span class="text-(length:--text-lead) leading-snug text-ink transition-colors duration-150 group-hover:text-accent">{{ prompt }}</span>
+          <span aria-hidden="true" class="shrink-0 text-accent transition-transform duration-150 group-hover:translate-x-1">&#8594;</span>
+        </button>
+      </li>
+      }
+    </ul>
+  </div>
+</section>

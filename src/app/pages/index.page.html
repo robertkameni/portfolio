@@ -42,13 +42,16 @@
 
   <projects-section [locale]="profile.locale" fadeIn />
 
+  <!-- Straight after the work, because that is where the next question forms. -->
+  <twin-invite [locale]="profile.locale" fadeIn />
+
   <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
 
   <dev-footer fadeIn />
   }
 </main>
 
-@if (store.data()) { @defer (on interaction(chatLauncher)) {
+@if (store.data()) { @defer (on interaction(chatLauncher); on idle) {
 <chat-widget />
 } @placeholder {
 <div class="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">

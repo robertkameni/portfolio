@@ -129,6 +129,11 @@ export type SiteCopy = {
     launcherLabel: string;
     inputAriaLabel: string;
   };
+  twinInvite: {
+    title: string;
+    description: string;
+    prompts: string[];
+  };
   adminLogin: {
     title: string;
     email: string;

@@ -356,6 +356,22 @@
       transform: none;
       opacity: 1;
     }
+
+    .chat-caret {
+      animation: none;
+    }
+  }
+
+  @keyframes caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    50.01%,
+    100% {
+      opacity: 0;
+    }
   }
 
   .project-markdown {
@@ -940,6 +956,32 @@
 
   .chat-markdown > :last-child {
     margin-bottom: 0;
+  }
+
+  /* The answer while it is arriving: plain text, so the caret below can sit
+     inside the same paragraph as the last character instead of after a block.
+     `pre-wrap` keeps the model's line breaks, which is what the markdown
+     renderer does with `breaks: true` anyway. */
+  .chat-reveal {
+    margin: 0;
+    /* Same scale as `.chat-markdown`, so the answer does not resize when the
+       reveal hands over to the formatted version. */
+    font-size: var(--text-small);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* The cursor while an answer is being revealed. It is inline after the last
+     character the reveal reached, which is where the next word will land. */
+  .chat-caret {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 1px;
+    vertical-align: -0.15em;
+    background: var(--color-accent);
+    animation: caret-blink 1s steps(1, end) infinite;
   }
 
   .chat-markdown p,

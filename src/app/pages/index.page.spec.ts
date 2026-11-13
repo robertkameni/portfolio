@@ -22,7 +22,7 @@ describe('home template content rendering', () => {
   const template = readFileSync(new URL('./index.page.html', import.meta.url), 'utf8');
 
   it('renders every content section unconditionally', () => {
-    const contentSections = ['skills-bento', 'about', 'projects-section', 'contact', 'dev-footer'];
+    const contentSections = ['skills-bento', 'about', 'projects-section', 'twin-invite', 'contact', 'dev-footer'];
 
     for (const selector of contentSections) {
       expect(template, `${selector} must be present in the template`).toContain(`<${selector}`);
