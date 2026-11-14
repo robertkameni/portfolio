@@ -107,6 +107,9 @@ export type SiteCopy = {
     loadErrorTitle: string;
     notFoundMessage: string;
     loadErrorMessage: string;
+    factsHeading: string;
+    stackHeading: string;
+    nextProjectHeading: string;
   };
   devProxy: {
     label: string;

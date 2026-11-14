@@ -158,6 +158,12 @@
     padding-inline: var(--gutter);
   }
 
+  /* Lets a figure use the full width of the shell without leaving it, so the
+     page keeps one column rhythm and the screenshot is still edge to edge. */
+  .bleed {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
   .type-display {
     font-size: var(--text-display);
     line-height: 0.92;

@@ -13,6 +13,7 @@ import { ScreenshotZoom } from '../../../shared/components/screenshot-zoom/scree
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
 import { LocaleService } from '../../../shared/services/locale.service';
+import { ProjectsStore } from '../../../store/projects.store';
 import { createProjectMarkdownRenderer, normalizeProjectMarkdown } from '../../../shared/markdown/project-markdown-renderer';
 import { withRenderMode } from '../../../shared/routing/render-mode.types';
 import { resolveProjectApiUrl } from './project-api-url';
@@ -30,6 +31,7 @@ export default class ProjectOverviewPage {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
   private readonly localeService = inject(LocaleService);
+  private readonly projectsStore = inject(ProjectsStore);
 
   protected previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
   protected clientReady = isPlatformBrowser(this.platformId);
@@ -42,6 +44,8 @@ export default class ProjectOverviewPage {
   private readonly markdownReady = signal(false);
 
   constructor() {
+    this.projectsStore.load();
+
     if (isPlatformBrowser(this.platformId)) {
       afterNextRender(() => {
         void this.loadMarkdownParser();
@@ -52,7 +56,7 @@ export default class ProjectOverviewPage {
     void this.loadMarkdownParser();
   }
 
-  goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : '/'));
+  goBackLink = computed(() => (this.previewMode() ? '/admin/projects' : ''));
 
   projectResource = httpResource<ApiSuccess<Project>>(() =>
     resolveProjectApiUrl({
@@ -66,6 +70,25 @@ export default class ProjectOverviewPage {
     const url = this.projectResource.value()?.data?.coverImageUrl;
     if (!url) return null;
     return getResponsiveImageAttrs(url);
+  });
+
+  /**
+   * The project after this one in the published list, wrapping at the end.
+   * A case study should not end in a dead end. The store is usually already
+   * filled by the home page, so this costs nothing.
+   */
+  protected readonly nextProject = computed(() => {
+    const list = this.projectsStore.data() ?? [];
+    if (list.length < 2) {
+      return null;
+    }
+
+    const index = list.findIndex((project) => project.slug === this.slug());
+    if (index === -1) {
+      return null;
+    }
+
+    return list[(index + 1) % list.length] ?? null;
   });
 
   protected readonly renderedMarkdown = computed(() => {

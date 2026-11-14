@@ -81,6 +81,9 @@ export const DE_COPY: SiteCopy = {
     loadErrorTitle: 'Projekt konnte nicht geladen werden',
     notFoundMessage: 'Der Projekt-Slug existiert nicht oder das Projekt ist noch nicht veröffentlicht.',
     loadErrorMessage: 'Projektdetails konnten nicht geladen werden.',
+    factsHeading: 'Auf einen Blick',
+    stackHeading: 'Stack',
+    nextProjectHeading: 'Nächstes Projekt',
   },
   devProxy: {
     label: 'Live',
