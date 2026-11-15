@@ -111,6 +111,10 @@ describe('design tokens', () => {
     expect((css.match(/prefers-reduced-motion/g) ?? []).length).toBe(1);
   });
 
+  it('keeps one top-level token root', () => {
+    expect((css.match(/^:root \{/gm) ?? []).length).toBe(1);
+  });
+
   it('does not use Inter or pure black', () => {
     expect(css).not.toMatch(/Inter/);
     expect(css).not.toContain('#000000');

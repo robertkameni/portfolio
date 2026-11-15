@@ -66,6 +66,12 @@
   /* Lift for floating surfaces. Tinted from the scrim rather than a neutral
      drop shadow, so it reads as shade under the page's own ink. */
   --shadow-panel: 0 20px 48px color-mix(in srgb, var(--color-scrim) 18%, transparent), 0 2px 8px color-mix(in srgb, var(--color-scrim) 10%, transparent);
+  /* Motion. Rise is the entrance curve; out is the state curve. Two easings,
+     two jobs: `--ease-out` settles an interaction, `--ease-rise` arrives. */
+  --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-rise: 700ms;
+  --stagger: 60ms;
+  --rise-blur: 6px;
 }
 
 @media (min-width: 768px) {
@@ -777,13 +783,6 @@
    gradient text, no pulsing dots, because those fight the Dossier restraint.
 --------------------------------------------------------------------------- */
 
-:root {
-  --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-rise: 700ms;
-  --stagger: 60ms;
-  --rise-blur: 6px;
-}
-
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -817,16 +816,6 @@
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes scroll-sweep {
-  from {
-    transform: scaleX(0);
-  }
-
-  to {
-    transform: scaleX(1);
   }
 }
 
@@ -899,7 +888,7 @@
 
   @supports (animation-timeline: scroll()) {
     .scroll-progress {
-      animation: scroll-sweep linear both;
+      animation: rule-draw linear both;
       animation-timeline: scroll();
     }
   }
