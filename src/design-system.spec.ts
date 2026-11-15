@@ -307,6 +307,16 @@ describe('component styles', () => {
     expect(cvCss).toMatch(/@layer components\s*\{/);
   });
 
+  it('pins the layer order inside the component stylesheet', () => {
+    // Angular injects this sheet at runtime, and in dev it lands before the
+    // global Tailwind sheet. The first `@layer` statement in a document fixes
+    // the order, so without this line `components` is registered ahead of
+    // `theme` and `base`, and preflight (`* { padding: 0 }`,
+    // `h1 { font-size: inherit }`) beats every rule below it. The CV page
+    // renders as an unpadded, 16px sheet. Verified in a browser, not in jsdom.
+    expect(cvCss).toMatch(/@layer\s+theme,\s*base,\s*components,\s*utilities;/);
+  });
+
   it('wires the component stylesheet', () => {
     // Task 6's failure mode one level down: a stylesheet that exists but is
     // never referenced contributes nothing, and every assertion above still passes.

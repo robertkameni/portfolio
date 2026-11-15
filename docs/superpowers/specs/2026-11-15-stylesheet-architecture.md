@@ -107,6 +107,23 @@ page. It therefore moved out of the global entry into
 `src/app/pages/cv/index.page.css`, wrapped in `@layer components` so utilities
 still override it.
 
+**A layered component stylesheet must also declare the layer order.** Angular
+injects component styles into `<head>` at runtime, and in dev that happens
+*before* the global Tailwind sheet. The first `@layer` statement in a document
+fixes the position of every name in it, so a bare `@layer components { … }`
+registers `components` ahead of `theme` and `base` — and preflight
+(`* { padding: 0 }`, `h1 { font-size: inherit }`) then beats every rule in the
+component. The symptom is a CV sheet with no padding, no border and 16px type,
+while `max-width` and `background` still apply because preflight does not touch
+them. `index.page.css` therefore opens with:
+
+```css
+@layer theme, base, components, utilities;
+```
+
+An unlayered component stylesheet (the admin messages view) does not need this,
+because unlayered rules outrank every layer regardless of order.
+
 The CV also shows the boundary of the rule. `main#main` in its old print block was
 *not* a `.cv-*` rule: it is a document-level reset that applies to every printed
 page. It stayed in `src/styles/print.css`. Scoping it would have been a silent
@@ -130,7 +147,7 @@ trap: the name looks like the CV page, but the element is projected into
 - exactly one top-level `:root` and one `@media (prefers-reduced-motion: reduce)`
   block;
 - the `.cv-*` rules live in the component stylesheet, the component declares
-  `styleUrl`, and `@page` stays global.
+  `styleUrl`, `@page` stays global, and the component pins the layer order.
 
 ## 6. Known deviations
 

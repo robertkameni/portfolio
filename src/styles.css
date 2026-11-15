@@ -18,7 +18,12 @@
    3. A component `styleUrl`, only when all four hold: the markup is authored
       in that template, nothing is projected into it, nothing is injected as
       innerHTML, and no other component uses the class. Two qualify today:
-      `app/pages/cv` and `app/pages/admin/(dashboard)/messages`.
+      `app/pages/cv` and `app/pages/admin/(dashboard)/messages`. A component
+      sheet that uses `@layer` must also repeat the full layer order
+      (`theme, base, components, utilities`) at its top: Angular injects it at
+      runtime, and the first `@layer` statement in the document decides the
+      order, so a bare `@layer components` block can end up underneath
+      preflight.
    4. This file, only for tokens: `@theme` and `:root`. It is the palette
       contract that `src/design-system.spec.ts` reads, so tokens live here and
       not in `src/styles/`.

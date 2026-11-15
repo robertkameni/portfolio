@@ -1,9 +1,19 @@
-/* The CV is the only component that owns its styles.
-   Criteria, all four true: the markup is authored in this template, nothing
-   is projected through ng-content, nothing arrives as sanitized innerHTML,
-   and no other component uses a .cv-* class.
+/* The CV is one of two components that own their styles. All four criteria
+   hold: the markup is authored in this template, nothing is projected through
+   ng-content, nothing arrives as sanitized innerHTML, and no other component
+   uses a .cv-* class.
    Wrapped in @layer components so utilities can still override it. @page and
-   the document-level print resets stay in src/styles/print.css. */
+   the document-level print resets stay in src/styles/print.css.
+
+   The layer statement below is mandatory, not decoration. Angular injects a
+   component stylesheet into <head> at runtime, and in dev that lands *before*
+   the global Tailwind sheet. The first `@layer` statement in a document fixes
+   the order for the names in it, so this sheet would otherwise register
+   `components` ahead of `theme` and `base` — and preflight (`* { padding: 0 }`,
+   `h1 { font-size: inherit }`) would then beat every rule below. Declaring the
+   full order here pins it regardless of which sheet arrives first. */
+
+@layer theme, base, components, utilities;
 
 @layer components {
   /* -------------------------------------------------------------------------
