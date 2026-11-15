@@ -1498,7 +1498,7 @@ footer .page-shell {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   white-space: nowrap;
-  color: var(--color-ink-3);
+  color: var(--color-ink);
 }
 
 .cv-entry-meta {
