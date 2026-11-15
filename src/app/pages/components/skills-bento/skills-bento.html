@@ -8,9 +8,15 @@
          flows, which is compact and needs no scanning. From sm up the hairline
          grid returns, with the lead skill taking half of the first row.
 
-         The lead skill is the one solid ink tile on the page. In a grid of
+         The lead skill is the one solid accent tile on the page. In a grid of
          hairlines and paper, a single filled cell is the section's anchor, so
-         the eye has somewhere to land before it reads nine labels. -->
+         the eye has somewhere to land before it reads nine labels.
+
+         The background has to be a binding, not a static class. Two background
+         utilities on one element share one specificity, so the winner is the
+         one Tailwind emits later in the sheet (`.bg-ink` and `.bg-paper` both
+         come after `.bg-accent`), not the one the class attribute lists first.
+         A static `bg-accent` beside `[class.bg-ink]` renders on no cell.) -->
     <div class="skill-grid mt-8 flex flex-wrap gap-2 md:mt-12">
       @for (skill of entries(); track skill.name; let i = $index) {
       <div
@@ -19,12 +25,10 @@
         [style.--i]="i"
         [attr.data-span]="span(i)"
         class="skill-cell group rounded-base border border-rule px-3 py-2 sm:rounded-none sm:border-0 {{ i === 0 ? 'sm:px-8 sm:py-10' : 'sm:px-5 sm:py-6' }}"
-        [class.bg-ink]="i === 0"
+        [class.bg-accent]="i === 0"
         [class.bg-paper]="i !== 0"
       >
-        <span
-          class="block font-medium leading-snug transition-colors duration-150 {{ i === 0 ? 'text-(length:--text-lead) text-paper' : 'text-(length:--text-small) text-ink-2 group-hover:text-ink' }}"
-        >
+        <span class="block font-medium leading-snug transition-colors duration-150 {{ i === 0 ? 'text-lead text-paper' : 'text-small text-ink-2 group-hover:text-ink' }}">
           {{ skill.name }}
         </span>
 
