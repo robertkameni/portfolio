@@ -23,6 +23,7 @@ export const EN_COPY: SiteCopy = {
     label: 'On this page',
     about: 'About',
     contact: 'Contact',
+    cv: 'CV (German)',
   },
   focus: { title: 'What I do' },
   stack: { eyebrow: 'Toolset' },

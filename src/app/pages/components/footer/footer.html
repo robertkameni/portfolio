@@ -21,6 +21,11 @@
       <a href="#contact" class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent">
         {{ copy().nav.contact }}
       </a>
+      <!-- The CV is the one page a recruiter asks for by name, so it leaves the
+           in-page anchors and becomes a real route. -->
+      <a routerLink="/cv" class="type-meta inline-flex min-h-11 items-center justify-self-start text-ink-3 transition-colors duration-150 even:justify-self-end hover:text-accent">
+        {{ copy().nav.cv }}
+      </a>
     </nav>
   </div>
 </footer>

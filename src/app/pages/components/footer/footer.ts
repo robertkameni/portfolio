@@ -1,10 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { LocaleService } from '../../../shared/services/locale.service';
 
 @Component({
   selector: 'dev-footer',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './footer.html',
 })
 export class Footer {

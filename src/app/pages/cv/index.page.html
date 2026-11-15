@@ -1,0 +1,145 @@
+<main id="main" class="min-h-dvh bg-paper pb-16 pt-8 text-ink">
+  <div class="page-shell">
+    <!-- Screen chrome. It never prints: a sheet that carries a toolbar and a
+         print button is a screenshot of a website, not a CV. -->
+    <div class="cv-chrome mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-rule pb-4">
+      <a routerLink="/" class="tap-area type-meta inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent">
+        <span aria-hidden="true">&#8592;</span>
+        Zurück zum Portfolio
+      </a>
+
+      <button
+        type="button"
+        (click)="print()"
+        class="tap-area inline-flex cursor-pointer items-center gap-2 bg-ink px-4 py-2 text-(length:--text-small) font-medium text-paper transition-colors duration-150 hover:bg-accent"
+      >
+        Als PDF drucken
+        <span aria-hidden="true">&#8595;</span>
+      </button>
+    </div>
+
+    <article class="cv-sheet">
+      <header class="cv-head">
+        <h1 class="cv-name">{{ cv.name }}</h1>
+
+        <p class="cv-contact">
+          <span>{{ cv.location }}</span>
+          <span aria-hidden="true">·</span>
+          <span>{{ cv.phone }}</span>
+        </p>
+        <p class="cv-contact">
+          <a [href]="'mailto:' + cv.email">{{ cv.email }}</a>
+          <span aria-hidden="true">·</span>
+          @for (link of cv.links; track link.href; let last = $last) {
+          <a [href]="link.href" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+          @if (!last) {
+          <span aria-hidden="true">·</span>
+          } }
+        </p>
+        <p class="cv-facts">{{ cv.facts }}</p>
+      </header>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Profil</h2>
+        <p class="cv-prose">{{ cv.profile }}</p>
+      </section>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Technische Kompetenzen</h2>
+        <dl class="cv-skills">
+          @for (group of cv.skills; track group.label) {
+          <div class="cv-skill">
+            <dt>{{ group.label }}</dt>
+            <dd>{{ group.items }}</dd>
+          </div>
+          }
+        </dl>
+      </section>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Erfahrung</h2>
+
+        @for (role of cv.roles; track role.company) {
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3 class="cv-entry-title">{{ role.title }}</h3>
+            <p class="cv-entry-period">{{ role.period }}</p>
+          </div>
+          <p class="cv-entry-meta">{{ role.company }}, {{ role.location }}</p>
+          <p class="cv-prose">{{ role.summary }}</p>
+
+          @if (role.bulletsHeading && role.bullets?.length) {
+          <p class="cv-subheading">{{ role.bulletsHeading }}</p>
+          <ul class="cv-list">
+            @for (bullet of role.bullets; track $index) {
+            <li>{{ bullet }}</li>
+            }
+          </ul>
+          } @if (role.engagements?.length) { @for (engagement of role.engagements; track engagement.name) {
+          <div class="cv-engagement">
+            <div class="cv-entry-head">
+              <h4 class="cv-entry-title">{{ engagement.name }}</h4>
+              <p class="cv-entry-period">{{ engagement.period }}</p>
+            </div>
+            <ul class="cv-list">
+              @for (bullet of engagement.bullets; track $index) {
+              <li>{{ bullet }}</li>
+              }
+            </ul>
+          </div>
+          } } @if (role.technologies) {
+          <p class="cv-tech">
+            <span>Technologien:</span>
+            {{ role.technologies }}
+          </p>
+          }
+        </div>
+        }
+      </section>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Projekte</h2>
+
+        @for (project of cv.projects; track project.name) {
+        <div class="cv-entry cv-entry-compact">
+          <div class="cv-entry-head">
+            <h3 class="cv-entry-title">
+              {{ project.name }}
+              <span class="cv-entry-link">{{ project.url }}</span>
+            </h3>
+            <p class="cv-entry-period">{{ project.period }}</p>
+          </div>
+          <p class="cv-prose">{{ project.summary }}</p>
+          <p class="cv-tech">
+            <span>Technologien:</span>
+            {{ project.technologies }}
+          </p>
+        </div>
+        }
+      </section>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Ausbildung</h2>
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3 class="cv-entry-title">{{ cv.education.title }}</h3>
+            <p class="cv-entry-period">{{ cv.education.period }}</p>
+          </div>
+          <p class="cv-entry-meta">{{ cv.education.institution }}</p>
+        </div>
+      </section>
+
+      <section class="cv-section">
+        <h2 class="cv-section-title">Sprachen</h2>
+        <ul class="cv-languages">
+          @for (language of cv.languages; track language.name) {
+          <li>
+            <span class="cv-language-name">{{ language.name }}</span>
+            <span class="cv-language-level">{{ language.level }}</span>
+          </li>
+          }
+        </ul>
+      </section>
+    </article>
+  </div>
+</main>

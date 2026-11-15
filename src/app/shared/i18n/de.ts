@@ -23,6 +23,7 @@ export const DE_COPY: SiteCopy = {
     label: 'Auf dieser Seite',
     about: 'Über mich',
     contact: 'Kontakt',
+    cv: 'Lebenslauf',
   },
   focus: { title: 'Schwerpunkt' },
   stack: { eyebrow: 'Werkzeuge' },

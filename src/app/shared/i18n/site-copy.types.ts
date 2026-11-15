@@ -39,6 +39,8 @@ export type SiteCopy = {
     label: string;
     about: string;
     contact: string;
+    /** The CV page. German document, so the label says so in English. */
+    cv: string;
   };
   focus: {
     title: string;
