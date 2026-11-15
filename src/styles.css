@@ -584,6 +584,10 @@
       border-color var(--dur-fast) var(--ease-out);
   }
 
+  .cv {
+    margin-inline: 1rem;
+  }
+
   .toolbar-option:hover {
     color: var(--color-ink);
   }
@@ -1525,6 +1529,7 @@ footer .page-shell {
   font-size: 0.75rem;
   font-family: var(--font-mono);
   color: var(--color-ink-3);
+  margin-inline-start: 10px;
 }
 
 .cv-subheading {

@@ -43,6 +43,9 @@ export function buildSitemapEntries(projects: readonly SitemapProject[]): Sitema
   const entries: SitemapEntry[] = [
     { path: '/', changeFrequency: 'weekly', priority: 1 },
     { path: '/projects', changeFrequency: 'weekly', priority: 0.8 },
+    // A CV is the page a recruiter searches for by name. It was reachable only
+    // from the footer before, and absent from the sitemap entirely.
+    { path: '/cv', changeFrequency: 'monthly', priority: 0.7 },
   ];
 
   for (const project of projects) {

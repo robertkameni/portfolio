@@ -1,4 +1,5 @@
 import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { withRenderMode } from '../shared/routing/render-mode.types';
 import { PortfolioStore } from '../store/portfolio.store';
 import { VisitorStore } from '../store/visitor.store';
@@ -37,6 +38,7 @@ export const routeMeta = withRenderMode('server');
     FadeInDirective,
     ActiveSectionDirective,
     SiteToolbarComponent,
+    RouterLink,
   ],
   templateUrl: './index.page.html',
 })

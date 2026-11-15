@@ -6,10 +6,10 @@ import { absoluteUrl, resolveSiteLocation, type SiteLocation } from './site-url'
 const LOCATION: SiteLocation = { origin: 'https://example.test', basePath: '/portfolio' };
 
 describe('sitemap entries', () => {
-  it('lists the home page and the projects index even with no projects', () => {
+  it('lists the home page, the projects index and the CV even with no projects', () => {
     const entries = buildSitemapEntries([]);
 
-    expect(entries.map((entry) => entry.path)).toEqual(['/', '/projects']);
+    expect(entries.map((entry) => entry.path)).toEqual(['/', '/projects', '/cv']);
   });
 
   it('adds one entry per published project', () => {
@@ -24,7 +24,7 @@ describe('sitemap entries', () => {
     // two newest projects, so those pages were never advertised.
     expect(paths).toContain('/projects/atlas-bio');
     expect(paths).toContain('/projects/the-engineering-forge');
-    expect(paths).toHaveLength(4);
+    expect(paths).toHaveLength(5);
   });
 
   it('keeps the home page first and the most important priority', () => {
@@ -37,13 +37,13 @@ describe('sitemap entries', () => {
   it('skips a project with an empty slug instead of emitting a broken URL', () => {
     const entries = buildSitemapEntries([{ slug: '   ', updatedAt: '2026-01-01T00:00:00.000Z' }]);
 
-    expect(entries).toHaveLength(2);
+    expect(entries).toHaveLength(3);
   });
 
   it('escapes a slug that would otherwise break the URL', () => {
     const entries = buildSitemapEntries([{ slug: 'a b/c', updatedAt: '2026-01-01T00:00:00.000Z' }]);
 
-    expect(entries[2]?.path).toBe('/projects/a%20b%2Fc');
+    expect(entries[3]?.path).toBe('/projects/a%20b%2Fc');
   });
 });
 

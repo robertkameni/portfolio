@@ -41,6 +41,18 @@ describe('home template content rendering', () => {
     expect(deferTriggers[0]).toContain('chatLauncher');
   });
 
+  /**
+   * The CV is the one page a recruiter asks for by name, so it needs a way in
+   * that does not depend on scrolling to the footer. Two placements, because
+   * the phone bar has no room for a fifth section item.
+   */
+  it('offers the CV from the desktop nav and the phone top bar', () => {
+    const cvLinks = template.match(/routerLink="\/cv"/g) ?? [];
+
+    expect(cvLinks).toHaveLength(2);
+    expect(template).toContain('data-toolbar-cv');
+  });
+
   it('ships no height placeholders that would collapse the page before hydration', () => {
     expect(template).not.toMatch(/class="h-(24|32|16)"/);
   });
