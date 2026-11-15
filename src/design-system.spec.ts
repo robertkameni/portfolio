@@ -171,6 +171,27 @@ describe('design tokens', () => {
     expect((css.match(/^:root \{/gm) ?? []).length).toBe(1);
   });
 
+  it('takes scroll padding from the measured header', () => {
+    expect(css).toMatch(/scroll-padding-top:\s*var\(--header-offset,\s*9rem\)/);
+    expect(css).not.toMatch(/scroll-padding-top:\s*\d/);
+    // Counting alone would pass on a `body` rule, so the declaration is pinned to
+    // the base `html` rule. `blockFor` returns the first `html` block, which is
+    // the `@layer base` one: neither `print.css`'s `html, body` group nor
+    // `motion.css`'s reduced-motion restyle carries the token.
+    expect(blockFor(css, 'html {')).toContain('scroll-padding-top: var(--header-offset, 9rem)');
+    // The block assertion above would also hold for an
+    // `@media (min-width: 1024px) { html { … } }` at the top of base.css, which is
+    // the duplicate this change removed, so the rule must sit in the base layer
+    // rather than inside a media query.
+    const beforeHtml = css.slice(0, css.indexOf('html {'));
+    expect(beforeHtml.lastIndexOf('@layer base')).toBeGreaterThan(beforeHtml.lastIndexOf('@media'));
+    // The desktop override must be gone, not merely reworded. `base.css` used to
+    // carry an unlayered `@media (min-width: 1024px) { html { scroll-padding-top } }`
+    // that only beat the layered rule because unlayered CSS wins; once the value
+    // is measured, a second hardcoded one is both redundant and wrong.
+    expect((css.match(/scroll-padding-top/g) ?? []).length).toBe(1);
+  });
+
   it('declares token overrides after the block they override', () => {
     // A custom property resolves by source order, and @media adds no specificity.
     // An override that lands above the block it overrides is dead: that is how

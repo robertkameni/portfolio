@@ -1,15 +1,11 @@
 /* Document element styles. Nothing here is scoped: html, body and the selection colour have no component. */
 
-@media (min-width: 1024px) {
-  html {
-    scroll-padding-top: 4.75rem;
-  }
-}
-
 @layer base {
   html {
     background: var(--color-paper);
-    scroll-padding-top: 9rem;
+    /* Measured by site-toolbar.ts and written to :root. The fallback is the
+       tallest phone header, used only before the first measurement. */
+    scroll-padding-top: var(--header-offset, 9rem);
     scroll-behavior: smooth;
   }
 
