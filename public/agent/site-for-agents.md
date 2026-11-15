@@ -2,7 +2,7 @@
 
 **Role:** Technical Lead Frontend Engineer — Angular (v8 to Angular 22), Next.js 15/16 with React 19, enterprise web, full stack collaboration.
 
-**Canonical site:** https://lucastar.de/portfolio/
+**Canonical site:** https://cv.lucastar.de/
 
 **Contact**
 
@@ -27,5 +27,5 @@ Focus: scalable Angular applications (Signals, NgRx Signal Store, RxJS), Next.js
 
 ## Discovery
 
-- Sitemap: https://lucastar.de/portfolio/sitemap.xml  
-- Robots: https://lucastar.de/portfolio/robots.txt  
+- Sitemap: https://cv.lucastar.de/sitemap.xml  
+- Robots: https://cv.lucastar.de/robots.txt  

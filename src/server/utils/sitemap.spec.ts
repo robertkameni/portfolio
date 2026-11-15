@@ -96,8 +96,10 @@ describe('XML escaping', () => {
 });
 
 describe('site location', () => {
-  it('defaults to the production origin and base path', () => {
-    expect(resolveSiteLocation({})).toEqual({ origin: 'https://lucastar.de', basePath: '/portfolio' });
+  it('defaults to the production origin, served from the host root', () => {
+    // The site moved off `lucastar.de/portfolio` to its own host at the root, so
+    // the default base path is empty. `absoluteUrl` already handles that case.
+    expect(resolveSiteLocation({})).toEqual({ origin: 'https://cv.lucastar.de', basePath: '' });
   });
 
   it('honours overrides and normalises slashes', () => {

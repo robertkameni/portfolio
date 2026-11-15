@@ -1,6 +1,6 @@
 # Personal Portfolio & AI Showcase
 
-**Live demo:** [https://lucastar.de/portfolio/](https://lucastar.de/portfolio/)
+**Live demo:** [https://cv.lucastar.de/](https://cv.lucastar.de/)
 
 An **Angular 22 + AnalogJS-based portfolio** demonstrating modern frontend architecture, lightweight server-side capabilities, and optional AI-driven UI personalization.
 

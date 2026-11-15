@@ -2,16 +2,9 @@
 # Robert Kameni — portfolio crawl directives
 # Analog.js + Nitro (Vercel). Plain-text robots.txt — no HTML.
 #
-# Canonical host (production, matches README live demo):
-#   https://lucastar.de/portfolio
-#
-# Custom domain checklist:
-#   - Update the "Sitemap:" URL at the bottom of this file (same host + HTTPS).
-#   - Update every <loc> in public/sitemap.xml to that same origin.
-#   - Add new published project detail URLs to sitemap.xml when slugs go live.
-#
-# Path wildcards such as /projects/*/edit are honored by Googlebot, Bingbot, and
-# other common crawlers; unknown tokens are ignored by simple bots.
+# Canonical host (production): https://cv.lucastar.de
+#   The site is served from the root of its own host, so paths here are
+#   absolute from `/`. It used to live at https://lucastar.de/portfolio.
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -133,4 +126,4 @@ Disallow: /projects/*/edit
 # =============================================================================
 # Sitemap — keep host + paths identical to public/sitemap.xml
 # =============================================================================
-Sitemap: https://lucastar.de/portfolio/sitemap.xml
+Sitemap: https://cv.lucastar.de/sitemap.xml
