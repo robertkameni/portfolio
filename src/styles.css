@@ -325,14 +325,6 @@
     transform: none;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
-
   .chat-typing-dot {
     animation: chat-typing-bounce 1s infinite;
   }
@@ -347,18 +339,6 @@
     50% {
       transform: none;
       animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .chat-typing-dot {
-      animation: none;
-      transform: none;
-      opacity: 1;
-    }
-
-    .chat-caret {
-      animation: none;
     }
   }
 
@@ -643,13 +623,6 @@
 
     to {
       transform: translateX(300%);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .loader-bar {
-      animation: none;
-      width: 100%;
     }
   }
 
@@ -1147,9 +1120,6 @@
   }
 
   @supports (animation-timeline: view()) {
-    /* The hero portrait is a composition anchor: it must sit exactly where the
-       grid puts it, so it keeps the entrance rise and takes no parallax. */
-
     .shot-parallax {
       animation: shot-drift linear both;
       animation-timeline: view();
@@ -1166,11 +1136,28 @@
   .enter,
   [data-stagger],
   .chat-bubble,
-  .chat-panel {
+  .chat-panel,
+  .chat-typing-dot,
+  .reveal,
+  .reveal[data-visible='true'] {
     animation: none !important;
     filter: none !important;
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+  }
+
+  .chat-caret,
+  .loader-bar {
+    animation: none !important;
+  }
+
+  .chat-caret {
+    opacity: 1 !important;
+  }
+
+  .loader-bar {
+    width: 100% !important;
   }
 
   .edge-top::before {
@@ -1178,17 +1165,9 @@
     transform: none !important;
   }
 
-  .reveal,
-  .reveal[data-visible='true'] {
-    filter: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-
   .scroll-progress {
     animation: none !important;
-    display: none;
+    display: none !important;
   }
 
   .project-shot,

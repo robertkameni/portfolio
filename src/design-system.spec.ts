@@ -28,6 +28,12 @@ const COLOUR_TOKENS = ['paper', 'paper-2', 'surface', 'ink', 'ink-2', 'ink-3', '
 /** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
 const darkBlock = blockFor(css, '@media (prefers-color-scheme: dark)');
 
+/** The light palette. The screen colours live in the Tailwind `@theme` block. */
+const themeBlock = blockFor(css, '@theme');
+
+/** The print palette, which is the `:root` rule identified by its leading comment inside `@media print`. */
+const printBlock = blockFor(css, '/* Print palette');
+
 describe('design tokens', () => {
   it('defines the Dossier palette', () => {
     expect(css).toContain('--color-paper: #f1f2f2');
@@ -79,7 +85,6 @@ describe('design tokens', () => {
     // A dark reader who prints must get the light sheet. Six of the thirteen
     // tokens used to be missing here, so accents and the chat surface printed
     // as dark blocks on white paper.
-    const printBlock = blockFor(css, '/* Print palette');
     expect(printBlock).not.toBe('');
 
     for (const token of COLOUR_TOKENS) {
@@ -91,6 +96,19 @@ describe('design tokens', () => {
     for (const token of COLOUR_TOKENS) {
       expect(darkBlock, `dark must set --color-${token}`).toContain(`--color-${token}:`);
     }
+  });
+
+  it('declares the same colour tokens in the light, dark and print blocks', () => {
+    // Presence-only loops let a block carry extra tokens into the other palettes.
+    const names = (block: string) => [...block.matchAll(/(--color-[\w-]+):/g)].map((m) => m[1]).sort();
+    const light = names(themeBlock);
+    expect(names(darkBlock)).toEqual(light);
+    expect(names(printBlock)).toEqual(light);
+    expect(light).toHaveLength(COLOUR_TOKENS.length);
+  });
+
+  it('declares the reduced-motion overrides once', () => {
+    expect((css.match(/prefers-reduced-motion/g) ?? []).length).toBe(1);
   });
 
   it('does not use Inter or pure black', () => {
