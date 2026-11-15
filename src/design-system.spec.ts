@@ -6,13 +6,43 @@ import { describe, expect, it } from 'vitest';
 
 const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 
-/** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
-const darkBlock = (() => {
-  const start = css.indexOf('@media (prefers-color-scheme: dark)');
+/** Body of the first top-level block whose header contains `marker`, brace-matched. */
+function blockFor(source: string, marker: string): string {
+  const start = source.indexOf(marker);
   if (start === -1) return '';
-  const end = css.indexOf('\n}', start);
-  return end === -1 ? css.slice(start) : css.slice(start, end);
-})();
+  const open = source.indexOf('{', start);
+  if (open === -1) return '';
+  let depth = 0;
+  for (let index = open; index < source.length; index += 1) {
+    if (source[index] === '{') depth += 1;
+    if (source[index] === '}') {
+      depth -= 1;
+      if (depth === 0) return source.slice(open + 1, index);
+    }
+  }
+  return source.slice(open + 1);
+}
+
+const COLOUR_TOKENS = [
+  'paper',
+  'paper-2',
+  'surface',
+  'ink',
+  'ink-2',
+  'ink-3',
+  'rule',
+  'accent',
+  'accent-wash',
+  'chat',
+  'chat-2',
+  'chat-rule',
+  'scrim',
+  'background',
+  'primary',
+] as const;
+
+/** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
+const darkBlock = blockFor(css, '@media (prefers-color-scheme: dark)');
 
 describe('design tokens', () => {
   it('defines the Dossier palette', () => {
@@ -65,11 +95,31 @@ describe('design tokens', () => {
     }
   });
 
+  it('overrides every colour token in the print block', () => {
+    // A dark reader who prints must get the light sheet. Six of the thirteen
+    // tokens used to be missing here, so accents and the chat surface printed
+    // as dark blocks on white paper.
+    const printBlock = blockFor(css, '/* Print palette');
+    expect(printBlock).not.toBe('');
+
+    for (const token of COLOUR_TOKENS) {
+      expect(printBlock, `print must set --color-${token}`).toContain(`--color-${token}:`);
+    }
+  });
+
+  it('keeps every dark colour override inside the dark block', () => {
+    for (const token of COLOUR_TOKENS) {
+      expect(darkBlock, `dark must set --color-${token}`).toContain(`--color-${token}:`);
+    }
+  });
+
   it('does not use Inter or pure black', () => {
     expect(css).not.toMatch(/Inter/);
     expect(css).not.toContain('#000000');
     expect(css).not.toMatch(/#000\b/);
     expect(css).not.toContain('#ffffff');
+    expect(css).not.toMatch(/#fff(?:fff)?\b/i);
+    expect(css).not.toMatch(/\bblack\b/);
   });
 
   it('defines the type and layout primitives', () => {

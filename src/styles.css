@@ -67,8 +67,8 @@
      page cannot drift into uniform spacing. */
   --space-section: clamp(4rem, 6vw, 6rem);
   --space-section-compact: clamp(3rem, 4.2vw, 4.5rem);
-  /* Lift for floating surfaces. Tinted from the scrim, not a pure black drop
-     shadow, so it reads as shade under the page's own ink. */
+  /* Lift for floating surfaces. Tinted from the scrim rather than a neutral
+     drop shadow, so it reads as shade under the page's own ink. */
   --shadow-panel: 0 20px 48px color-mix(in srgb, var(--color-scrim) 18%, transparent), 0 2px 8px color-mix(in srgb, var(--color-scrim) 10%, transparent);
 }
 
@@ -755,7 +755,7 @@
   }
 
   .admin-btn-primary:hover {
-    background: color-mix(in srgb, var(--color-accent) 88%, black);
+    background: color-mix(in srgb, var(--color-accent) 88%, var(--color-scrim));
     border-color: transparent;
     color: var(--color-paper);
   }
@@ -1238,9 +1238,12 @@
 --------------------------------------------------------------------------- */
 
 @media print {
-  /* Print always uses the light palette, whatever the reader's scheme is.
-     Values come from the Dossier tokens rather than new hexes: a dark scheme
-     would otherwise print as a solid block of ink. */
+  /* Print palette. Always the light sheet, whatever the reader's scheme is.
+     Tested in src/design-system.spec.ts: every token the screen palette
+     declares must be overridden here, or a dark-mode print comes out as a
+     block of ink with a pale-orange accent. Shadow tokens are not listed
+     because the only surfaces wearing them (chat panel, zoom dialog) are
+     hidden below. */
   :root {
     --color-paper: #f1f2f2;
     --color-paper-2: #e9eaea;
@@ -1249,12 +1252,20 @@
     --color-ink-2: #4c5054;
     --color-ink-3: #63686d;
     --color-rule: #d6d8d9;
+    --color-accent: #c0430f;
+    --color-accent-wash: #f7e9e2;
+    --color-chat: #fdf8f4;
+    --color-chat-2: #f4e9e2;
+    --color-chat-rule: #e2cabe;
+    --color-scrim: #101113;
+    --color-background: #f1f2f2;
+    --color-primary: #c0430f;
   }
 
   html,
   body {
-    background: #f1f2f2 !important;
-    color: #101113 !important;
+    background: var(--color-paper) !important;
+    color: var(--color-ink) !important;
   }
 
   /* Chrome that only makes sense on a screen with a pointer. */
@@ -1305,7 +1316,7 @@
 
   /* Underline rather than colour: colour is unreliable on a mono printer. */
   a {
-    color: #101113 !important;
+    color: var(--color-ink) !important;
     text-decoration: underline;
   }
 
@@ -1616,7 +1627,7 @@ footer .page-shell {
 
   main#main {
     padding: 0 !important;
-    background: #fff !important;
+    background: var(--color-paper) !important;
   }
 
   .cv-sheet {
@@ -1737,7 +1748,7 @@ footer .page-shell {
   /* A link is underlined on paper; its colour is noise in greyscale. */
   .cv-contact a,
   .cv-sheet a {
-    color: #101113 !important;
+    color: var(--color-ink) !important;
     text-decoration: underline;
   }
 }
