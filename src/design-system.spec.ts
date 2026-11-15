@@ -49,8 +49,8 @@ const COLOUR_TOKENS = ['paper', 'paper-2', 'surface', 'ink', 'ink-2', 'ink-3', '
 /** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
 const darkBlock = blockFor(css, '@media (prefers-color-scheme: dark)');
 
-/** The light palette. The screen colours live in the Tailwind `@theme` block. */
-const themeBlock = blockFor(css, '@theme');
+/** The light palette. The screen colours live in the Tailwind `@theme static` block. */
+const themeBlock = blockFor(css, '@theme static');
 
 /** The print palette, which is the `:root` rule identified by its leading comment inside `@media print`. */
 const printBlock = blockFor(css, '/* Print palette');
@@ -66,6 +66,9 @@ describe('design tokens', () => {
     // loose enough to hold the tokens.
     const entry = readFileSync(entryUrl, 'utf8')
       .replace(/@import\s+'[^']+';/g, '')
+      // Comments are prose, not rules: the header is expected to name `@layer`
+      // and `@theme` while documenting where a rule belongs.
+      .replace(/\/\*[\s\S]*?\*\//g, '')
       .trim();
 
     expect(entry).not.toMatch(/@layer|@page|@keyframes|@supports/);

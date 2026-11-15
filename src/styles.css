@@ -1,3 +1,36 @@
+/* ---------------------------------------------------------------------------
+   Stylesheet entry
+
+   Import order is cascade order: base, primitives, chrome, forms, overlays,
+   markdown, motion, print. The layer order is declared once, by the
+   `tailwindcss` import, so `@layer components` blocks merge across all the
+   imported files.
+
+   Where a rule goes, in this order:
+   1. A utility, when one already says it. Layout, spacing, colour, one-off
+      widths.
+   2. `src/styles/*.css`, when it is a recipe used by more than one component,
+      or used through an escape hatch: the type scale, .field, the toolbar,
+      markdown. These stay global because Angular's emulated encapsulation
+      cannot style content projected through ng-content, nor markup that
+      arrives as sanitized innerHTML. Both carry no usable scope attribute, so
+      a component stylesheet would silently match nothing.
+   3. A component `styleUrl`, only when all four hold: the markup is authored
+      in that template, nothing is projected into it, nothing is injected as
+      innerHTML, and no other component uses the class. Two qualify today:
+      `app/pages/cv` and `app/pages/admin/(dashboard)/messages`.
+   4. This file, only for tokens: `@theme` and `:root`. It is the palette
+      contract that `src/design-system.spec.ts` reads, so tokens live here and
+      not in `src/styles/`.
+
+   Unlayered is a claim that a rule must beat a utility, and it has to say so
+   where it is written. Today that claim is made by: `[data-toolbar-mobile]`,
+   `footer .page-shell`, `.skill-grid`, `.skill-cell` (they must beat the flex
+   and width utilities the templates apply), the reduced-motion block, and
+   `@media print`. Anything else that leaves a layer is a bug: unlayered CSS
+   outranks every Tailwind utility.
+--------------------------------------------------------------------------- */
+
 @import 'tailwindcss';
 
 @import './styles/base.css';

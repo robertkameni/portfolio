@@ -1,4 +1,4 @@
-/* Motion. The reduced-motion block below is unlayered and every declaration in it is !important, which is why it wins over the motion rules above it and over print.css and cv.css imported after it: keep both properties.
+/* Motion. The reduced-motion block below is unlayered and every declaration in it is !important, which is why it wins over the motion rules above it and over print.css imported after it: keep both properties.
    It deliberately resets .loader-bar (owned by chrome.css) and the chat selectors (owned by overlays.css), so this file is the single owner of reduced-motion across the split. */
 
 /* ---------------------------------------------------------------------------

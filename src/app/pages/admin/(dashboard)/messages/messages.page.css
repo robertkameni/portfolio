@@ -1,3 +1,14 @@
+/* The admin messages view is one of two components that own their styles. The
+   four scoping criteria hold: the markup is authored in this template, nothing
+   is projected, nothing is injected as innerHTML, and no other component uses
+   these classes.
+
+   Deliberately unlayered, unlike the CV sheet. The container query below sets
+   `gap: 12px` on `.btns`, which the template also gives Tailwind's `gap-2`
+   (8px). Layered rules lose to utilities, so wrapping this file in
+   `@layer components` would quietly drop the stacked layout to an 8px gap.
+   The override is the intent; see docs/superpowers/specs/2026-11-15-stylesheet-architecture.md. */
+
 .header-container {
   container-type: inline-size;
 }
