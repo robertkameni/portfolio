@@ -74,6 +74,10 @@
     box-shadow: 0 12px 32px color-mix(in srgb, var(--color-scrim) 18%, transparent);
   }
 
+  /* `message-in` is defined in motion.css. Keyframe names are global, so this
+     is order-independent, but the dependency is invisible from here: motion.css
+     owns the definition and `src/design-system.spec.ts` asserts that every name
+     animated with is defined somewhere in the composed stylesheet. */
   .chat-bubble {
     animation: message-in 240ms var(--ease-out) both;
   }

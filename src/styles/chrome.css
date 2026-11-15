@@ -81,6 +81,23 @@
   }
 }
 
+/* The hero portrait's offset block. It sat in motion.css by accident of task
+   assignment: a box-shadow is not motion, and reading it among the keyframes
+   invited edits that expected animation semantics.
+
+   Two rules that were here are gone rather than moved. `.project-row:first-child
+   { padding-block: 2.5rem }` and `{ .project-shot { width: 28rem } }` were dead:
+   both sit in `@layer components`, and the templates apply `py-8` / `md:py-12`
+   and `w-full`, which are utilities and therefore win. Measured in a browser
+   before deleting: the featured row's padding came from `md:py-12` (48px, not
+   40px) and its screenshot from `w-full` (705px, not 448px). The featured row
+   still reads as featured; it now does so through the utilities alone. */
+@layer components {
+  .portrait {
+    box-shadow: -12px 12px 0 var(--color-accent-wash);
+  }
+}
+
 /* Tool sheet. Kept outside @layer so it wins over the flex utilities that
    the phone layout uses. From 640px the cells lock to a 12-column hairline
    grid: the lead skill takes half of the first row, and nine tools fill

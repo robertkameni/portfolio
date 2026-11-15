@@ -160,11 +160,16 @@
 @media print {
   /* Print palette. Always the light sheet, whatever the reader's scheme is.
      Tested in src/design-system.spec.ts: every token the screen palette
-     declares must be overridden here, or a dark-mode print comes out as a
-     block of ink with a pale-orange accent. Shadow tokens are not listed
-     because the only surfaces wearing them (chat panel, zoom dialog) are
-     hidden below. */
+     declares must be overridden here with an exact value, or a dark-mode print
+     comes out as a block of ink with a pale-orange accent. Shadow tokens are
+     not listed: the only surface wearing `--shadow-panel` is the chat panel,
+     which print hides. */
   :root {
+    /* `color-scheme` is what the UA paints its own surfaces from: form
+       controls, the caret, `::selection`, scrollbars. Leaving it at `light
+       dark` lets a dark-scheme reader print those as dark blocks on the white
+       sheet the tokens ask for. */
+    color-scheme: light;
     --color-paper: #f1f2f2;
     --color-paper-2: #e9eaea;
     --color-surface: #fafafa;

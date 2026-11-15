@@ -4,8 +4,9 @@
 
 > **Superseded in part (2026-11-15):** two code blocks below still show the
 > compatibility aliases `--color-background` and `--color-primary` in the token
-> root. Both were removed; the palette is now nine `--color-*` tokens with
-> `--color-paper` and `--color-accent` as the only names. The plan is left as a
+> root. Both were removed; the palette is now thirteen `--color-*` tokens (nine
+> surface and ink names, four chat names), with `--color-paper` and
+> `--color-accent` as the primary names. The plan is left as a
 > record of the work, not as current documentation — see
 > `docs/superpowers/specs/2026-11-15-stylesheet-architecture.md` for the current
 > stylesheet architecture.

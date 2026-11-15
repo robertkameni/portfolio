@@ -52,7 +52,10 @@ All tokens live in `src/styles.css` under `@theme`, with dark values applied thr
 | `--color-accent` | `#c0430f` | `#ff8350` |
 | `--color-accent-wash` | `#f7e9e2` | `#2a1a13` |
 
-The palette is exactly nine tokens; there are no aliases. `--color-background` and
+The palette is the nine surface and ink tokens tabulated above, plus the four chat
+tokens (`--color-chat`, `--color-chat-2`, `--color-chat-rule`) and `--color-scrim`:
+thirteen names in total, which is the set `src/design-system.spec.ts` enforces across
+the light, dark and print blocks. There are no aliases. `--color-background` and
 `--color-primary` were kept for a transition period and removed on 2026-11-15 once
 `rg` found no template still consuming them (see
 `docs/superpowers/specs/2026-11-15-stylesheet-architecture.md`). `--color-paper` and

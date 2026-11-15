@@ -14,6 +14,9 @@ function readStylesheet(): string {
 
 const css = readStylesheet();
 
+/** The same stylesheet with comments removed: structural checks count rules, not prose. */
+const cssCode = css.replace(/\/\*[\s\S]*?\*\//g, '');
+
 /** Bodies of every block whose header contains `marker`, brace-matched. A selector may be restyled twice (base plus media query). */
 function blocksFor(source: string, marker: string): string[] {
   const bodies: string[] = [];
@@ -44,7 +47,62 @@ function blockFor(source: string, marker: string): string {
   return blocksFor(source, marker)[0] ?? '';
 }
 
+/**
+ * Occurrences of `needle` that sit at brace depth 0, i.e. outside every block.
+ *
+ * Counting raw matches measures spelling, not structure: `^:root {` measures
+ * indentation, so a legitimately dedented print root would fail it, and `:root{`
+ * without a space would slip past. Depth is the property both checks actually
+ * mean.
+ */
+function countAtTopLevel(source: string, needle: string): number {
+  let depth = 0;
+  let count = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === '{') {
+      depth += 1;
+      continue;
+    }
+    if (char === '}') {
+      depth -= 1;
+      continue;
+    }
+    if (depth === 0 && source.startsWith(needle, index)) {
+      count += 1;
+      index += needle.length - 1;
+    }
+  }
+  return count;
+}
+
+/** `--color-x: #hex` declarations of a block, as a token map. */
+function colourValues(block: string): Record<string, string> {
+  return Object.fromEntries([...block.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)].map((match) => [match[1] ?? '', (match[2] ?? '').trim()]));
+}
+
 const COLOUR_TOKENS = ['paper', 'paper-2', 'surface', 'ink', 'ink-2', 'ink-3', 'rule', 'accent', 'accent-wash', 'chat', 'chat-2', 'chat-rule', 'scrim'] as const;
+
+/**
+ * The exact values the print palette must carry. Presence alone is not enough:
+ * a retuned hex would pass a `toContain('--color-ink-3:')` check, and the print
+ * sheet would drift away from the light palette one edit at a time.
+ */
+const PRINT_PALETTE: Record<string, string> = {
+  '--color-paper': '#f1f2f2',
+  '--color-paper-2': '#e9eaea',
+  '--color-surface': '#fafafa',
+  '--color-ink': '#101113',
+  '--color-ink-2': '#4c5054',
+  '--color-ink-3': '#63686d',
+  '--color-rule': '#d6d8d9',
+  '--color-accent': '#c0430f',
+  '--color-accent-wash': '#f7e9e2',
+  '--color-chat': '#fdf8f4',
+  '--color-chat-2': '#f4e9e2',
+  '--color-chat-rule': '#e2cabe',
+  '--color-scrim': '#101113',
+};
 
 /** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
 const darkBlock = blockFor(css, '@media (prefers-color-scheme: dark)');
@@ -140,38 +198,61 @@ describe('design tokens', () => {
     }
   });
 
-  it('overrides every colour token in the print block', () => {
-    // A dark reader who prints must get the light sheet. Six of the thirteen
-    // tokens used to be missing here, so accents and the chat surface printed
-    // as dark blocks on white paper.
+  it('overrides every colour token in the print block, with the light value', () => {
+    // A dark reader who prints must get the light sheet. Several tokens used to
+    // be missing here, so accents and the chat surface printed as dark blocks on
+    // white paper. Presence alone is not the invariant: a retuned hex would pass
+    // a name-only check and the printed sheet would drift from the screen one.
     expect(printBlock).not.toBe('');
 
+    const print = colourValues(printBlock);
     for (const token of COLOUR_TOKENS) {
-      expect(printBlock, `print must set --color-${token}`).toContain(`--color-${token}:`);
+      expect(print, `print must set --color-${token}`).toHaveProperty(`--color-${token}`);
     }
+    expect(print).toEqual(PRINT_PALETTE);
   });
 
   it('keeps every dark colour override inside the dark block', () => {
+    // Presence alone would pass if a dark hex were duplicated into the light
+    // palette: the override would still "be somewhere". The point of an override
+    // is that the value changes, so every dark token must differ from its light
+    // counterpart.
+    const light = colourValues(themeBlock);
+    const dark = colourValues(darkBlock);
+
     for (const token of COLOUR_TOKENS) {
-      expect(darkBlock, `dark must set --color-${token}`).toContain(`--color-${token}:`);
+      const name = `--color-${token}`;
+      expect(dark, `dark must set ${name}`).toHaveProperty(name);
+      expect(dark[name], `${name} must differ between the light and dark palettes`).not.toBe(light[name]);
     }
   });
 
   it('declares the same colour tokens in the light, dark and print blocks', () => {
     // Presence-only loops let a block carry extra tokens into the other palettes.
-    const names = (block: string) => [...block.matchAll(/(--color-[\w-]+):/g)].map((m) => m[1]).sort();
+    // An unparsed (empty) light block would satisfy every parity assertion by
+    // falling back to "rest of file", so it is guarded explicitly.
+    const names = (block: string) => [...block.matchAll(/(--color-[\w-]+):/g)].map((match) => match[1]).sort();
+    expect(themeBlock, 'the light palette block must be found').not.toBe('');
     const light = names(themeBlock);
     expect(names(darkBlock)).toEqual(light);
     expect(names(printBlock)).toEqual(light);
     expect(light).toHaveLength(COLOUR_TOKENS.length);
   });
 
-  it('declares the reduced-motion overrides once', () => {
-    expect((css.match(/prefers-reduced-motion/g) ?? []).length).toBe(1);
+  it('declares the reduced-motion overrides once, at the top level', () => {
+    // Counting raw occurrences measures spelling: a comment naming the media
+    // query would trip it, and a legitimate `@media print and
+    // (prefers-reduced-motion: reduce)` would be forbidden. What the invariant
+    // means is one such block that is not nested inside another.
+    expect(countAtTopLevel(cssCode, '@media (prefers-reduced-motion: reduce)')).toBe(1);
   });
 
   it('keeps one top-level token root', () => {
-    expect((css.match(/^:root \{/gm) ?? []).length).toBe(1);
+    // Matching `^:root {` measured indentation, not nesting: a dedented print
+    // root would fail it and `:root{` would slip past. Depth is the property.
+    // Comments are stripped first: the entry's own header names `:root` while
+    // explaining where a rule belongs, and prose is not a selector.
+    expect(countAtTopLevel(cssCode, ':root')).toBe(1);
   });
 
   it('takes scroll padding from the measured header', () => {
@@ -242,14 +323,48 @@ describe('design tokens', () => {
       '.admin-chip {',
       '.chat-markdown th {',
     ]) {
-      // `.cell-label` has a base `display: none` rule and a media-query restyle,
-      // so at least one block carrying the selector must compose.
-      const bodies = blocksFor(css, selector);
-      expect(bodies.length, selector).toBeGreaterThan(0);
+      // `.cell-label` has a base `display: none` rule and a media-query restyle.
+      // A block that only hides the element cannot be the one that composes the
+      // recipe, so it is excluded: leaving it in let a future `@apply` added to
+      // the hiding block satisfy the assertion while the visible rule lost it.
+      const composers = blocksFor(css, selector).filter((body) => !/^\s*display:\s*none;?\s*$/.test(body));
+      expect(composers.length, selector).toBeGreaterThan(0);
       expect(
-        bodies.some((body) => /@apply[^;]*text-meta[^;]*tracking-meta/.test(body)),
+        composers.some((body) => /@apply[^;]*text-meta[^;]*tracking-meta/.test(body)),
         `${selector} must compose the meta recipe from the theme tokens`,
       ).toBe(true);
+    }
+  });
+
+  it('defines every keyframe it animates with', () => {
+    // Keyframe names are global, so a rule may animate with a keyframe declared
+    // in another file (`.chat-bubble` in overlays.css uses `message-in` from
+    // motion.css). That dependency is invisible from the consumer, which is why
+    // it is asserted here rather than commented: a renamed or deleted keyframe
+    // silently stops the animation instead of failing anything.
+    const defined = new Set([...cssCode.matchAll(/@keyframes\s+([\w-]+)/g)].map((match) => match[1]));
+    const used = new Set(
+      [...cssCode.matchAll(/(?:^|[;\s{])animation(?:-name)?:\s*([\w-]+)/g)].map((match) => match[1]).filter((name): name is string => !!name && name !== 'none'),
+    );
+
+    expect(used.size).toBeGreaterThan(0);
+    expect([...used].filter((name) => !defined.has(name))).toEqual([]);
+  });
+
+  it('keeps the chat reveal and the chat markdown on one type scale', () => {
+    // The reveal shows the answer as plain text and hands over to the rendered
+    // markdown when it finishes. If the two disagree, the bubble resizes at that
+    // moment. They live in different files, so nothing but this check keeps them
+    // equal.
+    const declaration = (block: string, property: string) => new RegExp(`${property}:\\s*([^;]+);`).exec(block)?.[1]?.trim();
+
+    for (const property of ['font-size', 'line-height']) {
+      const reveal = declaration(blockFor(css, '.chat-reveal {'), property);
+      const markdown = declaration(blockFor(css, '.chat-markdown {'), property);
+
+      expect(reveal, `.chat-reveal must declare ${property}`).toBeDefined();
+      expect(markdown, `.chat-markdown must declare ${property}`).toBeDefined();
+      expect(reveal, `.chat-reveal and .chat-markdown must agree on ${property}`).toBe(markdown);
     }
   });
 

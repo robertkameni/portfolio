@@ -25,6 +25,10 @@
   }
 }
 
+/* Two consumers, two timing models: `.edge-top::before` plays it on a wall
+   clock when its section is revealed, and `.scroll-progress` scrubs it against
+   the scroll timeline. Changing this keyframe changes both, so a new consumer
+   is rarely the whole story. */
 @keyframes rule-draw {
   from {
     transform: scaleX(0);
@@ -144,23 +148,12 @@
     background-color: var(--color-paper-2);
   }
 
-  .portrait {
-    box-shadow: -12px 12px 0 var(--color-accent-wash);
-  }
-
+  /* The shot's size, the row's first-child padding and the portrait's offset
+     shadow are presentation, not motion: they live in chrome.css. What stays
+     here is the movement those boxes make. */
   .project-shot {
     transform: scale(1.08);
     transition: transform 500ms var(--ease-rise);
-  }
-
-  .project-row:first-child {
-    padding-block: 2.5rem;
-  }
-
-  @media (min-width: 768px) {
-    .project-row:first-child .project-shot {
-      width: 28rem;
-    }
   }
 
   .project-row:hover .project-shot,
