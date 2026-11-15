@@ -1,9 +1,9 @@
-import { defineEventHandler, getRequestURL, setResponseHeader } from 'h3';
+import { defineEventHandler, getRequestURL, send, setResponseHeader } from 'h3';
 import { projectRepository } from '../db/repositories/project.repository';
 import { buildSitemapEntries, renderSitemapXml } from '../utils/sitemap';
 
 /**
- * Serves `/sitemap.xml`, with or without the deployment base path.
+ * Serves `/sitemap.xml`, whatever the base path is.
  *
  * A middleware rather than a route: the Angular catch-all page answers every
  * unmatched path of the SSR function, so both a Nitro route under
@@ -12,6 +12,13 @@ import { buildSitemapEntries, renderSitemapXml } from '../utils/sitemap';
  *
  * Generated from the database: the previous static file had drifted and was
  * missing two of eight published projects, including the newest one.
+ *
+ * It responds with `send()` rather than by returning the body. A middleware's
+ * return value ends the handler chain but does not reliably flush a body in the
+ * dev server: the request stayed open with no bytes and no headers until the
+ * client gave up, while the query and the XML build had both finished. Writing
+ * the response explicitly is the middleware contract, and it behaves the same
+ * in dev and in the Vercel build.
  */
 export default defineEventHandler(async (event) => {
   const { pathname } = getRequestURL(event);
@@ -28,7 +35,7 @@ export default defineEventHandler(async (event) => {
     // Short cache: a newly published project becomes discoverable within
     // minutes rather than at the next deploy.
     setResponseHeader(event, 'cache-control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
-    return xml;
+    return send(event, xml);
   } catch (error) {
     console.error('[sitemap] could not list projects', error);
 
@@ -37,6 +44,6 @@ export default defineEventHandler(async (event) => {
     setResponseHeader(event, 'cache-control', 'no-store');
     setResponseHeader(event, 'content-type', 'text/plain; charset=utf-8');
     event.node.res.statusCode = 503;
-    return 'Sitemap temporarily unavailable.';
+    return send(event, 'Sitemap temporarily unavailable.');
   }
 });

@@ -2,17 +2,17 @@
  * Where the site claims to live, used for canonical URLs, the sitemap and the
  * Link headers.
  *
- * The deployed site is served under `/portfolio/` (see the `base` tag and the
- * `vercel.json` rewrites), so the origin alone is not enough. Both parts are
- * overridable so a preview or a custom domain does not have to edit code.
+ * The site is served from the root of its own host, `cv.lucastar.de`, so the
+ * base path is empty. It used to be `/portfolio/`; both parts stay overridable
+ * so a preview deployment or a staging host does not have to edit code.
  */
 export type SiteLocation = {
   origin: string;
   basePath: string;
 };
 
-const DEFAULT_ORIGIN = 'https://lucastar.de';
-const DEFAULT_BASE_PATH = '/portfolio';
+const DEFAULT_ORIGIN = 'https://cv.lucastar.de';
+const DEFAULT_BASE_PATH = '';
 
 /** Strip trailing slashes so joining never produces `//`. */
 function trimSlashes(value: string): string {
@@ -33,7 +33,7 @@ export function resolveSiteLocation(env: NodeJS.ProcessEnv = process.env): SiteL
   };
 }
 
-/** Absolute URL for a path inside the site, e.g. `/projects` → `https://host/portfolio/projects`. */
+/** Absolute URL for a path inside the site, e.g. `/projects` → `https://cv.lucastar.de/projects`. */
 export function absoluteUrl(path: string, location: SiteLocation = resolveSiteLocation()): string {
   if (!path || path === '/') {
     return `${location.origin}${location.basePath}/`;

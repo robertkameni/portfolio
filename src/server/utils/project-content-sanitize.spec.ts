@@ -87,7 +87,7 @@ describe('project-content-sanitize', () => {
   });
 
   it('accepts markdown with styled images and headings', () => {
-    expect(() => validateProjectMarkdownContent('# Overview\n\n![AI simulator](https://lucastar.de/portfolio/assets/ai-simulation-team.png)')).not.toThrow();
+    expect(() => validateProjectMarkdownContent('# Overview\n\n![AI simulator](https://cv.lucastar.de/assets/ai-simulation-team.png)')).not.toThrow();
   });
 
   it('rejects markdown that renders to unsafe HTML', () => {

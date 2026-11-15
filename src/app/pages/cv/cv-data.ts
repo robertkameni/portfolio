@@ -60,7 +60,7 @@ export const CV_DATA: CvData = {
   links: [
     { label: 'linkedin.com/in/robertkameni', href: 'https://www.linkedin.com/in/robertkameni/' },
     { label: 'github.com/robertkameni', href: 'https://github.com/robertkameni' },
-    { label: 'lucastar.de/portfolio', href: 'https://lucastar.de/portfolio/' },
+    { label: 'cv.lucastar.de', href: 'https://cv.lucastar.de/' },
   ],
   facts: 'EU/EFTA-Staatsangehörigkeit (keine Bewilligung nötig) · 3 Monate Kündigungsfrist',
   profile:
