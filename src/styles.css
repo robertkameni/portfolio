@@ -8,7 +8,6 @@
 @import './styles/markdown.css';
 @import './styles/motion.css';
 @import './styles/print.css';
-@import './styles/cv.css';
 
 @theme static {
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;

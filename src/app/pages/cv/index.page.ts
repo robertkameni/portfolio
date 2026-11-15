@@ -20,6 +20,7 @@ export const routeMeta = withRenderMode('server');
   standalone: true,
   imports: [RouterLink],
   templateUrl: './index.page.html',
+  styleUrl: './index.page.css',
 })
 export default class CvPage {
   private readonly platformId = inject(PLATFORM_ID);

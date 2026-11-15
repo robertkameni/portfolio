@@ -21,6 +21,11 @@
     color: var(--color-ink) !important;
   }
 
+  main#main {
+    padding: 0 !important;
+    background: var(--color-paper) !important;
+  }
+
   /* Chrome that only makes sense on a screen with a pointer. */
   .scroll-progress,
   site-toolbar,

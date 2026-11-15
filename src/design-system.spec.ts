@@ -291,3 +291,29 @@ describe('templates', () => {
     expect(offenders).toEqual([]);
   });
 });
+
+describe('component styles', () => {
+  const cvCss = readFileSync(new URL('./app/pages/cv/index.page.css', import.meta.url), 'utf8');
+  const cvComponent = readFileSync(new URL('./app/pages/cv/index.page.ts', import.meta.url), 'utf8');
+
+  it('scopes the CV sheet to the CV page', () => {
+    expect(cvCss).toContain('.cv-sheet');
+    expect(css).not.toContain('.cv-sheet');
+    // Wrapped in the components layer, or the unlayered component CSS would beat
+    // the Tailwind utilities on the same elements. Same lesson as Task 6.
+    expect(cvCss).toMatch(/@layer components\s*\{/);
+  });
+
+  it('wires the component stylesheet', () => {
+    // Task 6's failure mode one level down: a stylesheet that exists but is
+    // never referenced contributes nothing, and every assertion above still passes.
+    expect(cvComponent).toContain("styleUrl: './index.page.css'");
+  });
+
+  it('keeps the page box global', () => {
+    // @page is document-level and outlives the route; a component stylesheet
+    // would leave A4 margins on every print afterwards.
+    expect(css).toMatch(/@page\s*\{/);
+    expect(cvCss).not.toMatch(/@page\s*\{/);
+  });
+});
