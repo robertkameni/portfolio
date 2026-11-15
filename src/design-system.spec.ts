@@ -9,7 +9,12 @@ const entryUrl = new URL('./styles.css', import.meta.url);
 /** The entry plus every relative stylesheet it imports, one level deep. */
 function readStylesheet(): string {
   const entry = readFileSync(entryUrl, 'utf8');
-  return entry.replace(/@import\s+'(\.[^']+)';/g, (_match, relative: string) => readFileSync(new URL(relative, entryUrl), 'utf8'));
+  // The callback parameters are typed by hand rather than inferred. Inference
+  // here depends on `@types/node` being in the program the editor picked, which
+  // is exactly the thing that broke before: without it `readFileSync` returns
+  // `any`, the callback loses its signatures, and `_match` becomes an implicit
+  // `any`. Spelling them out keeps this file readable in any program.
+  return entry.replace(/@import\s+'(\.[^']+)';/g, (_match: string, relative: string) => readFileSync(new URL(relative, entryUrl), 'utf8'));
 }
 
 const css = readStylesheet();

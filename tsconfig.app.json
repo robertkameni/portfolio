@@ -10,5 +10,9 @@
     "src/**/*.d.ts",
     "src/app/pages/**/*.page.ts",
     "src/server/middleware/**/*.ts"
-  ]
+  ],
+  // The include list is already a whitelist, so no spec can match it. Stated
+  // anyway: the base config no longer excludes specs (an editor-only project
+  // needs them), so this project says what it does not build.
+  "exclude": ["src/**/*.spec.ts"]
 }

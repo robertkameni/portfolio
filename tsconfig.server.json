@@ -5,5 +5,10 @@
     "noUncheckedIndexedAccess": true,
     "types": ["node"]
   },
-  "include": ["src/server/**/*.ts", "middleware.ts"]
+  "include": ["src/server/**/*.ts", "middleware.ts"],
+  // `src/server/**/*.ts` matches the 16 spec files under it. The base config no
+  // longer excludes specs (see the note there), so this project must: a server
+  // build has no use for them and they would be checked with `types: ["node"]`
+  // only, which is not the program they are written against.
+  "exclude": ["src/**/*.spec.ts"]
 }
