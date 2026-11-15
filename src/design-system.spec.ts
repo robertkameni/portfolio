@@ -23,23 +23,7 @@ function blockFor(source: string, marker: string): string {
   return source.slice(open + 1);
 }
 
-const COLOUR_TOKENS = [
-  'paper',
-  'paper-2',
-  'surface',
-  'ink',
-  'ink-2',
-  'ink-3',
-  'rule',
-  'accent',
-  'accent-wash',
-  'chat',
-  'chat-2',
-  'chat-rule',
-  'scrim',
-  'background',
-  'primary',
-] as const;
+const COLOUR_TOKENS = ['paper', 'paper-2', 'surface', 'ink', 'ink-2', 'ink-3', 'rule', 'accent', 'accent-wash', 'chat', 'chat-2', 'chat-rule', 'scrim'] as const;
 
 /** Declarations of the `prefers-color-scheme: dark` block, so dark values cannot be satisfied from the light palette. */
 const darkBlock = blockFor(css, '@media (prefers-color-scheme: dark)');
@@ -55,8 +39,6 @@ describe('design tokens', () => {
     expect(css).toContain('--color-rule: #d6d8d9');
     expect(css).toContain('--color-accent: #c0430f');
     expect(css).toContain('--color-accent-wash: #f7e9e2');
-    expect(css).toContain('--color-background: #f1f2f2');
-    expect(css).toContain('--color-primary: #c0430f');
   });
 
   it('defines the dark scheme override', () => {
@@ -88,8 +70,6 @@ describe('design tokens', () => {
       '--color-rule: #2c2f31',
       '--color-accent: #ff8350',
       '--color-accent-wash: #2a1a13',
-      '--color-background: #141516',
-      '--color-primary: #ff8350',
     ]) {
       expect(darkBlock).toContain(token);
     }

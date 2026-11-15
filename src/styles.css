@@ -28,10 +28,6 @@
      its contrast when it is inspected full size. */
   --color-scrim: #101113;
 
-  /* Aliases kept so templates that are not migrated yet still resolve. */
-  --color-background: #f1f2f2;
-  --color-primary: #c0430f;
-
   --radius-base: 2px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -99,8 +95,6 @@
     --color-chat-2: #1e1712;
     --color-chat-rule: #4c392e;
     --color-scrim: #0b0c0d;
-    --color-background: #141516;
-    --color-primary: #ff8350;
     /* A dark page has no ambient light to cast shade, so the panel is lifted by
        depth and a top bevel instead. */
     --shadow-panel: 0 24px 60px color-mix(in srgb, var(--color-scrim) 82%, transparent), inset 0 1px 0 color-mix(in srgb, var(--color-ink) 7%, transparent);
@@ -863,16 +857,6 @@
   }
 }
 
-@keyframes portrait-settle {
-  from {
-    transform: scale(1.05);
-  }
-
-  to {
-    transform: none;
-  }
-}
-
 @keyframes shot-drift {
   from {
     transform: translateY(-3%);
@@ -1163,12 +1147,6 @@
   }
 
   @supports (animation-timeline: view()) {
-    .portrait-settle {
-      animation: portrait-settle linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 55%;
-    }
-
     /* The hero portrait is a composition anchor: it must sit exactly where the
        grid puts it, so it keeps the entrance rise and takes no parallax. */
 
@@ -1188,8 +1166,7 @@
   .enter,
   [data-stagger],
   .chat-bubble,
-  .chat-panel,
-  .portrait-settle {
+  .chat-panel {
     animation: none !important;
     filter: none !important;
     opacity: 1 !important;
@@ -1258,8 +1235,6 @@
     --color-chat-2: #f4e9e2;
     --color-chat-rule: #e2cabe;
     --color-scrim: #101113;
-    --color-background: #f1f2f2;
-    --color-primary: #c0430f;
   }
 
   html,
