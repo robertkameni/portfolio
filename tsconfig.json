@@ -20,7 +20,20 @@
     "useDefineForClassFields": false,
     "skipLibCheck": true
   },
-  "exclude": ["src/**/*.spec.ts"],
+  // This file is the only tsconfig the TypeScript server discovers on its own:
+  // it looks for a file named `tsconfig.json` in each ancestor directory. The
+  // other configs are only loaded when a tool is told to use them (`tsc -p`).
+  //
+  // So a file excluded here belongs to no project the editor can see, and the
+  // server falls back to an inferred project with `moduleResolution: classic`
+  // and no `@types/node`. That is what made `src/design-system.spec.ts` report
+  // "Cannot find name 'node:path'" and an implicit `any` on a `String.replace`
+  // callback, while `npm run typecheck` passed: the two were reading different
+  // programs.
+  //
+  // Specs therefore stay in scope here, and the builds that must not see them
+  // exclude them explicitly. App and server are whitelists already; they say so
+  // out loud rather than relying on inheritance from this file.
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
