@@ -40,12 +40,25 @@ describe('Content Security Policy', () => {
     expect(reportOnly).toEqual(enforced);
   });
 
-  it('allows the two inline scripts Angular injects', () => {
-    // 1. id="ng-event-dispatch-contract" (Angular's event dispatch bootstrap)
-    // 2. the untagged __jsaction_bootstrap call appended by SSR
-    // If Angular changes either payload, the hash must be recomputed from the
-    // served HTML; the browser console names the required value.
-    expect(scriptHashes(cspOf('Content-Security-Policy'))).toHaveLength(2);
+  it('allows the inline scripts Angular injects, including each route variant', () => {
+    // Angular emits three inline scripts. Two are payload-stable:
+    //   1. id="ng-event-dispatch-contract" (event replay bootstrap)
+    //   2. the untagged __jsaction_bootstrap call
+    // `id="ng-state"` is `type="application/json"`, which CSP does not apply to,
+    // so it needs no hash.
+    //
+    // The bootstrap call is NOT stable across routes: it lists the events that
+    // page actually uses, so `/` ships ["click","submit"] and `/cv` ships
+    // ["click"]. Hash-pinning that means every new route with a different event
+    // set is silently blocked. The CV page was, until this list carried both.
+    //
+    // If a future route introduces a third event combination, the browser
+    // console names the hash it needs. A per-request nonce would remove the
+    // whole class of failure; this guard cannot detect it, because it reads
+    // vercel.json rather than the served HTML.
+    const hashes = scriptHashes(cspOf('Content-Security-Policy'));
+
+    expect(hashes).toHaveLength(3);
   });
 
   it('keeps the report endpoint on the report-only policy', () => {
