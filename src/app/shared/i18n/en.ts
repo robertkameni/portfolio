@@ -40,7 +40,7 @@ export const EN_COPY: SiteCopy = {
     empty: 'No projects published yet.',
     unavailable: 'Case write-ups are in progress.',
     viewLive: 'View live',
-    viewLiveAriaLabel: 'Open {title} live (opens in a new tab)',
+    viewLiveAriaLabel: 'View live: {title} (opens in a new tab)',
     openProjectCta: 'Open →',
     openProjectAriaLabel: 'Open project: {title}',
   },

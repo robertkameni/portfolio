@@ -35,7 +35,18 @@
 
       <div class="min-w-0">
         <div class="grid gap-x-8 gap-y-2 md:grid-cols-[1fr_auto] md:items-baseline">
-          <h3 class="text-(length:--text-lead) font-medium leading-snug">
+          @if (headingLevel() === 2) {
+          <h2 class="text-lead font-medium leading-snug">
+            <a
+              [routerLink]="['/projects', project.slug]"
+              [attr.aria-label]="openProjectAriaLabel(project.title)"
+              class="tap-area text-ink transition-colors duration-150 hover:text-accent"
+            >
+              {{ project.title }}
+            </a>
+          </h2>
+          } @else {
+          <h3 class="text-lead font-medium leading-snug">
             <a
               [routerLink]="['/projects', project.slug]"
               [attr.aria-label]="openProjectAriaLabel(project.title)"
@@ -44,6 +55,7 @@
               {{ project.title }}
             </a>
           </h3>
+          }
 
           <span class="type-meta text-ink-3 tabular-nums">{{ project.createdAt | date: 'MMM y' : undefined : currentDateLocale() }}</span>
         </div>

@@ -43,7 +43,7 @@
     } @if (visibleProjects().length === 0) {
     <p class="mt-10 text-ink-2">{{ copy().projectsPage.filterEmpty }}</p>
     } @else {
-    <projects-list [projects]="visibleProjects()" [locale]="locale()" />
+    <projects-list [projects]="visibleProjects()" [locale]="locale()" [headingLevel]="2" />
     } }
   </div>
 </main>

@@ -27,14 +27,14 @@
           <span aria-hidden="true">·</span>
           <span>{{ cv.phone }}</span>
         </p>
+        <!-- Links are underlined, so they need no separator, and a dot between
+             them only gives the line something to strand on a new row when it
+             wraps on a phone. -->
         <p class="cv-contact">
           <a [href]="'mailto:' + cv.email">{{ cv.email }}</a>
-          <span aria-hidden="true">·</span>
-          @for (link of cv.links; track link.href; let last = $last) {
+          @for (link of cv.links; track link.href) {
           <a [href]="link.href" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
-          @if (!last) {
-          <span aria-hidden="true">·</span>
-          } }
+          }
         </p>
         <p class="cv-facts">{{ cv.facts }}</p>
       </header>

@@ -40,14 +40,34 @@
     letter-spacing: -0.03em;
   }
 
+  /* A flex row, because the parts have to be able to wrap. As inline text the
+     contact line had no break opportunity: Angular drops the whitespace around
+     the separator spans, so the four links rendered as one unbreakable token and
+     the page scrolled sideways at 390px. `gap` supplies the spacing the markup
+     no longer can. */
   .cv-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.375rem;
+    row-gap: 0.125rem;
     margin-top: 0.5rem;
     font-size: 0.8125rem;
     line-height: 1.45;
     color: var(--color-ink-2);
   }
 
+  .cv-contact > span[aria-hidden='true'] {
+    color: var(--color-ink-3);
+  }
+
+  /* A link inside running text is still a touch target. At 13px these measured
+     19px tall, under the 24px minimum, so they carry their own hit box rather
+     than relying on the line box. */
   .cv-contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
     color: inherit;
     text-decoration-color: color-mix(in srgb, var(--color-ink) 30%, transparent);
     text-underline-offset: 3px;
@@ -240,7 +260,14 @@
 
     .cv-contact {
       margin-top: 1.5pt;
+      column-gap: 3pt;
       font-size: 8.2pt;
+    }
+
+    /* Paper has no touch target, and every point of height here costs body
+       copy from the second sheet. */
+    .cv-contact a {
+      min-height: 0;
     }
 
     .cv-facts {

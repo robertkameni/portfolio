@@ -40,7 +40,7 @@ export const DE_COPY: SiteCopy = {
     empty: 'Noch keine Projekte veröffentlicht.',
     unavailable: 'Projektbeschreibungen folgen in Kürze.',
     viewLive: 'Live ansehen',
-    viewLiveAriaLabel: '{title} live öffnen (öffnet in neuem Tab)',
+    viewLiveAriaLabel: 'Live ansehen: {title} (öffnet in neuem Tab)',
     openProjectCta: 'Öffnen →',
     openProjectAriaLabel: 'Projekt öffnen: {title}',
   },
