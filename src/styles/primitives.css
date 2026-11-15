@@ -1,0 +1,124 @@
+/* Shared primitives. Global on purpose: they are used in page templates and in content projected through ng-content, where Angular's emulated encapsulation cannot reach. */
+
+@layer components {
+  .page-shell {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Lets a figure use the full width of the shell without leaving it, so the
+     page keeps one column rhythm and the screenshot is still edge to edge. */
+  .bleed {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .type-display {
+    font-size: var(--text-display);
+    line-height: 0.92;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: var(--color-ink);
+  }
+
+  .type-lead {
+    font-size: var(--text-lead);
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .type-h2 {
+    font-size: var(--text-h2);
+    line-height: 1.02;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+  }
+
+  .type-title {
+    font-size: var(--text-title);
+    line-height: 1.02;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  .type-h3 {
+    font-size: var(--text-h3);
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .type-meta {
+    @apply font-mono text-meta font-medium uppercase tracking-meta;
+  }
+
+  .type-metric {
+    font-size: var(--text-metric);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Every section takes its padding from the same pair of tokens, so the
+     document breathes at two speeds instead of one. */
+  .section {
+    padding-block: var(--space-section);
+  }
+
+  .section-compact {
+    padding-block: var(--space-section-compact);
+  }
+
+  /* A printed link. The rule is the affordance, not the colour: accent on
+     every small link made the page look highlighted rather than designed. */
+  .link-quiet {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-ink) 24%, transparent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      text-decoration-color var(--dur-fast) var(--ease-out);
+  }
+
+  .link-quiet:hover {
+    color: var(--color-accent);
+    text-decoration-color: currentColor;
+  }
+
+  /* Small mono links carry the page's navigation, but their text box is only
+     ~17px tall. This grows the touch target to 44px without touching the
+     type size or the vertical rhythm. Anchored at the top so the extra area
+     falls away from the paragraph above instead of over it. */
+  .tap-area {
+    position: relative;
+  }
+
+  .tap-area::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: -6px;
+    min-height: 44px;
+    height: calc(100% + 6px);
+  }
+
+  /* A floating control that has stepped aside for a section that needs the same
+     corner. visibility (not just opacity) keeps it out of the tab order and the
+     accessibility tree. */
+  [data-yielded] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 160ms var(--ease-out),
+      visibility 0s linear 160ms;
+  }
+}

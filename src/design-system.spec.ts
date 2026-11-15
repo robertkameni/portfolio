@@ -4,7 +4,15 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
+const entryUrl = new URL('./styles.css', import.meta.url);
+
+/** The entry plus every relative stylesheet it imports, one level deep. */
+function readStylesheet(): string {
+  const entry = readFileSync(entryUrl, 'utf8');
+  return entry.replace(/@import\s+'(\.[^']+)';/g, (_match, relative: string) => readFileSync(new URL(relative, entryUrl), 'utf8'));
+}
+
+const css = readStylesheet();
 
 /** Bodies of every block whose header contains `marker`, brace-matched. A selector may be restyled twice (base plus media query). */
 function blocksFor(source: string, marker: string): string[] {
@@ -48,6 +56,41 @@ const themeBlock = blockFor(css, '@theme');
 const printBlock = blockFor(css, '/* Print palette');
 
 describe('design tokens', () => {
+  it('keeps the entry to tokens and imports', () => {
+    // The entry may hold `@import` lines and token blocks only: `@theme`,
+    // `:root`, and the media queries that carry an override of one of those
+    // token blocks. Anything that selects an element, a class, an id or an
+    // attribute means a rule file has been inlined back into the entry, which
+    // is the whole thing this split exists to prevent. A byte budget is not a
+    // substitute: `.admin-chip { ... }` is 267 bytes and slips under any bound
+    // loose enough to hold the tokens.
+    const entry = readFileSync(entryUrl, 'utf8')
+      .replace(/@import\s+'[^']+';/g, '')
+      .trim();
+
+    expect(entry).not.toMatch(/@layer|@page|@keyframes|@supports/);
+    // No class, id or attribute rule, indented or not. A `@media` wrapper is
+    // the only legitimate reason for indentation here.
+    expect(entry).not.toMatch(/^[ \t]*[.#[]/m);
+    // No element rule, indented or not. `[^{\n]` keeps the selector match on
+    // one line so a declaration list cannot be mistaken for a selector.
+    expect(entry).not.toMatch(/^[ \t]*[a-z][a-z0-9-]*[ \t]*(,[^{\n]*)?\{/m);
+    expect(entry).not.toContain('.page-shell');
+  });
+
+  it('imports every stylesheet in the styles directory', () => {
+    // readStylesheet() inlines what the entry imports, so a file dropped into
+    // src/styles/ and forgotten in the entry would contribute nothing to `css`
+    // and every assertion above would still pass. That is this task's failure
+    // mode one level up, so the directory and the entry must agree exactly.
+    const entry = readFileSync(entryUrl, 'utf8');
+    expect((css.match(/@import/g) ?? []).length).toBe(1); // only tailwindcss may remain
+
+    const imported = [...entry.matchAll(/@import\s+'\.\/styles\/([^']+)';/g)].map((match) => match[1] ?? '');
+    const present = readdirSync(fileURLToPath(new URL('./styles/', import.meta.url))).sort();
+    expect(present).toEqual(imported.sort());
+  });
+
   it('defines the Dossier palette', () => {
     expect(css).toContain('--color-paper: #f1f2f2');
     expect(css).toContain('--color-paper-2: #e9eaea');
@@ -126,6 +169,14 @@ describe('design tokens', () => {
 
   it('keeps one top-level token root', () => {
     expect((css.match(/^:root \{/gm) ?? []).length).toBe(1);
+  });
+
+  it('declares token overrides after the block they override', () => {
+    // A custom property resolves by source order, and @media adds no specificity.
+    // An override that lands above the block it overrides is dead: that is how
+    // the dark scheme beat the print palette and --gutter stopped widening.
+    expect(css.indexOf('--gutter: 2.5rem')).toBeGreaterThan(css.indexOf('--gutter: 1.5rem'));
+    expect(css.indexOf('/* Print palette')).toBeGreaterThan(css.indexOf('@media (prefers-color-scheme: dark)'));
   });
 
   it('does not use Inter or pure black', () => {

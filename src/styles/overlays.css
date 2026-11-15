@@ -1,0 +1,113 @@
+/* Floating surfaces: the zoom dialog and the chat chrome. Global because the launcher lives in the page template and the panel in chat-widget. */
+
+@layer components {
+  /* Full-size evidence. The platform provides the top layer and focus trap;
+     these rules only strip the UA frame and size the image against the
+     viewport rather than against an auto-height box. */
+  .zoom-dialog {
+    max-width: none;
+    max-height: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .zoom-dialog::backdrop {
+    background: var(--color-scrim);
+    opacity: 0.95;
+  }
+
+  .zoom-dialog[open] {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .zoom-dialog-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 6rem);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-base);
+  }
+
+  .chat-typing-dot {
+    animation: chat-typing-bounce 1s infinite;
+  }
+
+  @keyframes chat-typing-bounce {
+    0%,
+    100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  @keyframes caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .chat-launcher {
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--color-scrim) 18%, transparent);
+  }
+
+  .chat-bubble {
+    animation: message-in 240ms var(--ease-out) both;
+  }
+
+  /* The answer while it is arriving: plain text, so the caret below can sit
+     inside the same paragraph as the last character instead of after a block.
+     `pre-wrap` keeps the model's line breaks, which is what the markdown
+     renderer does with `breaks: true` anyway. */
+  .chat-reveal {
+    margin: 0;
+    /* Same scale as `.chat-markdown`, so the answer does not resize when the
+       reveal hands over to the formatted version. */
+    font-size: var(--text-small);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* The cursor while an answer is being revealed. It is inline after the last
+     character the reveal reached, which is where the next word will land. */
+  .chat-caret {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 1px;
+    vertical-align: -0.15em;
+    background: var(--color-accent);
+    animation: caret-blink 1s steps(1, end) infinite;
+  }
+
+  /* The panel floats above the document, so it wears the page's only elevation.
+     Its own surface colours live in the chat tokens above. */
+  .chat-panel {
+    box-shadow: var(--shadow-panel);
+    animation: message-in 200ms var(--ease-out) both;
+  }
+}
