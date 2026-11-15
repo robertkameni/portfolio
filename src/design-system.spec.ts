@@ -6,21 +6,34 @@ import { describe, expect, it } from 'vitest';
 
 const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 
+/** Bodies of every block whose header contains `marker`, brace-matched. A selector may be restyled twice (base plus media query). */
+function blocksFor(source: string, marker: string): string[] {
+  const bodies: string[] = [];
+  let from = 0;
+  for (;;) {
+    const start = source.indexOf(marker, from);
+    if (start === -1) return bodies;
+    const open = source.indexOf('{', start);
+    if (open === -1) return bodies;
+    let depth = 0;
+    for (let index = open; index < source.length; index += 1) {
+      if (source[index] === '{') depth += 1;
+      if (source[index] === '}') {
+        depth -= 1;
+        if (depth === 0) {
+          bodies.push(source.slice(open + 1, index));
+          from = index + 1;
+          break;
+        }
+      }
+    }
+    if (from <= start) return bodies;
+  }
+}
+
 /** Body of the first top-level block whose header contains `marker`, brace-matched. */
 function blockFor(source: string, marker: string): string {
-  const start = source.indexOf(marker);
-  if (start === -1) return '';
-  const open = source.indexOf('{', start);
-  if (open === -1) return '';
-  let depth = 0;
-  for (let index = open; index < source.length; index += 1) {
-    if (source[index] === '{') depth += 1;
-    if (source[index] === '}') {
-      depth -= 1;
-      if (depth === 0) return source.slice(open + 1, index);
-    }
-  }
-  return source.slice(open + 1);
+  return blocksFor(source, marker)[0] ?? '';
 }
 
 const COLOUR_TOKENS = ['paper', 'paper-2', 'surface', 'ink', 'ink-2', 'ink-3', 'rule', 'accent', 'accent-wash', 'chat', 'chat-2', 'chat-rule', 'scrim'] as const;
@@ -130,6 +143,38 @@ describe('design tokens', () => {
     }
     for (const cls of ['.page-shell', '.type-display', '.type-h2', '.type-meta', '.type-metric', '.reveal']) {
       expect(css).toContain(cls);
+    }
+  });
+
+  it('declares the meta type once', () => {
+    // Seven rules used to retype mono + 13px + uppercase + 0.08em (weight 500
+    // on five of the seven). The recipe is a token now; a second literal means
+    // it has been copied again. The one that remains is `--tracking-meta`.
+    expect((css.match(/0\.08em/g) ?? []).length).toBe(1);
+    expect(css).toContain('--tracking-meta: 0.08em');
+
+    // Counting the literal alone would pass if every `@apply` were deleted and
+    // the tracking re-spelled as `letter-spacing: var(--tracking-meta)`, so the
+    // composition itself is asserted. The trailing space and brace are part of
+    // each marker: `.project-markdown th` without them matches the shared
+    // `.project-markdown th, td` rule higher in the file, not the header rule.
+    for (const selector of [
+      '.type-meta {',
+      '.project-markdown th {',
+      '.project-markdown .cell-label {',
+      '.toolbar-option {',
+      '.toolbar-toggle {',
+      '.admin-chip {',
+      '.chat-markdown th {',
+    ]) {
+      // `.cell-label` has a base `display: none` rule and a media-query restyle,
+      // so at least one block carrying the selector must compose.
+      const bodies = blocksFor(css, selector);
+      expect(bodies.length, selector).toBeGreaterThan(0);
+      expect(
+        bodies.some((body) => /@apply[^;]*text-meta[^;]*tracking-meta/.test(body)),
+        `${selector} must compose the meta recipe from the theme tokens`,
+      ).toBe(true);
     }
   });
 
