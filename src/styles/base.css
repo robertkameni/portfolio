@@ -1,0 +1,46 @@
+/* Document element styles. Nothing here is scoped: html, body and the selection colour have no component. */
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    /* Measured by site-toolbar.ts and written to :root. The fallback is the
+       tallest phone header, used only before the first measurement. */
+    scroll-padding-top: var(--header-offset, 9rem);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img {
+    display: block;
+  }
+}

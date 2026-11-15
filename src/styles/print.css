@@ -1,0 +1,104 @@
+/* Print. Unlayered on purpose: print rules must beat utilities and cannot sit in a component stylesheet. @page has to be top level and global.
+   The print palette is not here: it lives in the entry, after the dark block, and must stay there, because imported content is emitted before the entry's own rules and a palette declared above the dark block is dead. */
+
+/* ---------------------------------------------------------------------------
+   Print
+
+   A CV gets printed, and a screenshot of the printed page is what ends up in
+   a PDF or on a hiring manager's desk. Two things break that: floating chrome
+   lands once and covers content on every sheet, and dark-mode paper prints as
+   a solid block of ink.
+
+   Rendered surfaces also have to lose their screen-only treatment: the entry
+   animation leaves sections at opacity 0, and the scroll progress bar sits at
+   scaleX(0). Both are invisible state that a printer renders literally.
+--------------------------------------------------------------------------- */
+
+@media print {
+  html,
+  body {
+    background: var(--color-paper) !important;
+    color: var(--color-ink) !important;
+  }
+
+  main#main {
+    padding: 0 !important;
+    background: var(--color-paper) !important;
+  }
+
+  /* Chrome that only makes sense on a screen with a pointer. */
+  .scroll-progress,
+  site-toolbar,
+  chat-widget,
+  .fixed,
+  .tap-area::after {
+    display: none !important;
+  }
+
+  /* Opacity and transform are animation state, not design. */
+  .enter,
+  [data-stagger],
+  .reveal,
+  .reveal[data-visible='true'],
+  .hero-portrait,
+  .hero-cta,
+  .shot-parallax,
+  .project-shot {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .edge-top::before {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Keep an entry from being split across two sheets. */
+  article,
+  li,
+  .admin-card,
+  figure,
+  .project-markdown pre,
+  .project-markdown table {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Underline rather than colour: colour is unreliable on a mono printer. */
+  a {
+    color: var(--color-ink) !important;
+    text-decoration: underline;
+  }
+
+  /* A link's destination is invisible on paper. */
+  .project-markdown a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* Screenshots are evidence; do not let them run to a second sheet. */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
+
+  .zoom-dialog {
+    display: none !important;
+  }
+}
+
+/* The page box is declared at the top level: `@page` is not valid inside
+   `@media`, and a browser that meets it there discards the rest of the block. */
+@page {
+  size: A4;
+  margin: 11mm 14mm;
+}

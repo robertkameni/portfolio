@@ -7,6 +7,9 @@
     </div>
 
     <div class="ml-auto flex items-center gap-5">
+      <!-- A page link in the top bar, for widths where the section nav has no
+           room for a fifth item. Projected so the page owns the label. -->
+      <ng-content select="[data-toolbar-cv]"></ng-content>
       @if (showBackUrl()) {
       <button (click)="navigateBack()" class="toolbar-option cursor-pointer">{{ copy().devProxy.back }}</button>
       } @if (showHomeUrl()) {

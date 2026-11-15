@@ -25,6 +25,13 @@ export class ProjectsList {
 
   projects = input.required<ProjectListItem[]>();
   locale = input<AppLocale>('en');
+  /**
+   * Heading level for a row title. On the home page the list sits under an
+   * `h2`, so rows are `h3`. On the projects index the list is the page, and an
+   * `h3` directly under the `h1` skips a level, which the heading-order audit
+   * rejects. The page that owns the list decides.
+   */
+  headingLevel = input<2 | 3>(3);
 
   protected projectCopy() {
     return getSiteCopy(this.locale()).projects;

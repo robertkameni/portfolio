@@ -21,7 +21,7 @@ function project(overrides: Partial<ProjectListItem> = {}): ProjectListItem {
   };
 }
 
-function render(projects: ProjectListItem[]) {
+function render(projects: ProjectListItem[], headingLevel?: 2 | 3) {
   TestBed.configureTestingModule({
     imports: [ProjectsList],
     providers: [provideZonelessChangeDetection(), provideRouter([])],
@@ -29,6 +29,9 @@ function render(projects: ProjectListItem[]) {
 
   const fixture = TestBed.createComponent(ProjectsList);
   fixture.componentRef.setInput('projects', projects);
+  if (headingLevel !== undefined) {
+    fixture.componentRef.setInput('headingLevel', headingLevel);
+  }
   fixture.detectChanges();
   return fixture;
 }
@@ -114,5 +117,33 @@ describe('ProjectsList', () => {
     expect(tagRow.textContent).toContain('Angular');
     expect(tagRow.textContent).toContain('TypeScript');
     expect(tagRow.textContent).not.toContain('+');
+  });
+
+  /**
+   * The list appears twice: under an `h2` on the home page, and directly under
+   * the page `h1` on the projects index. A row title that stayed `h3` in the
+   * second case skipped a heading level, which Lighthouse flags.
+   */
+  it('uses h3 for a row title by default, for the list under a section heading', () => {
+    const fixture = render([project()]);
+
+    expect(fixture.nativeElement.querySelector('article h3')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('article h2')).toBeNull();
+  });
+
+  it('uses h2 for a row title when the list is the page', () => {
+    const fixture = render([project()], 2);
+
+    expect(fixture.nativeElement.querySelector('article h2')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('article h3')).toBeNull();
+  });
+
+  it('names the visible live link in its accessible name', () => {
+    const fixture = render([project({ projectUrl: 'https://atlas.lucastar.de' })]);
+    const live = [...(fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>)].find((a) => a.getAttribute('href') === 'https://atlas.lucastar.de');
+    const visible = live?.textContent?.replace('→', '').trim().toLowerCase() ?? '';
+
+    // A sighted reader and a screen reader must be told the same thing.
+    expect(live?.getAttribute('aria-label')?.toLowerCase()).toContain(visible);
   });
 });

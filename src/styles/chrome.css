@@ -1,0 +1,170 @@
+/* Site chrome. The phone-nav grid, the footer lane and the skill grid stay unlayered so they beat the flex and width utilities the templates apply; every other rule here belongs to @layer components. */
+
+@layer components {
+  .toolbar-option {
+    @apply font-mono text-meta font-medium uppercase tracking-meta;
+    color: var(--color-ink-3);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-block: 0.5rem;
+    border-bottom: 2px solid transparent;
+    background: none;
+    border-inline: 0;
+    border-top: 0;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .cv {
+    margin-inline: 1rem;
+  }
+
+  .toolbar-option:hover {
+    color: var(--color-ink);
+  }
+
+  .toolbar-option[aria-pressed='true'],
+  .toolbar-option[aria-current='true'] {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-accent);
+  }
+
+  /* A switch, not a place. The dev-mode persona buttons used to share the
+     option style, so a pressed one drew the same accent underline the nav uses
+     for "you are here" and the header showed two active items at once. A
+     filled chip says "this control is on" without borrowing the marker. */
+  .toolbar-toggle {
+    @apply font-mono text-meta font-medium uppercase tracking-meta;
+    color: var(--color-ink-3);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-block: 0.375rem;
+    padding-inline: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-base);
+    background: none;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .toolbar-toggle:hover {
+    color: var(--color-ink);
+    border-color: var(--color-rule);
+  }
+
+  .toolbar-toggle[aria-pressed='true'] {
+    color: var(--color-paper);
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .loader-bar {
+    height: 1px;
+    width: 33%;
+    background: var(--color-accent);
+    animation: loader-sweep 1.4s var(--ease-out) infinite;
+  }
+
+  @keyframes loader-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(300%);
+    }
+  }
+}
+
+/* The hero portrait's offset block. It sat in motion.css by accident of task
+   assignment: a box-shadow is not motion, and reading it among the keyframes
+   invited edits that expected animation semantics.
+
+   Two rules that were here are gone rather than moved. `.project-row:first-child
+   { padding-block: 2.5rem }` and `{ .project-shot { width: 28rem } }` were dead:
+   both sit in `@layer components`, and the templates apply `py-8` / `md:py-12`
+   and `w-full`, which are utilities and therefore win. Measured in a browser
+   before deleting: the featured row's padding came from `md:py-12` (48px, not
+   40px) and its screenshot from `w-full` (705px, not 448px). The featured row
+   still reads as featured; it now does so through the utilities alone. */
+@layer components {
+  .portrait {
+    box-shadow: -12px 12px 0 var(--color-accent-wash);
+  }
+}
+
+/* Tool sheet. Kept outside @layer so it wins over the flex utilities that
+   the phone layout uses. From 640px the cells lock to a 12-column hairline
+   grid: the lead skill takes half of the first row, and nine tools fill
+   three rows with no empty cell. */
+@media (min-width: 640px) {
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-rule);
+  }
+
+  .skill-cell[data-span='6'] {
+    grid-column: span 6;
+  }
+
+  .skill-cell[data-span='4'] {
+    grid-column: span 4;
+  }
+
+  .skill-cell[data-span='3'] {
+    grid-column: span 3;
+  }
+
+  .skill-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Phone header. Four labels do not fit one line at 375px, and a flex wrap
+   leaves Kontakt alone on a second row. Two columns keep the page order and
+   line the pairs up with RK on the left and Admin on the right. */
+@media (max-width: 639px) {
+  [data-toolbar-mobile] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  [data-toolbar-mobile] > a {
+    justify-self: start;
+    width: max-content;
+  }
+
+  [data-toolbar-mobile] > a:nth-child(even) {
+    justify-self: end;
+  }
+}
+
+/* The launcher is fixed to the corner, so the footer keeps its links out of
+   that lane. On a phone the lane is the icon at the bottom; from 640px it is
+   the labelled button, and only the overlap with the centred column is padded. */
+footer .page-shell {
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 640px) {
+  footer .page-shell {
+    padding-bottom: 2rem;
+    padding-inline-end: max(var(--gutter), calc(14.5rem - (100vw - min(100vw, var(--container))) / 2));
+  }
+}
+
+@media print {
+  footer .page-shell {
+    padding-bottom: 2rem;
+    padding-inline-end: var(--gutter);
+  }
+}

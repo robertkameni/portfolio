@@ -2,6 +2,12 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Superseded in part (2026-11-15):** `--color-primary` and `--color-background`
+> named in this plan no longer exist. The current names are `--color-accent` and
+> `--color-paper`. The plan is left as a record of the work; see
+> `docs/superpowers/specs/2026-11-15-stylesheet-architecture.md` for how styles
+> are organised today.
+
 **Goal:** Redesign the About section into a glass article: small portrait + title header, two-column scannable bio inside one frosted panel, highlights below.
 
 **Architecture:** Template-first change in `about.html`, plus a small reusable `.about-glass` utility in `src/styles.css` for blur, border, inset highlight, and `prefers-reduced-transparency` fallback. No changes to adaptive logic in `about.ts`, data interfaces, or i18n copy.

@@ -2,6 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Superseded in part (2026-11-15):** two code blocks below still show the
+> compatibility aliases `--color-background` and `--color-primary` in the token
+> root. Both were removed; the palette is now thirteen `--color-*` tokens (nine
+> surface and ink names, four chat names), with `--color-paper` and
+> `--color-accent` as the primary names. The plan is left as a
+> record of the work, not as current documentation — see
+> `docs/superpowers/specs/2026-11-15-stylesheet-architecture.md` for the current
+> stylesheet architecture.
+
 **Goal:** Replace the site's black/green/Inter presentation with the Dossier system: cool paper, ink, one signal-orange accent, Instrument Sans plus JetBrains Mono, one section rhythm, six distinct layout families, and one 2px radius across every public surface and the admin.
 
 **Architecture:** Design tokens live once in `src/styles.css` (`@theme` for colours and radii, `:root` for sizes, a `prefers-color-scheme: dark` block for the dark set) plus seven `.type-*` component classes and a `.page-shell` layout primitive. Every template consumes tokens and those classes rather than hex values or one-off type utilities. The two "hero card" components collapse into one `masthead` and one `focus-areas` component so the page has six real layout families instead of five bordered boxes.

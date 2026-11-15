@@ -1,5 +1,4 @@
 import type { AppRenderMode } from './render-mode.types';
-
 /**
  * Central hybrid rendering map consumed by vite.config.ts (prerender + Nitro routeRules).
  * Keep in sync with routeMeta.renderMode on each page file.
@@ -9,6 +8,7 @@ import type { AppRenderMode } from './render-mode.types';
  */
 export const HYBRID_RENDER_ROUTES: ReadonlyArray<{ path: string; mode: AppRenderMode }> = [
   { path: '/', mode: 'server' },
+  { path: '/cv', mode: 'server' },
   { path: '/projects', mode: 'server' },
   { path: '/projects/*', mode: 'server' },
   { path: '/admin/**', mode: 'client' },
