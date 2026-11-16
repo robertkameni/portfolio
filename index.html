@@ -10,6 +10,20 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141516" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
+    <!-- The first screen is set in Instrument Sans; preload it from the HTML
+         instead of letting the render-blocking stylesheet parse discover it,
+         which costs a round trip on a phone. The fonts live in /fonts/ with
+         stable names for exactly this reason: build output is content-hashed,
+         so it cannot be preloaded from here.
+
+         The hero portrait is not preloaded. It used to be, but a `<link
+         rel="preload" as="image" imagesrcset>` is rewritten by the build's
+         HTML pass, which turned every candidate into `/` and made the browser
+         fetch the 62 KB document a second time as an image. The `<picture>`
+         markup sits in the first kilobytes of the body, so the preload scanner
+         finds the right candidate from `sizes` without help. -->
+    <link rel="preload" as="font" href="/fonts/instrument-sans-latin-wght-normal.woff2" type="font/woff2" crossorigin />
+
     <!-- Sharing. A portfolio arrives as a pasted link in LinkedIn, Slack or
          WhatsApp, and without these it arrives as a bare line. -->
     <meta property="og:type" content="profile" />
@@ -54,6 +68,16 @@
         align-items: center;
         justify-content: center;
         background: #f1f2f2;
+      }
+
+      /* Every public route is server-rendered, so the HTML the browser just
+         parsed already contains the page inside <app-root>. Keeping an opaque
+         overlay on top of it until the JS bundle boots hides the only thing
+         worth painting: on a throttled phone that turned a 1.6s image into a
+         5.1s LCP. Show the loader only while <app-root> is still empty, which
+         is the client-only case (/admin, the project editor). */
+      body:has(app-root > *) #boot-loader {
+        display: none;
       }
 
       #boot-loader .shell {

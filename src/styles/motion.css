@@ -11,16 +11,18 @@
    gradient text, no pulsing dots, because those fight the Dossier restraint.
 --------------------------------------------------------------------------- */
 
+/* Opacity and transform only. A `filter: blur()` in here looked good on a
+   desktop and cost seconds on a phone: the hero portrait is the LCP element,
+   and blurring a 2133x2664 image forces a full-size filtered raster before the
+   first frame that counts as a paint. Keep entrances compositor-only. */
 @keyframes rise-in {
   from {
     opacity: 0;
-    filter: blur(var(--rise-blur));
     transform: translateY(18px);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
     transform: none;
   }
 }

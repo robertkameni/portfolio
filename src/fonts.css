@@ -1,2 +1,39 @@
-@import '@fontsource-variable/instrument-sans';
-@import '@fontsource-variable/jetbrains-mono';
+/* ---------------------------------------------------------------------------
+   Fonts
+
+   Self-hosted instead of `@import '@fontsource-variable/*'` for one reason:
+   stable file names. The fontsource import is bundled into the hashed
+   stylesheet, so the woff2 URL only exists after that stylesheet is parsed. The
+   browser therefore discovers the fonts late (HTML -> CSS -> font), which on a
+   slow phone is a ~2s critical chain, and there is no way to preload a hashed
+   URL from index.html.
+
+   Serving them from /fonts/ lets index.html preload them in parallel with the
+   CSS, and lets vercel.json cache them immutably.
+
+   Only the latin subset ships: the site is English and German, and both fit
+   inside U+0000-00FF plus the punctuation/latin ranges below.
+
+   `font-display: swap` is explicit. The fallback paints immediately and the
+   swap happens as soon as the woff2 lands.
+--------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Instrument Sans Variable';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/instrument-sans-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

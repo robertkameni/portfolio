@@ -8,11 +8,12 @@ import './styles.css';
 
 bootstrapApplication(App, appConfig)
   .then(() => {
-    const removeLoader = () => document.getElementById('boot-loader')?.remove();
-    if (document.readyState === 'complete') {
-      removeLoader();
-    } else {
-      window.addEventListener('load', removeLoader, { once: true });
-    }
+    /* Drop the shell loader as soon as the app is running, not when the
+       `load` event fires. `load` waits on every font and image on the page,
+       which on a slow connection is seconds after the app is interactive — and
+       while the loader sits on top, it is the thing Lighthouse paints as LCP.
+       `index.html` already hides it with `:has()` for server-rendered pages;
+       this removes it from the DOM for client-only routes. */
+    document.getElementById('boot-loader')?.remove();
   })
   .catch((err) => console.error(err));
