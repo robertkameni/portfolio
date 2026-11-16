@@ -6,7 +6,7 @@ import { VisitorStore } from '../../../store/visitor.store';
 import type { IntroData } from './interface/intro-data';
 
 const data: IntroData = {
-  name: 'Robert Kameni',
+  name: 'Robert Kameni Namou',
   title: 'Staff Angular Engineer',
   description: 'Scalable Angular platforms and the architecture behind them.',
   socials: [
@@ -32,7 +32,7 @@ describe('Masthead', () => {
     const fixture = render();
 
     const h1 = fixture.nativeElement.querySelector('h1') as HTMLElement;
-    expect(h1.textContent?.trim()).toBe('Robert Kameni');
+    expect(h1.textContent?.trim()).toBe('Robert Kameni Namou');
     expect(h1.querySelectorAll('span').length).toBe(0);
   });
 
@@ -60,7 +60,7 @@ describe('Masthead', () => {
   it('names the portrait after the profile rather than hardcoding it', () => {
     const fixture = render();
 
-    expect(fixture.nativeElement.querySelector('img').getAttribute('alt')).toBe('Robert Kameni');
+    expect(fixture.nativeElement.querySelector('img').getAttribute('alt')).toBe('Robert Kameni Namou');
   });
 
   it('omits the social list when there are no valid links', () => {
