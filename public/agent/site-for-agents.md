@@ -1,4 +1,4 @@
-# Robert Kameni — portfolio (agent-oriented summary)
+# Robert Kameni Namou — portfolio (agent-oriented summary)
 
 **Role:** Technical Lead Frontend Engineer — Angular (v8 to Angular 22), Next.js 15/16 with React 19, enterprise web, full stack collaboration.
 

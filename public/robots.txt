@@ -1,5 +1,5 @@
 # =============================================================================
-# Robert Kameni — portfolio crawl directives
+# Robert Kameni Namou — portfolio crawl directives
 # Analog.js + Nitro (Vercel). Plain-text robots.txt — no HTML.
 #
 # Canonical host (production): https://cv.lucastar.de

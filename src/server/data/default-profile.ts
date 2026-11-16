@@ -1,12 +1,12 @@
 import type { ProfileData } from '../../app/shared/types/profile-data';
 
 export const defaultProfile: ProfileData = {
-  name: 'Robert Kameni',
+  name: 'Robert Kameni Namou',
   title: 'Technical Lead Frontend Engineer',
   phone: '+4917630131077',
   email: 'robertkameni83@gmail.com',
   intro: {
-    name: 'Robert Kameni',
+    name: 'Robert Kameni Namou',
     title: 'Technical Lead Frontend Engineer',
     description:
       'Technical Lead Frontend Engineer working in Angular (v8 to v22) and Next.js/React, building scalable enterprise web applications and leading teams that ship them.',
@@ -84,7 +84,7 @@ export const defaultProfile: ProfileData = {
   about: {
     title: 'About Me',
     paragraphs: [
-      'I am Robert Kameni, a Technical Lead Frontend Engineer with around 6 years of experience building complex enterprise web applications, mainly Angular (v8 to v22) and Next.js/React. I own frontend delivery end to end: architecture, implementation, quality, and go-live.',
+      'I am Robert Kameni Namou, a Technical Lead Frontend Engineer with around 6 years of experience building complex enterprise web applications, mainly Angular (v8 to v22) and Next.js/React. I own frontend delivery end to end: architecture, implementation, quality, and go-live.',
       'At DATEV eG (since 08/2024) I own the frontend architecture and technical direction for two Scrum teams with eight developers, including mentoring two junior and mid-level engineers. I lead the Angular architecture with a focus on scalability, performance, and maintainability, and I introduced AI-assisted development workflows (GitHub Copilot, spec-driven development).',
       'Measurable results at DATEV: feature development time down 30% through a design system with 50+ reusable Angular components, bundle size down 25% and load times down 40%, and Angular 22 with Signals and NgRx Signal Store adopted across 5+ application modules, which cut state-related production errors by 70% in the first quarter. I also designed and led a new product built AI-first on Next.js 15/16 (App Router) and React 19.',
       'Before DATEV I spent 2.5 years as an IT consultant in frontend roles at Sifamo GmbH (02/2022 to 07/2024), with two long-term enterprise engagements: rebuilding the frontend of a factoring product on Angular 15 with RxJS and NgRx (load times down 30%), and building web components for a deployment-control platform plus migrating an Nx monorepo from Angular 15 to 16 across five applications (error rate down 60%).',

@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import type { IncomingMessage } from 'node:http';
-import { defineEventHandler, setResponseHeader } from 'h3';
+import { appendResponseHeader, defineEventHandler, setResponseHeader } from 'h3';
 import { buildContentSecurityPolicy, buildReportOnlyPolicy, EVENT_DISPATCH_CONTRACT_HASH } from '../utils/csp-policy';
 
 /**
@@ -30,4 +30,16 @@ export default defineEventHandler((event) => {
   const scriptHashes = [EVENT_DISPATCH_CONTRACT_HASH];
   setResponseHeader(event, 'Content-Security-Policy', buildContentSecurityPolicy({ nonce, scriptHashes, upgradeInsecureRequests: true }));
   setResponseHeader(event, 'Content-Security-Policy-Report-Only', buildReportOnlyPolicy(nonce, scriptHashes));
+
+  /**
+   * SSR now renders in the visitor's language, chosen from `Accept-Language`.
+   * The HTML response therefore depends on that header, and an intermediary that
+   * caches by URL alone would serve a German page to an English visitor. `Vary`
+   * makes the dependence explicit.
+   *
+   * It is added here rather than in `vercel.json` because the platform already
+   * sets `Vary: Origin` on these responses, and a config header with the same
+   * name would replace that value instead of adding to it.
+   */
+  appendResponseHeader(event, 'Vary', 'Accept-Language');
 });

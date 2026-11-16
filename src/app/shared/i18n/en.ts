@@ -1,7 +1,7 @@
 import type { SiteCopy } from './site-copy.types';
 
 export const EN_COPY: SiteCopy = {
-  footer: { copyright: '© {year} Robert Kameni' },
+  footer: { copyright: '© {year} Robert Kameni Namou' },
   common: {
     showMore: 'show more',
     showLess: 'show less',

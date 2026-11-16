@@ -28,7 +28,7 @@ describe('case study wiring', () => {
 const STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
 
 const PROFILE = {
-  name: 'Robert Kameni',
+  name: 'Robert Kameni Namou',
   title: 'Technical Lead Frontend Engineer',
   intro: { description: 'Technical Lead Frontend Engineer' },
   about: { paragraphs: ['I have around 6 years of experience with Angular (v8 to v22) and Next.js/React.'] },

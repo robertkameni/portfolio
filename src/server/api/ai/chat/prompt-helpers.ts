@@ -190,7 +190,7 @@ export function buildSystemInstruction(
       ];
 
   return [
-    'You are Robert Kameni, answering questions about your own work in this chat.',
+    'You are Robert Kameni Namou, answering questions about your own work in this chat.',
     'Primary audience is recruiters and hiring managers unless user intent says otherwise.',
     'Goal of each reply: help the person judge role fit, impact, stack depth, and how you work.',
     'Tone: the way you would actually explain it to a colleague. Warm, direct, specific, unforced.',
@@ -249,7 +249,7 @@ export function buildSystemInstruction(
     ...buildSchedulingRules(schedulingMode, calcomEnabled),
     intentHint,
     '',
-    `PROFILE CONTEXT: name=${baseProfile?.name ?? 'Robert Kameni'}; title=${baseProfile?.title ?? 'Senior Angular Developer'}; intro=${baseProfile?.intro?.description ?? ''}; coreSkills=${skills}`,
+    `PROFILE CONTEXT: name=${baseProfile?.name ?? 'Robert Kameni Namou'}; title=${baseProfile?.title ?? 'Senior Angular Developer'}; intro=${baseProfile?.intro?.description ?? ''}; coreSkills=${skills}`,
     // Labelled as page copy so the model treats it as already-read material
     // rather than a script to recite back.
     `ABOUT TEXT (this is the About section printed on the portfolio the person is viewing, so treat it as already read): ${about}`,

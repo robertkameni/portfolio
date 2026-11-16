@@ -122,7 +122,7 @@ export async function sendContactNotification(input: ContactNotificationInput): 
     const { error } = await client.emails.send({
       from: `"Portfolio Contact" <${config.fromEmail}>`,
       to: input.senderEmail,
-      subject: 'Thank you for your message — Robert Kameni',
+      subject: 'Thank you for your message — Robert Kameni Namou',
       html: buildConfirmationHtml(input),
       tags: [
         { name: 'source', value: 'contact_form' },

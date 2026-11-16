@@ -39,6 +39,7 @@ export type CvProject = {
 
 export type CvData = {
   name: string;
+  headline: string;
   location: string;
   phone: string;
   email: string;
@@ -54,6 +55,7 @@ export type CvData = {
 
 export const CV_DATA: CvData = {
   name: 'Robert Kameni Namou',
+  headline: 'Technical Lead Frontend Engineer · Frontend-Architekt (Angular)',
   location: 'Nürnberg, Deutschland',
   phone: '+49 176 30137077',
   email: 'robertkameni83@gmail.com',
@@ -101,7 +103,7 @@ export const CV_DATA: CvData = {
       bullets: [
         'Führte die technische Leitung von 2 Scrum-Teams mit insgesamt 8 Entwickler:innen für geschäftskritische Enterprise-Anwendungen, inkl. Mentoring von 2 Junior- und Mid-Level-Entwickler:innen',
         'Senkte die Entwicklungszeit neuer Features um 30 % durch Aufbau eines skalierbaren Design Systems mit 50+ wiederverwendbaren UI-Komponenten (Angular)',
-        'Reduzierte die Bundle-Grösse um 25 % und die Ladezeiten um 40 % durch gezielte Performance-Massnahmen (Lazy Loading, Change Detection Optimierung, Bundle-Analyse)',
+        'Reduzierte die Bundle-Größe um 25 % und die Ladezeiten um 40 % durch gezielte Performance-Maßnahmen (Lazy Loading, Change Detection Optimierung, Bundle-Analyse)',
         'Führte Angular 22, Signals und NgRx Signal Store in 5+ Anwendungsmodulen ein und vereinheitlichte damit die Frontend-Architektur – state-bezogene Produktionsfehler sanken im ersten Quartal um 50 %',
         'Konzipierte und leitete ein neues Produkt nach dem AI-First-Prinzip: Next.js 15/16 (App Router), React 19, GitHub Copilot als AI Agent, spec-driven Development – etablierte AI-gestützte Entwicklungsprozesse im Team',
       ],
@@ -113,13 +115,13 @@ export const CV_DATA: CvData = {
       location: 'Berlin',
       period: '02/2022 – 07/2024',
       summary:
-        'Über 2,5 Jahre mit zwei langfristigen Kundeneinsätzen in Grossprojekten (jeweils mehrere Scrum-Teams) – Entwicklung, Optimierung und Wartung moderner Webanwendungen mit Angular und TypeScript.',
+        'Über 2,5 Jahre mit zwei langfristigen Kundeneinsätzen in Großprojekten (jeweils mehrere Scrum-Teams) – Entwicklung, Optimierung und Wartung moderner Webanwendungen mit Angular und TypeScript.',
       engagements: [
         {
           name: 'Projekt Omnia/Optica, Stuttgart',
           period: '09/2023 – 07/2024',
           bullets: [
-            'Entwickelte das Frontend einer Factoring-Software zur Ablösung einer Legacy-Lösung neu (Angular 15, RxJS, NgRx) – Grossprojekt mit 3 Scrum-Teams',
+            'Entwickelte das Frontend einer Factoring-Software zur Ablösung einer Legacy-Lösung neu (Angular 15, RxJS, NgRx) – Großprojekt mit 3 Scrum-Teams',
             'Reduzierte die Ladezeiten um 30 % durch Analyse und Behebung von Produktionsproblemen sowie gezielte Performance-Optimierung',
             'Setzte neue Frontend-Features in agilen Sprints in enger Zusammenarbeit mit UX/UI- und Backend-Teams um',
           ],
