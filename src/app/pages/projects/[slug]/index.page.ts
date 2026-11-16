@@ -2,6 +2,7 @@ import { afterNextRender, Component, computed, inject, PLATFORM_ID, signal } fro
 import { isPlatformBrowser } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { httpResource } from '@angular/common/http';
 import type { Project } from '../../../shared/types/project.types';
 import type { ApiSuccess } from '../../../shared/types/api.types';
@@ -29,11 +30,25 @@ export const routeMeta = withRenderMode('server');
 export default class ProjectOverviewPage {
   private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly slug = signal(this.route.snapshot.paramMap.get('slug') ?? '');
   private readonly localeService = inject(LocaleService);
   private readonly projectsStore = inject(ProjectsStore);
 
-  protected previewMode = signal(this.route.snapshot.queryParamMap.get('preview') === 'admin');
+  /**
+   * The params come from the live stream, not from `route.snapshot`.
+   *
+   * Angular reuses this component when navigating from one case study to
+   * another, because both URLs match the same route. The snapshot is read once
+   * at construction, so a reused instance kept the first slug: following the
+   * "next project" link changed the address but the body stayed on the previous
+   * project until a reload. `paramMap` emits on every navigation, and the
+   * resource below refetches when this signal changes.
+   */
+  private readonly paramMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
+  private readonly queryParamMap = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+
+  private readonly slug = computed(() => this.paramMap().get('slug') ?? '');
+
+  protected previewMode = computed(() => this.queryParamMap().get('preview') === 'admin');
   protected clientReady = isPlatformBrowser(this.platformId);
   protected locale = this.localeService.locale;
   protected angularLocale = computed(() => toAngularLocale(this.locale()));
