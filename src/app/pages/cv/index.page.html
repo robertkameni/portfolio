@@ -8,19 +8,39 @@
         Zurück zum Portfolio
       </a>
 
-      <button
-        type="button"
-        (click)="print()"
-        class="tap-area inline-flex cursor-pointer items-center gap-2 bg-ink px-4 py-2 text-(length:--text-small) font-medium text-paper transition-colors duration-150 hover:bg-accent"
-      >
-        Als PDF drucken
-        <span aria-hidden="true">&#8595;</span>
-      </button>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <!-- A hosted file is what an ATS can actually ingest. The print button
+             stays for the "look at it first" path, but it is no longer the only
+             way to get the document out of this page. -->
+        <a
+          href="/assets/cv/lebenslauf-robert-kameni-namou.pdf"
+          download
+          class="tap-area inline-flex items-center gap-2 bg-ink px-4 py-2 text-small font-medium text-paper transition-colors duration-150 hover:bg-accent"
+        >
+          PDF herunterladen
+        </a>
+        <a
+          href="/assets/cv/lebenslauf-robert-kameni-namou.docx"
+          download
+          aria-label="Lebenslauf als DOCX herunterladen"
+          class="tap-area type-meta inline-flex items-center text-ink-3 transition-colors hover:text-accent"
+        >
+          DOCX
+        </a>
+        <button
+          type="button"
+          (click)="print()"
+          class="tap-area inline-flex cursor-pointer items-center gap-2 border border-rule px-4 py-2 text-small font-medium text-ink transition-colors duration-150 hover:border-ink"
+        >
+          Drucken
+        </button>
+      </div>
     </div>
 
     <article class="cv-sheet">
       <header class="cv-head">
         <h1 class="cv-name">{{ cv.name }}</h1>
+        <p class="cv-headline">{{ cv.headline }}</p>
 
         <p class="cv-contact">
           <span>{{ cv.location }}</span>
@@ -45,7 +65,7 @@
       </section>
 
       <section class="cv-section">
-        <h2 class="cv-section-title">Technische Kompetenzen</h2>
+        <h2 class="cv-section-title">Kenntnisse</h2>
         <dl class="cv-skills">
           @for (group of cv.skills; track group.label) {
           <div class="cv-skill">
@@ -57,7 +77,7 @@
       </section>
 
       <section class="cv-section">
-        <h2 class="cv-section-title">Erfahrung</h2>
+        <h2 class="cv-section-title">Berufserfahrung</h2>
 
         @for (role of cv.roles; track role.company) {
         <div class="cv-entry">
@@ -105,7 +125,7 @@
           <div class="cv-entry-head">
             <h3 class="cv-entry-title">
               {{ project.name }}
-              <span class="cv-entry-link">{{ project.url }}</span>
+              <a class="cv-entry-link" [href]="'https://' + project.url" target="_blank" rel="noopener noreferrer">{{ project.url }}</a>
             </h3>
             <p class="cv-entry-period">{{ project.period }}</p>
           </div>

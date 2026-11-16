@@ -40,6 +40,17 @@
     letter-spacing: -0.03em;
   }
 
+  /* The role line ATS parsers and recruiters both look for before the prose
+     starts. It carries the German synonym as well, because enterprise job ads
+     still match on "Frontend-Architekt" rather than the English title. */
+  .cv-headline {
+    margin-top: 0.375rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--color-ink-2);
+  }
+
   /* A flex row, because the parts have to be able to wrap. As inline text the
      contact line had no break opportunity: Angular drops the whitespace around
      the separator spans, so the four links rendered as one unbreakable token and
@@ -94,7 +105,6 @@
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.14em;
-    text-transform: uppercase;
     color: var(--color-ink);
   }
 
@@ -168,6 +178,13 @@
     font-family: var(--font-mono);
     color: var(--color-ink-3);
     margin-inline-start: 10px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, var(--color-ink) 30%, transparent);
+  }
+
+  .cv-entry-link:hover {
+    color: var(--color-accent);
   }
 
   .cv-subheading {
@@ -236,7 +253,7 @@
     }
 
     .cv-skill {
-      grid-template-columns: 11rem minmax(0, 1fr);
+      grid-template-columns: 12rem minmax(0, 1fr);
     }
   }
 
@@ -256,6 +273,11 @@
      type sizes rather than in screen rhythm. */
     .cv-name {
       font-size: 18pt;
+    }
+
+    .cv-headline {
+      margin-top: 2pt;
+      font-size: 9pt;
     }
 
     .cv-contact {
@@ -292,7 +314,7 @@
     }
 
     .cv-skill {
-      grid-template-columns: 30mm minmax(0, 1fr);
+      grid-template-columns: 40mm minmax(0, 1fr);
       padding-block: 0.5pt;
     }
 

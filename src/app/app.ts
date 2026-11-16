@@ -5,6 +5,7 @@ import { filter, tap } from 'rxjs/operators';
 import { AnalyticsService } from './services/analytics.service';
 import { RealtimeService } from './services/realtime.service';
 import { LocaleService } from './shared/services/locale.service';
+import { PageMetaService } from './shared/services/page-meta.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class App {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly localeService = inject(LocaleService);
+  private readonly pageMeta = inject(PageMetaService);
 
   constructor() {
     /**
@@ -27,9 +29,13 @@ export class App {
      * misleads screen readers (they pick a voice) and search engines (they
      * index a language). An effect runs during SSR too, so the attribute is in
      * the HTML the crawler receives rather than only after hydration.
+     *
+     * A route can override it: the CV is German whatever the visitor's locale,
+     * so `/cv` sets an override and the printed PDF carries `lang="de"` instead
+     * of the reader's language.
      */
     effect(() => {
-      this.document.documentElement.lang = this.localeService.locale();
+      this.document.documentElement.lang = this.pageMeta.langOverride() ?? this.localeService.locale();
     });
 
     afterNextRender(() => {

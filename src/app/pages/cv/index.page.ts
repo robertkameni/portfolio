@@ -1,8 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { withRenderMode } from '../../shared/routing/render-mode.types';
-import { LocaleService } from '../../shared/services/locale.service';
+import { PageMetaService } from '../../shared/services/page-meta.service';
 import { CV_DATA } from './cv-data';
 
 export const routeMeta = withRenderMode('server');
@@ -15,10 +15,14 @@ export const routeMeta = withRenderMode('server');
  * in `cv-data.ts`, copied from the CV file rather than derived from the profile,
  * so the printed page cannot quietly disagree with the document.
  *
- * The content is German whatever the visitor's language, so the page declares
- * `lang="de"` on its main element. Without it an English visitor got German text
- * announced with an English voice, which is unreadable in a screen reader even
- * though it looks fine.
+ * The content is German whatever the visitor's language, so the page claims the
+ * document language as well as `main lang="de"`. Without that an English
+ * visitor printed a PDF tagged `lang="en"` around German text, and an ATS that
+ * trusts the document language indexed it in the wrong one.
+ *
+ * The head tags are set here too: the title is what the browser suggests as the
+ * PDF filename, and the canonical URL is the page an ATS or search engine
+ * should index. Both are restored on navigation away.
  */
 @Component({
   selector: 'cv-page',
@@ -29,10 +33,21 @@ export const routeMeta = withRenderMode('server');
 })
 export default class CvPage {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly localeService = inject(LocaleService);
+  private readonly pageMeta = inject(PageMetaService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly cv = CV_DATA;
-  protected readonly locale = this.localeService.locale;
+
+  constructor() {
+    this.pageMeta.apply({
+      title: 'Lebenslauf Robert Kameni Namou – Technical Lead Frontend Engineer',
+      description: 'Lebenslauf von Robert Kameni Namou: Technical Lead Frontend Engineer mit rund 6 Jahren Erfahrung in Angular, Next.js/React und Enterprise-Webanwendungen.',
+      canonical: 'https://cv.lucastar.de/cv',
+      lang: 'de',
+    });
+
+    this.destroyRef.onDestroy(() => this.pageMeta.restore());
+  }
 
   protected print(): void {
     if (isPlatformBrowser(this.platformId)) {
