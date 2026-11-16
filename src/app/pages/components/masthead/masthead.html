@@ -38,19 +38,32 @@
         </div>
       </div>
 
-      <div class="enter md:justify-self-end" style="--i: 1">
-        <img
-          src="/assets/lucas-600.jpg"
-          srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
-          width="480"
-          height="600"
-          sizes="(min-width: 768px) 30vw, 80vw"
-          [alt]="name()"
-          decoding="async"
-          loading="eager"
-          fetchpriority="high"
-          class="portrait hero-portrait aspect-4/5 w-full max-w-[20rem] object-cover object-top md:max-w-none"
-        />
+      <!-- No entrance animation on this block. It holds the LCP element, and an
+           `opacity: 0` start means the largest paint cannot be reported until
+           the animation runs. The portrait is above the fold, so it is simply
+           there. -->
+      <div class="md:justify-self-end">
+        <!-- The portrait is the LCP element on a phone. It is offered at three
+             widths so the browser fetches the smallest file that still covers
+             its device pixels: a 412pt phone at 1.75x needs 560px, not the
+             711px fallback (74 KB). The JPEG srcset stays for browsers that
+             support neither AVIF nor WebP. -->
+        <picture>
+          <source type="image/avif" srcset="/assets/lucas-400.avif 400w, /assets/lucas-600.avif 600w, /assets/lucas-800.avif 711w" sizes="(min-width: 768px) 30vw, 320px" />
+          <source type="image/webp" srcset="/assets/lucas-400.webp 400w, /assets/lucas-600.webp 600w, /assets/lucas-800.webp 711w" sizes="(min-width: 768px) 30vw, 320px" />
+          <img
+            src="/assets/lucas-600.jpg"
+            srcset="/assets/lucas-400.jpg 400w, /assets/lucas-600.jpg 600w, /assets/lucas-800.jpg 800w"
+            width="480"
+            height="600"
+            sizes="(min-width: 768px) 30vw, 320px"
+            [alt]="name()"
+            decoding="async"
+            loading="eager"
+            fetchpriority="high"
+            class="portrait hero-portrait aspect-4/5 w-full max-w-[20rem] object-cover object-top md:max-w-none"
+          />
+        </picture>
       </div>
     </div>
   </div>

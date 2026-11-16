@@ -127,7 +127,6 @@
   --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-rise: 700ms;
   --stagger: 60ms;
-  --rise-blur: 6px;
 }
 
 @media (min-width: 768px) {

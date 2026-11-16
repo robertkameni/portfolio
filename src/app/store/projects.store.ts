@@ -75,7 +75,29 @@ function withProjectsLoad(url: string, browserOnly = false, useTransferState = f
   );
 }
 
-export const ProjectsStore = signalStore({ providedIn: 'root' }, withState(initialState), withProjectsLoad('/api/projects', false, true));
+/**
+ * The public list is server-rendered, so the hydrated tree must start with it.
+ * Waiting for `load()` puts the first client render at `data() === null` and
+ * Angular re-renders the server HTML instead of reusing it.
+ */
+function transferredProjectsState(): ProjectsState {
+  const platformId = inject(PLATFORM_ID);
+  if (!isPlatformBrowser(platformId)) {
+    return initialState;
+  }
+
+  const transferState = inject(TransferState);
+  const transferred = transferState.get(PROJECTS_STATE_KEY, null);
+
+  if (!transferred) {
+    return initialState;
+  }
+
+  transferState.remove(PROJECTS_STATE_KEY);
+  return { data: transferred, isLoading: false, error: null };
+}
+
+export const ProjectsStore = signalStore({ providedIn: 'root' }, withState(transferredProjectsState), withProjectsLoad('/api/projects', false, true));
 
 export const AdminProjectsStore = signalStore(
   { providedIn: 'root' },

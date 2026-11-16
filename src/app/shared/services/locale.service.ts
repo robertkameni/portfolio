@@ -1,15 +1,19 @@
-import { PLATFORM_ID, Service, computed, inject, signal } from '@angular/core';
+import { makeStateKey, PLATFORM_ID, Service, computed, inject, signal, TransferState } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { REQUEST } from '@analogjs/router/tokens';
 import type { IncomingMessage } from 'node:http';
 import { resolveBrowserLocale, resolveLocaleFromAcceptLanguage, type AppLocale } from '../i18n/app-locale';
 import { getSiteCopy } from '../i18n/site-copy';
 
+/** The locale the server rendered with. Fixed key: the value is the locale. */
+const SSR_LOCALE_STATE_KEY = makeStateKey<AppLocale>('app.locale');
+
 @Service()
 export class LocaleService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly clientReady = isPlatformBrowser(this.platformId);
   private readonly request = inject(REQUEST, { optional: true }) as IncomingMessage | null;
+  private readonly transferState = inject(TransferState);
   /**
    * The server used to hardcode `'en'`, so SSR rendered the English copy while
    * the browser rendered German: the language changed under the reader and a
@@ -19,9 +23,27 @@ export class LocaleService {
    * (`max-age=0, must-revalidate`), so one language per response is safe, and
    * the middleware adds `Vary: Accept-Language` so no intermediary caches it
    * wrongly.
+   *
+   * The client must not resolve the language a second time. `Accept-Language`
+   * (what the server saw) and `navigator.languages` (what the browser reports)
+   * disagree often enough — privacy settings, proxies, a non-default UI
+   * language — and the disagreement is fatal: the server renders one language,
+   * hydration renders another, and Angular throws the server DOM away. The
+   * server therefore publishes its choice in the transfer state and the client
+   * adopts it, so the hydrated tree is always the tree that was served.
    */
-  private readonly localeState = signal<AppLocale>(this.clientReady ? resolveBrowserLocale() : resolveLocaleFromAcceptLanguage(this.request?.headers['accept-language']));
+  private readonly localeState = signal<AppLocale>(this.initialLocale());
 
   readonly locale = this.localeState.asReadonly();
   readonly copy = computed(() => getSiteCopy(this.locale()));
+
+  private initialLocale(): AppLocale {
+    if (!this.clientReady) {
+      const locale = resolveLocaleFromAcceptLanguage(this.request?.headers['accept-language']);
+      this.transferState.set(SSR_LOCALE_STATE_KEY, locale);
+      return locale;
+    }
+
+    return this.transferState.get(SSR_LOCALE_STATE_KEY, null) ?? resolveBrowserLocale();
+  }
 }

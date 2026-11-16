@@ -22,6 +22,17 @@ export class FadeInDirective implements OnInit, OnDestroy {
       return;
     }
 
+    /* Read before write. Hiding the node first (`.reveal` sets opacity 0) and
+       then measuring its position invalidates style and forces a synchronous
+       layout, once per section, in the middle of hydration. Reading first lets
+       every measurement reuse the layout the browser already has. Content that
+       is already on screen is also never hidden, so hydrating a server-rendered
+       page cannot make the first screen blink. */
+    if (this.isInViewport(node)) {
+      node.dataset['visible'] = 'true';
+      return;
+    }
+
     node.classList.add('reveal');
 
     this.observer = new IntersectionObserver(
@@ -34,10 +45,6 @@ export class FadeInDirective implements OnInit, OnDestroy {
     );
 
     this.observer.observe(node);
-
-    if (this.isInViewport(node)) {
-      requestAnimationFrame(() => requestAnimationFrame(() => this.reveal()));
-    }
   }
 
   ngOnDestroy(): void {

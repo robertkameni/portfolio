@@ -30,9 +30,47 @@ function profileStateKey(locale: AppLocale) {
   return makeStateKey<LocalizedProfileData>(`portfolio.profile.${locale}`);
 }
 
+/**
+ * Hydration compares the server-rendered DOM against the client's first render.
+ * Starting at `initialState` means that first render is `data() === null`, which
+ * does not match the HTML the server sent (it rendered the profile), so Angular
+ * discards the server tree and renders again. On a phone that second render is
+ * what the visitor sees as LCP: the bytes were already painted, then everything
+ * was recreated and the entrance animations ran a second time.
+ *
+ * Reading the transfer state here — during store creation, before the template
+ * hydrates — makes the first client render identical to the server's.
+ */
+function initialProfileState(): ProfileState {
+  const platformId = inject(PLATFORM_ID);
+  if (!isPlatformBrowser(platformId)) {
+    return initialState;
+  }
+
+  const locale = inject(LocaleService).locale();
+  const transferState = inject(TransferState);
+  const key = profileStateKey(locale);
+  const transferred = transferState.get(key, null);
+
+  if (!transferred) {
+    return initialState;
+  }
+
+  transferState.remove(key);
+  return {
+    data: transferred,
+    isLoading: false,
+    error: null,
+    /* The data is server-fresh. Stamping it as fetched now lets the TTL in
+       `loadProfile` treat it as current instead of refetching immediately. */
+    lastFetchedAt: Date.now(),
+    lastFetchedLocale: locale,
+  };
+}
+
 export const PortfolioStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState(initialProfileState),
   withMethods((store, http = inject(HttpClient), platformId = inject(PLATFORM_ID), localeService = inject(LocaleService), transferState = inject(TransferState)) => {
     return {
       loadProfile: rxMethod<void>(
