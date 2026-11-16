@@ -14,6 +14,11 @@ export const routeMeta = withRenderMode('server');
  * The page is server-rendered like the rest of the public site; the data lives
  * in `cv-data.ts`, copied from the CV file rather than derived from the profile,
  * so the printed page cannot quietly disagree with the document.
+ *
+ * The content is German whatever the visitor's language, so the page declares
+ * `lang="de"` on its main element. Without it an English visitor got German text
+ * announced with an English voice, which is unreadable in a screen reader even
+ * though it looks fine.
  */
 @Component({
   selector: 'cv-page',
