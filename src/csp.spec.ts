@@ -17,7 +17,8 @@ function securityHeaders(): Header[] {
 }
 
 const NONCE = 'dGVzdC1ub25jZS12YWx1ZQ==';
-const enforced = buildContentSecurityPolicy({ nonce: NONCE });
+/** The enforced policy as the middleware builds it, upgrade directive included. */
+const enforced = buildContentSecurityPolicy({ nonce: NONCE, upgradeInsecureRequests: true });
 const reportOnly = buildReportOnlyPolicy(NONCE);
 
 function directive(policy: string, name: string): string {
@@ -77,9 +78,22 @@ describe('Content Security Policy', () => {
   it('keeps the report endpoint on the report-only policy only', () => {
     expect(reportOnly).toContain('report-uri /api/csp-report');
     expect(enforced).not.toContain('report-uri');
-    // Everything else must be identical, or the report-only policy stops
-    // predicting what the enforced one will block.
-    expect(reportOnly.replace('; report-uri /api/csp-report', '')).toBe(enforced);
+    // Apart from the endpoint and the directive below, the two must be
+    // identical, or the report-only policy stops predicting what the enforced
+    // one will block.
+    expect(reportOnly.replace('; report-uri /api/csp-report', '')).toBe(enforced.replace('; upgrade-insecure-requests', ''));
+  });
+
+  it('omits upgrade-insecure-requests from the report-only policy', () => {
+    // A browser ignores the directive in a report-only policy, because it
+    // rewrites requests rather than restricting them, and logs a warning on
+    // every response:
+    //   "The Content Security Policy directive 'upgrade-insecure-requests' is
+    //    ignored when delivered in a report-only policy."
+    // It is not a restriction, so leaving it out costs the report-only policy
+    // none of its predictive value.
+    expect(enforced).toContain('upgrade-insecure-requests');
+    expect(reportOnly).not.toContain('upgrade-insecure-requests');
   });
 
   it('forbids inline fonts', () => {

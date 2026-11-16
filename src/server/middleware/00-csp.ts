@@ -28,6 +28,6 @@ export default defineEventHandler((event) => {
   (event.node.req as NonceRequest).cspNonce = nonce;
 
   const scriptHashes = [EVENT_DISPATCH_CONTRACT_HASH];
-  setResponseHeader(event, 'Content-Security-Policy', buildContentSecurityPolicy({ nonce, scriptHashes }));
+  setResponseHeader(event, 'Content-Security-Policy', buildContentSecurityPolicy({ nonce, scriptHashes, upgradeInsecureRequests: true }));
   setResponseHeader(event, 'Content-Security-Policy-Report-Only', buildReportOnlyPolicy(nonce, scriptHashes));
 });
