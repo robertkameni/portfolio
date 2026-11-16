@@ -15,6 +15,14 @@
  * `'unsafe-inline'` must never appear in `script-src` beside a nonce: browsers
  * ignore the nonce as soon as it does, and the policy silently falls back to
  * allowing every inline script.
+ *
+ * One directive is deliberately absent from the report-only policy.
+ * `upgrade-insecure-requests` is not a restriction: it tells the browser to
+ * rewrite `http://` subresource URLs to `https://`. A report-only policy has no
+ * effect on the page, so a browser drops the directive and logs a warning
+ * ("'upgrade-insecure-requests' is ignored when delivered in a report-only
+ * policy"). Emitting it there produced a console warning on every response
+ * while changing nothing. It belongs to the enforced policy only.
  */
 export type CspOptions = {
   /** Per-response nonce, base64. Must also be given to Angular's CSP_NONCE. */
@@ -32,6 +40,12 @@ export type CspOptions = {
   scriptHashes?: readonly string[];
   /** Adds `report-uri`, for the report-only variant. */
   reportUri?: string;
+  /**
+   * Emit `upgrade-insecure-requests`. Only meaningful on the enforced policy:
+   * the directive rewrites requests rather than restricting them, so a
+   * report-only delivery is ignored by the browser and logs a warning.
+   */
+  upgradeInsecureRequests?: boolean;
 };
 
 /**
@@ -58,7 +72,7 @@ const IMAGE_HOSTS = ["'self'", 'https://images.unsplash.com', 'https://lucastar.
 const CONNECT_HOSTS = ["'self'", 'wss:'];
 
 export function buildContentSecurityPolicy(options: CspOptions): string {
-  const { nonce, scriptHashes = [], reportUri } = options;
+  const { nonce, scriptHashes = [], reportUri, upgradeInsecureRequests = false } = options;
 
   const scriptSrc = ["'self'", `'nonce-${nonce}'`, ...scriptHashes.map((hash) => `'${hash}'`)].join(' ');
 
@@ -68,7 +82,6 @@ export function buildContentSecurityPolicy(options: CspOptions): string {
     "frame-ancestors 'none'",
     "form-action 'self'",
     "object-src 'none'",
-    'upgrade-insecure-requests',
     'trusted-types angular angular#bundler angular#unsafe-bypass dompurify',
     "require-trusted-types-for 'script'",
     `script-src ${scriptSrc}`,
@@ -78,6 +91,12 @@ export function buildContentSecurityPolicy(options: CspOptions): string {
     `connect-src ${CONNECT_HOSTS.join(' ')}`,
   ];
 
+  // Kept out of the shared list above because the report-only policy must not
+  // carry it: see the note on CspOptions.
+  if (upgradeInsecureRequests) {
+    directives.push('upgrade-insecure-requests');
+  }
+
   if (reportUri) {
     directives.push(`report-uri ${reportUri}`);
   }
@@ -85,7 +104,14 @@ export function buildContentSecurityPolicy(options: CspOptions): string {
   return directives.join('; ');
 }
 
-/** The report-only policy: identical, plus the endpoint. */
+/**
+ * The report-only policy: the enforced one plus the endpoint, minus
+ * `upgrade-insecure-requests`.
+ *
+ * That directive is the one deliberate difference beyond `report-uri`. A
+ * browser ignores it in a report-only policy and logs a warning on every
+ * response, so predicting the enforced policy does not require it.
+ */
 export function buildReportOnlyPolicy(nonce: string, scriptHashes: readonly string[] = []): string {
   return buildContentSecurityPolicy({ nonce, scriptHashes, reportUri: '/api/csp-report' });
 }
