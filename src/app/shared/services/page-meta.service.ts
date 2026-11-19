@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, inject, signal } from '@angular/core';
+import { trustedJsonLdScript } from '../seo/trusted-json-ld-script';
 
 /**
  * The head tags a route can claim.
@@ -17,9 +18,11 @@ export type PageMeta = {
   lang?: string;
   ogTitle?: string;
   ogDescription?: string;
+  jsonLd?: Record<string, unknown>;
+  hreflang?: { lang: string; href: string }[];
 };
 
-type MetaKey = { attr: 'name' | 'property'; key: string; value: keyof PageMeta };
+type MetaKey = { attr: 'name' | 'property'; key: string; value: Exclude<keyof PageMeta, 'jsonLd' | 'hreflang'> };
 
 const META_KEYS: MetaKey[] = [
   { attr: 'name', key: 'description', value: 'description' },
@@ -46,6 +49,7 @@ export class PageMetaService {
   private savedTitle: string | null = null;
   private savedTags: SavedTag[] | null = null;
   private savedCanonical: { href: string | null; created: boolean } | null = null;
+  private savedAlternates: Array<{ lang: string; href: string }> | null = null;
 
   apply(meta: PageMeta): void {
     this.save();
@@ -65,6 +69,8 @@ export class PageMetaService {
       this.writeMeta(attr, key, values[value]);
     }
     this.writeCanonical(meta.canonical);
+    this.writeJsonLd(meta.jsonLd);
+    this.writeAlternateLinks(meta.hreflang ?? []);
     this.langOverride.set(meta.lang ?? null);
   }
 
@@ -97,9 +103,13 @@ export class PageMetaService {
       canonical.setAttribute('href', this.savedCanonical.href);
     }
 
+    this.clearJsonLd();
+    this.restoreAlternateLinks();
+
     this.savedTitle = null;
     this.savedTags = null;
     this.savedCanonical = null;
+    this.savedAlternates = null;
     this.langOverride.set(null);
   }
 
@@ -115,6 +125,12 @@ export class PageMetaService {
 
     const canonical = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     this.savedCanonical = { href: canonical?.getAttribute('href') ?? null, created: !canonical };
+
+    const existingAlternates = this.document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]');
+    this.savedAlternates = Array.from(existingAlternates).map((el) => ({
+      lang: el.getAttribute('hreflang') ?? '',
+      href: el.getAttribute('href') ?? '',
+    }));
   }
 
   private findMeta(attr: 'name' | 'property', key: string): HTMLMetaElement | null {
@@ -139,5 +155,49 @@ export class PageMetaService {
       this.document.head.appendChild(link);
     }
     link.setAttribute('href', href);
+  }
+
+  private static readonly JSON_LD_ATTR = 'data-page-meta-jsonld';
+
+  private writeJsonLd(data: Record<string, unknown> | undefined): void {
+    this.clearJsonLd();
+    if (!data) return;
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute(PageMetaService.JSON_LD_ATTR, '');
+    // Trusted Types: textContent is a script sink even for ld+json data blocks.
+    script.textContent = trustedJsonLdScript(this.document, JSON.stringify(data)) as string;
+    this.document.head.appendChild(script);
+  }
+
+  private clearJsonLd(): void {
+    this.document.head.querySelectorAll(`script[${PageMetaService.JSON_LD_ATTR}]`).forEach((node) => node.remove());
+  }
+
+  private writeAlternateLinks(links: { lang: string; href: string }[]): void {
+    this.clearAlternateLinks();
+    for (const { lang, href } of links) {
+      const link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', lang);
+      link.setAttribute('href', href);
+      this.document.head.appendChild(link);
+    }
+  }
+
+  private clearAlternateLinks(): void {
+    this.document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+  }
+
+  private restoreAlternateLinks(): void {
+    this.clearAlternateLinks();
+    if (!this.savedAlternates) return;
+    for (const { lang, href } of this.savedAlternates) {
+      const link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', lang);
+      link.setAttribute('href', href);
+      this.document.head.appendChild(link);
+    }
   }
 }

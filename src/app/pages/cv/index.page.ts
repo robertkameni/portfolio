@@ -3,6 +3,11 @@ import { Component, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { withRenderMode } from '../../shared/routing/render-mode.types';
 import { PageMetaService } from '../../shared/services/page-meta.service';
+import { buildPersonJsonLd } from '../../shared/seo/json-ld';
+import { getPageSeoCopy } from '../../shared/seo/page-seo-copy';
+import { siteAbsoluteUrl } from '../../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../../shared/seo/hreflang';
+import { cvKnowsAbout } from '../../shared/seo/cv-knows-about';
 import { CV_DATA } from './cv-data';
 
 export const routeMeta = withRenderMode('server');
@@ -39,11 +44,18 @@ export default class CvPage {
   protected readonly cv = CV_DATA;
 
   constructor() {
+    const seo = getPageSeoCopy('de');
     this.pageMeta.apply({
-      title: 'Lebenslauf Robert Kameni Namou – Technical Lead Frontend Engineer',
-      description: 'Lebenslauf von Robert Kameni Namou: Technical Lead Frontend Engineer mit rund 6 Jahren Erfahrung in Angular, Next.js/React und Enterprise-Webanwendungen.',
-      canonical: 'https://cv.lucastar.de/cv',
+      title: seo.cv.title,
+      description: seo.cv.description,
+      canonical: siteAbsoluteUrl('/cv'),
+      hreflang: buildHreflangLinks('/cv'),
       lang: 'de',
+      jsonLd: buildPersonJsonLd({
+        jobTitle: CV_DATA.headline,
+        knowsAbout: cvKnowsAbout(),
+        url: siteAbsoluteUrl('/cv'),
+      }),
     });
 
     this.destroyRef.onDestroy(() => this.pageMeta.restore());

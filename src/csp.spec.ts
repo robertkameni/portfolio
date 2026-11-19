@@ -107,6 +107,7 @@ describe('Content Security Policy', () => {
     expect(directive(enforced, 'img-src')).toContain('https://images.unsplash.com');
     expect(directive(enforced, 'connect-src')).toContain('wss:');
     expect(enforced).toContain('trusted-types');
+    expect(enforced).toContain('json-ld');
     expect(enforced).toContain("require-trusted-types-for 'script'");
     expect(enforced).toContain("frame-ancestors 'none'");
   });

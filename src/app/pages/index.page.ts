@@ -1,4 +1,4 @@
-import { Component, computed, inject, isDevMode, OnInit } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, isDevMode, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { withRenderMode } from '../shared/routing/render-mode.types';
 import { PortfolioStore } from '../store/portfolio.store';
@@ -18,6 +18,15 @@ import { TwinInvite } from './components/twin-invite/twin-invite';
 import { Contact } from './components/contact/contact';
 import { Footer } from './components/footer/footer';
 import { ChatWidget } from '../ai-engine';
+import { PageMetaService } from '../shared/services/page-meta.service';
+import { LocaleService } from '../shared/services/locale.service';
+import { getPageSeoCopy } from '../shared/seo/page-seo-copy';
+import { buildPersonJsonLd, buildPersonWebsiteGraph, buildWebsiteJsonLd } from '../shared/seo/json-ld';
+import { siteAbsoluteUrl } from '../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../shared/seo/hreflang';
+import { cvKnowsAbout } from '../shared/seo/cv-knows-about';
+import { PERSON_NAME } from '../shared/seo/person-identity';
+import { CV_DATA } from './cv/cv-data';
 
 export const routeMeta = withRenderMode('server');
 
@@ -46,9 +55,35 @@ export default class Home implements OnInit {
   store = inject(PortfolioStore);
   private readonly visitorStore = inject(VisitorStore);
   private readonly chatStore = inject(ChatStore);
+  private readonly pageMeta = inject(PageMetaService);
+  private readonly localeService = inject(LocaleService);
+  private readonly destroyRef = inject(DestroyRef);
 
   devMode = isDevMode();
   protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
+
+  constructor() {
+    effect(() => {
+      const locale = this.localeService.locale();
+      const seo = getPageSeoCopy(locale);
+      const url = siteAbsoluteUrl('/');
+      this.pageMeta.apply({
+        title: seo.home.title,
+        description: seo.home.description,
+        canonical: url,
+        hreflang: buildHreflangLinks('/'),
+        jsonLd: buildPersonWebsiteGraph(
+          buildPersonJsonLd({
+            jobTitle: CV_DATA.headline,
+            knowsAbout: cvKnowsAbout(),
+            url,
+          }),
+          buildWebsiteJsonLd({ url, name: PERSON_NAME }),
+        ),
+      });
+    });
+    this.destroyRef.onDestroy(() => this.pageMeta.restore());
+  }
 
   readonly activeProfile = computed(() => this.visitorStore.profile()?.visitorType ?? null);
 
