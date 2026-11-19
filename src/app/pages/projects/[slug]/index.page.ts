@@ -21,6 +21,7 @@ import { resolveProjectApiUrl } from './project-api-url';
 import { PageMetaService } from '../../../shared/services/page-meta.service';
 import { getPageSeoCopy } from '../../../shared/seo/page-seo-copy';
 import { siteAbsoluteUrl } from '../../../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../../../shared/seo/hreflang';
 import { buildCreativeWorkJsonLd } from '../../../shared/seo/json-ld';
 
 export const routeMeta = withRenderMode('server');
@@ -75,11 +76,13 @@ export default class ProjectOverviewPage {
       const seo = getPageSeoCopy(locale);
       if (!project) return;
       const tags = project.tags ?? [];
-      const url = siteAbsoluteUrl(`/projects/${project.slug}`);
+      const path = `/projects/${project.slug}`;
+      const url = siteAbsoluteUrl(path);
       this.pageMeta.apply({
         title: seo.projectDetail.title(project.title, tags),
         description: seo.projectDetail.description(project.title, tags),
         canonical: url,
+        hreflang: buildHreflangLinks(path),
         jsonLd: buildCreativeWorkJsonLd({
           name: project.title,
           url,

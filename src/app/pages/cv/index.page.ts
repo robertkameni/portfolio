@@ -6,6 +6,7 @@ import { PageMetaService } from '../../shared/services/page-meta.service';
 import { buildPersonJsonLd } from '../../shared/seo/json-ld';
 import { getPageSeoCopy } from '../../shared/seo/page-seo-copy';
 import { siteAbsoluteUrl } from '../../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../../shared/seo/hreflang';
 import { cvKnowsAbout } from '../../shared/seo/cv-knows-about';
 import { CV_DATA } from './cv-data';
 
@@ -48,6 +49,7 @@ export default class CvPage {
       title: seo.cv.title,
       description: seo.cv.description,
       canonical: siteAbsoluteUrl('/cv'),
+      hreflang: buildHreflangLinks('/cv'),
       lang: 'de',
       jsonLd: buildPersonJsonLd({
         jobTitle: CV_DATA.headline,

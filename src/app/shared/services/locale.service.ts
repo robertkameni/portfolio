@@ -39,11 +39,45 @@ export class LocaleService {
 
   private initialLocale(): AppLocale {
     if (!this.clientReady) {
-      const locale = resolveLocaleFromAcceptLanguage(this.request?.headers['accept-language']);
+      // ?lang= query wins over Accept-Language so a shared link renders in the
+      // requested language on the first SSR response.
+      const langParam = this.extractLangParam(this.request?.url);
+      const locale = langParam ?? resolveLocaleFromAcceptLanguage(this.request?.headers['accept-language']);
       this.transferState.set(SSR_LOCALE_STATE_KEY, locale);
       return locale;
     }
 
-    return this.transferState.get(SSR_LOCALE_STATE_KEY, null) ?? resolveBrowserLocale();
+    // The transfer state carries the server's choice (which may already reflect
+    // ?lang=), so the hydrated tree matches the served HTML.  For pure client
+    // loads (no SSR, e.g. dev server without prerender) fall back to ?lang=
+    // before the browser-language heuristic.
+    const tsLocale = this.transferState.get(SSR_LOCALE_STATE_KEY, null);
+    if (tsLocale) return tsLocale;
+    const langParam = this.extractLangParamFromWindow();
+    return langParam ?? resolveBrowserLocale();
+  }
+
+  /**
+   * Extract a valid `lang` query-param value from a server-side request URL
+   * (which is a path + optional query string, e.g. `/cv?lang=en`).
+   */
+  private extractLangParam(url: string | undefined): AppLocale | null {
+    if (!url) return null;
+    const qIdx = url.indexOf('?');
+    if (qIdx === -1) return null;
+    const params = new URLSearchParams(url.slice(qIdx + 1));
+    const lang = params.get('lang');
+    return lang === 'de' || lang === 'en' ? lang : null;
+  }
+
+  /**
+   * Extract a valid `lang` query-param value from `window.location.search`
+   * (browser-only, called only when `this.clientReady` is true).
+   */
+  private extractLangParamFromWindow(): AppLocale | null {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get('lang');
+    return lang === 'de' || lang === 'en' ? lang : null;
   }
 }

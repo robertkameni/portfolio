@@ -29,6 +29,27 @@ describe('PageMetaService JSON-LD', () => {
     expect(script?.textContent).toContain('Robert Kameni Namou');
   });
 
+  it('writes hreflang alternates on apply and removes them on restore', () => {
+    const alternates = [
+      { lang: 'de', href: 'https://cv.lucastar.de/cv?lang=de' },
+      { lang: 'en', href: 'https://cv.lucastar.de/cv?lang=en' },
+      { lang: 'x-default', href: 'https://cv.lucastar.de/cv?lang=de' },
+    ];
+    service.apply({
+      title: 'CV',
+      description: 'Lebenslauf',
+      canonical: 'https://cv.lucastar.de/cv',
+      hreflang: alternates,
+    });
+    const links = document.head.querySelectorAll('link[rel="alternate"][hreflang]');
+    expect(links.length).toBe(3);
+    expect(links[0]?.getAttribute('hreflang')).toBe('de');
+    expect(links[0]?.getAttribute('href')).toContain('lang=de');
+
+    service.restore();
+    expect(document.head.querySelectorAll('link[rel="alternate"][hreflang]').length).toBe(0);
+  });
+
   it('removes JSON-LD on restore without leaving the route title', () => {
     service.apply({
       title: 'CV',

@@ -8,6 +8,7 @@ import { ProjectsStore } from '../../store/projects.store';
 import { PageMetaService } from '../../shared/services/page-meta.service';
 import { getPageSeoCopy } from '../../shared/seo/page-seo-copy';
 import { siteAbsoluteUrl } from '../../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../../shared/seo/hreflang';
 import { stackFamilies, type StackFamily } from '../../shared/utils/project-stack';
 
 export const routeMeta = withRenderMode('server');
@@ -33,6 +34,7 @@ export default class ProjectsPage implements OnInit {
         title: seo.projects.title,
         description: seo.projects.description,
         canonical: siteAbsoluteUrl('/projects'),
+        hreflang: buildHreflangLinks('/projects'),
       });
     });
     this.destroyRef.onDestroy(() => this.pageMeta.restore());

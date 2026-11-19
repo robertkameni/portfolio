@@ -23,6 +23,7 @@ import { LocaleService } from '../shared/services/locale.service';
 import { getPageSeoCopy } from '../shared/seo/page-seo-copy';
 import { buildPersonJsonLd, buildPersonWebsiteGraph, buildWebsiteJsonLd } from '../shared/seo/json-ld';
 import { siteAbsoluteUrl } from '../shared/seo/site-absolute-url';
+import { buildHreflangLinks } from '../shared/seo/hreflang';
 import { cvKnowsAbout } from '../shared/seo/cv-knows-about';
 import { PERSON_NAME } from '../shared/seo/person-identity';
 import { CV_DATA } from './cv/cv-data';
@@ -70,6 +71,7 @@ export default class Home implements OnInit {
         title: seo.home.title,
         description: seo.home.description,
         canonical: url,
+        hreflang: buildHreflangLinks('/'),
         jsonLd: buildPersonWebsiteGraph(
           buildPersonJsonLd({
             jobTitle: CV_DATA.headline,
