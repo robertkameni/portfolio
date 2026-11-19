@@ -2,27 +2,25 @@ import type { AppLocale } from '../i18n/app-locale';
 import { PERSON_NAME } from './person-identity';
 
 const SPINE_DE = 'Technical Lead Frontend Engineer (Angular, TypeScript, RxJS/NgRx; Next.js/React)';
-const SPINE_EN = 'Technical Lead Frontend Engineer — Angular, TypeScript, RxJS/NgRx; Next.js/React';
+const SPINE_EN = 'Technical Lead Frontend Engineer (Angular, TypeScript, RxJS/NgRx; Next.js/React)';
 
 export function getPageSeoCopy(locale: AppLocale) {
   const isDe = locale === 'de';
   return {
     home: {
       title: isDe ? `${PERSON_NAME} – Technical Lead Frontend (Angular)` : `${PERSON_NAME} – Technical Lead Frontend Engineer (Angular)`,
-      description: isDe
-        ? `Portfolio von ${PERSON_NAME}: ${SPINE_DE}. Projekte, Erfahrung und Kontakt.`
-        : `Portfolio of ${PERSON_NAME}: ${SPINE_EN}. Selected projects, experience, and contact.`,
+      description: isDe ? `Portfolio von ${PERSON_NAME}: ${SPINE_DE}. Projekte, Erfahrung, Kontakt.` : `Portfolio of ${PERSON_NAME}: ${SPINE_EN}. Projects, experience, contact.`,
     },
     projects: {
-      title: isDe ? `Projekte – ${PERSON_NAME} (Angular & Full-Stack Cases)` : `Projects – ${PERSON_NAME} (Angular & full-stack cases)`,
+      title: isDe ? `Projekte – ${PERSON_NAME} (Angular & Full-Stack)` : `Projects – ${PERSON_NAME} (Angular and full-stack)`,
       description: isDe
-        ? `Fallstudien von ${PERSON_NAME}: Enterprise-Angular, TypeScript und ausgewählte Next.js/React-Projekte.`
-        : `Case studies by ${PERSON_NAME}: enterprise Angular, TypeScript, and selected Next.js/React work.`,
+        ? `Fallstudien von ${PERSON_NAME}: Enterprise-Angular, TypeScript, Next.js/React.`
+        : `Case studies from ${PERSON_NAME}: enterprise Angular, TypeScript, Next.js/React.`,
     },
     // Lebenslauf is always German for ATS/print.
     cv: {
       title: `Lebenslauf ${PERSON_NAME} – Technical Lead Frontend Engineer`,
-      description: `Lebenslauf von ${PERSON_NAME}: Technical Lead Frontend Engineer mit Schwerpunkt Angular, TypeScript, RxJS/NgRx sowie Next.js/React.`,
+      description: `Lebenslauf von ${PERSON_NAME}: Technical Lead Frontend Engineer, Schwerpunkt Angular, TypeScript, RxJS/NgRx, Next.js/React.`,
     },
     projectDetail: {
       title(projectTitle: string, technologies: string[]): string {
@@ -34,8 +32,8 @@ export function getPageSeoCopy(locale: AppLocale) {
         const tech = technologies.filter(Boolean).join(', ');
         const techClause = tech ? tech : 'Angular, TypeScript';
         return isDe
-          ? `${projectTitle} von ${PERSON_NAME}: ${techClause}. Teil des Portfolios als Technical Lead Frontend Engineer.`
-          : `${projectTitle} by ${PERSON_NAME}: ${techClause}. From the portfolio of a Technical Lead Frontend Engineer.`;
+          ? `${projectTitle} von ${PERSON_NAME}: ${techClause}. Portfolio als Technical Lead Frontend Engineer.`
+          : `${projectTitle} by ${PERSON_NAME}: ${techClause}. Technical Lead Frontend Engineer portfolio.`;
       },
     },
   };
