@@ -1,10 +1,13 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { withRenderMode } from '../../shared/routing/render-mode.types';
 import { ProjectsList } from '../components/projects/projects-list';
 import { RouterLink } from '@angular/router';
 import { getSiteCopy } from '../../shared/i18n/site-copy';
 import { LocaleService } from '../../shared/services/locale.service';
 import { ProjectsStore } from '../../store/projects.store';
+import { PageMetaService } from '../../shared/services/page-meta.service';
+import { getPageSeoCopy } from '../../shared/seo/page-seo-copy';
+import { siteAbsoluteUrl } from '../../shared/seo/site-absolute-url';
 import { stackFamilies, type StackFamily } from '../../shared/utils/project-stack';
 
 export const routeMeta = withRenderMode('server');
@@ -18,8 +21,22 @@ export const routeMeta = withRenderMode('server');
 export default class ProjectsPage implements OnInit {
   private readonly localeService = inject(LocaleService);
   protected readonly store = inject(ProjectsStore);
+  private readonly pageMeta = inject(PageMetaService);
+  private readonly destroyRef = inject(DestroyRef);
   protected locale = this.localeService.locale;
   protected copy = computed(() => getSiteCopy(this.locale()));
+
+  constructor() {
+    effect(() => {
+      const seo = getPageSeoCopy(this.localeService.locale());
+      this.pageMeta.apply({
+        title: seo.projects.title,
+        description: seo.projects.description,
+        canonical: siteAbsoluteUrl('/projects'),
+      });
+    });
+    this.destroyRef.onDestroy(() => this.pageMeta.restore());
+  }
 
   protected readonly activeFamily = signal<StackFamily | null>(null);
 
