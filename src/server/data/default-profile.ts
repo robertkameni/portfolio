@@ -8,8 +8,7 @@ export const defaultProfile: ProfileData = {
   intro: {
     name: 'Robert Kameni Namou',
     title: 'Technical Lead Frontend Engineer',
-    description:
-      'Technical Lead Frontend Engineer working in Angular (v8 to v22) and Next.js/React, building scalable enterprise web applications and leading teams that ship them.',
+    description: 'Technical Lead Frontend Engineer on Angular (v8 to v22) and Next.js/React. Builds enterprise web applications and leads teams through delivery.',
     socials: [
       {
         platform: 'LinkedIn',
@@ -30,13 +29,13 @@ export const defaultProfile: ProfileData = {
       title: 'Frontend',
       subtitle: 'Angular | Next.js | React | TypeScript',
       iconPath: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-      description: 'I specialize in Angular development, creating scalable and high-performance web applications.',
+      description: 'Most of my work is Angular: apps that stay fast and maintainable as features pile on.',
       items: [
-        { title: 'Performance Optimization:', description: 'Runtime and architectural measures, Signal Store, NgRx.' },
-        { title: 'Project Architecture:', description: 'Scalable Angular platform, monorepo modernization.' },
+        { title: 'Performance Optimization:', description: 'Runtime tuning, architecture choices, Signal Store, and NgRx.' },
+        { title: 'Project Architecture:', description: 'Angular platforms that grow with the product; monorepo upgrades when they are due.' },
         {
           title: 'Responsive Design:',
-          description: 'Desktop and mobile development using HTML5, CSS3, and Angular Material.',
+          description: 'Desktop and mobile with HTML5, CSS3, and Angular Material.',
         },
       ],
     },
@@ -44,17 +43,17 @@ export const defaultProfile: ProfileData = {
       title: 'Backend & Quality',
       subtitle: 'Java 21 | Spring Boot 3 | Testing',
       iconPath: 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01',
-      description: 'Skilled in enterprise backend environments and ensuring code stability.',
+      description: 'Comfortable in enterprise Java/Spring backends and focused on keeping production stable.',
       items: [
         {
           title: 'API Integration:',
-          description: 'Connecting modern Angular frontends with Java 21 and Springboot 3 services.',
+          description: 'Angular frontends wired to Java 21 and Springboot 3 services.',
         },
         {
           title: 'Testing:',
-          description: 'Extensive automated testing using Jest and Cypress for unit and E2E coverage.',
+          description: 'Jest and Cypress for unit tests and E2E coverage.',
         },
-        { title: 'Stability:', description: 'Bugfixing in production, root-cause analysis, and long-term prevention.' },
+        { title: 'Stability:', description: 'Production bugfixes, root-cause work, and changes meant to stick.' },
       ],
     },
   ],
@@ -84,61 +83,61 @@ export const defaultProfile: ProfileData = {
   about: {
     title: 'About Me',
     paragraphs: [
-      'I am Robert Kameni Namou, a Technical Lead Frontend Engineer with around 6 years of experience building complex enterprise web applications, mainly Angular (v8 to v22) and Next.js/React. I own frontend delivery end to end: architecture, implementation, quality, and go-live.',
-      'At DATEV eG (since 08/2024) I own the frontend architecture and technical direction for two Scrum teams with eight developers, including mentoring two junior and mid-level engineers. I lead the Angular architecture with a focus on scalability, performance, and maintainability, and I introduced AI-assisted development workflows (GitHub Copilot, spec-driven development).',
-      'Measurable results at DATEV: feature development time down 30% through a design system with 50+ reusable Angular components, bundle size down 25% and load times down 40%, and Angular 22 with Signals and NgRx Signal Store adopted across 5+ application modules, which cut state-related production errors by 70% in the first quarter. I also designed and led a new product built AI-first on Next.js 15/16 (App Router) and React 19.',
-      'Before DATEV I spent 2.5 years as an IT consultant in frontend roles at Sifamo GmbH (02/2022 to 07/2024), with two long-term enterprise engagements: rebuilding the frontend of a factoring product on Angular 15 with RxJS and NgRx (load times down 30%), and building web components for a deployment-control platform plus migrating an Nx monorepo from Angular 15 to 16 across five applications (error rate down 60%).',
-      'My technical range covers TypeScript, RxJS, Signals, NgRx Signal Store, Jest, Cypress, and the Java 21 / Spring Boot 3 backend side, so I can hold an API contract with a backend team instead of handing work over.',
-      'As a Technical Lead I guide teams from the technical side, run reviews, and set engineering standards. I care most about performant, AI-ready frontends and teams that scale without losing quality.',
+      'I am Robert Kameni Namou, Technical Lead Frontend Engineer. Around 6 years in, mostly on complex enterprise web apps with Angular (v8 to v22) and Next.js/React. I take frontend delivery end to end: architecture, implementation, quality, and go-live.',
+      'At DATEV eG (since 08/2024) I own frontend architecture and technical direction for two Scrum teams with eight developers, including mentoring two junior and mid-level engineers. I steer the Angular stack toward scalability, performance, and maintainability, and I brought in AI-assisted workflows (GitHub Copilot, spec-driven development).',
+      'At DATEV the numbers moved: feature development time down 30% after a design system with 50+ reusable Angular components; bundle size down 25% and load times down 40%; Angular 22 with Signals and NgRx Signal Store across 5+ application modules, cutting state-related production errors by 70% in the first quarter. I also designed and led a new product built AI-first on Next.js 15/16 (App Router) and React 19.',
+      'Before DATEV I spent 2.5 years as an IT consultant in frontend roles at Sifamo GmbH (02/2022 to 07/2024). Two long-term enterprise engagements: rebuilding the frontend of a factoring product on Angular 15 with RxJS and NgRx (load times down 30%), and web components for a deployment-control platform plus migrating an Nx monorepo from Angular 15 to 16 across five applications (error rate down 60%).',
+      'Day to day that means TypeScript, RxJS, Signals, NgRx Signal Store, Jest, Cypress, and enough Java 21 / Spring Boot 3 to negotiate API contracts with backend teams instead of throwing work over the wall.',
+      'As Technical Lead I guide teams from the technical side, run reviews, and set engineering standards. I like fast frontends, sensible use of AI tooling, and teams that can grow without letting quality slip.',
     ],
 
     highlights: [
       {
         title: 'Angular Expertise Across Versions',
-        description: 'Delivered and maintained production systems from Angular 8 to Angular 22, consistently adopting modern framework capabilities and best practices.',
+        description: 'Shipped and maintained production Angular from v8 through v22, picking up new framework features where they helped.',
         iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       },
       {
         title: 'Execution and Performance Impact',
-        description: 'Improved runtime performance, introduced scalable architecture patterns, and increased development efficiency by 70% across teams.',
+        description: 'Better runtime performance, clearer architecture patterns, and about 70% more development efficiency across the teams involved.',
         iconPath: 'M13 10V3L4 14h7v7l9-11h-7z',
       },
       {
         title: 'Technical Leadership and Team Scaling',
-        description: 'Led code reviews, guided developers technically, and established engineering standards to scale delivery quality and team effectiveness.',
+        description: 'Ran code reviews, coached developers on hard calls, and put engineering standards in place so delivery could scale.',
         iconPath:
           'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
       },
       {
         title: 'AI-Driven Development',
-        description: 'Integrate LLMs and AI tooling into architecture and delivery to ship faster while keeping quality and maintainability high.',
+        description: 'Uses LLMs and AI tooling in architecture and delivery where they save time without compromising quality or maintainability.',
         iconPath: 'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z',
       },
     ],
   },
   contact: {
     title: "Let's Connect",
-    description: "Ready to bring your ideas to life? Let's discuss how we work together to create something amazing.",
+    description: 'If you have a frontend or lead role in mind, get in touch. Happy to talk scope, stack, and timeline.',
     features: [
       {
         title: '6+ Years Experience',
-        description: 'Building scalable web applications',
+        description: 'Enterprise web applications, mostly Angular and Next.js',
         iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       },
       {
         title: 'Full Stack Expertise',
-        description: 'Senior Angular Developer with diverse backend experience',
+        description: 'Lead-level Angular with Java/Spring on the API side',
         iconPath: 'M13 10V3L4 14h7v7l9-11h-7z',
       },
       {
         title: 'Diverse Project Portfolio',
-        description: 'From startups to enterprise solutions',
+        description: 'Consulting engagements and in-house product teams',
         iconPath: 'M4 6h16M4 10h16M4 14h16M4 18h16',
       },
     ],
     formCard: {
       title: 'Ready to Start Your Project?',
-      description: 'Send a message to discuss your project requirements.',
+      description: 'Tell me what you are building and what you need from a lead.',
     },
   },
 };

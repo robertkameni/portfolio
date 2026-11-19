@@ -35,30 +35,29 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
       intro: {
         ...baseProfile.intro,
         title: 'Technischer Lead Frontend Engineer',
-        description:
-          'Technischer Lead Frontend Engineer mit Schwerpunkt Angular (v8 bis v22) und Next.js/React: skalierbare Enterprise-Webanwendungen und Teams, die sie zuverlässig liefern.',
+        description: 'Technischer Lead Frontend Engineer mit Angular (v8 bis v22) und Next.js/React. Baut Enterprise-Webanwendungen und führt Teams bis zum Go-live.',
       },
       heroCards: [
         {
           ...heroCard0,
           title: 'Frontend',
           subtitle: 'Angular | Next.js | React | TypeScript',
-          description: 'Ich spezialisiere mich auf Angular-Entwicklung und entwickle skalierbare, performante Webanwendungen.',
+          description: 'Schwerpunkt Angular: Anwendungen, die mit wachsendem Funktionsumfang schnell und wartbar bleiben.',
           items: [
-            { ...heroCard0Item0, title: 'Performance-Optimierung:', description: 'Runtime- und Architekturmaßnahmen, Signal Store und NgRx.' },
-            { ...heroCard0Item1, title: 'Projektarchitektur:', description: 'Skalierbare Angular-Plattformen und Monorepo-Modernisierung.' },
-            { ...heroCard0Item2, title: 'Responsive Design:', description: 'Desktop- und Mobile-Entwicklung mit HTML5, CSS3 und Angular Material.' },
+            { ...heroCard0Item0, title: 'Performance-Optimierung:', description: 'Runtime-Tuning, Architekturentscheidungen, Signal Store und NgRx.' },
+            { ...heroCard0Item1, title: 'Projektarchitektur:', description: 'Angular-Plattformen, die mit dem Produkt mitwachsen; Monorepo-Upgrades, wenn sie anstehen.' },
+            { ...heroCard0Item2, title: 'Responsive Design:', description: 'Desktop und Mobile mit HTML5, CSS3 und Angular Material.' },
           ],
         },
         {
           ...heroCard1,
           title: 'Backend & Qualität',
           subtitle: 'Java 21 | Spring Boot 3 | Testing',
-          description: 'Erfahren in Enterprise-Backends und in der Sicherstellung langfristiger Code-Stabilität.',
+          description: 'Zuhause in Enterprise-Java/Spring-Backends; Fokus auf stabile Produktion.',
           items: [
-            { ...heroCard1Item0, title: 'API-Integration:', description: 'Anbindung moderner Angular-Frontends an Services mit Java 21 und Spring Boot 3.' },
-            { ...heroCard1Item1, title: 'Testing:', description: 'Umfassende automatisierte Tests mit Jest und Cypress für Unit- und E2E-Abdeckung.' },
-            { ...heroCard1Item2, title: 'Stabilität:', description: 'Fehlerbehebung in Produktion, Root-Cause-Analyse und langfristige Prävention.' },
+            { ...heroCard1Item0, title: 'API-Integration:', description: 'Angular-Frontends an Java-21- und Spring-Boot-3-Services angebunden.' },
+            { ...heroCard1Item1, title: 'Testing:', description: 'Jest und Cypress für Unit-Tests und E2E-Abdeckung.' },
+            { ...heroCard1Item2, title: 'Stabilität:', description: 'Produktions-Fixes, Root-Cause-Arbeit und Änderungen, die bleiben.' },
           ],
         },
       ],
@@ -75,47 +74,47 @@ export function localizeProfile(baseProfile: ProfileData, locale: AppLocale): Lo
       about: {
         title: 'Über mich',
         paragraphs: [
-          'Ich bin Robert Kameni Namou, Technical Lead Frontend Engineer mit rund 6 Jahren Erfahrung in komplexen Enterprise-Webanwendungen, überwiegend mit Angular (v8 bis v22) sowie Next.js und React. Ich verantworte Frontend end-to-end: Architektur, Umsetzung, Qualität und Go-live.',
-          'Bei der DATEV eG (seit 08/2024) verantworte ich Frontend-Architektur und technische Ausrichtung für zwei Scrum-Teams mit acht Entwickler:innen, inklusive Mentoring von zwei Junior- und Mid-Level-Entwickler:innen. Ich führe die Angular-Architektur mit Fokus auf Skalierbarkeit, Performance und Wartbarkeit und habe AI-gestützte Entwicklungsprozesse (GitHub Copilot, spec-driven Development) im Team etabliert.',
-          'Messbare Ergebnisse bei DATEV: 30 % weniger Entwicklungszeit durch ein Design System mit 70+ wiederverwendbaren Angular-Komponenten, 25 % kleinere Bundles und 40 % kürzere Ladezeiten, dazu Angular 22 mit Signals und NgRx Signal Store in 5+ Anwendungsmodulen, wodurch state-bezogene Produktionsfehler im ersten Quartal um 50 % sanken. Zusätzlich habe ich ein neues Produkt AI-first auf Next.js 15/16 (App Router) und React 19 konzipiert und geleitet.',
-          'Davor war ich 2,5 Jahre als IT-Consultant im Frontend bei der Sifamo GmbH (02/2022 bis 07/2024) in zwei langfristigen Großprojekten: Neuentwicklung des Frontends einer Factoring-Software mit Angular 15, RxJS und NgRx (30 % kürzere Ladezeiten) sowie Web-Komponenten für eine Deployment-Control-Plattform und Migration eines Nx-Monorepos von Angular 15 auf 16 über fünf Anwendungen (60 % weniger Fehler).',
-          'Technisch reicht mein Spektrum von TypeScript, RxJS, Signals, NgRx Signal Store, Jest und Cypress bis zur Backend-Seite mit Java 21 und Spring Boot 3, sodass ich API-Verträge mit Backend-Teams direkt mittrage statt nur zu übergeben.',
-          'Als Technical Lead führe ich Teams aus technischer Sicht, leite Reviews und setze Engineering-Standards. Mich treiben performante, AI-fähige Frontends und Teams, die ohne Qualitätsverlust skalieren.',
+          'Ich bin Robert Kameni Namou, Technical Lead Frontend Engineer. Etwa 6 Jahre, vor allem komplexe Enterprise-Webanwendungen mit Angular (v8 bis v22) sowie Next.js und React. Ich verantworte Frontend end-to-end: Architektur, Umsetzung, Qualität und Go-live.',
+          'Bei der DATEV eG (seit 08/2024) verantworte ich Frontend-Architektur und technische Ausrichtung für zwei Scrum-Teams mit acht Entwickler:innen, inklusive Mentoring von zwei Junior- und Mid-Level-Entwickler:innen. Ich lenke den Angular-Stack in Richtung Skalierbarkeit, Performance und Wartbarkeit und habe AI-gestützte Abläufe (GitHub Copilot, spec-driven Development) im Team etabliert.',
+          'Bei DATEV haben sich die Kennzahlen bewegt: 30 % weniger Entwicklungszeit nach einem Design System mit 70+ wiederverwendbaren Angular-Komponenten; 25 % kleinere Bundles und 40 % kürzere Ladezeiten; Angular 22 mit Signals und NgRx Signal Store in 5+ Anwendungsmodulen, state-bezogene Produktionsfehler im ersten Quartal um 50 % weniger. Zudem habe ich ein neues Produkt AI-first auf Next.js 15/16 (App Router) und React 19 konzipiert und geleitet.',
+          'Davor war ich 2,5 Jahre als IT-Consultant im Frontend bei der Sifamo GmbH (02/2022 bis 07/2024). Zwei langfristige Großprojekte: Neuentwicklung des Frontends einer Factoring-Software mit Angular 15, RxJS und NgRx (30 % kürzere Ladezeiten) sowie Web-Komponenten für eine Deployment-Control-Plattform und Migration eines Nx-Monorepos von Angular 15 auf 16 über fünf Anwendungen (60 % weniger Fehler).',
+          'Im Alltag heißt das TypeScript, RxJS, Signals, NgRx Signal Store, Jest, Cypress und genug Java 21 / Spring Boot 3, um API-Verträge mit Backend-Teams direkt zu klären statt nur zu übergeben.',
+          'Als Technical Lead führe ich Teams aus technischer Sicht, leite Reviews und setze Engineering-Standards. Mir sind schnelle Frontends, sinnvoller Einsatz von AI-Tooling und Teams wichtig, die wachsen können, ohne dass die Qualität leidet.',
         ],
         highlights: [
           {
             ...aboutHighlight0,
             title: 'Angular-Kompetenz über viele Versionen',
-            description: 'Produktive Systeme von Angular 8 bis Angular 22 ausgeliefert und moderne Framework-Fähigkeiten konsequent eingeführt.',
+            description: 'Angular in Produktion von Version 8 bis 22 ausgeliefert und gepflegt; neue Framework-Features eingesetzt, wo sie geholfen haben.',
           },
           {
             ...aboutHighlight1,
             title: 'Execution und Performance-Impact',
-            description: 'Runtime-Performance verbessert, skalierbare Architekturpatterns eingeführt und die Entwicklungseffizienz teamübergreifend um 50 % gesteigert.',
+            description: 'Bessere Runtime-Performance, klarere Architekturmuster und rund 50 % mehr Entwicklungseffizienz in den beteiligten Teams.',
           },
           {
             ...aboutHighlight2,
             title: 'Technische Führung und Team-Skalierung',
-            description: 'Code-Reviews geleitet, Teams technisch geführt und Engineering-Standards etabliert, um Lieferqualität und Team-Wirksamkeit zu skalieren.',
+            description: 'Code-Reviews geleitet, Entwickler bei schwierigen Entscheidungen begleitet und Engineering-Standards etabliert, damit die Lieferung mitwachsen kann.',
           },
           {
             iconPath: aboutHighlight3?.iconPath ?? aiDrivenHighlightIcon,
             title: 'AI-gestützte Entwicklung',
-            description: 'LLMs und AI-Tooling pragmatisch in Architektur und Delivery integriert, um schneller zu liefern und Qualität sowie Wartbarkeit hochzuhalten.',
+            description: 'LLMs und AI-Tooling in Architektur und Delivery dort, wo sie Zeit sparen, ohne Qualität oder Wartbarkeit zu opfern.',
           },
         ],
       },
       contact: {
         title: 'Lass uns vernetzen',
-        description: 'Bereit, Ideen in echte Produkte zu verwandeln? Lass uns besprechen, wie wir gemeinsam etwas Starkes aufbauen können.',
+        description: 'Wenn du eine Frontend- oder Lead-Rolle im Kopf hast, melde dich. Gern klären wir Umfang, Stack und Zeitplan.',
         features: [
-          { ...contactFeature0, title: '6+ Jahre Erfahrung', description: 'Skalierbare Webanwendungen bauen' },
-          { ...contactFeature1, title: 'Full-Stack-Expertise', description: 'Senior Angular Entwickler mit vielseitiger Backend-Erfahrung' },
-          { ...contactFeature2, title: 'Vielfältiges Projektportfolio', description: 'Von Startups bis zu Enterprise-Lösungen' },
+          { ...contactFeature0, title: '6+ Jahre Erfahrung', description: 'Enterprise-Webanwendungen, vor allem Angular und Next.js' },
+          { ...contactFeature1, title: 'Full-Stack-Expertise', description: 'Lead-Niveau in Angular, Java/Spring auf der API-Seite' },
+          { ...contactFeature2, title: 'Vielfältiges Projektportfolio', description: 'Consulting-Einsätze und Produktteams in Unternehmen' },
         ],
         formCard: {
           title: 'Bereit, dein Projekt zu starten?',
-          description: 'Schreib mir, um über Anforderungen und Umsetzung zu sprechen.',
+          description: 'Schreib, was du baust und was du vom Lead brauchst.',
         },
       },
     };
