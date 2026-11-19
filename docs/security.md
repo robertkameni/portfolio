@@ -62,7 +62,7 @@ The enforced CSP is set in `vercel.json`. After review, the permissive `https:` 
 | `font-src` | `'self'` |
 | `style-src` | `'self'` `'unsafe-inline'` (required by Angular runtime) |
 | `script-src` | `'self'` plus per-build inline script hashes |
-| `trusted-types` | `angular` `angular#bundler` `angular#unsafe-bypass` |
+| `trusted-types` | `angular` `angular#bundler` `angular#unsafe-bypass` `dompurify` `json-ld` |
 | `object-src` | `'none'` |
 | `frame-ancestors` | `'none'` |
 | `form-action` | `'self'` |

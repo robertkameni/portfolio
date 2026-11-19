@@ -82,7 +82,7 @@ export function buildContentSecurityPolicy(options: CspOptions): string {
     "frame-ancestors 'none'",
     "form-action 'self'",
     "object-src 'none'",
-    'trusted-types angular angular#bundler angular#unsafe-bypass dompurify',
+    'trusted-types angular angular#bundler angular#unsafe-bypass dompurify json-ld',
     "require-trusted-types-for 'script'",
     `script-src ${scriptSrc}`,
     "style-src 'self' 'unsafe-inline'",

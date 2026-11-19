@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, inject, signal } from '@angular/core';
+import { trustedJsonLdScript } from '../seo/trusted-json-ld-script';
 
 /**
  * The head tags a route can claim.
@@ -164,7 +165,8 @@ export class PageMetaService {
     const script = this.document.createElement('script');
     script.type = 'application/ld+json';
     script.setAttribute(PageMetaService.JSON_LD_ATTR, '');
-    script.textContent = JSON.stringify(data);
+    // Trusted Types: textContent is a script sink even for ld+json data blocks.
+    script.textContent = trustedJsonLdScript(this.document, JSON.stringify(data)) as string;
     this.document.head.appendChild(script);
   }
 
