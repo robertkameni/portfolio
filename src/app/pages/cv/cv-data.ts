@@ -66,7 +66,7 @@ export const CV_DATA: CvData = {
   ],
   facts: 'EU/EFTA-Staatsangehörigkeit (keine Bewilligung nötig) · 3 Monate Kündigungsfrist',
   profile:
-    'Senior Frontend Engineer mit rund 6 Jahren Erfahrung in der Konzeption, Architektur und Entwicklung komplexer Enterprise-Webanwendungen mit Schwerpunkt Angular (v8–v22) sowie Next.js/React. Durchgehend in Festanstellung tätig, aktuell als Technical Lead Frontend Engineer bei DATEV eG: technische Führung von 2 Scrum-Teams (8 Entwickler:innen), Performance-Optimierung (Ladezeiten −40 %), State Management (NgRx Signal Store, RxJS) sowie Einführung AI-gestützter Entwicklungsmethoden (GitHub Copilot, spec-driven Development).',
+    'Senior Frontend Engineer mit rund 6 Jahren Erfahrung in Konzeption, Architektur und Entwicklung komplexer Enterprise-Webanwendungen, Schwerpunkt Angular (v8–v22) und Next.js/React. Durchgehend fest angestellt, heute Technical Lead Frontend Engineer bei DATEV eG: Führung von 2 Scrum-Teams (8 Entwickler:innen), Performance-Optimierung (Ladezeiten −40 %), State Management mit NgRx Signal Store und RxJS sowie Einführung AI-gestützter Entwicklungsmethoden (GitHub Copilot, spec-driven Development).',
   skills: [
     {
       label: 'Frontend',
@@ -98,14 +98,14 @@ export const CV_DATA: CvData = {
       location: 'Nürnberg',
       period: '08/2024 – heute',
       summary:
-        'Plattform zur Verwaltung von Steuerkanzleien. Technische Verantwortung für Architektur und strategische Weiterentwicklung geschäftskritischer Enterprise-Webanwendungen; Führung der Angular-Architektur mit Fokus auf Skalierbarkeit, Performance und Wartbarkeit.',
+        'Plattform zur Verwaltung von Steuerkanzleien. Technische Verantwortung für Architektur und strategische Weiterentwicklung geschäftskritischer Enterprise-Webanwendungen; Angular-Architektur mit Schwerpunkt Skalierbarkeit, Performance und Wartbarkeit.',
       bulletsHeading: 'Erfolgsbeispiele',
       bullets: [
-        'Führte die technische Leitung von 2 Scrum-Teams mit insgesamt 8 Entwickler:innen für geschäftskritische Enterprise-Anwendungen, inkl. Mentoring von 2 Junior- und Mid-Level-Entwickler:innen',
-        'Senkte die Entwicklungszeit neuer Features um 30 % durch Aufbau eines skalierbaren Design Systems mit 50+ wiederverwendbaren UI-Komponenten (Angular)',
-        'Reduzierte die Bundle-Größe um 25 % und die Ladezeiten um 40 % durch gezielte Performance-Maßnahmen (Lazy Loading, Change Detection Optimierung, Bundle-Analyse)',
-        'Führte Angular 22, Signals und NgRx Signal Store in 5+ Anwendungsmodulen ein und vereinheitlichte damit die Frontend-Architektur – state-bezogene Produktionsfehler sanken im ersten Quartal um 50 %',
-        'Konzipierte und leitete ein neues Produkt nach dem AI-First-Prinzip: Next.js 15/16 (App Router), React 19, GitHub Copilot als AI Agent, spec-driven Development – etablierte AI-gestützte Entwicklungsprozesse im Team',
+        'Technische Leitung von 2 Scrum-Teams mit insgesamt 8 Entwickler:innen an geschäftskritischen Enterprise-Anwendungen; Mentoring von 2 Junior- und Mid-Level-Entwickler:innen',
+        'Senkte die Entwicklungszeit neuer Features um 30 % mit einem skalierbaren Design System aus 50+ wiederverwendbaren UI-Komponenten (Angular)',
+        'Bundle-Größe um 25 % und Ladezeiten um 40 % weniger durch Lazy Loading, optimierte Change Detection und Bundle-Analyse',
+        'Angular 22, Signals und NgRx Signal Store in 5+ Anwendungsmodulen eingeführt und die Frontend-Architektur vereinheitlicht; state-bezogene Produktionsfehler sanken im ersten Quartal um 50 %',
+        'Neues Produkt nach dem AI-First-Prinzip konzipiert und geleitet: Next.js 15/16 (App Router), React 19, GitHub Copilot als AI Agent, spec-driven Development; AI-gestützte Entwicklungsprozesse im Team etabliert',
       ],
       technologies: 'Angular 22, Next.js 15/16, React 19, TypeScript, RxJS, NgRx Signal Store, Jest, Cypress, GitHub Copilot, Git Flow, CI/CD',
     },
@@ -115,24 +115,24 @@ export const CV_DATA: CvData = {
       location: 'Berlin',
       period: '02/2022 – 07/2024',
       summary:
-        'Über 2,5 Jahre mit zwei langfristigen Kundeneinsätzen in Großprojekten (jeweils mehrere Scrum-Teams) – Entwicklung, Optimierung und Wartung moderner Webanwendungen mit Angular und TypeScript.',
+        'Über 2,5 Jahre zwei langfristige Kundeneinsätze in Großprojekten (jeweils mehrere Scrum-Teams): Entwicklung, Optimierung und Wartung moderner Webanwendungen mit Angular und TypeScript.',
       engagements: [
         {
           name: 'Projekt Omnia/Optica, Stuttgart',
           period: '09/2023 – 07/2024',
           bullets: [
-            'Entwickelte das Frontend einer Factoring-Software zur Ablösung einer Legacy-Lösung neu (Angular 15, RxJS, NgRx) – Großprojekt mit 3 Scrum-Teams',
-            'Reduzierte die Ladezeiten um 30 % durch Analyse und Behebung von Produktionsproblemen sowie gezielte Performance-Optimierung',
-            'Setzte neue Frontend-Features in agilen Sprints in enger Zusammenarbeit mit UX/UI- und Backend-Teams um',
+            'Frontend einer Factoring-Software zur Ablösung einer Legacy-Lösung neu gebaut (Angular 15, RxJS, NgRx); Großprojekt mit 3 Scrum-Teams',
+            'Ladezeiten um 30 % gesenkt nach Analyse und Behebung von Produktionsproblemen und gezielter Performance-Optimierung',
+            'Neue Frontend-Features in agilen Sprints mit UX/UI- und Backend-Teams umgesetzt',
           ],
         },
         {
           name: 'Projekt W&W Informatik, Stuttgart',
           period: '02/2022 – 08/2023',
           bullets: [
-            'Entwickelte 10 neue Webkomponenten (Angular 15/16) für eine Plattform zur Steuerung von Deployment-Prozessen und verbesserte damit die Benutzererfahrung',
-            'Migrierte die Monorepo-Architektur von Angular 15 auf Angular 16 mit Nx und modernisierte erfolgreich 5 Anwendungen und Libraries',
-            'Senkte die Fehlerquote um 60 % durch Behebung kritischer Produktions-Bugs und Optimierung der State-Management-Architektur (NgRx)',
+            '10 neue Webkomponenten (Angular 15/16) für eine Plattform zur Steuerung von Deployment-Prozessen; spürbar bessere Benutzererfahrung',
+            'Monorepo von Angular 15 auf Angular 16 mit Nx migriert; 5 Anwendungen und Libraries modernisiert',
+            'Fehlerquote um 60 % gesenkt durch Behebung kritischer Produktions-Bugs und Optimierung der State-Management-Architektur (NgRx)',
           ],
         },
       ],
@@ -144,13 +144,13 @@ export const CV_DATA: CvData = {
       location: 'Nürnberg',
       period: '10/2020 – 01/2022',
       summary:
-        'Entwicklung und Weiterentwicklung von Webanwendungen mit Angular und TypeScript; Koordination des Entwicklungsteams, Ressourcenplanung sowie Analyse und Konzeption der Software-Architektur in enger Zusammenarbeit mit dem Backend-Team.',
+        'Entwicklung und Weiterentwicklung von Webanwendungen mit Angular und TypeScript. Koordination des Entwicklungsteams, Ressourcenplanung, Analyse und Konzeption der Software-Architektur mit dem Backend-Team.',
       bulletsHeading: 'Erfolgsbeispiele',
       bullets: [
-        'Koordinierte ein Entwicklungsteam von 8 Entwickler:innen und priorisierte technische Aufgaben im agilen Umfeld (Scrum)',
-        'Reduzierte die Entwicklungs- und Wartungsaufwände neuer Features um 60 % durch Analyse und Optimierung der Frontend-Architektur',
-        'Führte standardisierte Code-Review-Prozesse und Entwicklungsrichtlinien ein und steigerte damit Codequalität und Teamproduktivität',
-        'Setzte skalierbare End-to-End-Lösungen in enger Zusammenarbeit mit Backend-Teams (C#, .NET, Azure) um',
+        'Entwicklungsteam von 8 Entwickler:innen koordiniert und technische Aufgaben im Scrum-Umfeld priorisiert',
+        'Entwicklungs- und Wartungsaufwand neuer Features um 60 % reduziert durch Analyse und Optimierung der Frontend-Architektur',
+        'Standardisierte Code-Reviews und Entwicklungsrichtlinien eingeführt; Codequalität und Teamproduktivität stiegen spürbar',
+        'Skalierbare End-to-End-Lösungen mit Backend-Teams (C#, .NET, Azure) umgesetzt',
       ],
     },
   ],
@@ -160,21 +160,21 @@ export const CV_DATA: CvData = {
       url: 'aisim.lucastar.de',
       period: '05/2026 – heute',
       summary:
-        'Multi-Agenten-Debatten-Simulator: 6 Agenten (PM bis Reviewer) debattieren Produktideen mit Streaming, Tool-Aufrufen und persistierten Läufen; erkennt Software-, Bau- und Hybridprojekte und setzt passende Rollen.',
+        'Multi-Agenten-Debatten-Simulator mit 6 Agenten (PM bis Reviewer): Produktideen per Streaming, Tool-Aufrufen und persistierten Läufen; erkennt Software-, Bau- und Hybridprojekte und weist passende Rollen zu.',
       technologies: 'Next.js 16, React 19, Vercel AI SDK + DeepSeek, Prisma 7 + Neon, Upstash Redis, JWT-Auth',
     },
     {
       name: 'The Engineering Forge',
       url: 'forge.lucastar.de',
       period: '06/2026 – heute',
-      summary: 'Orchestriert eine GitHub-Spec-Kit-Pipeline: ingestet Markdown-Briefs per Bearer-Auth und liefert implementierungsfertige Spec-Bundles für AI-Agenten.',
+      summary: 'GitHub-Spec-Kit-Pipeline: Markdown-Briefs per Bearer-Auth, daraus implementierungsfertige Spec-Bundles für AI-Agenten.',
       technologies: 'Next.js 16, BullMQ + Redis, OpenAPI, Self-Heal-Zyklen, Railway',
     },
     {
       name: 'ATLAS-BIO',
       url: 'atlas.lucastar.de',
       period: '10/2026 – heute',
-      summary: 'Spec-getriebene Offline-PWA (Französisch) für dokumentierte Mikronährstoff-Bildung, ohne Konto; 60+ Tasks aus FR/NFR-Spezifikation, CI- und Lighthouse-Gates.',
+      summary: 'Spec-getriebene Offline-PWA (Französisch) für dokumentierte Mikronährstoff-Bildung ohne Konto; 60+ Tasks aus FR/NFR-Spezifikation, CI- und Lighthouse-Gates.',
       technologies: 'Next.js 16, TypeScript, Zod, node --test',
     },
   ],

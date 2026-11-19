@@ -33,7 +33,7 @@ export const EN_COPY: SiteCopy = {
   projects: {
     eyebrow: 'Selected work',
     title: 'Projects',
-    description: 'A small preview of published work. Open the full overview to browse every project.',
+    description: 'A few published projects shown here. Open the full list to see everything.',
     viewAll: 'View all projects',
     loading: 'Loading projects...',
     error: 'Could not load projects.',
@@ -95,8 +95,8 @@ export const EN_COPY: SiteCopy = {
   chat: {
     title: 'Digital Twin',
     subtitle: 'Ask me anything about Robert',
-    introLine1: "Hi! I'm Robert's AI Digital Twin.",
-    introLine2: 'I know his projects, stack, and experience.',
+    introLine1: "Hi. I'm Robert's digital twin.",
+    introLine2: 'I can answer questions about his projects, stack, and experience.',
     promptAngular: 'Tell me about your Angular experience',
     promptFreelance: 'Are you available for freelance work?',
     typingSrOnly: 'AI is typing...',
@@ -109,7 +109,7 @@ export const EN_COPY: SiteCopy = {
   },
   twinInvite: {
     title: 'Ask the twin',
-    description: 'An AI version of me, loaded with the case studies. Ask the question the page does not answer.',
+    description: 'An AI stand-in with my case studies loaded. Ask what the page does not cover.',
     prompts: ['Tell me about your Angular experience', 'Are you available for freelance work?', 'What have you built with Next.js?'],
   },
   adminLogin: {
@@ -161,22 +161,22 @@ export const EN_COPY: SiteCopy = {
   },
   about: {
     adaptiveTitle: {
-      recruiter: 'A Reliable Engineering Partner',
-      founder: 'Building Your Vision, End-to-End',
-      developer: 'An Architect Who Loves the Code',
-      hiringManager: 'Ready to Lead & Deliver',
+      recruiter: 'Technical lead for enterprise Angular',
+      founder: 'SaaS from zero to one',
+      developer: 'Modern Angular in production',
+      hiringManager: 'Lead frontend delivery',
     },
     founderParagraphs: [
-      'I take SaaS products from 0 to 1 with clean architecture early, so growth does not pile up avoidable technical debt.',
-      'With modern Angular, Nitro backends, and focused LLM use, I ship systems that move fast without losing stability.',
+      'I take SaaS products from 0 to 1 and sort out architecture early so later growth does not pile up avoidable technical debt.',
+      'I work with modern Angular, Nitro backends, and LLM features where they earn their place. Releases stay fast without turning unstable.',
     ],
     recruiterParagraphs: [
-      'As a Technical Lead I raise team efficiency, set quality standards, and deliver complex enterprise Angular applications reliably.',
-      'In large Scrum setups I focus on technical leadership, CI/CD, and AI-assisted tooling so delivery stays predictable.',
+      'As a technical lead I help the team move faster, keep quality visible, and ship complex enterprise Angular applications on schedule.',
+      'In large Scrum teams I handle technical direction, CI/CD, and AI-assisted tooling so delivery dates stay realistic.',
     ],
     developerParagraphs: [
-      'I live in the modern Angular ecosystem. I modernize legacy apps toward zoneless architecture with Signals and build state with the NgRx Signal Store.',
-      "Complex architecture, Nx monorepos, and AI/LLM integration are part of my day-to-day. If you want to talk reactive patterns, let's connect.",
+      'Most of my work sits in modern Angular. I move legacy apps toward zoneless setups with Signals and use the NgRx Signal Store for state.',
+      'Nx monorepos, awkward architecture, and AI/LLM hooks show up often. If you want to talk reactive patterns, get in touch.',
     ],
     previewSplitToken: 'Signals and NgRx Signal Store.',
     metric: { value: '70%', caption: 'faster team delivery at DATEV' },
@@ -187,14 +187,14 @@ export const EN_COPY: SiteCopy = {
       messageRequired: 'Message is required',
     },
     adaptiveTitle: {
-      recruiter: "Let's Talk About Your Next Big Hire",
-      founder: "Let's Bring Your Idea to Life",
-      developer: 'Trade Notes on Angular, SSR & Tooling',
+      recruiter: 'Talk about your open role',
+      founder: 'Talk through your product idea',
+      developer: 'Angular, SSR, and tooling',
     },
     adaptiveDescription: {
-      recruiter: "Looking for a seasoned Angular engineer? Drop me a message and let's schedule an interview.",
-      founder: "Ready to start building? Contact me and let's discuss your product's architecture and roadmap.",
-      developer: "Into Signals, SSR, Nitro, or pragmatic AI integration? Leave a technical question or something you're working on, and we can compare approaches.",
+      recruiter: 'Hiring for Angular with lead-level experience? Send a message and we can line up a call.',
+      founder: 'Want to start building? Describe the idea and we can talk through architecture and roadmap.',
+      developer: 'Working on Signals, SSR, Nitro, or AI integration? Send a technical question or what you are building and we can compare notes.',
     },
     adaptivePlaceholder: {
       recruiter: "Hi Robert, we're looking for an Angular expert...",
@@ -221,178 +221,178 @@ export const EN_COPY: SiteCopy = {
   hero: {
     defaultTitle: 'Technical Lead Frontend Engineer',
     adaptiveTitle: {
-      recruiter: 'Senior Engineer Ready to Drive Your Next Project',
-      founder: 'Architecting Scalable Solutions for Ambitious Startups',
-      developer: 'Deep Dives into Angular, Node, and AI Architecture',
+      recruiter: 'Senior engineer for frontend projects',
+      founder: 'Frontend and APIs for early-stage products',
+      developer: 'Angular, Node, and AI architecture',
     },
     frontend: {
       default: {
-        description: "Engineering modern, high-performance web applications using Angular's latest reactive primitives.",
+        description: 'Modern Angular web apps using the current reactive primitives: Signals, zoneless options, and the rest of the stack as it ships.',
         items: [
           {
-            title: 'Reactive UI Architecture:',
-            description: 'Zoneless Angular, Signals, and NgRx SignalStore for highly predictable state management.',
+            title: 'Reactive UI',
+            description: 'Zoneless Angular, Signals, and NgRx Signal Store for state you can follow in code review.',
           },
           {
-            title: 'Frontend Quality Assurance:',
-            description: 'Implementing strict end-to-end testing with Playwright and rapid unit coverage via Jest.',
+            title: 'Testing',
+            description: 'End-to-end coverage with Playwright and unit tests with Jest.',
           },
           {
-            title: 'Performance & Scaling:',
-            description: 'Deep optimization of Core Web Vitals, SSR hydration, and structuring scalable Nx monorepos.',
+            title: 'Performance',
+            description: 'Core Web Vitals, SSR hydration, and Nx monorepos when the codebase outgrows a single app.',
           },
           {
-            title: 'Next.js & React:',
-            description: 'App Router applications with React 19, Server Components, and streamed responses, including AI products.',
+            title: 'Next.js and React',
+            description: 'App Router with React 19, Server Components, and streamed responses, including AI-facing UI.',
           },
         ],
       },
       founder: {
-        description: 'Building highly responsive, conversion-optimized interfaces that adapt instantly to your changing business needs.',
+        description: 'Fast interfaces that still work when requirements change every sprint.',
         items: [
           {
-            title: 'Rapid Execution:',
-            description: 'Leveraging modern toolchains for fast MVP delivery without accumulating technical debt.',
+            title: 'MVP delivery',
+            description: 'Current toolchains for MVPs without piling on debt you pay for later.',
           },
           {
-            title: 'Conversion-First:',
-            description: 'Lightning-fast load times and seamless SSR to maximize user retention and SEO.',
+            title: 'Speed and SEO',
+            description: 'Quick loads and SSR that help retention and search visibility.',
           },
           {
-            title: 'Reliable Releases:',
-            description: 'Automated frontend testing with Playwright and Jest to ensure UI features never break.',
+            title: 'Release checks',
+            description: 'Playwright and Jest in CI so UI regressions surface before users see them.',
           },
           {
-            title: 'Full stack, one deploy:',
-            description: 'Next.js as the product framework: pages, API routes, and database access together, without a second backend.',
+            title: 'Full stack, one deploy',
+            description: 'Next.js as the product shell: pages, API routes, and database access in one deploy, without a separate backend service.',
           },
         ],
       },
       recruiter: {
-        description: 'Delivering enterprise-grade frontend applications with a focus on code maintainability, team scalability, and UI consistency.',
+        description: 'Enterprise Angular frontends with maintainable code, room for more developers on the team, and consistent UI patterns.',
         items: [
           {
-            title: 'Technical Leadership:',
-            description: 'Technical leadership for teams on modern Angular paradigms and enforcing clean architectural standards.',
+            title: 'Team standards',
+            description: 'Modern Angular patterns and clear architecture rules the whole squad can follow.',
           },
           {
-            title: 'Testing Culture:',
-            description: 'Spearheading UI test automation with Jest and Playwright to guarantee stability across releases.',
+            title: 'Testing culture',
+            description: 'Jest and Playwright automation so releases do not depend on manual click-throughs.',
           },
           {
-            title: 'Scalable Workflows:',
-            description: 'Structuring Nx workspaces and CI/CD pipelines for large, multi-team enterprise environments.',
+            title: 'Nx and CI/CD',
+            description: 'Nx workspaces and pipelines sized for large, multi-team setups.',
           },
           {
-            title: 'A second framework stack:',
-            description: 'Production Next.js and React 19 applications alongside Angular, using the App Router and Server Components.',
+            title: 'Second framework stack',
+            description: 'Production Next.js and React 19 beside Angular, with App Router and Server Components.',
           },
         ],
       },
       developer: {
-        description: 'Pushing the boundaries of the Angular ecosystem with advanced reactivity, strict typing, and elegant design patterns.',
+        description: 'Angular work with strong reactivity, strict typing, and patterns that survive refactors.',
         items: [
           {
-            title: 'Signal Architecture:',
-            description: 'Deep integration of Signals, complex RxJS streams, and strictly zoneless state engines.',
+            title: 'Signals and RxJS',
+            description: 'Signals next to RxJS streams and zoneless setup where the app needs it.',
           },
           {
-            title: 'Type-Safe Tooling:',
-            description: 'Leveraging strictly typed templates and enforcing deterministic behavioral testing via Playwright.',
+            title: 'Typed templates',
+            description: 'Strict template typing and Playwright tests for behavior that matters.',
           },
           {
-            title: 'Performance Primitives:',
-            description: 'Optimizing hydration strategies, lazy-loaded routes, and efficient change detection cycles.',
+            title: 'Runtime performance',
+            description: 'Hydration choices, lazy routes, and change detection that does not waste cycles.',
           },
           {
-            title: 'React ecosystem:',
-            description: 'Next.js App Router, Server Components, and React 19, including streaming responses and React hydration.',
+            title: 'React ecosystem',
+            description: 'Next.js App Router, Server Components, React 19, streaming responses, and React hydration.',
           },
         ],
       },
     },
     backend: {
       default: {
-        description: 'Architecting resilient APIs and maintaining uncompromising software quality across the entire stack.',
+        description: 'APIs and services with tests and types kept honest across the stack.',
         items: [
           {
-            title: 'API & Microservices:',
-            description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.',
+            title: 'APIs and services',
+            description: 'Typed REST and realtime APIs on Node.js (Nitro) and Java Spring Boot.',
           },
           {
-            title: 'Quality Assurance:',
-            description: 'Implementing comprehensive unit and integration tests using JUnit 5, Mockito, and Testcontainers.',
+            title: 'Backend tests',
+            description: 'Unit and integration tests with JUnit 5, Mockito, and Testcontainers.',
           },
           {
-            title: 'Cloud & Data:',
-            description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
+            title: 'Cloud and data',
+            description: 'PostgreSQL with Prisma and deployments aimed at zero downtime at the edge.',
           },
           {
-            title: 'Security & Sessions:',
-            description: 'Short-lived access tokens with refresh rotation, httpOnly cookies and SameSite=strict; CSP reports watch the public endpoints.',
+            title: 'Security and sessions',
+            description: 'Short-lived access tokens with refresh rotation, httpOnly cookies and SameSite=strict, plus CSP reports on public endpoints.',
           },
         ],
       },
       founder: {
-        description: 'Deploying highly reliable, cost-effective infrastructure enhanced with custom AI capabilities.',
+        description: 'Infrastructure that stays up without oversized bills, plus AI features when the product needs them.',
         items: [
           {
-            title: 'AI-Powered Features:',
-            description: "Embedding intelligent agents and LLM logic natively into your product's API layer.",
+            title: 'AI in the API',
+            description: 'Agents and LLM calls wired into the API layer your product already uses.',
           },
           {
-            title: 'Serverless Scaling:',
-            description: 'Leveraging cloud-edge environments that scale perfectly alongside user demand drops and spikes.',
+            title: 'Edge scaling',
+            description: 'Cloud edge runtimes that scale when traffic spikes and shrink when it drops.',
           },
           {
-            title: 'Continuous Delivery:',
-            description: 'Automated deployment pipelines to continuously ship business value without breaking things.',
+            title: 'Continuous delivery',
+            description: 'Deployment pipelines that ship often and catch breakages in test before production.',
           },
           {
-            title: 'Secure from the start:',
-            description: 'Auth, sessions, and input validation are built with the product rather than hardened on later.',
+            title: 'Security from day one',
+            description: 'Auth, sessions, and input validation ship with the product instead of a late hardening pass.',
           },
         ],
       },
       recruiter: {
-        description: 'Driving engineering excellence through strict QA cultures and highly reliable, scalable service architectures.',
+        description: 'Backend services with clear QA expectations and architecture that survives enterprise load.',
         items: [
           {
-            title: 'API & Microservices:',
-            description: 'Architecting type-safe, scalable REST and realtime APIs with Node.js (Nitro) and Java Spring Boot.',
+            title: 'APIs and services',
+            description: 'Typed REST and realtime APIs on Node.js (Nitro) and Java Spring Boot.',
           },
           {
-            title: 'Testing Culture:',
-            description: 'Enforcing TDD methodologies and rigorous API integration testing to guarantee enterprise platform stability.',
+            title: 'Testing culture',
+            description: 'TDD where it helps and API integration tests that catch regressions before release.',
           },
           {
-            title: 'CI/CD & Delivery:',
-            description: 'Automating reliable build pipelines to guarantee frictionless software delivery processes.',
+            title: 'CI/CD',
+            description: 'Build and deploy pipelines the team can run without heroics every Friday.',
           },
           {
-            title: 'Enterprise Security:',
-            description: 'Separate access and refresh tokens, httpOnly cookies, and CSP reporting at enterprise standard.',
+            title: 'Enterprise security',
+            description: 'Separate access and refresh tokens, httpOnly cookies, and CSP reporting to your standards.',
           },
         ],
       },
       developer: {
-        description: 'Building strictly typed, highly optimized backends obsessed with clean architecture and execution speed.',
+        description: 'Backends with end-to-end types, tests you trust, and architecture you can change without a rewrite.',
         items: [
           {
-            title: 'Type-Safe Ecosystem:',
-            description: 'Unifying the full stack with end-to-end type safety via Prisma, Nitro, and deep generics.',
+            title: 'Types across the stack',
+            description: 'Prisma, Nitro, and generics so API contracts match what the client compiles against.',
           },
           {
-            title: 'Robust Testing:',
-            description: 'Writing deterministic backend test suites using JUnit 5, Mockito, and Testcontainers for real DB integration.',
+            title: 'Backend tests',
+            description: 'JUnit 5, Mockito, and Testcontainers suites that hit a real database in CI.',
           },
           {
-            title: 'Cloud & Data:',
-            description: 'Designing seamless PostgreSQL/Prisma integrations and zero-downtime, edge-ready deployments.',
+            title: 'Cloud and data',
+            description: 'PostgreSQL with Prisma and edge deployments planned for zero downtime.',
           },
           {
-            title: 'Auth architecture:',
-            description: 'JWT verification in a middleware layer, refresh rotation, and strict cookie flags as a second line of defense.',
+            title: 'Auth architecture',
+            description: 'JWT verification in middleware, refresh rotation, and strict cookie flags behind the session layer.',
           },
         ],
       },
