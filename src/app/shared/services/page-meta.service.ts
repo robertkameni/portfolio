@@ -17,9 +17,10 @@ export type PageMeta = {
   lang?: string;
   ogTitle?: string;
   ogDescription?: string;
+  jsonLd?: Record<string, unknown>;
 };
 
-type MetaKey = { attr: 'name' | 'property'; key: string; value: keyof PageMeta };
+type MetaKey = { attr: 'name' | 'property'; key: string; value: Exclude<keyof PageMeta, 'jsonLd'> };
 
 const META_KEYS: MetaKey[] = [
   { attr: 'name', key: 'description', value: 'description' },
@@ -65,6 +66,7 @@ export class PageMetaService {
       this.writeMeta(attr, key, values[value]);
     }
     this.writeCanonical(meta.canonical);
+    this.writeJsonLd(meta.jsonLd);
     this.langOverride.set(meta.lang ?? null);
   }
 
@@ -96,6 +98,8 @@ export class PageMetaService {
     } else if (canonical && this.savedCanonical?.href != null) {
       canonical.setAttribute('href', this.savedCanonical.href);
     }
+
+    this.clearJsonLd();
 
     this.savedTitle = null;
     this.savedTags = null;
@@ -139,5 +143,21 @@ export class PageMetaService {
       this.document.head.appendChild(link);
     }
     link.setAttribute('href', href);
+  }
+
+  private static readonly JSON_LD_ATTR = 'data-page-meta-jsonld';
+
+  private writeJsonLd(data: Record<string, unknown> | undefined): void {
+    this.clearJsonLd();
+    if (!data) return;
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute(PageMetaService.JSON_LD_ATTR, '');
+    script.textContent = JSON.stringify(data);
+    this.document.head.appendChild(script);
+  }
+
+  private clearJsonLd(): void {
+    this.document.head.querySelectorAll(`script[${PageMetaService.JSON_LD_ATTR}]`).forEach((node) => node.remove());
   }
 }
