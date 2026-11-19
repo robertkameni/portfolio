@@ -5,9 +5,14 @@ Status: Approved design — pending implementation plan
 
 ## Goal
 
-When a recruiter searches for the stack Robert uses (not his name), public pages should be crawlable with coherent DE/EN meta and structured data. ATS assets (HTML CV, PDF, DOCX) stay aligned with the same identity. No skill-only landing URLs.
+Public pages must be findable two ways:
 
-Success: SSR HTML for `/`, `/cv`, `/projects`, and `/projects/:slug` carries unique title, description, canonical, and JSON-LD that reflect the Angular Technical Lead spine; printable CV assets still parse cleanly and match that spine.
+1. **Stack search** — recruiter looks for the stack Robert uses (Angular TL, TypeScript, etc.)
+2. **Name search** — recruiter looks for name variants: `Robert Kameni Namou`, `Robert Kameni`, `Robert Namou`, `Kameni Namou`
+
+Crawlable DE/EN meta and structured data on existing routes. ATS assets (HTML CV, PDF, DOCX) stay aligned with the same identity. No skill-only landing URLs.
+
+Success: SSR HTML for `/`, `/cv`, `/projects`, and `/projects/:slug` carries unique title, description, canonical, and JSON-LD that reflect the Angular Technical Lead spine **and** the full legal name plus discoverable name variants; printable CV assets still parse cleanly and match that spine.
 
 ## Positioning (inferred)
 
@@ -29,7 +34,18 @@ One shared head layer. Extend `PageMetaService` so every public route applies lo
 
 Surfaces in scope: `/`, `/projects`, `/projects/:slug`, `/cv`. Admin, `/api`, and project edit stay non-indexable via existing `robots.txt`.
 
-Keyword spine for all meta templates: CV headline + core skills. Home, projects list/detail, and CV descriptions reuse that spine. No separate SEO keyword file that can drift from the CV.
+Keyword spine for all meta templates: full name + CV headline + core skills. Home, projects list/detail, and CV titles/descriptions reuse that spine. No separate SEO keyword file that can drift from the CV.
+
+### Name discovery
+
+Canonical display name everywhere: **Robert Kameni Namou**.
+
+JSON-LD `Person` on home and CV must set:
+
+- `name`: `Robert Kameni Namou`
+- `alternateName`: `["Robert Kameni", "Robert Namou", "Kameni Namou"]`
+
+Page titles and descriptions for home and `/cv` include the full name naturally (already typical for CV titles). Do not keyword-stuff every variant into visible body copy or every project title — variants live in structured data + natural full-name usage in titles/descriptions. Visible H1 / CV header remains the full name only.
 
 ## Components
 
@@ -56,8 +72,8 @@ Small DE/EN title and description templates next to existing site-copy. Values m
 
 ### 4. JSON-LD builders (pure functions)
 
-- Home / sitewide: `Person` + `WebSite`
-- CV: `Person` with `jobTitle` and `knowsAbout` aligned to CV skills
+- Home / sitewide: `Person` + `WebSite` (`Person.name` + `alternateName` as above)
+- CV: `Person` with `name`, `alternateName`, `jobTitle`, and `knowsAbout` aligned to CV skills
 - Project detail: minimal `CreativeWork` in Phase A (title, url, keywords from tech tags); richer fields in Phase C when body depth exists. Prefer `CreativeWork` over `SoftwareApplication` — these are case studies, not installable products.
 
 Canonical URLs always go through existing `absoluteUrl` / `SITE_ORIGIN` (`https://cv.lucastar.de` by default). Sitemap shape stays as in `buildSitemapEntries` — do not invent a second origin for OG or JSON-LD.
@@ -105,8 +121,9 @@ Phase A does not require regenerating PDF/DOCX unless a string drift is found du
 
 - JSON-LD builders: required `@context` / `@type`, no empty `knowsAbout` / `keywords` arrays when data is missing
 - `PageMetaService`: apply sets title, description, canonical, JSON-LD; restore clears route-owned tags without leaking to the next route
-- Meta templates: resolve per locale and include the Angular TL spine
-- SSR smoke (existing harness if present): `/`, `/cv`, `/projects/:slug` HTML contains unique `<title>`, meta description, and one `ld+json` block
+- Meta templates: resolve per locale and include the Angular TL spine plus full name on home/CV
+- JSON-LD `Person`: `name` and all three `alternateName` values present
+- SSR smoke (existing harness if present): `/`, `/cv`, `/projects/:slug` HTML contains unique `<title>`, meta description, and one `ld+json` block; home/CV title contains `Robert Kameni Namou`
 
 ## Out of scope
 
@@ -128,4 +145,5 @@ Phase A does not require regenerating PDF/DOCX unless a string drift is found du
 
 - No dual-surface ATS export pipeline rewrite
 - No content-led homepage rewrite as a prerequisite for meta
-- No dependence on recruiter name-search alone; stack-keyword discovery is the success bar
+- No stuffing every name variant into body copy or project titles — structured `alternateName` + natural full-name titles are enough
+- Success bar is **both** stack-keyword discovery and name-variant discovery, not one at the expense of the other
