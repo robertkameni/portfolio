@@ -24,6 +24,7 @@ export const DE_COPY: SiteCopy = {
     about: 'Über mich',
     contact: 'Kontakt',
     cv: 'Lebenslauf',
+    language: 'Sprache',
   },
   focus: { title: 'Schwerpunkt' },
   stack: { eyebrow: 'Werkzeuge' },

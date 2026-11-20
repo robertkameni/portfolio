@@ -10,6 +10,7 @@ const LIST_SELECT = {
   slug: true,
   title: true,
   description: true,
+  descriptionEn: true,
   tags: true,
   coverImageUrl: true,
   projectUrl: true,

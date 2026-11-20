@@ -37,6 +37,28 @@ export class LocaleService {
   readonly locale = this.localeState.asReadonly();
   readonly copy = computed(() => getSiteCopy(this.locale()));
 
+  /**
+   * Visitor-driven locale change after hydration. First paint still comes from
+   * transfer state / `?lang=`; this only runs from an explicit UI control.
+   */
+  setLocale(locale: AppLocale): void {
+    if (locale === this.localeState()) {
+      return;
+    }
+    this.localeState.set(locale);
+    if (!this.clientReady || typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem('app-locale', locale);
+    } catch {
+      // Private mode / blocked storage must not break the toggle.
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', locale);
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }
+
   private initialLocale(): AppLocale {
     if (!this.clientReady) {
       // ?lang= query wins over Accept-Language so a shared link renders in the

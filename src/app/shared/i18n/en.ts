@@ -24,6 +24,7 @@ export const EN_COPY: SiteCopy = {
     about: 'About',
     contact: 'Contact',
     cv: 'CV (German)',
+    language: 'Language',
   },
   focus: { title: 'What I do' },
   stack: { eyebrow: 'Toolset' },
