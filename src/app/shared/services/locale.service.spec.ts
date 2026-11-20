@@ -18,14 +18,16 @@ describe('LocaleService.setLocale', () => {
 
     const service = TestBed.inject(LocaleService);
     const replaceState = vi.spyOn(window.history, 'replaceState');
+    const start = service.locale();
+    const next = start === 'en' ? 'de' : 'en';
 
-    service.setLocale('en');
-    expect(service.locale()).toBe('en');
-    expect(window.localStorage.getItem('app-locale')).toBe('en');
+    service.setLocale(next);
+    expect(service.locale()).toBe(next);
+    expect(window.localStorage.getItem('app-locale')).toBe(next);
     expect(replaceState).toHaveBeenCalled();
 
-    service.setLocale('de');
-    expect(service.locale()).toBe('de');
-    expect(window.localStorage.getItem('app-locale')).toBe('de');
+    service.setLocale(start);
+    expect(service.locale()).toBe(start);
+    expect(window.localStorage.getItem('app-locale')).toBe(start);
   });
 });
