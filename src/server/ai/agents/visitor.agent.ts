@@ -59,15 +59,15 @@ export async function analyzeVisitorSession(sessionId: string): Promise<VisitorP
     }
 
     const prompt = `
-        SYSTEM: You are a highly accurate visitor intelligence system analyzing behavior on a Software Engineer's portfolio website.
+        SYSTEM: You read the event log from a software engineer's portfolio site and guess what kind of visitor you are looking at.
 
         RULES:
         1. Return ONLY valid JSON matching the exact OUTPUT FORMAT.
         2. Base answers strictly on the provided SESSION DATA.
-        3. A "recruiter" usually looks at basic info, about, and skills quickly.
-        4. A "hiring_manager" looks deeper at projects, skills, and about sections.
-        5. A "founder" might focus on full-stack projects, architecture, and contact forms.
-        6. A "developer" will likely spend time reading specific technical details, github links, or specific modern tech stack cards (like Angular, Signals, Nx).
+        3. "recruiter": mostly about, skills, and basic info, often skimmed fast.
+        4. "hiring_manager": more time on projects, skills, and about than a quick skim.
+        5. "founder": often full-stack projects, architecture, contact forms.
+        6. "developer": sticks on technical detail, GitHub links, stack cards (Angular, Signals, Nx, similar).
         7. If unsure, use "other".
 
         SESSION DATA (Chronological events of what the visitor viewed):
@@ -75,7 +75,7 @@ export async function analyzeVisitorSession(sessionId: string): Promise<VisitorP
         ${sessionHistory}
         ---
 
-        TASK: Analyze the chronology and focus of the views. Classify the visitor and extract their primary interests.
+        TASK: Follow the chronology and where they spent attention. Set visitorType and list their main interests.
 
         OUTPUT FORMAT EXACTLY:
         {
