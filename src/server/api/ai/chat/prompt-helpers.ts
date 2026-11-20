@@ -387,22 +387,7 @@ export function detectPromptLocale(message: string): PromptLocale {
   if (germanSignals.some((signal) => text.includes(signal))) {
     return 'de';
   }
-  const englishSignals = [
-    'tell me',
-    'your ',
-    'about your',
-    'how much',
-    'what did you',
-    'what have you',
-    'built with',
-    'experience',
-    'available',
-    'salary',
-    'freelance',
-    'angular',
-    'next.js',
-    'react',
-  ];
+  const englishSignals = ['tell me', 'your ', 'about your', 'how much', 'what did you', 'what have you', 'built with', 'are you available', 'salary', 'start date'];
   if (englishSignals.some((signal) => text.includes(signal))) {
     return 'en';
   }

@@ -39,20 +39,20 @@
   } @else if (store.error()) {
   <page-loader [message]="copy().home.failedProfile" />
   } @else if (store.data(); as profile) {
-  <masthead [data]="profile.intro" [locale]="profile.locale" />
+  <masthead [data]="profile.intro" [locale]="uiLocale()" />
 
-  <focus-areas [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
+  <focus-areas [cards]="profile.heroCards" [locale]="uiLocale()" fadeIn />
 
-  <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn />
+  <skills-bento [skills]="profile.skills" [locale]="uiLocale()" fadeIn />
 
-  <about [data]="profile.about" [locale]="profile.locale" fadeIn />
+  <about [data]="profile.about" [locale]="uiLocale()" fadeIn />
 
-  <projects-section [locale]="profile.locale" fadeIn />
+  <projects-section [locale]="uiLocale()" fadeIn />
 
   <!-- Straight after the work, because that is where the next question forms. -->
-  <twin-invite [locale]="profile.locale" fadeIn />
+  <twin-invite [locale]="uiLocale()" fadeIn />
 
-  <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
+  <contact [data]="profile.contact" [locale]="uiLocale()" fadeIn />
 
   <dev-footer fadeIn />
   }

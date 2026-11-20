@@ -37,6 +37,11 @@ describe('detectPromptLocale', () => {
     expect(detectPromptLocale('Tell me about your Angular experience')).toBe('en');
     expect(detectPromptLocale('What have you built with Next.js?')).toBe('en');
   });
+
+  it('keeps German when the message only adds a tech keyword', () => {
+    expect(detectPromptLocale('Wie lange nutzt du schon Angular?')).toBe('de');
+    expect(detectPromptLocale('Sag was zu React')).toBe('de');
+  });
 });
 
 const STUDY_PREFIX = 'CASE STUDY (tell this one story, leave the other projects as names only): ';
