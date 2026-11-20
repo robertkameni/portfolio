@@ -3,7 +3,9 @@ export type Project = {
   slug: string;
   title: string;
   description: string | null;
+  descriptionEn?: string | null;
   contentMarkdown: string | null;
+  contentMarkdownEn?: string | null;
   tags: string[];
   coverImageUrl: string | null;
   projectUrl: string | null;
@@ -12,7 +14,7 @@ export type Project = {
   updatedAt: string;
 };
 
-export type ProjectListItem = Omit<Project, 'contentMarkdown'>;
+export type ProjectListItem = Omit<Project, 'contentMarkdown' | 'contentMarkdownEn'>;
 
 /** Body for POST / PUT project admin APIs (matches server CreateProjectDto fields). */
 export type ProjectPayload = Omit<Project, 'id' | 'createdAt' | 'updatedAt'>;

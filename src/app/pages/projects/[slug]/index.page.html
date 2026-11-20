@@ -26,8 +26,8 @@
 
         <h1 class="type-title">{{ project.title }}</h1>
 
-        @if (project.description) {
-        <p class="type-lead text-ink-2">{{ project.description }}</p>
+        @if (localizedDescription()) {
+        <p class="type-lead text-ink-2">{{ localizedDescription() }}</p>
         }
       </header>
 
@@ -80,7 +80,7 @@
         <div class="min-w-0 lg:col-start-1 lg:row-start-1">
           <section class="space-y-4">
             <h2 class="type-h2">{{ copy().projectDetail.overview }}</h2>
-            @if (project.contentMarkdown) {
+            @if (localizedMarkdown()) {
             <div class="project-markdown max-w-[65ch]" [safeHtml]="renderedMarkdown()"></div>
             } @else {
             <p class="max-w-[65ch] leading-7 text-ink-2">{{ copy().projectDetail.emptyDescription }}</p>

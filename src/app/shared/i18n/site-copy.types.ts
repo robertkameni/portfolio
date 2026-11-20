@@ -41,6 +41,8 @@ export type SiteCopy = {
     contact: string;
     /** The CV page. German document, so the label says so in English. */
     cv: string;
+    /** Accessible name for the DE|EN language toggle group. */
+    language: string;
   };
   focus: {
     title: string;

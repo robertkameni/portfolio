@@ -6,6 +6,7 @@ import {
   buildProjectPromptContext,
   buildSystemInstruction,
   caseStudyForInstruction,
+  detectPromptLocale,
   scoreProject,
   selectRelevantProjects,
   trimCaseStudy,
@@ -14,14 +15,32 @@ import {
 } from './prompt-helpers';
 
 describe('case study wiring', () => {
-  it('loads contentMarkdown and withholds the block while scheduling', () => {
+  it('loads DE and EN markdown and withholds the block while scheduling', () => {
     const loader = readFileSync(new URL('./chat-stream-shared.ts', import.meta.url), 'utf8');
     const stream = readFileSync(new URL('./stream.post.ts', import.meta.url), 'utf8');
 
     expect(loader).toContain('contentMarkdown: true');
-    expect(loader).not.toContain('contentMarkdownEn');
+    expect(loader).toContain('contentMarkdownEn: true');
+    expect(loader).toContain('descriptionEn: true');
     expect(loader).toContain('buildProjectPromptContext(');
     expect(stream).toContain('caseStudyForInstruction(schedulingMode, caseStudy)');
+  });
+});
+
+describe('detectPromptLocale', () => {
+  it('picks German for umlaut and German phrasing', () => {
+    expect(detectPromptLocale('Erzähl mir von deiner Angular-Erfahrung')).toBe('de');
+    expect(detectPromptLocale('Bist du verfügbar?')).toBe('de');
+  });
+
+  it('picks English for recruiter English phrasing', () => {
+    expect(detectPromptLocale('Tell me about your Angular experience')).toBe('en');
+    expect(detectPromptLocale('What have you built with Next.js?')).toBe('en');
+  });
+
+  it('keeps German when the message only adds a tech keyword', () => {
+    expect(detectPromptLocale('Wie lange nutzt du schon Angular?')).toBe('de');
+    expect(detectPromptLocale('Sag was zu React')).toBe('de');
   });
 });
 
@@ -96,6 +115,23 @@ describe('case study block', () => {
     expect(result.caseStudy).not.toContain('SECOND BODY');
     expect(result.projectSummary).toContain('ATLAS-BIO');
     expect(result.projectSummary).toContain('DATEV Kanzlei Platform');
+  });
+
+  it('prefers the EN body for an English question when present', () => {
+    const result = buildProjectPromptContext(
+      [{ ...angular, contentMarkdown: 'DE BODY', contentMarkdownEn: 'EN BODY', descriptionEn: 'Lead frontend EN' }],
+      'Tell me about your Angular experience',
+    );
+
+    expect(result.caseStudy).toContain('EN BODY');
+    expect(result.caseStudy).not.toContain('DE BODY');
+    expect(result.projectSummary).toContain('Lead frontend EN');
+  });
+
+  it('falls back to DE when EN is empty on an English question', () => {
+    const result = buildProjectPromptContext([{ ...angular, contentMarkdown: 'DE BODY', contentMarkdownEn: '  ' }], 'Tell me about your Angular experience');
+
+    expect(result.caseStudy).toContain('DE BODY');
   });
 
   it('skips a blank body even when the project matches', () => {

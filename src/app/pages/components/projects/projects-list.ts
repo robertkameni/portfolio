@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import type { ProjectListItem } from '../../../shared/types/project.types';
 import type { AppLocale } from '../../../shared/i18n/app-locale';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
+import { localizedProjectField } from '../../../shared/i18n/localized-project-field';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 
 @Component({
@@ -57,8 +58,12 @@ export class ProjectsList {
     return toAngularLocale(this.locale());
   }
 
-  protected descriptionNeedsToggle(text: string): boolean {
-    return text.length > ProjectsList.descriptionCollapsedMaxChars;
+  protected localizedDescription(project: ProjectListItem): string | null {
+    return localizedProjectField(project.description, project.descriptionEn, this.locale());
+  }
+
+  protected descriptionNeedsToggle(text: string | null): boolean {
+    return !!text && text.length > ProjectsList.descriptionCollapsedMaxChars;
   }
 
   protected visibleTags(project: ProjectListItem): string[] {

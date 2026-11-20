@@ -355,18 +355,87 @@ export type ProjectPromptContext = {
   caseStudy: string;
 };
 
+export type PromptLocale = 'de' | 'en';
+
+/**
+ * Pick the case-study language from the visitor message. Strong German signals
+ * win; otherwise English recruiter phrasing (or a Latin-only question without
+ * German markers) selects EN. Default is DE.
+ */
+export function detectPromptLocale(message: string): PromptLocale {
+  const text = message.toLowerCase();
+  const germanSignals = [
+    'ä',
+    'ö',
+    'ü',
+    'ß',
+    'erzähl',
+    'erzaehl',
+    'deiner',
+    'dein ',
+    'hast du',
+    'bist du',
+    'was hast',
+    'wie ist',
+    'über ',
+    'ueber ',
+    'verfügbar',
+    'verfuegbar',
+    'gehalt',
+    'projekten',
+  ];
+  if (germanSignals.some((signal) => text.includes(signal))) {
+    return 'de';
+  }
+  const englishSignals = ['tell me', 'your ', 'about your', 'how much', 'what did you', 'what have you', 'built with', 'are you available', 'salary', 'start date'];
+  if (englishSignals.some((signal) => text.includes(signal))) {
+    return 'en';
+  }
+  return 'de';
+}
+
+export function localizeProjectForPrompt<
+  T extends {
+    title: string;
+    description: string | null;
+    descriptionEn?: string | null;
+    tags: string[];
+    updatedAt: Date | string;
+    contentMarkdown?: string | null;
+    contentMarkdownEn?: string | null;
+  },
+>(project: T, locale: PromptLocale): T & { description: string | null; contentMarkdown: string | null } {
+  const pick = (de: string | null | undefined, en: string | null | undefined): string | null => {
+    if (locale === 'en') {
+      const english = en?.trim();
+      if (english) return english;
+    }
+    const german = de?.trim();
+    return german ? german : null;
+  };
+  return {
+    ...project,
+    description: pick(project.description, project.descriptionEn),
+    contentMarkdown: pick(project.contentMarkdown, project.contentMarkdownEn),
+  };
+}
+
 export function buildProjectPromptContext(
   projects: readonly {
     title: string;
     description: string | null;
+    descriptionEn?: string | null;
     tags: string[];
     updatedAt: Date | string;
     contentMarkdown?: string | null;
+    contentMarkdownEn?: string | null;
   }[],
   message: string,
   limit = 6,
 ): ProjectPromptContext {
-  const ranked = selectRelevantProjects(projects, message, limit);
+  const locale = detectPromptLocale(message);
+  const localized = projects.map((project) => localizeProjectForPrompt(project, locale));
+  const ranked = selectRelevantProjects(localized, message, limit);
   const projectSummary = normalizeProjectSummary(ranked);
   const winner = ranked[0];
   if (!winner || scoreProject(winner, message) <= 0) {
