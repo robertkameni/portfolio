@@ -5,6 +5,39 @@ import { TestBed } from '@angular/core/testing';
 import { LocaleService } from './locale.service';
 import { REQUEST } from '@analogjs/router/tokens';
 
+describe('LocaleService on the server', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  function serverLocale(request: unknown): string {
+    TestBed.configureTestingModule({
+      providers: [LocaleService, TransferState, { provide: PLATFORM_ID, useValue: 'server' }, { provide: REQUEST, useValue: request }],
+    });
+    return TestBed.inject(LocaleService).locale();
+  }
+
+  it('reads ?lang= from originalUrl because Nitro rewrites url to the SSR entry', () => {
+    const locale = serverLocale({
+      url: '/index.html',
+      originalUrl: '/projects/atlas-bio-micronutrition-pwa?lang=en',
+      headers: { 'accept-language': 'de-DE,de;q=0.9' },
+    });
+
+    expect(locale).toBe('en');
+  });
+
+  it('falls back to Accept-Language when the URL carries no choice', () => {
+    const locale = serverLocale({
+      url: '/index.html',
+      originalUrl: '/projects/atlas-bio-micronutrition-pwa',
+      headers: { 'accept-language': 'de-DE,de;q=0.9' },
+    });
+
+    expect(locale).toBe('de');
+  });
+});
+
 describe('LocaleService.syncLangQueryParam', () => {
   const providers = [LocaleService, TransferState, { provide: PLATFORM_ID, useValue: 'browser' }, { provide: REQUEST, useValue: null }];
 

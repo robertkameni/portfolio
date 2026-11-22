@@ -109,7 +109,7 @@ export class LocaleService {
     if (!this.clientReady) {
       // ?lang= query wins over Accept-Language so a shared link renders in the
       // requested language on the first SSR response.
-      const langParam = this.extractLangParam(this.request?.url);
+      const langParam = this.extractLangParam(this.readRequestUrl());
       const locale = langParam ?? resolveLocaleFromAcceptLanguage(this.request?.headers['accept-language']);
       this.transferState.set(SSR_LOCALE_STATE_KEY, locale);
       return locale;
@@ -123,6 +123,18 @@ export class LocaleService {
     if (tsLocale) return tsLocale;
     const langParam = this.extractLangParamFromWindow();
     return langParam ?? resolveBrowserLocale();
+  }
+
+  /**
+   * The URL the visitor asked for. Nitro rewrites `req.url` to the SSR entry
+   * (`/index.html`) before Angular runs, which drops the path and the query
+   * string; only `originalUrl` still carries `?lang=`. Reading `url` alone made
+   * every shared `?lang=` link render in `Accept-Language` instead, and the
+   * client then corrected the URL after hydration.
+   */
+  private readRequestUrl(): string | undefined {
+    const request = this.request as (IncomingMessage & { originalUrl?: string }) | null;
+    return request?.originalUrl ?? request?.url;
   }
 
   /**
