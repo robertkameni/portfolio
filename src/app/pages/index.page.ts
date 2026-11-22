@@ -60,7 +60,8 @@ export default class Home implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   devMode = isDevMode();
-  protected readonly copy = computed(() => getSiteCopy(this.store.data()?.locale ?? 'en'));
+  protected readonly uiLocale = this.localeService.locale;
+  protected readonly copy = computed(() => getSiteCopy(this.uiLocale()));
 
   constructor() {
     effect(() => {

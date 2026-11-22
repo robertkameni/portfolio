@@ -10,7 +10,7 @@
     <a href="#contact" class="toolbar-option">{{ copy().nav.contact }}</a>
     <!-- The one nav item that leaves the page. It has no section to mark, so
          the activeSection directive ignores it: that only pairs href^="#". -->
-    <a routerLink="/cv" class="toolbar-option cv">{{ copy().nav.cv }}</a>
+    <a routerLink="/cv" queryParamsHandling="preserve" class="toolbar-option cv">{{ copy().nav.cv }}</a>
   </nav>
   <nav data-toolbar-mobile [attr.aria-label]="copy().nav.label" activeSection class="page-shell flex gap-x-5 border-t border-rule sm:flex-nowrap lg:hidden">
     <a href="#focus" class="toolbar-option">{{ copy().focus.title }}</a>
@@ -21,7 +21,7 @@
   <!-- On a phone the section nav keeps its four anchors in two rows; a fifth
        item left a lone link on a third row and pushed the sticky bar to 186px.
        The CV is a document, not a section, so it sits in the top bar instead. -->
-  <a data-toolbar-cv routerLink="/cv" class="toolbar-option cv lg:hidden">{{ copy().nav.cv }}</a>
+  <a data-toolbar-cv routerLink="/cv" queryParamsHandling="preserve" class="toolbar-option cv lg:hidden">{{ copy().nav.cv }}</a>
   @if (devMode) {
   <div class="hidden items-center gap-1.5 sm:flex">
     <button (click)="setMockProfile('founder')" [attr.aria-pressed]="activeProfile() === 'founder'" class="toolbar-toggle cursor-pointer">{{ copy().home.founder }}</button>
@@ -39,20 +39,20 @@
   } @else if (store.error()) {
   <page-loader [message]="copy().home.failedProfile" />
   } @else if (store.data(); as profile) {
-  <masthead [data]="profile.intro" [locale]="profile.locale" />
+  <masthead [data]="profile.intro" [locale]="uiLocale()" />
 
-  <focus-areas [cards]="profile.heroCards" [locale]="profile.locale" fadeIn />
+  <focus-areas [cards]="profile.heroCards" [locale]="uiLocale()" fadeIn />
 
-  <skills-bento [skills]="profile.skills" [locale]="profile.locale" fadeIn />
+  <skills-bento [skills]="profile.skills" [locale]="uiLocale()" fadeIn />
 
-  <about [data]="profile.about" [locale]="profile.locale" fadeIn />
+  <about [data]="profile.about" [locale]="uiLocale()" fadeIn />
 
-  <projects-section [locale]="profile.locale" fadeIn />
+  <projects-section [locale]="uiLocale()" fadeIn />
 
   <!-- Straight after the work, because that is where the next question forms. -->
-  <twin-invite [locale]="profile.locale" fadeIn />
+  <twin-invite [locale]="uiLocale()" fadeIn />
 
-  <contact [data]="profile.contact" [locale]="profile.locale" fadeIn />
+  <contact [data]="profile.contact" [locale]="uiLocale()" fadeIn />
 
   <dev-footer fadeIn />
   }

@@ -13,6 +13,7 @@ import { SafeHtmlDirective } from '../../../shared/directives/safe-html.directiv
 import { ScreenshotZoom } from '../../../shared/components/screenshot-zoom/screenshot-zoom';
 import { getSiteCopy } from '../../../shared/i18n/site-copy';
 import { toAngularLocale } from '../../../shared/i18n/app-locale';
+import { localizedProjectField } from '../../../shared/i18n/localized-project-field';
 import { LocaleService } from '../../../shared/services/locale.service';
 import { ProjectsStore } from '../../../store/projects.store';
 import { createProjectMarkdownRenderer, normalizeProjectMarkdown } from '../../../shared/markdown/project-markdown-renderer';
@@ -86,7 +87,7 @@ export default class ProjectOverviewPage {
         jsonLd: buildCreativeWorkJsonLd({
           name: project.title,
           url,
-          description: project.description ?? undefined,
+          description: localizedProjectField(project.description, project.descriptionEn, locale) ?? undefined,
           keywords: tags,
         }),
       });
@@ -138,9 +139,21 @@ export default class ProjectOverviewPage {
     return list[(index + 1) % list.length] ?? null;
   });
 
+  protected readonly localizedDescription = computed(() => {
+    const project = this.projectResource.value()?.data;
+    if (!project) return null;
+    return localizedProjectField(project.description, project.descriptionEn, this.locale());
+  });
+
+  protected readonly localizedMarkdown = computed(() => {
+    const project = this.projectResource.value()?.data;
+    if (!project) return null;
+    return localizedProjectField(project.contentMarkdown, project.contentMarkdownEn, this.locale());
+  });
+
   protected readonly renderedMarkdown = computed(() => {
     this.markdownReady();
-    const md = this.projectResource.value()?.data?.contentMarkdown;
+    const md = this.localizedMarkdown();
     if (!md || !this.markdownParser) {
       return '';
     }

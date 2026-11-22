@@ -1,6 +1,6 @@
 <header class="border-b border-rule bg-paper/90 backdrop-blur-md">
   <div class="page-shell flex h-13 items-center gap-6">
-    <a routerLink="/" class="tap-area font-mono text-[0.8125rem] font-semibold tracking-[0.04em] text-ink">RK</a>
+    <a routerLink="/" queryParamsHandling="preserve" class="tap-area font-mono text-[0.8125rem] font-semibold tracking-[0.04em] text-ink">RK</a>
 
     <div class="flex items-center gap-5">
       <ng-content></ng-content>
@@ -10,6 +10,10 @@
       <!-- A page link in the top bar, for widths where the section nav has no
            room for a fifth item. Projected so the page owns the label. -->
       <ng-content select="[data-toolbar-cv]"></ng-content>
+      <div class="flex items-center gap-1" role="group" [attr.aria-label]="copy().nav.language">
+        <button type="button" class="toolbar-toggle" [attr.aria-pressed]="locale() === 'de'" (click)="setLocale('de')">DE</button>
+        <button type="button" class="toolbar-toggle" [attr.aria-pressed]="locale() === 'en'" (click)="setLocale('en')">EN</button>
+      </div>
       @if (showBackUrl()) {
       <button (click)="navigateBack()" class="toolbar-option cursor-pointer">{{ copy().devProxy.back }}</button>
       } @if (showHomeUrl()) {

@@ -44,7 +44,15 @@ export async function loadChatPromptContext(message: string) {
   // from exactly the questions that needed it.
   const publishedProjects = await prisma.project.findMany({
     where: { isPublished: true },
-    select: { title: true, description: true, tags: true, updatedAt: true, contentMarkdown: true },
+    select: {
+      title: true,
+      description: true,
+      descriptionEn: true,
+      tags: true,
+      updatedAt: true,
+      contentMarkdown: true,
+      contentMarkdownEn: true,
+    },
     orderBy: { updatedAt: 'desc' },
   });
   const { projectSummary, caseStudy } = buildProjectPromptContext(publishedProjects, message);

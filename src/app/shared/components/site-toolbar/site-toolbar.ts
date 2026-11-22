@@ -2,7 +2,9 @@ import { ViewportScroller } from '@angular/common';
 import { afterNextRender, Component, DestroyRef, ElementRef, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import type { AppLocale } from '../../i18n/app-locale';
 import { LocaleService } from '../../services/locale.service';
+import { PortfolioStore } from '../../../store/portfolio.store';
 
 @Component({
   selector: 'site-toolbar',
@@ -15,6 +17,7 @@ import { LocaleService } from '../../services/locale.service';
 })
 export class SiteToolbarComponent {
   private readonly localeService = inject(LocaleService);
+  private readonly portfolioStore = inject(PortfolioStore);
   private readonly router = inject(Router);
   private readonly scroller = inject(ViewportScroller);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -96,5 +99,10 @@ export class SiteToolbarComponent {
       return;
     }
     void this.router.navigateByUrl('/admin/login');
+  }
+
+  setLocale(locale: AppLocale): void {
+    this.localeService.setLocale(locale);
+    this.portfolioStore.loadProfile();
   }
 }

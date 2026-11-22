@@ -10,13 +10,21 @@
       <nav [attr.aria-label]="copy().linksLabel" class="md:min-w-56">
         <ul class="border-t border-rule">
           <li class="border-b border-rule">
-            <a routerLink="/" class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent">
+            <a
+              routerLink="/"
+              queryParamsHandling="preserve"
+              class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent"
+            >
               {{ copy().home }}
               <span aria-hidden="true">&#8594;</span>
             </a>
           </li>
           <li class="border-b border-rule">
-            <a routerLink="/projects" class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent">
+            <a
+              routerLink="/projects"
+              queryParamsHandling="preserve"
+              class="tap-area flex items-center justify-between gap-4 py-4 text-ink transition-colors duration-150 hover:text-accent"
+            >
               {{ copy().projects }}
               <span aria-hidden="true">&#8594;</span>
             </a>
