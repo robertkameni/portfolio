@@ -49,20 +49,22 @@ describe('Word CV header', () => {
   });
 });
 
-describe('served Word CV', () => {
-  const SERVED = 'public/assets/cv/lebenslauf-robert-kameni-namou.docx';
-
-  it('carries no template footer text', () => {
-    const zip = readFileSync(SERVED);
+describe('Word CV footers', () => {
+  it.each(CV_FILES)('%s carries no template footer text', (path) => {
+    const zip = readFileSync(path);
     const footers = ['word/footer1.xml', 'word/footer2.xml', 'word/footer3.xml'];
 
-    // The source document in docs/cv still had its original footer, which read
-    // "– Intern –" on every page. A file a recruiter downloads cannot advertise
-    // an internship that is not on the CV, so the served copy stays empty here.
+    // The source document kept its original footer, which read "– Intern –" on
+    // every page. Both the source and the served copy are the CV, so neither may
+    // advertise an internship that is not on it.
     for (const name of footers) {
       expect(readZipEntry(zip, name), name).not.toContain('Intern');
     }
   });
+});
+
+describe('served Word CV', () => {
+  const SERVED = 'public/assets/cv/lebenslauf-robert-kameni-namou.docx';
 
   it('uses no layout tables, which parsers read column by column', () => {
     const document = readZipEntry(readFileSync(SERVED), 'word/document.xml');
@@ -140,16 +142,18 @@ describe('Word CV experience', () => {
     const document = readZipEntry(readFileSync(path), 'word/document.xml');
 
     // The role headings explicitly turned keep-with-next off, so a job could
-    // break after its first bullet and the next role started with no gap.
+    // break after its first bullet and the next role started with no gap. Match
+    // the tag without its closing form: Word writes <w:keepNext />, but a re-save
+    // by a library writes <w:keepNext/>, and the property is the same.
     for (const title of ROLE_TITLES) {
       const role = roleParagraph(document, title);
-      expect(role, title).toContain('<w:keepNext />');
+      expect(role, title).toMatch(/<w:keepNext\s*\/>/);
       expect(role).not.toContain('w:keepNext w:val="0"');
     }
 
     expect(paragraphBefore(document, 'IT Consultant')).toContain('w:before="240"');
     expect(paragraphBefore(document, 'e Developer')).toContain('w:before="240"');
-    expect(paragraphBefore(document, 'Technische Leitung von 2 Scrum-Teams')).toContain('<w:keepNext />');
+    expect(paragraphBefore(document, 'Technische Leitung von 2 Scrum-Teams')).toMatch(/<w:keepNext\s*\/>/);
     expect(paragraphBefore(document, 'Projekt Omnia/Optica')).toContain('w:before="160"');
   });
 });
