@@ -49,6 +49,31 @@ describe('Word CV header', () => {
   });
 });
 
+describe('served Word CV', () => {
+  const SERVED = 'public/assets/cv/lebenslauf-robert-kameni-namou.docx';
+
+  it('carries no template footer text', () => {
+    const zip = readFileSync(SERVED);
+    const footers = ['word/footer1.xml', 'word/footer2.xml', 'word/footer3.xml'];
+
+    // The source document in docs/cv still had its original footer, which read
+    // "– Intern –" on every page. A file a recruiter downloads cannot advertise
+    // an internship that is not on the CV, so the served copy stays empty here.
+    for (const name of footers) {
+      expect(readZipEntry(zip, name), name).not.toContain('Intern');
+    }
+  });
+
+  it('uses no layout tables, which parsers read column by column', () => {
+    const document = readZipEntry(readFileSync(SERVED), 'word/document.xml');
+
+    // A table-based resume reaches an ATS as cell fragments: the period of an
+    // entry is parsed before the role beside it. Paragraphs with tab stops read
+    // in the order a human reads them.
+    expect(document).not.toContain('<w:tbl>');
+  });
+});
+
 describe('Word CV typography', () => {
   it.each(CV_FILES)('%s avoids small caps and italics that parsers read inconsistently', (path) => {
     const zip = readFileSync(path);
