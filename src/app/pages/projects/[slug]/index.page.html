@@ -2,6 +2,7 @@
   <div class="page-shell">
     <a
       [routerLink]="goBackLink()"
+      queryParamsHandling="preserve"
       [fragment]="previewMode() ? '' : 'projects-section'"
       class="tap-area type-meta inline-flex items-center gap-2 text-ink-3 transition-colors hover:text-accent"
     >
@@ -91,7 +92,7 @@
           <!-- A case study ends with the next one, not with a dead end. -->
           <nav [attr.aria-label]="copy().projectDetail.nextProjectHeading" class="mt-16 border-t border-rule pt-6">
             <h2 class="type-meta text-ink-3">{{ copy().projectDetail.nextProjectHeading }}</h2>
-            <a [routerLink]="['/projects', next.slug]" class="group mt-3 flex items-baseline justify-between gap-6">
+            <a [routerLink]="['/projects', next.slug]" queryParamsHandling="preserve" class="group mt-3 flex items-baseline justify-between gap-6">
               <span class="type-h3 text-ink transition-colors duration-150 group-hover:text-accent">{{ next.title }}</span>
               <span aria-hidden="true" class="text-accent transition-transform duration-150 group-hover:translate-x-1">&#8594;</span>
             </a>

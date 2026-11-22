@@ -34,6 +34,15 @@ export class LocaleService {
    */
   private readonly localeState = signal<AppLocale>(this.initialLocale());
 
+  /**
+   * True when the language is the visitor's explicit choice rather than a
+   * heuristic (`Accept-Language` / `navigator.languages`). Only then does the
+   * URL keep `?lang=`: an automatic pick must not be frozen into every link,
+   * but a choice made through the toggle (or a shared `?lang=` link) has to
+   * survive in-app navigation, a refresh, and a copied URL.
+   */
+  private readonly explicitLocale = signal<boolean>(this.readExplicitLocale());
+
   readonly locale = this.localeState.asReadonly();
   readonly copy = computed(() => getSiteCopy(this.locale()));
 
@@ -42,10 +51,12 @@ export class LocaleService {
    * transfer state / `?lang=`; this only runs from an explicit UI control.
    */
   setLocale(locale: AppLocale): void {
-    if (locale === this.localeState()) {
-      return;
+    // Clicking the button for the already active language is still a choice:
+    // persist it so later navigation keeps `?lang=` in the URL.
+    this.explicitLocale.set(true);
+    if (locale !== this.localeState()) {
+      this.localeState.set(locale);
     }
-    this.localeState.set(locale);
     if (!this.clientReady || typeof window === 'undefined') {
       return;
     }
@@ -57,6 +68,41 @@ export class LocaleService {
     const url = new URL(window.location.href);
     url.searchParams.set('lang', locale);
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  /**
+   * Router navigation does not repeat query params, so moving between pages
+   * dropped `?lang=` and the next refresh or copied URL fell back to
+   * `Accept-Language`. Re-attach an explicit choice with `replaceState` so the
+   * address bar stays shareable and history gains no extra entry. In-app
+   * navigation is the only trigger; the automatic language heuristic is never
+   * frozen into the URL.
+   */
+  syncLangQueryParam(): void {
+    if (!this.clientReady || !this.explicitLocale() || typeof window === 'undefined') {
+      return;
+    }
+    const locale = this.localeState();
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('lang') === locale) {
+      return;
+    }
+    url.searchParams.set('lang', locale);
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  /**
+   * A `?lang=` in the current address means the visitor (or whoever shared the
+   * link) chose the language, so navigation keeps carrying it. The stored
+   * preference is deliberately not enough: first paint comes from the server,
+   * which cannot read `localStorage`, so appending `?lang=` for a stored value
+   * would flip the language on the next refresh mid-visit.
+   */
+  private readExplicitLocale(): boolean {
+    if (!this.clientReady || typeof window === 'undefined') {
+      return false;
+    }
+    return this.extractLangParamFromWindow() !== null;
   }
 
   private initialLocale(): AppLocale {

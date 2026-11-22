@@ -2,7 +2,7 @@
   <div class="page-shell">
     <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
       <h2 class="type-h2">{{ copy().projects.title }}</h2>
-      <a routerLink="/projects" class="tap-area link-quiet type-meta inline-flex items-center gap-2">
+      <a routerLink="/projects" queryParamsHandling="preserve" class="tap-area link-quiet type-meta inline-flex items-center gap-2">
         {{ copy().projects.viewAll }}
         <span aria-hidden="true">&#8594;</span>
       </a>

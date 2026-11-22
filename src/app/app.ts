@@ -51,6 +51,9 @@ export class App {
           takeUntilDestroyed(this.destroyRef),
         )
         .subscribe((event) => {
+          // Keep a visitor-chosen `?lang=` in the address bar across in-app
+          // navigation, so refresh and sharing stay in their language.
+          this.localeService.syncLangQueryParam();
           this.analyticsService.trackPageView(event.urlAfterRedirects);
         });
     });

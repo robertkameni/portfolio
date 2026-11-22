@@ -17,7 +17,12 @@
       @if (project.coverImageUrl) {
       <!-- The screenshot is the largest element in the row, so it carries the
            link too. A reader who taps the picture expects the case study. -->
-      <a [routerLink]="['/projects', project.slug]" [attr.aria-label]="openProjectAriaLabel(project.title)" class="project-shot-link block overflow-hidden">
+      <a
+        [routerLink]="['/projects', project.slug]"
+        queryParamsHandling="preserve"
+        [attr.aria-label]="openProjectAriaLabel(project.title)"
+        class="project-shot-link block overflow-hidden"
+      >
         <div class="shot-parallax">
           <img
             [src]="project.coverImageUrl"
@@ -39,6 +44,7 @@
           <h2 class="text-lead font-medium leading-snug">
             <a
               [routerLink]="['/projects', project.slug]"
+              queryParamsHandling="preserve"
               [attr.aria-label]="openProjectAriaLabel(project.title)"
               class="tap-area text-ink transition-colors duration-150 hover:text-accent"
             >
@@ -49,6 +55,7 @@
           <h3 class="text-lead font-medium leading-snug">
             <a
               [routerLink]="['/projects', project.slug]"
+              queryParamsHandling="preserve"
               [attr.aria-label]="openProjectAriaLabel(project.title)"
               class="tap-area text-ink transition-colors duration-150 hover:text-accent"
             >

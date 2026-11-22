@@ -90,7 +90,7 @@ I was Technical Lead Frontend and drove architecture decisions, technical standa
 
 ## Architecture and delivery
 
-- Angular 20 with Standalone Components and Signals
+- Angular 20 at the start, now Angular 22 with standalone components and signals
 - State management with NgRx Signal Store
 - UI architecture with Angular Material
 - Clear feature boundaries for several parallel teams
@@ -107,7 +107,7 @@ Scaling and shipping became more stable, features landed faster and more consist
 
 ## Tech stack
 
-Angular 21, Signals, Angular Material, NgRx Signal Store, TypeScript, Jest, Cypress, Git Flow, Confluence
+Angular 22, Signals, Angular Material, NgRx Signal Store, TypeScript, Jest, Cypress, Git Flow, Confluence
 $en$
 WHERE slug = 'datev-kanzlei-management-platform-angular20';
 
