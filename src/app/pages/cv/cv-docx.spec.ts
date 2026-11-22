@@ -25,6 +25,43 @@ function readZipEntry(zip: Buffer, name: string): string {
   throw new Error(`Missing ${name}`);
 }
 
+function bodyText(path: string): string[] {
+  const document = readZipEntry(readFileSync(path), 'word/document.xml');
+  return document
+    .split('</w:p>')
+    .map((paragraph) =>
+      [...paragraph.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g)]
+        .map((match) => match[1])
+        .join('')
+        .trim(),
+    )
+    .filter((text) => text.length > 0);
+}
+
+describe('Word CV copies', () => {
+  it('says the same thing in the source document and the served file', () => {
+    const [served, source] = CV_FILES.map(bodyText);
+
+    // The two files drifted: the source still had the old portfolio URL and the
+    // literal heading "TECHNISCHE KOMPETENZEN" while the served copy read
+    // "cv.lucastar.de" and "Kenntnisse". The served file is what a recruiter
+    // downloads, the source is what the next regeneration starts from, so they
+    // have to carry the same text even while their layout differs.
+    expect(source).toEqual(served);
+  });
+
+  it.each(CV_FILES)('%s links the site to an address that resolves', (path) => {
+    const document = readZipEntry(readFileSync(path), 'word/document.xml');
+
+    // The header printed cv.lucastar.de but the HYPERLINK field still pointed at
+    // lucastar.de/portfolio, which redirects to www.lucastar.de: a host that does
+    // not resolve. A dead link in a CV is worse than no link.
+    expect(document).toContain('<w:t>cv.lucastar.de</w:t>');
+    expect(document).toContain('HYPERLINK "https://cv.lucastar.de"');
+    expect(document).not.toContain('lucastar.de/portfolio');
+  });
+});
+
 describe('Word CV header', () => {
   it.each(CV_FILES)('%s keeps the divider with the text instead of across it', (path) => {
     const zip = readFileSync(path);
